@@ -759,6 +759,9 @@
             if(symbol === '==') {
                return white + "AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
             }
+            else if(symbol === '!=') {
+               return white + "!AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+            }
 
             return res + white + symbol + getExpression({inForeach:inForeach});
          }
