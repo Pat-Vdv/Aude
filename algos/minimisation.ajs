@@ -32,8 +32,8 @@ do {
     q2 = l[l.length-1];
     
     foreach(a in A.getAlphabet()) {
-      found1 = q1 in table && a in table[q1];
-      found2 = q2 in table && a in table[q2];
+      found1 = table[q1][a].card() > 0;
+      found2 = table[q2][a].card() > 0;
       if(found1 !== found2) {
         partition.remove(couple);
         break;

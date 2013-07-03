@@ -11,9 +11,7 @@ function addDeterminizedState(newQ) {
       QDest : Set;
       
       foreach(state in newQ) {
-        if(table[state] && table[state][symbol]) {
-          QDest U= table[state][symbol];
-        }
+        QDest U= table[state][symbol];
       }
       addDeterminizedState(QDest);
       

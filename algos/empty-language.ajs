@@ -10,12 +10,10 @@ function visit(state) {
   }
 
   visitedStates.add(state);
-  if(state in table) { // if there are transitions from this state
-    for(var symbol in table[state]) { // for each symbol
-      foreach(destinationState in table[state][symbol]) {
-        if(visit(destinationState)) {
-          return true;
-        }
+  for(var symbol in table[state]) { // for each symbol
+    foreach(destinationState in table[state][symbol]) {
+      if(visit(destinationState)) {
+        return true;
       }
     }
   }
