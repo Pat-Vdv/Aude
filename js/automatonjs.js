@@ -733,7 +733,7 @@
             else {
                symbol = symbol.toLowerCase();
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains') {
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
                if(type === whitespace) {
                   white2 = symbol2 === ' ' ? '' : symbol2;
@@ -743,12 +743,21 @@
                   white2 = '';
                }
 
-               if(symbol2 === '=') {
-                  return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, value:true}) + ')';
+               if(symbol2 === '=' && symbol !== 'contains') {
+                  if(symbol === 'contains') {
+                     i = deb;
+                     return res;
+                  }
+
+                  return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+               }
+               else if(symbol === 'contains') {
+                  i = deb2;
+                  return res + '.contains(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
                }
                else {
                   i = deb2;
-                  return white + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, value:true}) + ')';
+                  return white + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
                }
             }
             i = deb;
