@@ -411,12 +411,25 @@
          return res + parseForeach(inForeach);
       }               
       else if(inForeach && (symbol === "break" || symbol === "continue" || symbol === "throw" || symbol === "return")) {
+         if(value) {
+            i = deb;
+            return '';
+         }
          return res + foreachReplacements(symbol);
       }
       else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function') {
+         if(value && symbol !== 'function') {
+            i = deb;
+            return '';
+         }
+
          return res + symbol + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
       }
       else if(symbol === 'do') {
+         if(value) {
+            i = deb;
+            return '';
+         }
          res += symbol + getExpression({inForeach:inForeach});
          var symbol2 = getSymbol();
          var d = i;
@@ -431,11 +444,19 @@
          return res;
       }
       else if(symbol === 'else') {
+         if(value) {
+            i = deb;
+            return '';
+         }
          return res + symbol + getExpression({inForeach:inForeach});
       }
       else if(type === instruction) {
-         if(symbol === 'new' || symbol === 'delete' || symbol === 'instanceof' || symbol === 'typeof') {
+         if(symbol === 'new' || (!value && symbol === 'delete') || symbol === 'typeof') {
             res += symbol + getExpression({inForeach:inForeach, value:true, onlyOneValue:true});
+         }
+         else if(value) {
+            i = deb;
+            return '';
          }
          else {
             return res + symbol + getExpression({inForeach:inForeach});
