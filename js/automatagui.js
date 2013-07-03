@@ -368,7 +368,7 @@
             AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), 'svg'), index);
          }
          catch(e) {
-            console.log(e);
+            console.log(e.message);
          }
       };
 
