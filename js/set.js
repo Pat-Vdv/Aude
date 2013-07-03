@@ -34,12 +34,24 @@
       this.l = {};
       this.listeners = [];
       if(l) {
-         if(l.getList) {// l is a set
+         if(typeof l.getList === 'function') {// l is a set
             this.setTypeConstraint(l.typeConstraint);
             l = l.getList();
          }
-         for(var i in l) {
-            this.add(l[i]);
+         else if(l instanceof Array) {
+            for(var i in l) {
+               this.add(l[i]);
+            }
+         }
+         else {
+            if(l.contents) {
+               for(var i in l.contents) {
+                  this.add(l.contents[i]);
+               }
+            }
+            if(l.typeConstraint) {
+               this.setTypeConstraint(l.typeConstraint);
+            }
          }
       }
    };

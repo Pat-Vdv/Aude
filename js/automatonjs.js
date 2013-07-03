@@ -346,6 +346,66 @@
       return symbol;
    }
 
+   function getConstraintString() {
+      var deb = i;
+      var symbol = getSymbol(), tmp = '';
+      if(type === whitespace) {
+         if(symbol !== ' ') {
+            tmp = symbol;
+         }
+         symbol = getSymbol();
+      }
+      if(type & (variable | string)) {
+         if(type === string) {
+            try {
+               var typeConstraint = JSON.parse(symbol);
+               if(typeConstraint === 'float' || typeConstraint === 'double') {
+                  symbol = '"number"';
+               }
+            }
+            catch(e) {
+               i = deb;
+               return '';
+            }
+         }
+         else {
+            var lowerType = symbol.toLowerCase();
+            if(lowerType === "integer") {
+               symbol = '"integer"';
+            }
+            else if(lowerType === "number" || lowerType === "float") {
+               symbol = '"number"';
+            }
+            else if(lowerType === "list" || lowerType === "array") {
+               symbol = "Array";
+            }
+            else if(lowerType === 'automata') {
+               symbol = 'Automata';
+            }
+            else if(lowerType === 'element') {
+               symbol = 'Element';
+            }
+            else if(lowerType === 'tuple') {
+               symbol = 'Tuple';
+            }
+            else if(lowerType === 'set') {
+               symbol = 'Set';
+            }
+            else if(lowerType === "bool" || lowerType === "boolean" ||  lowerType === "string" || lowerType === "object" || lowerType === "undefined") {
+               symbol = '"' + lowerType + '"';
+            }
+            else if(lowerType === 'state') {
+               symbol = 'null'; // FIXME: no constraint for states
+            }
+         }
+         return tmp + symbol;
+      }
+      else {
+         i = deb;
+         return '';
+      }
+   }
+
    function getExpression(options) {
       var res          = '',
           deb          = i,
@@ -457,6 +517,32 @@
             return '';
          }
          return res + symbol + getExpression({inForeach:inForeach});
+      }
+      else if(symbol === 'emptySet') {
+         res += 'new Set(';
+         var deb = i;
+         symbol = getSymbol();
+         if(type === whitespace) {
+            symbol = getSymbol();
+         }
+         if(symbol === '(') {
+            var constraint = getConstraintString();
+            if(constraint) {
+               if(getSymbol() === ')') {
+                  res += '{typeConstraint:' + constraint + '}';
+               }
+               else {
+                  i = deb;
+               }
+            }
+            else if(getSymbol() !== ')') {
+               i = deb;
+            }
+         }
+         else {
+            i = deb;
+         }
+         res += ')';
       }
       else if(type === instruction) {
          if(symbol === 'new' || (!value && symbol === 'delete') || symbol === 'typeof') {
@@ -603,6 +689,14 @@
                         }
                         else {
                            if(symbol === 'of') {
+                              var constraint = getConstraintString();
+                              if(constraint) {
+                                 res += ';' + varName + '.setTypeConstraint(' + constraint + ')';
+                              }
+                              else {
+                                 i = deb;
+                                 return res;
+                              }
                               symbol = getSymbol();
                               if(type === whitespace) {
                                  if(symbol !== ' ') {
@@ -610,50 +704,8 @@
                                  }
                                  symbol = getSymbol();
                               }
-                              if(type & (variable | string)) {
-                                 if(type === string) {
-                                    try {
-                                       var typeConstraint = JSON.parse(symbol);
-                                       if(typeConstraint === 'float' || typeConstraint === 'double') {
-                                          symbol = '"number"';
-                                       }
-                                    }
-                                    catch(e) {
-                                       i = deb;
-                                       return res;
-                                    }
-                                 }
-                                 else {
-                                    var lowerType = symbol.toLowerCase();
-                                    if(lowerType === "integer") {
-                                       symbol = '"integer"';
-                                    }
-                                    else if(lowerType === "number" || lowerType === "float") {
-                                       symbol = '"number"';
-                                    }
-                                    else if(lowerType === "list" || lowerType === "array") {
-                                       symbol = "Array";
-                                    }
-                                    else if(lowerType === 'automata') {
-                                       symbol = 'Automata';
-                                    }
-                                    else if(lowerType === 'element') {
-                                       symbol = 'Element';
-                                    }
-                                    else if(lowerType === 'tuple') {
-                                       symbol = 'Tuple';
-                                    }
-                                    else if(lowerType === 'set') {
-                                       symbol = 'Set';
-                                    }
-                                    else if(lowerType === "bool" || lowerType === "boolean" ||  lowerType === "string" || lowerType === "object" || lowerType === "undefined") {
-                                       symbol = '"' + lowerType + '"';
-                                    }
-                                    else if(lowerType === 'state') {
-                                       symbol = 'null'; // FIXME: no constraint for states
-                                    }
-                                 }
-                                 tmp += ';' + varName + '.setTypeConstraint(' + symbol + ')';
+                              if(symbol === '=') {
+                                 tmp += ';' + varName + '.unionInPlace(' + getExpression({inForeach:inForeach, value:true}) + ')';
                                  symbol = getSymbol();
                                  if(type === whitespace) {
                                     if(symbol !== ' ') {
@@ -661,27 +713,13 @@
                                     }
                                     symbol = getSymbol();
                                  }
-                                 if(symbol === '=') {
-                                    tmp += ';' + varName + '.unionInPlace(' + getExpression({inForeach:inForeach, value:true}) + ')';
-                                    symbol = getSymbol();
-                                    if(type === whitespace) {
-                                       if(symbol !== ' ') {
-                                          tmp += symbol;
-                                       }
-                                       symbol = getSymbol();
-                                    }
-                                 }
-                                 if(symbol === ';') {
-                                    return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '') + symbol;
-                                 }
-                                 else {
-                                    i-= symbol.length;
-                                    return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '');
-                                 }
+                              }
+                              if(symbol === ';') {
+                                 return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '') + symbol;
                               }
                               else {
-                                 i = deb;
-                                 return res;
+                                 i-= symbol.length;
+                                 return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '');
                               }
                            }
                            else {
