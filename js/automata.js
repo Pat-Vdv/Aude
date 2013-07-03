@@ -197,6 +197,7 @@
             that.Sigma.forEach(function(symbol) {
                table[state][symbol] = new Set();
             });
+            table[state][epsilon] = new Set();
          });
          for(var t in transList) {
             transition = transList[t];
