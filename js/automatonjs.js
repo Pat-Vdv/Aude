@@ -405,9 +405,17 @@
          return res + symbol;
       }
       else if(symbol === ',') {
+         if(value) {
+            --i;
+            return res;
+         }
          return res + ',' + getExpression({inForeach:true, value:false, endSymbols:endSymbols});
       }
       else if(symbol === 'foreach') {
+         if(value) {
+            --i;
+            return res;
+         }
          return res + parseForeach(inForeach);
       }               
       else if(inForeach && (symbol === "break" || symbol === "continue" || symbol === "throw" || symbol === "return")) {
