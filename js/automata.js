@@ -191,15 +191,15 @@
 
       getTransitionsTable: function() {
          // In this loop, we build sets of accessible states by couple (state, symbol) in the list "table" 
-         var table = {}, transition, transList = this.getListOfTransitions();
+         var table = {}, that = this, transition, transList = this.getListOfTransitions();
+         this.states.forEach(function(state) {
+            table[state] = {};
+            that.Sigma.forEach(function(symbol) {
+               table[state][symbol] = new Set();
+            });
+         });
          for(var t in transList) {
             transition = transList[t];
-            if(!table[transition.startState]) {
-               table[transition.startState] = {};
-            }
-            if(!table[transition.startState][transition.symbol]) {
-               table[transition.startState][transition.symbol] = new Set();
-            }
             table[transition.startState][transition.symbol].add(transition.endState);
          }
          return table;
