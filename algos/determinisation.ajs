@@ -1,0 +1,39 @@
+A    : Automaton(0); // Input automaton
+DetA : Automaton;    // Output automaton
+Alphabet : Set = A.getAlphabet();
+table : List = A.getTransitionsTable();
+
+function addDeterminizedState(newQ) {
+  if(!DetA.hasState(newQ)) {
+    DetA.addState(newQ);
+    
+    foreach(symbol in Alphabet) {
+      QDest : Set;
+      
+      foreach(state in newQ) {
+        if(table[state] && table[state][symbol]) {
+          QDest U= table[state][symbol];
+        }
+      }
+      addDeterminizedState(QDest);
+      
+      DetA.addTransition(newQ, symbol, QDest);
+    }
+  }
+  
+  foreach(state in newQ) {
+    if(A.isFinalState(state)) {
+      DetA.setFinalState(newQ);
+      break;
+    }
+  }
+}
+
+QInit : Set;
+
+QInit.add(A.getInitialState());
+addDeterminizedState(QInit);
+
+DetA.setInitialState(QInit);
+
+return DetA;

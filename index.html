@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+   <head>
+      <meta charset="utf-8" />
+      <title>Automata</title>
+      <script src="js/mousewheel.js"></script>
+      <script src="js/automatadesigner.js"></script>
+      <script src="js/automata.js"></script>
+      <script src="js/set.js"></script>
+      <script src="js/automatagui.js"></script>
+      <script src="js/lib/codemirror/lib/codemirror.js"></script>
+      <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" />
+      <script src="js/codemirror-automatonjs/automatonjs.js"></script>
+      <link rel="stylesheet" href="style/automatagui.css" />
+      <script src="js/lib/libD/1.0/core.js"></script>
+      <script src="js/lib/libD/1.0/notify.js"></script>
+      <script src="js/lib/viz.js"></script>
+      <script src="js/automaton2dot.js"></script>
+      <script src="js/automatonjs.js"></script>
+      <script src="js/lib/fileSaver.js"></script>
+   </head>
+   <body>
+   <div id="toolbar" class="designmode">
+      <label>Mode : <select id="switchmode">
+         <option value="design"> Design </option>
+         <option value="program">Program </option>
+         <option value="automatoncode"> automaton code</option>
+      </select></label>
+      <span class="sep"></span>
+      <label>
+         Automaton n°
+         <select id="n_automaton"></select>
+      </label>
+      <span class="designmode-specific">
+         <button id="automaton_plus"><img alt="+" src="icons/oxygen/16x16/actions/list-add.png" /></button>
+         <button id="automaton_minus"><img alt="-" src="icons/oxygen/16x16/actions/list-remove.png" /></button>
+      </span>
+      <span class="sep"></span>
+      <button id="algo-exec">Execute Program</button>
+      <span class="sep"></span>
+      <input type="file" id="fileautomaton" style="display:none" />
+      <input type="file" id="fileprogram" style="display:none" />
+      <button id="open">Open</button>
+      <button id="save">Save</button>
+      <button id="saveas">Save As</button>
+      <span class="sep">Automaton:</span>
+      <button id="export">Export</button>
+      <button id="redraw">Redraw</button>
+      <div class="right">
+      <button id="export_result">Export result</button>
+      </div>
+   </div>
+   <div id="automataedit" class="pane">
+      <div id="left-pane">
+         <div id="svg-container" class="pane"></div>
+         <div id="automatoncode" class="pane disabled">
+            <textarea id="automatoncodeedit"></textarea>
+         </div>
+      </div>
+      <div id="splitter"></div>
+      <div id="results"></div>
+   </div>
+   <div id="codeedit" class="pane disabled"></div>
+   </body>
+</html>

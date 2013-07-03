@@ -1,0 +1,67 @@
+AutomataJS is a free (as in free speech and in free beer) software to teach and experiment with automata.
+
+= What is an automaton?
+
+   An automaton is a mathematical object behind regular expressions and robots. More precisely, we can define is as a quintuplet composed of:
+    - Q     : a set of states
+    - Sigma : a set of symbols
+    - q0    : an initial state
+    - Delta : a set of transitions, a transition being a (state, symbol, state) triplet.
+    - F     : a subset of Q in which states are considered accepting / final
+
+= What this program does?
+
+   This program let the user write, draw or represent automata, run or write automata/set-related algorithms. To write algorithms, a convenient language strongly inspired of Javascript has been designed. This language as native support for automata and sets. Sets have their own dedicated notation and the language defines common set operations as operators such as minus, inter, union and allow set iteration thanks to a foreach structure.
+
+   In the near future, it should be possible to run a automaton on a word and follow the execution graphically, find a regular expression from an automaton and a automaton from a regular expression, and even more.
+
+= How do I run the program?
+
+   Just open "index.html" in a recent browser.
+
+   Supported browsers are:
+    - The last version of Firefox (22+)
+    - The last version of Google Chrome / Chromium (28+)
+    - The last version of Opera (15+)
+    - A recent version of Rekonq or any other browser that makes use of Webkit
+
+   Should work on:
+    - a recent version of Safari
+
+   Might work on:
+    - IE 10+, but this is untested (we would be glad to if Windows were not required to test on IE)
+
+   Should not work on:
+    - tablets
+
+   Will probably never work on:
+    - IE < 10
+
+= What is the license of the program?
+
+   Some parts are under a BSD license:
+      set.js, automata.js, automatajs.js, automaton2dot.js ; these pieces of code are completely independent from other parts.
+
+   Some parts are under a GPL 3+:
+      index.html, automatagui.js, automatadesigner.js
+
+   One file is under WTFPL (read the file's header for more information):
+      mousewheel.js
+
+   If you have doubt about a license to respect for a particular file, GPLv3+ in fine. You can also contact the author.
+
+   This program makes use of the following external projects :
+    - libD, under GPL 3+.
+    - viz.js, which is Graphviz compiled in Javascript. See lib/COPYING.viz.txt for more information
+    - fileSaver.js, which is under X11/MIT, see lib/LICENSE.fileSaver.md for more information
+    - CodeMirror, which is under a MIT-style license. see lib/codemirror/LICENSE for more information
+
+   The GPLv3 license can be consulted in the file gpl.txt.
+   The WTFPL license can be consulted in the file wtfpl.txt.
+
+= Author
+   Raphaël Jakse (at UJF) : raphael dot jakse at gmail dot com
+   Supervised by Yliès Falcon between June 1st and July, 15 : ylies dot falcone at ujf-grenoble dot fr
+
+   This program was started as a personal project around November 2012. The main goal was to get to know automata and related algorithms, and also help friends in their revisions, in the hope more people, teachers included, would find it useful.
+   As of July of 2013, however, most of the development was done during a stage at Verimag supervised by Yliès Falcone and paid by the Université Joseph Fourier, Grenoble. 

@@ -1,0 +1,50 @@
+A : Automaton(0);
+ElimA : Automaton;
+Transitions : Table = A.getTransitionsTable();
+
+ElimA.setStates(A.getStates());
+ElimA.setFinalStates(A.getFinalStates());
+ElimA.setInitialState(A.getInitialState());
+
+function canReach(q1, a, q2, alreadySeenStates) {
+  if(alreadySeenStates.contains(q1))
+    return false;
+
+  if(A.hasTransition(new Transition(q1, a, q2))) {
+    return true;
+  }
+  else if(q1 in Transitions) {
+    alreadySeenStates.add(q1);
+    if(a !== epsilon && A.hasTransition(q1, a, q1)) {
+      if(canReach(q1, epsilon, q2, alreadySeenStates minus q1))
+        return true;
+    }
+    if(a in Transitions[q1]) {
+      foreach(state in Transitions[q1][a]) {
+        if(canReach(state, a, q2, alreadySeenStates))
+          return true;
+      }
+    }
+    if(a !== epsilon && epsilon in Transitions[q1]) {
+      foreach(state in Transitions[q1][epsilon]) {
+        if(canReach(state, a, q2, alreadySeenStates))
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
+foreach(q1 in A.getStates()) {
+  foreach(q2 in A.getStates()) {
+    foreach(a in A.getAlphabet()) {
+      if(canReach(q1, a, q2, new Set)) {
+        ElimA.addTransition(q1, a, q2);
+        if(A.isFinalState(q2))
+          ElimA.setFinalState(q1);
+      }
+    }
+  }
+}
+
+return ElimA;

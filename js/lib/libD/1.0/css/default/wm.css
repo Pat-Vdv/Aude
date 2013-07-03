@@ -1,0 +1,359 @@
+.ddwm-window.decoration
+{
+	border:1px solid rgb(50,50,50);
+}
+
+.ddwm-window.decoration
+{
+	-moz-border-radius:5px;
+	-khtml-border-radius:5px;
+	border-radius:5px;
+	border:1px solid rgba(50,50,50,0.5)
+}
+
+.ddwm-window
+{
+	position:absolute;
+
+/* Styles protecting the content of the window */
+	font-size:16px; /* FIXME : this might warm because it prevent users from auto adjusting the font size of the windows' container */
+	text-align:left;
+	font-style:normal;
+	font-weight:normal;
+	text-shadow:none
+}
+
+.libD-ws-colors-auto
+{
+	background-color:rgb(237,237,237);
+}
+.libD-ws-colors-auto
+{
+	background-color:rgba(237,237,237, 0.93);
+	color:black;
+	font-family:"Liberation Sans", "Nimbus Sans L", "FreeSans", Verdana,Helvetica, sans-serif;
+}
+
+.libD-ws-colors-auto, .libD-ws-size-auto
+{
+	width:100%;
+	height:100%;
+	margin:0;
+	padding:0;
+	overflow:auto;
+	position:relative;
+	zoom:1;
+}
+
+.shadows.ddwm-window.decoration.active, .no-decoration.active .ddwm-content
+{
+	-webkit-box-shadow:0 4px 8px rgba(0,0,0,0.4);
+	-moz-box-shadow:0 4px 8px rgba(0,0,0,0.4);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
+{
+	-webkit-box-shadow:0 4px 8px rgba(0,0,0,0.2);
+	box-shadow:0 4px 8px rgba(0,0,0,0.2);
+	-moz-box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+
+.no-decoration.ddwm-window .ddwm-titlebar
+{
+	display:none
+}
+
+.ddwm-window.decoration .ddwm-titlebar
+{
+	background-color:rgb(237,237,237);
+}
+.ddwm-window.decoration .ddwm-titlebar
+{
+	position:relative;
+	-moz-border-radius-topright:5px;
+	-khtml-border-top-right-radius:5px;
+	-khtml-border-top-left-radius:5px;
+	-moz-border-radius-topleft:5px;
+	border-top-left-radius:5px;
+	border-top-right-radius:5px;
+	height:17px;
+	padding-top:2px;
+	color:#555;
+	cursor:default;
+	background-color:rgba(237,237,237, 0.9);
+	background-repeat:repeat-x
+}
+
+.active.ddwm-window.decoration .ddwm-titlebar
+{
+	background-image:url(wm/title_top_middle.png);
+	padding-bottom:1px;
+}
+
+.inactive.ddwm-window.decoration .ddwm-titlebar
+{
+	background-image:url(wm/title_top_middle_inactive.png);
+	padding-bottom:1px
+}
+
+.inactive.ddwm-window.decoration .ddwm-title
+{
+	color:#AAA
+}
+
+.ddwm-titlebar-space
+{
+	cursor:default;
+	position:absolute;
+	left:24px;
+	right:55px;
+	top:1px;
+	bottom:0px;
+	overflow:hidden;
+	cursor:inherit;
+}
+
+.ddwm-title
+{
+	margin:0;
+	padding:0;
+	width:100%;
+	height:100%;
+	white-space:pre;
+	text-align:center;
+}
+
+.ddwm-title, .ddwm-text
+{
+	font-size:13px;
+	font-family: Sans, sans-serif;
+	text-shadow:1px 1px 5px #AAA;
+	font-weight:bold;
+}
+
+.ddwm-title.ddwm-title-embeded
+{
+	width:auto;
+	display:inline-block;
+}
+
+.ddwm-title-block.ddwm-title-embeded
+{
+	display:block
+}
+
+.ddwm-icon
+{
+	float:left;
+	margin-left:6px;
+	height:14px;
+	width:auto;
+	cursor:auto;
+}
+
+.ddwm-window.icon-hide .ddwm-icon
+{
+	display:none;
+}
+
+.ddwm-window.icon-hide .ddwm-titlebar-space
+{
+	left:0;
+	-khtml-border-top-left-radius:5px;
+	-moz-border-radius-topleft:5px;
+	border-top-left-radius:5px;
+	border-top-right-radius:5px;
+}
+
+.ddwm-window.decoration .ddwm-content
+{
+	z-index:5;
+	overflow:hidden;
+}
+
+.ddwm-content
+{
+	position:relative;
+}
+
+
+.ddwm-min, .ddwm-restore, .ddwm-max, .ddwm-close
+{
+	position:absolute;
+	width:16px;
+	height:16px;
+	font-size:0px;
+	color:transparent;
+	background-repeat:no-repeat;
+	cursor:auto;
+}
+
+.ddwm-close
+{
+	right:3px;
+	background-image:url(wm/close.png);
+}
+
+.ddwm-close:hover
+{
+	background-image:url(wm/close-h.png);
+}
+
+.ddwm-close:active
+{
+	background-image:url(wm/close-f.png);
+}
+
+.ddwm-restore
+{
+	right:21px;
+	background-image:url(wm/restore.png);
+}
+
+.ddwm-restore:hover
+{
+	background-image:url(wm/restore-h.png);
+}
+
+.ddwm-restore:active
+{
+	background-image:url(wm/restore-f.png);
+}
+
+.ddwm-max
+{
+	right:21px;
+	background-image:url(wm/maximize.png);
+}
+.ddwm-max:hover
+{
+	background-image:url(wm/maximize-h.png);
+}
+
+.ddwm-max:active
+{
+	background-image:url(wm/maximize-f.png);
+}
+
+.ddwm-min
+{
+	right:40px;
+	background-image:url(wm/minimize.png);
+}
+
+.ddwm-min:hover
+{
+	background-image:url(wm/minimize-h.png);
+}
+
+.ddwm-min:active
+{
+	background-image:url(wm/minimize-f.png);
+}
+
+.ddwm-min:active, .ddwm-restore:active, .ddwm-max:active, .ddwm-close:active
+{
+	margin-right:2px;
+	margin-top:2px;
+	height:12px;
+	width:12px;
+}
+
+.ddwm-window.decoration .ddwm-resize-left
+{
+	position:absolute;
+	top:20px;
+	left:0;
+	bottom:3px;
+	width:2px;
+	background:#F1F1F1;
+	-moz-border-radius-bottomleft:5px;
+	-khtml-border-bottom-left-radius:5px;
+	border-bottom-left-radius:5px;
+}
+
+.ddwm-window.decoration .ddwm-resize-right
+{
+	position:absolute;
+	top:20px;
+	right:0;
+	bottom:3px;
+	width:2px;
+	background:#F1F1F1;
+	-moz-border-radius-bottomright:5px;
+	-khtml-border-bottom-right-radius:5px;
+	border-bottom-right-radius:5px;
+}
+
+.ddwm-window.decoration .ddwm-resize-bottom
+{
+	position:absolute;
+	right:3px;
+	left:3px;
+	bottom:0;
+	height:2px;
+	background:#F1F1F1;
+}
+
+.ddwm-window.decoration .ddwm-resize-bottom, .ddwm-window.decoration .ddwm-resize-top, .ddwm-window.decoration .ddwm-resize-right
+{
+	z-index:10;
+}
+
+.ddwm-window.decoration .ddwm-content.fixed-size
+{
+	position:absolute;
+	top:20px;
+	bottom:2px;
+	left:2px;
+	right:2px
+}
+
+.ddwm-content.auto-size
+{
+	margin:2px;
+	margin-top:0px
+}
+
+.ddwm-window.no-decoration .ddwm-content.fixed-size
+{
+	position:absolute;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0
+}
+
+
+.ddwm-window.ddwm-maximized .ddwm-content.fixed-size
+{
+	bottom:0;
+	left:0;
+	right:0
+}
+
+.ddwm-window.ddwm-maximized .ddwm-content.auto-size
+{
+	margin:0
+}
+
+.ddwm-maximized .ddwm-resize-bottom, .ddwm-maximized .ddwm-resize-top, .ddwm-maximized .ddwm-resize-right, .ddwm-maximized .ddwm-resize-left
+{
+	display:none
+}
+
+.ddwm-window.ddwm-maximized
+{
+	border:0;
+	-moz-border-radius:0;
+	-khtml-border-radius:0;
+	border-radius:0
+}
+
+.ddwm-window.ddwm-maximized .ddwm-titlebar
+{
+	-moz-border-radius:0;
+	-khtml-border-radius:0;
+	border-radius:0
+}
