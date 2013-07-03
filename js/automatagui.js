@@ -50,28 +50,50 @@
           open              = document.getElementById('open'),
           save              = document.getElementById('save'),
           saveas            = document.getElementById('saveas'),
+          exportBtn         = document.getElementById('export'),
+          exportResult      = document.getElementById('export_result'),
           fileprogram       = document.getElementById('fileprogram'),
           exportFN          = '';
 
-      document.getElementById('export').onclick = function() {
+      window.addEventListener('keydown', function(e) {
+         if(e.ctrlKey) {
+            if(e.keyCode === 83) {
+               save.onclick();
+               e.preventDefault();
+               return false;
+            }
+            if(e.keyCode === 69) {
+               if(e.shiftKey) {
+                  exportResult.onclick();
+               }
+               else {
+                  exportBtn.onclick();
+               }
+               e.preventDefault();
+               return false;
+            }
+         }
+      });
+
+      exportBtn.onclick = function() {
          var fn = prompt("Which name do you want to give to the exported image ? (give a .dot extension to save as dot format, .svg to save as svg)", exportFN);
-        
+
          if(fn) {
             exportFN = fn;
-         }
-        
-         if(switchmode.value === 'design') {
-            automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex);
-         }
-         else {
-            AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
-         }
 
-         if(fn.length > 4 && fn.substr(fn.length-4) === '.svg') {
-            saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type:'text/plain;charset=utf-8'}), fn);
-         }
-         else {
-            saveAs(new Blob([automaton2dot(get_automaton(AutomataDesigner.currentIndex))], {type:'text/plain;charset=utf-8'}), fn);
+            if(switchmode.value === 'design') {
+               automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex);
+            }
+            else {
+               AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+            }
+
+            if(fn.length > 4 && fn.substr(fn.length-4) === '.svg') {
+               saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type:'text/plain;charset=utf-8'}), fn);
+            }
+            else {
+               saveAs(new Blob([automaton2dot(get_automaton(AutomataDesigner.currentIndex))], {type:'text/plain;charset=utf-8'}), fn);
+            }
          }
       };
       
@@ -84,7 +106,7 @@
           exportResultFN     = 'automaton.txt',
           exportResultTextFN = 'result.txt';
 
-      document.getElementById('export_result').onclick = function() {
+      exportResult.onclick = function() {
          if(automatonResult) {
             var fn = prompt("Which name do you want to give to the exported file ? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)", exportResultFN);
 
