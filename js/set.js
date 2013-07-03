@@ -288,6 +288,16 @@
 
       copy : function() {
          return new pkg.Set(this);
+      },
+
+      empty : function() {
+         var l = this.getList();
+         this._blockEvents = true;
+         for(var i in l) {
+            this.remove(l[i]);
+         }
+         this._blockEvents = false;
+         this.updated('empty');
       }
    };
 
@@ -461,6 +471,10 @@
 
    pkg.powerset = function (set) {
       return set.powerset();
+   };
+
+   pkg.empty = function(set) {
+      set.empty();
    };
 
 })(this);
