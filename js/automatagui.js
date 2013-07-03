@@ -392,7 +392,7 @@
       
       saveas.onclick = function() {
          var prog = switchmode.value === "program";
-         var n = prompt("Please enter a name for the file in which the " + (prog ? "program" : "automaton") + " will be saved.", (prog ? "algo.js":"automaton.txt"));
+         var n = prompt("Please enter a name for the file in which the " + (prog ? "program" : "automaton") + " will be saved.", (prog ? "algo.ajs":"automaton.txt"));
          if(n) {
             if(prog) {
                saveProgram(programFileName = n);
