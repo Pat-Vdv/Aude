@@ -179,8 +179,8 @@
 
       subsetOf: function(set) {
          set = pkg.to_set(set);
-         for(var i in set.l) {
-            if(!this.contains(set.l[i])) {
+         for(var i in this.l) {
+            if(!set.contains(this.l[i])) {
                return false;
             }
          }
