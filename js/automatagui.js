@@ -275,7 +275,7 @@
 
          if(window.userProgram && waitingFor.isEmpty()) {
             blockResult = false;
-            window.currentAutomaton = AutomatonJS.currentIndex;
+            window.currentAutomaton = AutomataDesigner.currentIndex;
             var res;
             try {
                res = userProgram(window.reallyRun);
