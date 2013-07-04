@@ -34,11 +34,11 @@
       this.l = {};
       this.listeners = [];
       if(l) {
-         if(typeof l.getList === 'function') {// l is a set
+         if(l instanceof Set) {// l is a set
             this.setTypeConstraint(l.typeConstraint);
             l = l.getList();
          }
-         else if(l instanceof Array) {
+         if(l instanceof Array) {
             for(var i in l) {
                this.add(l[i]);
             }
@@ -167,9 +167,10 @@
 
       minusInPlace: function(set) {
          set = pkg.to_set(set);
+         console.log(this.toString(), set.toString());
          this._blockEvents = true;
          for(var i in set.l) {
-            delete this.l[i];
+            this.remove(set.l[i]);
          }
          this._blockEvents = false;
          this.updated('minusInPlace', set);
@@ -298,6 +299,13 @@
          }
          this._blockEvents = false;
          this.updated('empty');
+      },
+ 
+      isEmpty : function() {
+         for(var i in this.l) {
+            return false;
+         }
+         return true;
       }
    };
 
@@ -475,6 +483,10 @@
 
    pkg.empty = function(set) {
       set.empty();
+   };
+   
+   pkg.is_empty = function(set) {
+      return set.isEmpty();
    };
 
 })(this);
