@@ -1,27 +1,31 @@
-// If the automaton doesn't recognizes any word, return false. Otherwize, return true. 
-
-function visit(state) {
-  if(visitedStates contains state) {
-    return false;
-  }
-
-  if(A.isAcceptingState(state)) {
-    return true;
-  }
-
-  visitedStates.add(state);
-  for(var symbol in table[state]) { // for each symbol
-    foreach(destinationState in table[state][symbol]) {
-      if(visit(destinationState)) {
-        return true;
+function emptyLanguage(A) {
+  // If the automaton doesn't recognizes any word, return false. Otherwize, return true. 
+  
+  function visit(state) {
+    if(visitedStates contains state) {
+      return false;
+    }
+  
+    if(A.isAcceptingState(state)) {
+      return true;
+    }
+  
+    visitedStates.add(state);
+    for(var symbol in table[state]) { // for each symbol
+      foreach(destinationState in table[state][symbol]) {
+        if(visit(destinationState)) {
+          return true;
+        }
       }
     }
+    return false;
   }
-  return false;
+  
+  A     : Automaton(0);
+  table : List = A.getTransitionsTable();
+  
+  visitedStates : Set of State;
+  return visit(A.getInitialState());
 }
 
-A     : Automaton(0);
-table : List = A.getTransitionsTable();
-
-visitedStates : Set of State;
-return visit(A.getInitialState());
+run(emptyLanguage, getAutomaton(currentAutomaton));
