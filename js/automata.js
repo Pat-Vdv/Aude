@@ -39,6 +39,9 @@
       this.trans.setTypeConstraint(pkg.Transition);
       this.finalStates = new Set();
       this.Sigma = new Set();
+      this.currentStates = new Set();
+      this.lastTakenTransitions = new Set();
+      this.lastTakenTransitions.setTypeConstraint(pkg.Transition);
       this.q_init = null;
    };
 
@@ -123,6 +126,9 @@
       setInitialState: function(state) {
          this.states.add(state);
          this.q_init = state;
+         if(this.currentStates.isEmpty()) {
+            this.currentStates.add(state);
+         }
       },
 
       getInitialState: function() {
@@ -194,7 +200,7 @@
          var table = {}, that = this, transition, transList = this.getListOfTransitions();
          this.states.forEach(function(state) {
             table[state] = {};
-            that.Sigma.forEach(function(symbol) {
+            that.Sigma.forEach(function (symbol) {
                table[state][symbol] = new Set();
             });
             table[state][pkg.epsilon] = new Set();
@@ -234,6 +240,116 @@
 
       toString: function() {
          return "Automaton(" + this.states.toString() + ", " + this.Sigma.toString() + ", " + this.q_init.toString() + ", " + this.trans.toString() + "," + this.finalStates.toString() + ")";
+      },
+
+      setCurrentState: function(state) {
+         if(this.states.contains(state)) {
+            this.currentStates.interInPlace([state]);
+         }
+      },
+
+      setCurrentStates: function(states) {
+         if(states.subsetOf(this.states)) {
+            this.currentStates = new_set(states);
+         }
+      },
+
+      addCurrentState: function(state) {
+         if(this.states.contains(state)) {
+            this.currentStates.add(state);
+         }
+      },
+ 
+      removeCurrentState: function(state) {
+         this.currentStates.remove(state);
+      },
+
+      removeCurrentStates: function(states) {
+         this.currentStates.minusInPlace(states);
+      },
+
+      getCurrentStates: function() {
+         return this.currentStates;
+      },
+
+      currentStatesAddAccessiblesByEpsilon: function(transitionsTable, visited) {
+         if(!visited) {
+            visited = new Set();
+         }
+         if(!transitionsTable) {
+            transitionsTable = this.getTransitionsTable();
+         }
+         var cs   = this.currentStates.getList(),
+             cont = false, // we continue if we added states
+             that = this;
+
+         function browseState(state) {
+            if(!visited.contains(state)) {
+               visited.add(state);
+               that.currentStates.add(state);
+               that.lastTakenTransitions.add(new Transition(cs[i], pkg.epsilon, state));
+               cont = true;
+            }
+         }
+
+         for(var i in cs) {
+            if(!visited.contains(cs[i])) {
+               visited.add(cs[i]);
+               transitionsTable[cs[i]][pkg.epsilon].forEach(browseState);
+            }
+         }
+         if(cont) {
+            this.currentStatesAddAccessiblesByEpsilon(transitionsTable, visited);
+         }
+      },
+ 
+      runSymbol: function(symbol, transitionsTable, dontEraseTakenTransitions) {
+         if(symbol === pkg.epsilon) {
+            throw(new Error("Automaton.runSymbol: epsilon is forbidden."));
+         }
+
+         if(!this.Sigma.contains(symbol)) {
+            this.currentStates.empty();
+            return false;
+         }
+
+         if(!transitionsTable) {
+            transitionsTable = this.getTransitionsTable();
+         }
+         if(!dontEraseTakenTransitions) {
+            this.lastTakenTransitions.empty();
+         }
+
+         var cs   = this.currentStates.getList(),
+             that = this;
+
+         function addState(state) {
+            that.currentStates.add(state);
+            that.lastTakenTransitions.add(new Transition(cs[i], symbol, state));
+         }
+
+         for(var i in cs) {
+            this.currentStates.remove(cs[i]);
+            transitionsTable[cs[i]][symbol].forEach(addState);
+         }
+         this.currentStatesAddAccessiblesByEpsilon(transitionsTable);
+      },
+ 
+      runWord: function(symbols) {
+         var transitionsTable = this.getTransitionsTable();
+         for(var i in symbols) {
+            this.runSymbol(symbols[i], transitionsTable);
+         }
+      },
+
+      acceptedWord: function(symbols) {
+         this.setCurrentState(this.getInitialState());
+         this.runWord(symbols);
+         return !inter(this.currentStates, this.getFinalStates()).isEmpty();
+      },
+ 
+      getLastTakenTransitions: function() {
+         return this.lastTakenTransitions;
       }
    };
 
@@ -248,12 +364,6 @@
          return "Transition(" + JSON.stringify(this.startState) + ", " + JSON.stringify(this.symbol) + ", " + JSON.stringify(this.endState) + ")";
       }
    };
-
-   if(!pkg.error) {
-      pkg.error = function (func, msg) {
-         throw {name:func, message:msg};
-      };
-   }
 
    pkg.new_automaton = function () {
       return new pkg.Automaton();
@@ -420,7 +530,7 @@
                lastIndex = j+1;
             }
             if(!closed) {
-               pkg.error("read_automaton", "Line " + i+1 + " is malformed");
+               throw(new Error("read_automaton: Line " + i+1 + " is malformed"));
             }
             return set;
          }
@@ -442,7 +552,7 @@
                lastIndex = j+1;
             }
             if(!closed) {
-               pkg.error("read_automaton", "Line " + i+1 + " is malformed");
+               throw(new Error("read_automaton: Line " + i+1 + " is malformed"));
             }
             return tuple;
          }
