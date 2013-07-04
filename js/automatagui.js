@@ -39,6 +39,7 @@
 
       var splitter          = document.getElementById('splitter'),
           toolbar           = document.getElementById('toolbar'),
+          content           = document.getElementById('content'),
           results           = document.getElementById('results'),
           codeedit          = document.getElementById('codeedit'),
           automataedit      = document.getElementById('automataedit'),
@@ -163,6 +164,8 @@
       function onResize () {
          var width = document.body.offsetWidth;
          results.style.left =  ((splitter.offsetLeft + sw)*100/width) + '%';
+         content.style.top  = toolbar.offsetHeight + 'px';
+         AutomataDesigner.redraw();
       }
 
       window.addEventListener('resize', onResize, false);
@@ -587,5 +590,6 @@
       window.loadProgram(':');
 
       switchmode.onchange();
+      onResize();
    }, false);
 })();

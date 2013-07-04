@@ -6,9 +6,17 @@ html,body {
    position:relative
 }
 
+#content {
+   position:absolute;
+   top:1.5em;
+   bottom:0;
+   left:0;
+   right:0;
+}
+
 #left-pane {
    position:absolute;
-   top:1.5rem;
+   top:0;
    bottom:0;
    left:0;
    right:25%;
@@ -17,7 +25,7 @@ html,body {
 #splitter {
    position:absolute;
    left:75%;
-   top:1.5rem;
+   top:0;
    bottom:0;
    width:4px;
    background:silver
@@ -82,7 +90,7 @@ html,body {
 }
 
 #results {
-   top:1.5rem;
+   top:0;
    right:0;
    bottom:0;
    position:absolute;
@@ -96,7 +104,7 @@ html,body {
    display:none
 }
 #codeedit, #automatoncode {
-   top:1.5rem;
+   top:0;
    left:0;
    right:0;
    bottom:0;
