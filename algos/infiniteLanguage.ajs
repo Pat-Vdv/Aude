@@ -1,0 +1,56 @@
+include epsElim;
+
+function infiniteLanguage(A) {
+  A : Automaton = epsElim(get_automaton(0));
+  
+  accessibleFinalStates : Set of State;
+  visitedStates         : Set of State;
+  table                 : Table = A.getTransitionsTable();
+  
+  function populateAccessibleFinalStates(state) {
+    if(visitedStates contains state) {
+      return;
+    }
+  
+    visitedStates.add(state);
+  
+    if(A.isFinalState(state)) {
+      accessibleFinalStates.add(state);
+    }
+  
+    for(var symbol in table[state]) {
+      foreach(destState in table[state][symbol]) {
+        populateAccessibleFinalStates(destState);
+      }
+    }
+  }
+  
+  function onCycle(finalState, visited, curState) {
+    if(visited contains curState) {
+      return false;
+    }
+  
+    visited.add(curState);
+  
+    for(var symbol in table[curState]) {
+      foreach(state in table[curState][symbol]) {
+        if(state == finalState || onCycle(finalState, visited.copy(), state)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  populateAccessibleFinalStates(A.getInitialState()); // we populate the set of accessible final states
+  
+  foreach(finalState in accessibleFinalStates) {
+    if(onCycle(finalState, emptySet(State), finalState)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+run(infiniteLanguage, get_automaton(currentAutomaton));
