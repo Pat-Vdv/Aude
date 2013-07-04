@@ -197,7 +197,7 @@
             that.Sigma.forEach(function(symbol) {
                table[state][symbol] = new Set();
             });
-            table[state][epsilon] = new Set();
+            table[state][pkg.epsilon] = new Set();
          });
          for(var t in transList) {
             transition = transList[t];
@@ -219,7 +219,7 @@
       },
 
       addSymbol: function(symbol) {
-         if(symbol !== epsilon) {
+         if(symbol !== pkg.epsilon) {
             this.Sigma.add(symbol);
          }
       },
@@ -478,7 +478,7 @@
          startState = getNextValue(c[i], lastIndex, leng);
          symbol = getNextValue(c[i], lastIndex, leng);
          if(symbol === '\\e') {
-            symbol = epsilon;
+            symbol = pkg.epsilon;
          }
          j = lastIndex;
          endState = getNextValue(c[i], lastIndex, leng);
@@ -593,5 +593,5 @@
       return res;
    };
 
-   var epsilon = 'ε';
+   pkg.epsilon = 'ε';
 })(this);
