@@ -15,7 +15,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
 
     var jsKeywords = {
       "if": kw("if"), "while": A, "with": A, "else": B, "do": B, "try": B, "finally": B,
-      "return": C, "break": C, "continue": C, "new": C, "delete": C, "throw": C,
+      "return": C, "break": C, "continue": C, "new": C, "delete": C, "throw": C,"include":C,
       "var": kw("var"), "const": kw("var"), "let": kw("var"),
       "function": kw("function"), "catch": kw("catch"),
       "for": kw("for"), "foreach": kw("foreach"), "switch": kw("switch"), "case": kw("case"), "default": kw("default"),

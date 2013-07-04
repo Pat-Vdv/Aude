@@ -72,7 +72,7 @@
       }
    });
 
-   var s,i, len, type, lastSignificantType;
+   var s,i, len, type, lastSignificantType, includes;
    var string          = 2,
        whitespace      = 4,
        variable        = 8,
@@ -81,7 +81,7 @@
        number          = 64,
        operator        = 128,
        comma_semicolon = 256,
-       comment         = 512,
+//     comment         = 512, // comments are like whitespace, in fact.
        closeParen      = 1024,
        closeCurly      = 2048,
        openBracket     = 4096,
@@ -143,7 +143,7 @@
          lastSignificantType = type = openBracket;
          return s[i++];
       }
-      else if(s[i] === "'" || s[i] === "'") {
+      else if(s[i] === '"' || s[i] === "'") {
          var d = i;
          var endChar = s[i++];
          while(i < len && s[i] !== endChar) {
@@ -160,6 +160,13 @@
             ++i;
          }
          type = whitespace;
+         var d = i;
+         getSymbol();
+         if(type !== whitespace) {
+            i = d;
+            type = whitespace;
+         }
+
          return s.substring(deb,i);
       }
       else if(s[i] === '.') {
@@ -272,18 +279,30 @@
          return s[i++];
       }
       else if(s[i] === '/') {
-         var d = i++;
+         var d = i++, deb;
          if(i < len && s[i] === '/') {
             do {
                ++i;
             } while(i < len && s[i] !== '\n');
-            type = comment;
+            type = whitespace;
+            deb = i;
+            getSymbol();
+            if(type !== whitespace) {
+               i = deb;
+               type = whitespace;
+            }
          }
          else if(i < len && s[i] === '*') {
             do {
                ++i;
             } while(i+1 < len && (s[i] !== '*' || s[i+1] !== '/'));
-            type = comment;
+            type = whitespace;
+            deb = i;
+            getSymbol();
+            if(type !== whitespace) {
+               i = deb;
+               type = whitespace;
+            }
          }
          else {
             if(lastSignificantType & (number | variable | closeParen | closeBracket)) {
@@ -320,7 +339,7 @@
          var bufferSymbol = getSymbol();
          if(type === variable || type === instruction) {
             var v = s[d] + bufferSymbol;
-            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof') {
+            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include') {
                lastSignificantType = type = instruction;
             }
             return v;
@@ -405,7 +424,7 @@
          return '';
       }
    }
-
+function log(e){console.log(e, type);return e;}
    function getExpression(options) {
       var res          = '',
           deb          = i,
@@ -433,7 +452,7 @@
          deb = i;
          var pres = '';
          do {
-            pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true,onlyOneValue:true});
+            pres += (pres ? ',':'') + log(getExpression({inForeach:inForeach,value:true,onlyOneValue:true}));
             symbol = getSymbol();
             if(type === whitespace) {
                pres += symbol;
@@ -544,6 +563,27 @@
          }
          res += ')';
       }
+      else if(symbol === 'include') {
+         symbol = getSymbol();
+         if(type === whitespace) {
+            res += symbol;
+            symbol = getSymbol();
+         }
+
+         includes.push(symbol);
+         deb = i;
+         symbol = getSymbol();
+         if(type === whitespace) {
+            res += symbol;
+            deb = i;
+            symbol = getSymbol();
+         }
+         if(symbol === ';') {
+            return res;
+         }
+         i = deb;
+         return res;
+      }
       else if(type === instruction) {
          if(symbol === 'new' || (!value && symbol === 'delete') || symbol === 'typeof') {
             res += symbol + getExpression({inForeach:inForeach, value:true, onlyOneValue:true});
@@ -603,6 +643,10 @@
             res += white + symbol + getExpression({inForeach:inForeach}) + getSymbol(); // symbol should be ')'
          }
          else if(symbol === ',') {
+            if(onlyOneValue) {
+               i = deb;
+               return res;
+            }
             res += white + symbol + getExpression({inForeach:inForeach, value:value, endSymbols:endSymbols});
          }
          else if(symbol === ';') {
@@ -951,10 +995,11 @@
       return res;
    }
 
-   AutomatonJS.toPureJS = function (str) {
-      i   = 0;
-      s   = str;
-      len = s.length;
+   AutomatonJS.toPureJS = function (str, includesArray) {
+      includes = includesArray || [];
+      len     = str.length;
+      s       = str;
+      i       = 0;
       lastSignificantType = type = end;
       return toPureJS();
    };

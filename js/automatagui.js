@@ -29,8 +29,8 @@
    };
 
    if(!window.AutomataDesignerGlue) {
-      window.AutomataDesignerGlue = {}
-   };
+      window.AutomataDesignerGlue = {};
+   }
 
    var enableAutoHandlingError = false;
 
@@ -53,6 +53,10 @@
           exportBtn         = document.getElementById('export'),
           exportResult      = document.getElementById('export_result'),
           fileprogram       = document.getElementById('fileprogram'),
+          head              = document.querySelector('head'),
+          launchAfterImport = false,
+          blockResult       = false,
+          waitingFor        = new Set(),
           exportFN          = '';
 
       window.addEventListener('keydown', function(e) {
@@ -252,34 +256,29 @@
 
       document.getElementById('automaton_plus').onclick();
 
-      var offsetError = -1;
-      window.onerror = function(message, url, lineNumber) {
-         if(enableAutoHandlingError) {
-            if(offsetError > -1) {
-               handleError(message, lineNumber - offsetError);
-            }
-            else {
-               offsetError = lineNumber-1;
-            }
-            return true;
-         }
-      };
-      loadProgram(':');
       document.getElementById('algo-exec').onclick = function() {
          if(cm) {
             execProgram(cm.getValue());
          }
       };
 
+      window.run = function(){};
+      window.reallyRun = function() {
+         blockResult = true;
+         setResult(arguments[0].apply(window, [].slice.call(arguments, 1)));
+      };
+
       window.execProgram = function(code) {
          if(code) {
-            loadProgram(code);
+            window.loadProgram(code);
          }
 
-         if(window.userProgram) {
+         if(window.userProgram && waitingFor.isEmpty()) {
+            blockResult = false;
+            window.currentAutomaton = AutomatonJS.currentIndex;
             var res;
             try {
-               res = userProgram();
+               res = userProgram(window.reallyRun);
             }
             catch(e) {
                if(e instanceof Error && 'stack' in e) {
@@ -303,24 +302,15 @@
                }
                return;
             }
-            
-            if(res instanceof Automaton) {
-               setAutomatonResult(res);
-            }
-            else if(res) {
-               setTextResult(res.toString());
+            if(blockResult) {
+               blockResult = false;
             }
             else {
-               if(res === undefined) {
-                  setTextResult("undefined");
-               }
-               else if(res === null) {
-                  setTextResult("null");
-               }
-               else {
-                  setTextResult(res);
-               }
+               setResult(res);
             }
+         }
+         else {
+            launchAfterImport = true;
          }
       };
 
@@ -374,6 +364,26 @@
 
       var freader = new FileReader(), automatonFileName, programFileName;
 
+      function setResult(res) {
+         if(res instanceof Automaton) {
+            setAutomatonResult(res);
+         }
+         else if(res) {
+            setTextResult(res.toString());
+         }
+         else {
+            if(res === undefined) {
+               setTextResult("undefined");
+            }
+            else if(res === null) {
+               setTextResult("null");
+            }
+            else {
+               setTextResult(res);
+            }
+         }
+      }
+
       function openAutomaton() {
          freader.onload = function() {
             automatoncodeedit.value = freader.result;
@@ -391,13 +401,13 @@
          programFileName = fileprogram.value;
       }
 
+      fileprogram.onchange = openProgram;
+      fileautomaton.onchange = openAutomaton;
       open.onclick = function() {
          if(switchmode.value === "program") {
-            fileprogram.onchange = openProgram;
             fileprogram.click();
          }
          else {
-            fileautomaton.onchange = openAutomaton;
             fileautomaton.click();
          }
       };
@@ -448,35 +458,134 @@
          }
       };
 
+      function handleError(message, line, stack, char) {
+         var errorTitle = "Error on line " + line + (
+               char === undefined ? ''
+                                  : ', character ' + char
+               ),
+             errorText  = message + (
+                stack ? '\nStack trace : \n' + stack
+                      : ''
+             );
+
+         notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/  /g, '  '), "error");
+         setTextResult(errorTitle + "\n" + errorText, true);
+      }
+
+      function handleImports(includes, includer) {
+         for(var i in includes) {
+            getScript(includes[i], includer);
+         }
+      }
+
+      window.loadProgram = function (code) {
+         var script   = document.getElementById('useralgo'),
+             includes = [];
+         if(script) {
+            head.removeChild(script);
+         }
+         waitingFor.empty();
+         window.userProgram = null;
+         script = document.createElement('script');
+         script.id = 'useralgo';
+         script.textContent = 'function userProgram(run) {"use strict";\n' + AutomatonJS.toPureJS(code, includes) + '\n}';
+         enableAutoHandlingError = "user's program";
+         head.appendChild(script);
+         enableAutoHandlingError = false;
+         handleImports(includes, "user's program");
+      };
+
+      window.gotScript = function(includeName, code) {
+         waitingFor.remove(includeName);
+
+         var id      = 'useralgo-include-' + includeName,
+             script  = document.getElementById(id),
+             includes = [];
+
+         if(script) {
+            head.removeChild(script);
+         }
+         script = document.createElement('script');
+         script.id = id;
+         script.textContent = AutomatonJS.toPureJS(code, includes);
+         enableAutoHandlingError = "module " + includeName;
+         head.appendChild(script);
+         enableAutoHandlingError = false;
+         handleImports(includes, "module " + includeName);
+         if(launchAfterImport && waitingFor.isEmpty() && window.userProgram) {
+            launchAfterImport = false;
+            execProgram();
+         }
+      };
+
+      function getScript(includeName, includer) {
+         if(includeName[0] === "'") {
+            includeName = includeName.replace(/"/g, '\\"');
+            includeName = includeName.substr(1, includeName.length-1);
+         }
+         if(includeName[0] === '"') {
+            try {
+               includeName = JSON.parse(includeName); // should not happen
+            }
+            catch(e) {
+               handleError("Syntax error: bad import parameter in " + includer);
+               return;
+            }
+         }
+         if(includeName.length < 4 || includeName.substr(includeName.length-4) !== '.ajs') {
+            includeName += '.ajs';
+         }
+         waitingFor.add(includeName);
+         AutomatonGlue.getScript(includeName, includer);
+      }
+
+      window.getScriptFailed = function(includeName, includer, reason) {
+         handleError("Error: import failed:" + reason  + " (in " + includer + ")");
+      };
+
+      window.AutomatonGlue = {
+         getScript: function(includeName, includer) {
+            if(includeName.match(/^(?:[a-z]+:(?:\\|\/\/?)|\/)/)) { // absolute path
+               handleError("Error: import: absolute paths are not supported in this version (in " + includer + ')');
+            }
+            else {
+               try {
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('get', 'algos/' + includeName, false);
+                  xhr.onreadystatechange = function() {
+                     if(xhr.readyState === 4) {
+                        if(!xhr.status || xhr.status === 200) {
+                           window.gotScript(includeName, xhr.responseText);
+                        }
+                        else {
+                           window.getScriptFailed(includeName, includer, 'The file was not found or you don\'t have enough permissions to read it. (HTTP status:' + xhr.status + ')');
+                        }
+                     }
+                  };
+                  xhr.overrideMimeType('text/plain');
+                  xhr.send();
+               }
+               catch(e) {
+                  window.getScriptFailed(includeName, includer, e.message);
+               }
+            }
+         }
+      };
+
+      var offsetError = -1;
+      window.onerror = function(message, url, lineNumber) {
+         if(enableAutoHandlingError) {
+            if(offsetError > -1) {
+               handleError(message + (typeof enableAutoHandlingError === 'string' ?'(in ' + enableAutoHandlingError + ')' : ''), lineNumber - offsetError);
+            }
+            else {
+               offsetError = lineNumber-1;
+            }
+            return true;
+         }
+      };
+      window.loadProgram(':');
+
       switchmode.onchange();
    }, false);
-
-
-   function handleError(message, line, stack, char) {
-      var errorTitle = "Error on line " + line + (
-            char === undefined ? ''
-                               : ', character ' + char
-            ),
-          errorText  = message + (
-             stack ? '\nStack trace : \n' + stack
-                   : ''
-          );
-
-      notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/  /g, '  '), "error");
-      setTextResult(errorTitle + "\n" + errorText, true);
-   }
-
-   window.loadProgram = function (code) {
-      var script, head = document.querySelector('head');
-      if(script = document.getElementById('useralgo')) {
-         head.removeChild(script);
-      }
-      window.userProgram = null;
-      script = document.createElement('script');
-      script.id = 'useralgo';
-      script.textContent = 'function userProgram() {"use strict";\n' + AutomatonJS.toPureJS(code) + '\n}';
-      enableAutoHandlingError = true;
-      head.appendChild(script);
-      enableAutoHandlingError = false;
-   };
 })();
