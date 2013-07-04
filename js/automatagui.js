@@ -338,7 +338,7 @@
 
       window.get_automaton = function(i) {
          if(automataNumber <= i) {
-            error("get_automaton", "The automaton n°" + JSON.stringify(i) + " doesn't exist");
+            throw(new Error("get_automaton: The automaton n°" + JSON.stringify(i) + " doesn't exist"));
          }
          return read_automaton(AutomataDesigner.getAutomatonCode(i));
       };

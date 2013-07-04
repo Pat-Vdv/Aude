@@ -73,8 +73,12 @@
          this.finalStates.remove(state);
       },
 
-      getSetOfStates: function() {
-         return this.states;
+      getNonFinalStates: function() {
+         return minus(a.getStates() - a.getFinalStates());
+      },
+ 
+      getNonAcceptingStates: function() {
+         return minus(a.getStates() - a.getFinalStates());
       },
 
       getStates: function() {
@@ -88,18 +92,6 @@
          else {
             throw(new Error('setStates() : the given argument is not a set'));
          }
-      },
-
-      getListOfStates: function() {
-         return this.states.getList();
-      },
-
-      getSetOfFinalStates: function() {
-         return this.finalStates;
-      },
-
-      getListOfFinalStates: function() {
-         return this.finalStates.getList();
       },
 
       getFinalStates: function() {
@@ -175,14 +167,6 @@
          return this.trans.contains(t);
       },
 
-      getSetOfTransitions: function() {
-         return this.trans;
-      },
-
-      getListOfTransitions: function() {
-         return this.trans.getList();
-      },
-
       getTransitions: function() {
          return this.trans;
       },
@@ -197,7 +181,7 @@
 
       getTransitionsTable: function() {
          // In this loop, we build sets of accessible states by couple (state, symbol) in the list "table" 
-         var table = {}, that = this, transition, transList = this.getListOfTransitions();
+         var table = {}, that = this, transition, transList = this.getTransitions().getList();
          this.states.forEach(function(state) {
             table[state] = {};
             that.Sigma.forEach(function (symbol) {
@@ -422,11 +406,11 @@
    };
 
    pkg.get_set_of_transitions = function (a) {
-      return a.getSetOfTransitions();
+      return a.getTransitions();
    };
 
    pkg.get_list_of_transitions = function (a) {
-      return a.getListOfTransitions();
+      return a.getTransitions().getList();
    };
 
    pkg.get_alphabet = function (a) {
@@ -474,25 +458,74 @@
    };
 
    pkg.get_list_of_states = function (a) {
-      return a.getListOfStates();
+      return a.geStates().getList();
    };
 
    pkg.get_set_of_final_states = function (a) {
-      return a.getSetOfFinalStates();
+      return a.getFinalStates();
    };
 
    pkg.get_list_of_final_states = function (a) {
-      return a.getListOfFinalStates();
+      return a.getFinalStates().getList();
    };
 
    pkg.get_set_of_non_accepting_states = function (a) {
-      return a.getStates().minus(a.getFinalStates());
+      return a.getNonFinalStates();
    };
 
    pkg.get_list_of_non_accepting_states = function (a) {
-      return a.getListOfFinalStates(); 
+      return a.getNonFinalStates().getList();
    };
 
+
+   pkg.set_current_state= function(A, state) {
+      A.setCurrentState(state);
+   };
+
+   pkg.set_current_states= function(A, states) {
+      A.setCurrentStates(states);
+   };
+
+   pkg.add_current_state= function(A, state) {
+      A.addCurrentState(state);
+   };
+
+   pkg.remove_current_states= function(A, state) {
+      A.removeCurrentState(state);
+   };
+
+   pkg.remove_current_states= function(A, states) {
+      A.removeCurrentStates(states);
+   };
+
+   pkg.get_current_states = function(A) {
+      return A.currentStates;
+   };
+
+   pkg.get_current_states_list = function(A) {
+      return A.currentStates.getList();
+   };
+
+   pkg.run_symbol = function(A, symbol) {
+      return A.runSymbol(symbol);
+   };
+
+   pkg.run_word = function(A, symbols) {
+      return A.runWord(symbols);
+   };
+
+   pkg.accepted_word = function(A, symbols) {
+      return A.acceptedWord(symbols);
+   };
+
+   pkg.get_last_taken_transitions = function(A) {
+      return A.lastTakenTransitions;
+   };
+      
+   pkg.get_last_taken_transitions_list = function(A) {
+      return A.lastTakenTransitions.getList();
+   };
+      
    // parses the code and returns an automaton from it
    pkg.read_automaton = function (code) {
       var lastIndex;
@@ -604,8 +637,8 @@
       var r = (q_init || "_default").toString() + "\n";
       var F = a.getFinalStates();
       var Fl = F.getList();
-      var Q = a.getListOfStates().sort();
-      var T = a.getListOfTransitions().sort();
+      var Q = a.getStates().getSortedList();
+      var T = a.getTransitions().getSortedList();
       var i;
 
       for(i in Q) {

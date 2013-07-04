@@ -64,7 +64,7 @@
 
       var initialState       = A.getInitialState() || '_default',
           NonAcceptingStates = A.getStates(),
-          AcceptingStates    = A.getListOfFinalStates(),
+          AcceptingStates    = A.getFinalStates().getList(),
           q;
 
       NonAcceptingStates = NonAcceptingStates.minusInPlace(AcceptingStates).getList();
@@ -100,7 +100,7 @@
       res += "\n";
 
       var table = [];
-      var transitions = A.getListOfTransitions();
+      var transitions = A.getTransitions().getList();
       for(var tr in transitions) {
          var t = transitions[tr];
          table[t.startState] || (table[t.startState] = []);
