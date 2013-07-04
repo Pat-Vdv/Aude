@@ -826,7 +826,7 @@ function log(e){console.log(e, type);return e;}
             else {
                symbol = symbol.toLowerCase();
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof') {
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
                if(type === whitespace) {
                   white2 = symbol2 === ' ' ? '' : symbol2;
@@ -836,17 +836,17 @@ function log(e){console.log(e, type);return e;}
                   white2 = '';
                }
 
-               if(symbol2 === '=' && symbol !== 'contains') {
-                  if(symbol === 'contains') {
+               if(symbol2 === '=' && symbol !== 'contains' && symbol !=='subsetof') {
+                  if(symbol === 'contains' || symbol === 'subsetof') {
                      i = deb;
                      return res;
                   }
 
                   return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
                }
-               else if(symbol === 'contains') {
+               else if(symbol === 'contains' || symbol === 'subsetof') {
                   i = deb2;
-                  return res + '.contains(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+                  return res + '.' + (symbol === 'subsetof' ? 'subsetOf' : symbol) + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
                }
                else {
                   i = deb2;
