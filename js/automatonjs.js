@@ -726,7 +726,6 @@
                         else if(!defaultValue){
                            tmp += 'new Set';
                         }
-
                         if(symbol === ';') {
                            return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '') + ';';
                         }
@@ -734,7 +733,7 @@
                            if(symbol === 'of') {
                               var constraint = getConstraintString();
                               if(constraint) {
-                                 res += ';' + varName + '.setTypeConstraint(' + constraint + ')';
+                                 tmp += ';' + varName + '.setTypeConstraint(' + constraint + ')';
                               }
                               else {
                                  i = deb;
