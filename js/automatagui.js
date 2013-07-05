@@ -68,8 +68,12 @@
           CURRENT_FINAL_STATE_COLOR     = localStorage.CURRENT_FINAL_STATE_COLOR     || 'rgba(90, 160, 0, 0.5)',
           CURRENT_TRANSITION_COLOR      = localStorage.CURRENT_TRANSITION_COLOR      || '#BD5504',
           CURRENT_STATE_COLOR           = localStorage.CURRENT_STATE_COLOR           || '#FFFF7B',
-          CURRENT_TRANSITION_PULSE_TIME = localStorage.CURRENT_TRANSITION_PULSE_TIME || 700,
-          DEFAULT_EXECUTION_STEP_TIME   = localStorage.DEFAULT_EXECUTION_STEP_TIME   || 1200;
+          CURRENT_TRANSITION_PULSE_TIME_FACTOR = parseFloat(localStorage.CURRENT_TRANSITION_PULSE_TIME_FACTOR) || 0.6,
+          EXECUTION_STEP_TIME   = parseInt(localStorage.EXECUTION_STEP_TIME);
+
+       if(isNaN(EXECUTION_STEP_TIME)) {
+          EXECUTION_STEP_TIME = 1200;
+       }
 
       window.addEventListener('keydown', function(e) {
          if(e.ctrlKey) {
@@ -95,29 +99,43 @@
          if(!executeWin || !executeWin.ws) {
             var refs = {};
             executeWin = libD.newWin({
-               content:libD.jso2dom(['div.libD-ws-colors-auto', [
-                  ['div', {'#':'root', 'style':'height:100%'}, ['label', [
+               content:libD.jso2dom(['div.libD-ws-colors-auto', {'style':'height:100%'}, [
+                  ['div', {'#':'root'}, ['label', [
                      ['#', 'Word: '],
                      ['input', {type:'text', '#':'word'}],
-                     ['input', {type:'button', value:'Run', '#':'run'}]
+                     ['input', {type:'button', value:'Run', '#':'run'}],
+                  ]]],
+                  ['div', ['label', [
+                     ['#', 'delay between steps: '],
+                     ['input', {type:'text', '#':'delay', value:EXECUTION_STEP_TIME}]
                   ]]]
                ]], refs),
                title:"Execute the current automaton with a word",
-               center:true
+               top:toolbar.offsetHeight+5,
+               right:results.offsetWidth+10
             }, refs);
             libD.wm.handleSurface(executeWin, refs.root);
             refs.run.onclick = function() {
                stopExecution();
                AutomataDesigner.cleanSVG(AutomataDesigner.currentIndex);
-               execute(refs.word.value);
+               refs.delay.onchange();
+               execute(refs.word.value, AutomataDesigner.currentIndex);
             };
+
+            refs.delay.onchange = function() {
+               EXECUTION_STEP_TIME = parseInt(refs.delay.value);
+               if(isNaN(EXECUTION_STEP_TIME)) {
+                  EXECUTION_STEP_TIME = localStorage.EXECUTION_STEP_TIMEv;
+               }
+               localStorage.EXECUTION_STEP_TIME = EXECUTION_STEP_TIME;
+            };
+
             refs.word.onkeypress = function(e) {
                if(e.keyCode === 13) {
                   refs.run.onclick();
                }
-            }
+            };
          }
-         console.log(executeWin);
          executeWin.show();
       };
 
@@ -298,7 +316,7 @@
       resultToLeft.onclick = function() {
          if(automatonResult) {
             automatonPlus.onclick();
-            AutomataDesigner.setSVG(results.querySelector('svg'));
+            AutomataDesigner.setSVG(results.querySelector('svg'), AutomataDesigner.currentIndex);
          }
       };
 
@@ -530,12 +548,14 @@
          }
       }
 
-      function execute(word, index, time, step, currentAutomaton, currentStates) {
+      function execute(word, index, step, currentAutomaton, currentStates) {
          if(step) {
-            if(time) {
+            if(EXECUTION_STEP_TIME || !word[0]) {
                if(step % 2) {
-                  for(var i in currentStates) {
-                     AutomataDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
+                  if(currentStates) {
+                     for(var i in currentStates) {
+                        AutomataDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
+                     }
                   }
 
                   currentStates = currentAutomaton.getCurrentStates().getList();
@@ -555,7 +575,7 @@
                   word = word.substr(1);
                   var currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
                   for(var i in currentTransitions) {
-                     AutomataDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME);
+                     AutomataDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR*EXECUTION_STEP_TIME);
                   }
                }
             }
@@ -569,17 +589,11 @@
             if(index === undefined) {
                index = AutomataDesigner.currentIndex;
             }
-            else if(index !== AutomataDesigner.currentIndex) {
-               time = 0;
-            }
-            if(time === undefined) {
-               time = DEFAULT_EXECUTION_STEP_TIME;
-            }
 
             currentAutomaton = read_automaton(AutomataDesigner.getAutomatonCode(index));
             var q_init = currentAutomaton.getInitialState();
             currentAutomaton.setCurrentState(q_init);
-            if(time) {
+            if(EXECUTION_STEP_TIME) {
                AutomataDesigner.stateSetBackgroundColor(
                   index,
                   q_init.toString(),
@@ -590,12 +604,15 @@
             }
          }
 
-         if(word[0] || (time && !(step % 2))) {
-            if(step && time) {
-               executionTimeout = setTimeout(execute, time-(!(step % 2))*time/2, word, index, time, step+1, currentAutomaton, currentStates);
+         if(step !== -1) {
+            if(!word[0]) {
+               step = -2;
+            }
+            if(step && EXECUTION_STEP_TIME) {
+               executionTimeout = setTimeout(execute, EXECUTION_STEP_TIME-(!(step % 2))*EXECUTION_STEP_TIME/2, word, index, step+1, currentAutomaton, currentStates);
             }
             else {
-               execute(word, index, time, step+1, currentAutomaton, currentStates);
+               execute(word, index, step+1, currentAutomaton, currentStates);
             }
          }
          else {
