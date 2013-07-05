@@ -591,7 +591,7 @@
             return tuple;
          }
          else {
-            while(j < len && s[j].trim() && s[j] !== ',') {
+            while(j < len && s[j].trim() && ',})]'.indexOf(s[j]) === -1) {
                ++j;
             }
             lastIndex = j;
