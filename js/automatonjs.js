@@ -424,7 +424,6 @@
          return '';
       }
    }
-function log(e){console.log(e, type);return e;}
    function getExpression(options) {
       var res          = '',
           deb          = i,
@@ -452,7 +451,7 @@ function log(e){console.log(e, type);return e;}
          deb = i;
          var pres = '';
          do {
-            pres += (pres ? ',':'') + log(getExpression({inForeach:inForeach,value:true,onlyOneValue:true}));
+            pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true,onlyOneValue:true});
             symbol = getSymbol();
             if(type === whitespace) {
                pres += symbol;
@@ -826,7 +825,7 @@ function log(e){console.log(e, type);return e;}
             else {
                symbol = symbol.toLowerCase();
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto') {
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
                if(type === whitespace) {
                   white2 = symbol2 === ' ' ? '' : symbol2;
@@ -836,8 +835,8 @@ function log(e){console.log(e, type);return e;}
                   white2 = '';
                }
 
-               if(symbol2 === '=' && symbol !== 'contains' && symbol !=='subsetof') {
-                  if(symbol === 'contains' || symbol === 'subsetof') {
+               if(type === operator) {
+                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto') {
                      i = deb;
                      return res;
                   }
@@ -847,6 +846,10 @@ function log(e){console.log(e, type);return e;}
                else if(symbol === 'contains' || symbol === 'subsetof') {
                   i = deb2;
                   return res + '.' + (symbol === 'subsetof' ? 'subsetOf' : symbol) + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+               }
+               else if(symbol === 'elementof' || symbol === 'belongsto') {
+                  i = deb2;
+                  return getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + '.contains(' + (white === ' ' ? '' : white) + res + ')';
                }
                else {
                   i = deb2;
