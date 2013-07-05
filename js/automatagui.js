@@ -107,6 +107,8 @@
             }, refs);
             libD.wm.handleSurface(executeWin, refs.root);
             refs.run.onclick = function() {
+               stopExecution();
+               AutomataDesigner.cleanSVG(AutomataDesigner.currentIndex);
                execute(refs.word.value);
             };
             refs.word.onkeypress = function(e) {

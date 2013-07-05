@@ -171,20 +171,22 @@
          pathEditor.parentNode.removeChild(pathEditor);
          pathEditor = null;
       }
-      var ellipses = svgs[index].querySelectorAll('ellipse'),
-          edges    = svgs[index].querySelectorAll('.edge'),
-          i, len;
+      if(svgs[index]) {
+         var ellipses = svgs[index].querySelectorAll('ellipse'),
+             edges    = svgs[index].querySelectorAll('.edge'),
+             i, len;
 
-      for(i = 0, len = ellipses.length; i < len; ++i) {
-         ellipses[i].setAttribute('fill', 'transparent');
-      }
+         for(i = 0, len = ellipses.length; i < len; ++i) {
+            ellipses[i].setAttribute('fill', 'transparent');
+         }
 
-      for(i = 0, len = edges.length; i < len; ++i) {
-         if(edges[i].id !== "initialStateArrow") {
-            edges[i].querySelector('text').removeAttribute('fill');
-            edges[i].querySelector('polygon').setAttribute('fill', 'black');
-            edges[i].querySelector('polygon').setAttribute('stroke', 'black');
-            edges[i].querySelector('path').setAttribute('stroke', 'black');
+         for(i = 0, len = edges.length; i < len; ++i) {
+            if(edges[i].id !== "initialStateArrow") {
+               edges[i].querySelector('text').removeAttribute('fill');
+               edges[i].querySelector('polygon').setAttribute('fill', 'black');
+               edges[i].querySelector('polygon').setAttribute('stroke', 'black');
+               edges[i].querySelector('path').setAttribute('stroke', 'black');
+            }
          }
       }
    };
