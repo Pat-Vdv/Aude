@@ -40,7 +40,7 @@ function epsElim(A) {
       foreach(a in A.getAlphabet()) {
         if(canReach(q1, a, q2, new Set)) {
           ElimA.addTransition(q1, a, q2);
-          if(A.isFinalState(q2))
+          if(a === epsilon && A.isFinalState(q2))
             ElimA.setFinalState(q1);
         }
       }
