@@ -229,18 +229,21 @@
       setCurrentState: function(state) {
          if(this.states.contains(state)) {
             this.currentStates.interInPlace([state]);
+            this.currentStatesAddAccessiblesByEpsilon();
          }
       },
 
       setCurrentStates: function(states) {
          if(states.subsetOf(this.states)) {
             this.currentStates = new_set(states);
+            this.currentStatesAddAccessiblesByEpsilon();
          }
       },
 
       addCurrentState: function(state) {
          if(this.states.contains(state)) {
             this.currentStates.add(state);
+            this.currentStatesAddAccessiblesByEpsilon();
          }
       },
  
