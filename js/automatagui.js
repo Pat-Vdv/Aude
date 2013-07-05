@@ -317,6 +317,7 @@
          if(automatonResult) {
             automatonPlus.onclick();
             AutomataDesigner.setSVG(results.querySelector('svg'), AutomataDesigner.currentIndex);
+            automatoncodeedit.value = automaton_code(automatonResult);
          }
       };
 
