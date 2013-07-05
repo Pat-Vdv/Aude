@@ -167,7 +167,6 @@
 
       minusInPlace: function(set) {
          set = pkg.to_set(set);
-         console.log(this.toString(), set.toString());
          this._blockEvents = true;
          for(var i in set.l) {
             this.remove(set.l[i]);

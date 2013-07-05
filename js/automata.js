@@ -556,11 +556,12 @@
                }
 
                if(s[j] === '}') {
+                  lastIndex = j+1;
                   closed = true;
                   break;
                }
                set.add(getNextValue(s, j, len));
-               lastIndex = j+1;
+               j = lastIndex;
             }
             if(!closed) {
                throw(new Error("read_automaton: Line " + i+1 + " is malformed"));
@@ -594,9 +595,6 @@
                ++j;
             }
             lastIndex = j;
-            if(s[j] === ',') {
-               --j;
-            }
             return s.substring(j0,j).trim();
          }
       }
