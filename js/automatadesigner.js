@@ -57,7 +57,15 @@
    pkg.setSVG = function (svg, index) {
       var svgWorkingNode;
       if(index === pkg.currentIndex) {
-         pkg.svgContainer.innerHTML = svg.replace(/<\?[\s\S]*\?>/g, '').replace(/<![^>]*>/g, '');
+         if(typeof svg === "string") {
+            pkg.svgContainer.innerHTML = svg.replace(/<\?[\s\S]*\?>/g, '').replace(/<![^>]*>/g, '');
+         }
+         else {
+            pkg.svgContainer.textContent = '';
+            console.log(svg.cloneNode(true));
+            pkg.svgContainer.appendChild(svg.cloneNode(true));
+         }
+
          svgWorkingNode = pkg.svgNode = svgs[index] = pkg.svgContainer.querySelector('svg');
       }
       else {
@@ -76,7 +84,7 @@
           i, len;
 
       for(i=0, len = states.length; i < len; ++i) {
-         states[i].querySelector('ellipse').setAttribute('fill', 'white');
+         states[i].querySelector('ellipse').setAttribute('fill', 'transparent');
          workingNodeList[atob(states[i].id)] = {t:[]};
       }
 
@@ -162,6 +170,22 @@
       if(pathEditor && pathEditor.parentNode) {
          pathEditor.parentNode.removeChild(pathEditor);
          pathEditor = null;
+      }
+      var ellipses = svgs[index].querySelectorAll('ellipse'),
+          edges    = svgs[index].querySelectorAll('.edge'),
+          i, len;
+
+      for(i = 0, len = ellipses.length; i < len; ++i) {
+         ellipses[i].setAttribute('fill', 'transparent');
+      }
+
+      for(i = 0, len = edges.length; i < len; ++i) {
+         if(edges[i].id !== "initialStateArrow") {
+            edges[i].querySelector('text').removeAttribute('fill');
+            edges[i].querySelector('polygon').setAttribute('fill', 'black');
+            edges[i].querySelector('polygon').setAttribute('stroke', 'black');
+            edges[i].querySelector('path').setAttribute('stroke', 'black');
+         }
       }
    };
 
@@ -707,7 +731,7 @@
             var pt = svgcursorPoint(e);
             var ry = 18.3848;
             var cy = pt.y;
-            ellipse.setAttribute('fill', 'white');
+            ellipse.setAttribute('fill', 'transparent');
             ellipse.setAttribute('stroke', 'black');
             ellipse.setAttribute('rx', 17.8879);
             ellipse.setAttribute('ry', ry);
@@ -1162,6 +1186,77 @@
 
       return origCoord + Math.abs(percent) * d;
    }
+
+   pkg.stateSetBackgroundColor = function (index, state, color) {
+      var s = svgs[index];
+      if(s) {
+         var state = s.getElementById(btoa(state));
+         if(state) {
+            getBigEllipse(state).setAttribute('fill', color);
+         }
+      }
+   };
+
+   pkg.stateRemoveBackgroundColor = function (index, state) {
+      pkg.stateSetBackgroundColor(index, state, 'transparent');
+   };
+
+   pkg.transitionSetColor = function (index, startState, symbol, endState, color) {
+      var s = svgs[index];
+      if(s) {
+         var edge = s.getElementById(btoa(startState) + ' ' + btoa(endState));
+         if(edge) {
+            edge.querySelector('text').setAttribute('fill', color);
+            edge.querySelector('polygon').setAttribute('fill', color);
+            edge.querySelector('polygon').setAttribute('stroke', color);
+            edge.querySelector('path').setAttribute('stroke', color);
+         }
+      }
+   };
+
+   function handlePulse(text, polygon, path, step, pulseTime) {
+      if(step) {
+            text.style.transition = text.style.webkitTransition = text.style.msTransition = polygon.style.transition = polygon.style.webkitTransition = polygon.style.msTransition = path.style.transition = path.style.webkitTransition = path.style.msTransition = '';
+      }
+      else {
+         text.removeAttribute('fill');
+         polygon.setAttribute('fill', 'black');
+         polygon.setAttribute('stroke', 'black');
+         path.setAttribute('stroke', 'black');
+         text.style.transition = text.style.webkitTransition = text.style.msTransition = polygon.style.transition = polygon.style.webkitTransition = polygon.style.msTransition = path.style.transition = path.style.webkitTransition = path.style.msTransition = pulseTime + 'ms';
+         setTimeout(handlePulse, pulseTime/2, text, polygon, path, 1);
+      }
+   }
+   pkg.transitionPulseColor = function (index, startState, symbol, endState, color, pulseTime) {
+      var s = svgs[index];
+      if(s) {
+         var edge = s.getElementById(btoa(startState) + ' ' + btoa(endState));
+         if(edge) {
+            var text    = edge.querySelector('text'),
+                polygon = edge.querySelector('polygon'),
+                path    = edge.querySelector('path');
+
+            text.setAttribute('fill', color);
+            polygon.setAttribute('fill', color);
+            polygon.setAttribute('stroke', color);
+            path.setAttribute('stroke', color);
+            setTimeout(handlePulse, pulseTime/2, text, polygon, path, 0, pulseTime);
+         }
+      }
+   };
+
+   pkg.transitionRemoveColor = function (index, startState, symbol, endState) {
+      var s = svgs[index];
+      if(s) {
+         var edge = s.getElementById(btoa(startState) + ' ' + btoa(endState));
+         if(edge) {
+            edge.querySelector('text').removeAttribute('fill');
+            edge.querySelector('polygon').setAttribute('fill', 'black');
+            edge.querySelector('polygon').setAttribute('stroke', 'black');
+            edge.querySelector('path').setAttribute('stroke', 'black');
+         }
+      }
+   };
 
    // move the points of a path during a movement
    // Parameters:

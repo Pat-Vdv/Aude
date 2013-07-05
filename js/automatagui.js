@@ -34,9 +34,9 @@
 
    var enableAutoHandlingError = false;
 
-   window.addEventListener('load', function() {
+   libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
       AutomataDesigner.load();
-
+   
       var splitter          = document.getElementById('splitter'),
           toolbar           = document.getElementById('toolbar'),
           content           = document.getElementById('content'),
@@ -54,11 +54,22 @@
           exportBtn         = document.getElementById('export'),
           exportResult      = document.getElementById('export_result'),
           fileprogram       = document.getElementById('fileprogram'),
+          automatonPlus     = document.getElementById('automaton_plus'),
+          resultToLeft      = document.getElementById('automaton_from_result'),
+          executeBtn        = document.getElementById('execute'),
           head              = document.querySelector('head'),
           launchAfterImport = false,
           blockResult       = false,
           waitingFor        = new Set(),
-          exportFN          = '';
+          exportFN          = '',
+          executionTimeout  = 0,
+          executeWin,
+          localStorage      = window.localStorage || {},
+          CURRENT_FINAL_STATE_COLOR     = localStorage.CURRENT_FINAL_STATE_COLOR     || 'rgba(90, 160, 0, 0.5)',
+          CURRENT_TRANSITION_COLOR      = localStorage.CURRENT_TRANSITION_COLOR      || '#BD5504',
+          CURRENT_STATE_COLOR           = localStorage.CURRENT_STATE_COLOR           || '#FFFF7B',
+          CURRENT_TRANSITION_PULSE_TIME = localStorage.CURRENT_TRANSITION_PULSE_TIME || 700,
+          DEFAULT_EXECUTION_STEP_TIME   = localStorage.DEFAULT_EXECUTION_STEP_TIME   || 1200;
 
       window.addEventListener('keydown', function(e) {
          if(e.ctrlKey) {
@@ -79,6 +90,34 @@
             }
          }
       });
+
+      executeBtn.onclick = function() {
+         if(!executeWin || !executeWin.ws) {
+            var refs = {};
+            executeWin = libD.newWin({
+               content:libD.jso2dom(['div.libD-ws-colors-auto', [
+                  ['div', {'#':'root', 'style':'height:100%'}, ['label', [
+                     ['#', 'Word: '],
+                     ['input', {type:'text', '#':'word'}],
+                     ['input', {type:'button', value:'Run', '#':'run'}]
+                  ]]]
+               ]], refs),
+               title:"Execute the current automaton with a word",
+               center:true
+            }, refs);
+            libD.wm.handleSurface(executeWin, refs.root);
+            refs.run.onclick = function() {
+               execute(refs.word.value);
+            };
+            refs.word.onkeypress = function(e) {
+               if(e.keyCode === 13) {
+                  refs.run.onclick();
+               }
+            }
+         }
+         console.log(executeWin);
+         executeWin.show();
+      };
 
       exportBtn.onclick = function() {
          var fn = prompt("Which name do you want to give to the exported image ? (give a .dot extension to save as dot format, .svg to save as svg)", exportFN);
@@ -197,6 +236,7 @@
                   }
                });
             }
+            onResize();
             break;
          case "design":
             toolbar.className = 'designmode';
@@ -228,7 +268,7 @@
       var automataNumber = document.getElementById('n_automaton'),
           automatonCount = 0;
 
-      document.getElementById('automaton_plus').onclick = function() {
+      automatonPlus.onclick = function() {
          var o = document.createElement('option');
          o.textContent = automatonCount;
          o.id = "automaton_n" + automatonCount;
@@ -250,6 +290,13 @@
                automatonSetNumber(curAutomaton);
             }
             --automatonCount;
+         }
+      };
+
+      resultToLeft.onclick = function() {
+         if(automatonResult) {
+            automatonPlus.onclick();
+            AutomataDesigner.setSVG(results.querySelector('svg'));
          }
       };
 
@@ -479,6 +526,90 @@
          for(var i in includes) {
             getScript(includes[i], includer);
          }
+      }
+
+      function execute(word, index, time, step, currentAutomaton, currentStates) {
+         if(step) {
+            if(time) {
+               if(step % 2) {
+                  for(var i in currentStates) {
+                     AutomataDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
+                  }
+
+                  currentStates = currentAutomaton.getCurrentStates().getList();
+                  for(var i in currentStates) {
+                     AutomataDesigner.stateSetBackgroundColor(
+                        index,
+                        currentStates[i].toString(),
+                        currentAutomaton.isAcceptingState(currentStates[i])
+                           ? CURRENT_FINAL_STATE_COLOR
+                           : CURRENT_STATE_COLOR
+                     );
+                  }
+               }
+               else {
+                  currentStates = currentAutomaton.getCurrentStates().getList();
+                  currentAutomaton.runSymbol(word[0]);
+                  word = word.substr(1);
+                  var currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
+                  for(var i in currentTransitions) {
+                     AutomataDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME);
+                  }
+               }
+            }
+            else {
+               currentAutomaton.runSymbol(word[0]);
+               word = word.substr(1);
+            }
+         }
+         else {
+            step = 0;
+            if(index === undefined) {
+               index = AutomataDesigner.currentIndex;
+            }
+            else if(index !== AutomataDesigner.currentIndex) {
+               time = 0;
+            }
+            if(time === undefined) {
+               time = DEFAULT_EXECUTION_STEP_TIME;
+            }
+
+            currentAutomaton = read_automaton(AutomataDesigner.getAutomatonCode(index));
+            var q_init = currentAutomaton.getInitialState();
+            currentAutomaton.setCurrentState(q_init);
+            if(time) {
+               AutomataDesigner.stateSetBackgroundColor(
+                  index,
+                  q_init.toString(),
+                  currentAutomaton.isAcceptingState(q_init)
+                  ? CURRENT_FINAL_STATE_COLOR
+                  : CURRENT_STATE_COLOR
+               );
+            }
+         }
+
+         if(word[0] || (time && !(step % 2))) {
+            if(step && time) {
+               executionTimeout = setTimeout(execute, time-(!(step % 2))*time/2, word, index, time, step+1, currentAutomaton, currentStates);
+            }
+            else {
+               execute(word, index, time, step+1, currentAutomaton, currentStates);
+            }
+         }
+         else {
+            executionTimeout = 0;
+         }
+      }
+
+      window.__execute = execute;
+
+      function stopExecution(index) {
+         if(executionTimeout) {
+            executionTimeout = 0;
+            clearTimeout(executionTimeout);
+            AutomataDesigner.cleanSVG(index);
+         }
+         
       }
 
       window.loadProgram = function (code) {
