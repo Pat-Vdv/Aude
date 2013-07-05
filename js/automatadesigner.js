@@ -265,7 +265,7 @@
       var tid,f,t,text,trans = svgs[index].querySelectorAll('.edge');
 
       for(i=0, len = trans.length; i < len; ++i) {
-         if(trans[i] !== initialStateArrows[i]) {
+         if(trans[i] !== initialStateArrows[index]) {
             tid  = trans[i].id.split(' ');
             text = trans[i].querySelector('text').textContent;
             f = atob(tid[0]);
