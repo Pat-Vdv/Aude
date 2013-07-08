@@ -1,0 +1,196 @@
+0
+11
+12
+13
+1
+4
+2
+3
+6
+9
+
+5
+7
+10
+^Û
+
+"0" ε "11"
+"0" ε "12"
+"0" ε "13"
+"1" e "4"
+"2" i "5"
+"3" e "6"
+"4" l "9"
+"6" y "7"
+"9" l "9"
+"9" o "10"
+"11" h "1"
+"12" h "2"
+"13" h "3"
+
+<representation type="image/svg+xml">
+<svg width="0" height="0" viewBox="0.00 0.00 592.00 200.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph1" class="graph">
+<title>automaton</title>
+
+
+
+<g id="MA==" class="node"><title>0</title>
+<ellipse fill="transparent" stroke="black" cx="136" cy="115.80000000000001" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="136" y="120.00000000000001" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+
+<g id="initialStateArrow" class="edge"><title>_begin-&gt;0</title>
+<path fill="none" stroke="black" d="M80,115.80000305175781C95.33333333333333,115.80000305175781 110.66666666666667,115.80000305175781 108,115.80000305175781"></path>
+<polygon fill="black" stroke="black" points="118,115.80000305175781 108,111.80000305175781 113,115.80000305175781 108,115.80000305175781 108,115.80000305175781 108,115.80000305175781 113,115.80000305175781 108,119.80000305175781 118,115.80000305175781 118,115.80000305175781"></polygon>
+</g>
+
+<g id="MTE=" class="node"><title>11</title>
+<ellipse fill="transparent" stroke="black" cx="219" cy="56.80000000000001" rx="20.8887" ry="20.8887"></ellipse>
+<text text-anchor="middle" x="219" y="61" font-family="Times,serif" font-size="14.00">11</text>
+</g>
+
+<g id="MA== MTE=" class="edge"><title>0-&gt;11</title>
+<path fill="none" stroke="black" d="M151.109,105.523 C162.82,96.9926 179.746,84.664 193.641,74.543"></path>
+<polygon fill="black" stroke="black" points="191.684,71.639 201.827,68.58 195.805,77.297 191.684,71.639"></polygon>
+<text text-anchor="middle" x="176" y="80.60000000000001" font-family="Times,serif" font-size="14.00">ε</text>
+</g>
+
+<g id="MTI=" class="node"><title>12</title>
+<ellipse fill="transparent" stroke="black" cx="219" cy="115.80000000000001" rx="20.8887" ry="20.8887"></ellipse>
+<text text-anchor="middle" x="219" y="120.00000000000001" font-family="Times,serif" font-size="14.00">12</text>
+</g>
+
+<g id="MA== MTI=" class="edge"><title>0-&gt;12</title>
+<path fill="none" stroke="black" d="M154.178,115.8 C164.062,115.8 176.758,115.8 188.219,115.8"></path>
+<polygon fill="black" stroke="black" points="188.282,112.3 198.282,115.8 188.282,119.3 188.282,112.3"></polygon>
+<text text-anchor="middle" x="176" y="111.60000000000001" font-family="Times,serif" font-size="14.00">ε</text>
+</g>
+
+<g id="MTM=" class="node"><title>13</title>
+<ellipse fill="transparent" stroke="black" cx="219" cy="174.8" rx="20.8887" ry="20.8887"></ellipse>
+<text text-anchor="middle" x="219" y="179" font-family="Times,serif" font-size="14.00">13</text>
+</g>
+
+<g id="MA== MTM=" class="edge"><title>0-&gt;13</title>
+<path fill="none" stroke="black" d="M151.109,126.077 C162.82,134.607 179.746,146.936 193.641,157.057"></path>
+<polygon fill="black" stroke="black" points="195.805,154.303 201.827,163.02 191.684,159.961 195.805,154.303"></polygon>
+<text text-anchor="middle" x="176" y="136.60000000000002" font-family="Times,serif" font-size="14.00">ε</text>
+</g>
+
+<g id="MQ==" class="node"><title>1</title>
+<ellipse fill="transparent" stroke="black" cx="302" cy="56.80000000000001" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="302" y="61" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+
+<g id="NA==" class="node"><title>4</title>
+<ellipse fill="transparent" stroke="black" cx="384" cy="56.80000000000001" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="384" y="61" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+
+<g id="MQ== NA==" class="edge"><title>1-&gt;4</title>
+<path fill="none" stroke="black" d="M320.359,56.8 C330.703,56.8 344.059,56.8 355.779,56.8"></path>
+<polygon fill="black" stroke="black" points="355.95,53.3 365.95,56.8 355.95,60.3 355.95,53.3"></polygon>
+<text text-anchor="middle" x="341" y="52.60000000000002" font-family="Times,serif" font-size="14.00">e</text>
+</g>
+
+<g id="Mg==" class="node"><title>2</title>
+<ellipse fill="transparent" stroke="black" cx="302" cy="115.80000000000001" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="302" y="120.00000000000001" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+
+<g id="NQ==" class="node"><title>5</title>
+<ellipse fill="transparent" stroke="black" cx="384" cy="115.80000000000001" rx="18" ry="18"></ellipse>
+<ellipse fill="transparent" stroke="black" cx="384" cy="115.80000000000001" rx="22" ry="22"></ellipse>
+<text text-anchor="middle" x="384" y="120.00000000000001" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+
+<g id="Mg== NQ==" class="edge"><title>2-&gt;5</title>
+<path fill="none" stroke="black" d="M320.359,115.8 C329.527,115.8 341.061,115.8 351.725,115.8"></path>
+<polygon fill="black" stroke="black" points="351.979,112.3 361.979,115.8 351.979,119.3 351.979,112.3"></polygon>
+<text text-anchor="middle" x="341" y="111.60000000000001" font-family="Times,serif" font-size="14.00">i</text>
+</g>
+
+<g id="Mw==" class="node"><title>3</title>
+<ellipse fill="transparent" stroke="black" cx="302" cy="174.8" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="302" y="179" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+
+<g id="Ng==" class="node"><title>6</title>
+<ellipse fill="transparent" stroke="black" cx="384" cy="174.8" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="384" y="179" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+
+<g id="Mw== Ng==" class="edge"><title>3-&gt;6</title>
+<path fill="none" stroke="black" d="M320.359,174.8 C330.703,174.8 344.059,174.8 355.779,174.8"></path>
+<polygon fill="black" stroke="black" points="355.95,171.3 365.95,174.8 355.95,178.3 355.95,171.3"></polygon>
+<text text-anchor="middle" x="341" y="170.60000000000002" font-family="Times,serif" font-size="14.00">e</text>
+</g>
+
+<g id="OQ==" class="node"><title>9</title>
+<ellipse fill="transparent" stroke="black" cx="472" cy="56.80000000000001" rx="18" ry="18"></ellipse>
+<text text-anchor="middle" x="472" y="61" font-family="Times,serif" font-size="14.00">9</text>
+</g>
+
+<g id="NA== OQ==" class="edge"><title>4-&gt;9</title>
+<path fill="none" stroke="black" d="M402.403,56.8 C414.254,56.8 430.183,56.8 443.708,56.8"></path>
+<polygon fill="black" stroke="black" points="443.916,53.3 453.916,56.8 443.916,60.3 443.916,53.3"></polygon>
+<text text-anchor="middle" x="428" y="52.60000000000002" font-family="Times,serif" font-size="14.00">l</text>
+</g>
+
+<g id="Nw==" class="node"><title>7</title>
+<ellipse fill="transparent" stroke="black" cx="472" cy="174.8" rx="18" ry="18"></ellipse>
+<ellipse fill="transparent" stroke="black" cx="472" cy="174.8" rx="22" ry="22"></ellipse>
+<text text-anchor="middle" x="472" y="179" font-family="Times,serif" font-size="14.00">7</text>
+</g>
+
+<g id="Ng== Nw==" class="edge"><title>6-&gt;7</title>
+<path fill="none" stroke="black" d="M402.403,174.8 C413.14,174.8 427.224,174.8 439.835,174.8"></path>
+<polygon fill="black" stroke="black" points="439.976,171.3 449.976,174.8 439.976,178.3 439.976,171.3"></polygon>
+<text text-anchor="middle" x="428" y="170.60000000000002" font-family="Times,serif" font-size="14.00">y</text>
+</g>
+
+<g id="OQ== OQ==" class="edge"><title>9-&gt;9</title>
+<path fill="none" stroke="black" d="M464.332,40.51 C462.483,30.411 465.039,20.8 472,20.8 C476.459,20.8 479.111,24.744 479.955,30.234"></path>
+<polygon fill="black" stroke="black" points="483.446,30.611 479.668,40.51 476.448,30.416 483.446,30.611"></polygon>
+<text text-anchor="middle" x="472" y="16.600000000000023" font-family="Times,serif" font-size="14.00">l</text>
+</g>
+
+<g id="MTA=" class="node"><title>10</title>
+<ellipse fill="transparent" stroke="black" cx="563" cy="56.80000000000001" rx="20.8568" ry="20.8568"></ellipse>
+<ellipse fill="transparent" stroke="black" cx="563" cy="56.80000000000001" rx="24.8884" ry="24.8884"></ellipse>
+<text text-anchor="middle" x="563" y="61" font-family="Times,serif" font-size="14.00">10</text>
+</g>
+
+<g id="OQ== MTA=" class="edge"><title>9-&gt;10</title>
+<path fill="none" stroke="black" d="M490.16,56.8 C500.922,56.8 515.166,56.8 528.131,56.8"></path>
+<polygon fill="black" stroke="black" points="528.164,53.3 538.164,56.8 528.164,60.3 528.164,53.3"></polygon>
+<text text-anchor="middle" x="516" y="52.60000000000002" font-family="Times,serif" font-size="14.00">o</text>
+</g>
+
+<g id="MTE= MQ==" class="edge"><title>11-&gt;1</title>
+<path fill="none" stroke="black" d="M240.022,56.8 C250.247,56.8 262.835,56.8 273.913,56.8"></path>
+<polygon fill="black" stroke="black" points="273.946,53.3 283.946,56.8 273.946,60.3 273.946,53.3"></polygon>
+<text text-anchor="middle" x="262" y="52.60000000000002" font-family="Times,serif" font-size="14.00">h</text>
+</g>
+
+<g id="MTI= Mg==" class="edge"><title>12-&gt;2</title>
+<path fill="none" stroke="black" d="M240.022,115.8 C250.247,115.8 262.835,115.8 273.913,115.8"></path>
+<polygon fill="black" stroke="black" points="273.946,112.3 283.946,115.8 273.946,119.3 273.946,112.3"></polygon>
+<text text-anchor="middle" x="262" y="111.60000000000001" font-family="Times,serif" font-size="14.00">h</text>
+</g>
+
+<g id="MTM= Mw==" class="edge"><title>13-&gt;3</title>
+<path fill="none" stroke="black" d="M240.022,174.8 C250.247,174.8 262.835,174.8 273.913,174.8"></path>
+<polygon fill="black" stroke="black" points="273.946,171.3 283.946,174.8 273.946,178.3 273.946,171.3"></polygon>
+<text text-anchor="middle" x="262" y="170.60000000000002" font-family="Times,serif" font-size="14.00">h</text>
+</g>
+
+<g id="node29" class="node"><title>svg</title>
+<ellipse fill="transparent" stroke="black" cx="42" cy="51.80000000000001" rx="24.4053" ry="24.4053"></ellipse>
+<ellipse fill="transparent" stroke="black" cx="42" cy="51.80000000000001" rx="28.3982" ry="28.3982"></ellipse>
+<text text-anchor="middle" x="42" y="56" font-family="Times,serif" font-size="14.00">svg</text>
+</g>
+</g>
+</svg>
+</representation>
