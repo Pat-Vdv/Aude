@@ -28,6 +28,13 @@
       return false;
    };
 
+   if(!window.Viz && window.Module) { // Viz glue
+      var gv = Module.cwrap('graphvizjs','string',['string','string','string']);
+      window.Viz = function(inputDot, outputFormat) {
+         return gv(inputDot, 'dot', outputFormat);
+      }
+   }
+
    if(!window.AutomataDesignerGlue) {
       window.AutomataDesignerGlue = {};
    }
