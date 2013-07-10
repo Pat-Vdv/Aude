@@ -206,6 +206,7 @@
           automatonPlus     = document.getElementById('automaton_plus'),
           resultToLeft      = document.getElementById('automaton_from_result'),
           executeBtn        = document.getElementById('execute'),
+          wordDiv           = document.getElementById('word'),
           head              = document.querySelector('head'),
           launchAfterImport = false,
           exportFN          = '',
@@ -260,7 +261,8 @@
                title:"Execute the current automaton with a word",
                top:toolbar.offsetHeight+5,
                right:results.offsetWidth+10
-            }, refs);
+            });
+            executeWin.__refs = refs;
             libD.wm.handleSurface(executeWin, refs.root);
             refs.run.onclick = function() {
                stopExecution();
@@ -284,6 +286,7 @@
             };
          }
          executeWin.show();
+         executeWin.__refs.word.focus();
       };
 
       exportBtn.onclick = function() {
@@ -583,7 +586,7 @@
          }
       }
 
-      function execute(word, index, step, currentAutomaton, currentStates) {
+      function execute(word, index, step, currentAutomaton, currentStates, currentIndex) {
          if(step) {
             if(EXECUTION_STEP_TIME || !word[0]) {
                if(step % 2) {
@@ -607,6 +610,7 @@
                else {
                   currentStates = currentAutomaton.getCurrentStates().getList();
                   currentAutomaton.runSymbol(word[0]);
+                  wordDiv.childNodes[currentIndex++].className = 'eaten';
                   word = word.substr(1);
                   var currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
                   for(var i in currentTransitions) {
@@ -620,11 +624,16 @@
             }
          }
          else {
-            step = 0;
+            step = 0; // we start everything.
             if(index === undefined) {
                index = AutomataDesigner.currentIndex;
             }
-
+            wordDiv.textContent = '';
+            for(var span, i=0, len = word.length; i < len; ++i) {
+               span = document.createElement('span');
+               span.textContent = word[i];
+               wordDiv.appendChild(span);
+            }
             currentAutomaton = read_automaton(AutomataDesigner.getAutomatonCode(index));
             var q_init = currentAutomaton.getInitialState();
             currentAutomaton.setCurrentState(q_init);
@@ -639,19 +648,20 @@
             }
          }
 
-         if(step !== -1) {
-            if(!word[0]) {
+         if(step === -1) {
+            wordDiv.textContent = '';
+            executionTimeout = 0;
+         }
+         else {
+            if(!word[0]) { // the word is completely eaten
                step = -2;
             }
             if(step && EXECUTION_STEP_TIME) {
-               executionTimeout = setTimeout(execute, EXECUTION_STEP_TIME-(!(step % 2))*EXECUTION_STEP_TIME/2, word, index, step+1, currentAutomaton, currentStates);
+               executionTimeout = setTimeout(execute, EXECUTION_STEP_TIME-(!(step % 2))*EXECUTION_STEP_TIME/2, word, index, step+1, currentAutomaton, currentStates, currentIndex || 0);
             }
             else {
-               execute(word, index, step+1, currentAutomaton, currentStates);
+               execute(word, index, step+1, currentAutomaton, currentStates, currentIndex || 0);
             }
-         }
-         else {
-            executionTimeout = 0;
          }
       }
 
@@ -660,6 +670,7 @@
       function stopExecution(index) {
          if(executionTimeout) {
             executionTimeout = 0;
+            wordDiv.textContent = '';
             clearTimeout(executionTimeout);
             AutomataDesigner.cleanSVG(index);
          }

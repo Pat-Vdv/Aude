@@ -141,6 +141,28 @@ html,body {
    height:100%
 }
 
+#word {
+   position:absolute;
+   left:1em;
+   top:1em;
+   color:#666;
+   font-size:2em;
+   font-weight:bold;
+   text-shadow:0 0 2px gray;
+}
+
+#word span {
+   transition:400ms ease-out;
+   display:inline-block;
+   opacity:1;
+   transform:scale(1);
+}
+
+#word .eaten {
+   opacity:0;
+   transform:scale(3) translate(-8px, -8px);
+}
+
 .libD_notify-area {
    max-width:none !important
 }
