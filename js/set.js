@@ -79,6 +79,10 @@
          return element in this.l;
          // fixme: this.l[element] === element doesn't work correctly because [1,4] !== [1,4]
       },
+ 
+      has: function(element) {
+         return this.contains(element);
+      },
 
       checkConstraint: function(element) {
          if(this.typeConstraint) {
@@ -357,6 +361,12 @@
                this.listeners.splice(i, 1);
             }
          }
+      },
+
+      forEach: function(callback) {
+         for(var i in this.l) {
+            callback(this.l[i]);
+         }
       }
    };
 
@@ -373,7 +383,7 @@
       }
    };
 
-   pkg.contains = function (set, element) {
+   pkg.contains = pkg.has = function (set, element) {
       return set.l in element;
    };
 
