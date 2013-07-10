@@ -294,7 +294,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     return pass(expression);
   }
   function maybeexpressionNoComma(type) {
-    if (type.match(/[;\}\)\],:]/)) return pass();
+    if (type.match(/[;\}\)\],]/)) return pass();
     return pass(expressionNoComma);
   }
 
@@ -304,7 +304,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
   }
   function maybeoperatorNoComma(type, value, me) {
     if (!me) me = maybeoperatorNoComma;
-    if (type == "operator") {
+    if (type == "operator" || type == ":") {
       if (/\+\+|--/.test(value)) return cont(me);
       if (value == "?") return cont(expression, expect(":"), expression);
       return cont(expression);
