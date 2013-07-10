@@ -272,7 +272,6 @@
 
          function browseState(state) {
             if(!visited.contains(state)) {
-               visited.add(state);
                that.currentStates.add(state);
                that.lastTakenTransitions.add(new Transition(cs[i], pkg.epsilon, state));
                cont = true;
@@ -317,6 +316,8 @@
 
          for(var i in cs) {
             this.currentStates.remove(cs[i]);
+         }
+         for(var i in cs) {
             transitionsTable[cs[i]][symbol].forEach(addState);
          }
          this.currentStatesAddAccessiblesByEpsilon(transitionsTable);
