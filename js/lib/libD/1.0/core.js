@@ -539,11 +539,12 @@ libD.isJsLoaded = function(fname)
 	<libD.cssLoad>
 	<libD.getCSS>
 */
-libD.jsLoad = function(fname)
+libD.jsLoad = function(fname, callback, type)
 {
 	var script = document.createElement('script');
 	script.src = fname;
-	script.type = 'text/javascript'; // useless for HTML 5, useful for XHTML.
+	script.type = type || 'text/javascript';
+   script.onload = callback;
 	document.getElementsByTagName('head')[0].appendChild(script);
 };
 
