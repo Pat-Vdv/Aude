@@ -244,10 +244,11 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
   }
   poplex.lex = true;
 
-  function expect(wanted) {
+  function expect(wanted, ends) {
     return function(type) {
       if (type == wanted) return cont();
       else if (wanted == ";") return pass();
+      else if (ends && ends.indexOf(type) !== -1) return pass();
       else return cont(arguments.callee);
     };
   }
@@ -327,7 +328,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     } else if (type == "number" || type == "string") {
       cx.marked = type + " property";
     }
-    if (atomicTypes.hasOwnProperty(type)) return cont(expect(":"), expressionNoComma);
+    if (atomicTypes.hasOwnProperty(type)) return cont(expect(":", ",}"), expressionNoComma);
   }
   function getterSetter(type) {
     if (type == ":") return cont(expression);
