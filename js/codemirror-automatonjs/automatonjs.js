@@ -54,7 +54,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     return jsKeywords;
   }();
 
-  var isOperatorChar = /[+\-*&%=<>!?|~^]/;
+  var isOperatorChar = /[\:+\-*&%=<>!?|~^]/;
 
   function chain(stream, state, f) {
     state.tokenize = f;
@@ -283,10 +283,10 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     if (atomicTypes.hasOwnProperty(type)) return cont(maybeop);
     if (type == "function") return cont(functiondef);
     if (type == "keyword c") return cont(noComma ? maybeexpressionNoComma : maybeexpression);
-    if (type == "(") return cont(pushlex(")"), maybeexpression, expect(")"), poplex, maybeop);
     if (type == "operator") return cont(noComma ? expressionNoComma : expression);
+    if (type == "(") return cont(pushlex(")"), maybeexpression, expect(")"), poplex, maybeop);
     if (type == "[") return cont(pushlex("]"), commasep(expressionNoComma, "]"), poplex, maybeop);
-    if (type == "{") return cont(pushlex("}"), commasep(objprop, "}"), poplex, maybeop);
+    if (type == "{") return cont(pushlex("}"), commasep(expressionNoComma, "}"), poplex, maybeop);
     return cont();
   }
   function maybeexpression(type) {
@@ -294,7 +294,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     return pass(expression);
   }
   function maybeexpressionNoComma(type) {
-    if (type.match(/[;\}\)\],]/)) return pass();
+    if (type.match(/[;\}\)\],:]/)) return pass();
     return pass(expressionNoComma);
   }
 
@@ -321,15 +321,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
   function property(type) {
     if (type == "variable") {cx.marked = "property"; return cont();}
   }
-  function objprop(type, value) {
-    if (type == "variable") {
-      cx.marked = "property";
-      if (value == "get" || value == "set") return cont(getterSetter);
-    } else if (type == "number" || type == "string") {
-      cx.marked = type + " property";
-    }
-    if (atomicTypes.hasOwnProperty(type)) return cont(expect(":", ",}"), expressionNoComma);
-  }
+
   function getterSetter(type) {
     if (type == ":") return cont(expression);
     if (type != "variable") return cont(expect(":"), expression);
