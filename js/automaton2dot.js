@@ -35,7 +35,7 @@
 
    function dotState(q) {
       var s = q.toString() || "_default";
-      return JSON.stringify(s) + "[id=\"" + btoa(s) + "\"]";
+      return JSON.stringify(s).replace(/&/g, '&amp;') + "[id=\"" + btoa(s) + "\"]";
    }
 
    function catln() {
@@ -109,12 +109,12 @@
          }
          table[t.startState][t.endState].add(t.symbol);
       }
-      res += cat("\t_begin -> ", JSON.stringify(initialState.toString() || "_default"), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
+      res += cat("\t_begin -> ", JSON.stringify(initialState.toString().replace(/&/g, '&amp;') || "_default"), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
 
       for (var startState in table) {
          var trans = table[startState];
          for(var endState in trans) {
-            res += cat("\t", JSON.stringify(startState.toString()), " -> ", JSON.stringify(endState.toString()), " [label = ");
+            res += cat("\t", JSON.stringify(startState.toString()).replace(/&/g, '&amp;'), " -> ", JSON.stringify(endState.toString()).replace(/&/g, '&amp;'), " [label = ");
 
             var symbols = table[startState][endState].getSortedList(),
                 comma   = "",
@@ -132,7 +132,7 @@
                   comma = ",";
                }
             }
-            res += JSON.stringify(tmp) + catln(", id=\"", btoa(startState.toString()), " ", btoa(endState.toString()), "\"]");
+            res += JSON.stringify(tmp).replace(/&/g, '&amp;') + catln(", id=\"", btoa(startState.toString()), " ", btoa(endState.toString()), "\"]");
          }
       }
 
