@@ -3,16 +3,24 @@
    <head>
       <meta charset="utf-8" />
       <title>AutomatonJS to pure JS Test</title>
-      <script src="../js/automatonjs.js"></script>
       <script src="../js/lib/codemirror/lib/codemirror.js"></script>
-      <link rel="stylesheet" href="../js/lib/codemirror/lib/codemirror.css" />
       <script src="../js/codemirror-automatonjs/automatonjs.js"></script>
+      <link rel="stylesheet" href="../js/lib/codemirror/lib/codemirror.css" />
       <style>
          html {position:relative;height:100%;width:100%}
          #cm{height:100%;width:80%}
       </style>
+      <script type="text/javascript;version=1.8">
+         var JS18Supported = true;
+      </script>
       <script>
          window.onload = function() {
+            var script=document.createElement('script');
+            script.src = "../js/automatonjs.js";
+            if(window.JS18Supported) {
+               script.type = 'text/javascript;version=1.8';
+            }
+            document.querySelector('head').appendChild(script);
             cm = CodeMirror(document.body.firstChild);
          }
       </script>

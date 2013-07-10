@@ -3,7 +3,7 @@
 
 
 /*
-   Copyright (c) 1998, Raphaël Jakse (Université Joseph Fourier)
+   Copyright (c) 2013, Raphaël Jakse (Université Joseph Fourier)
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are met:
@@ -32,14 +32,42 @@
 
 // NEEDS automata.js, set.js
 
-(function(pkg) {
+(function(pkg, that) {
    "use strict";
    if(!pkg.AutomatonJS) {
       pkg.AutomatonJS = {};
    }
 
    // things needed to executre AutomatonJS code.
-   pkg.AutomatonJS.BreakException = {};
+   if(!that.StopIteration) {
+      that.StopIteration = {};
+   }
+
+   var letDeclarationSupported = false,
+       arrowFunctionSupported  = false,
+       letExpressionSupported  = false,
+       IterationsSupported     = false;
+       
+   try {
+      arrowFunctionSupported = eval("(x => true)()");
+   }
+   catch(e){}
+
+   try {
+     letExpressionSupported  = eval('var a=1, t; let (a=2){if(a === 2){t = true}}; t && a === 1;');
+   }
+   catch(e){}
+
+   try {
+     letDeclarationSupported = eval('var a=1, t; if(true){let a = 2;t = a === 2} t && a === 1;');
+   }
+   catch(e){}
+
+   try {
+      IterationsSupported    = eval("for(let i of [1,2]){} true")
+   }
+   catch(e){}
+
    pkg.AutomatonJS.eq = function(v1, v2) {
       return v1 === v2 || (
             typeof v1 === typeof v2
@@ -209,6 +237,10 @@
                }
                return '==';
             }
+            else if(s[i] === '>') {
+               ++i;
+               return '=>';
+            }
             return '=';
          }
          if(s[i] === '<') {
@@ -339,7 +371,7 @@
          var bufferSymbol = getSymbol();
          if(type === variable || type === instruction) {
             var v = s[d] + bufferSymbol;
-            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include') {
+            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include' || v === 'let') {
                lastSignificantType = type = instruction;
             }
             return v;
@@ -354,7 +386,7 @@
 
    function foreachReplacements(symbol) {
       if(symbol === "break") {
-         return "throw AutomatonJS.BreakException";
+         return "throw StopIteration";
       }
       else if(symbol === "return") {
          return "throw";
@@ -468,12 +500,16 @@
          }
       }
       else if(symbol === '[') {
-         var pres = toPureJS({']':true});
+         var pres = toPureJS({']':true}, inForeach);
          res += '[' + pres + getSymbol(); // ']'
       }
       else if(symbol === '(') {
-         var pres = toPureJS({')':true});
+         var pres = toPureJS({')':true}, inForeach);
          res += '(' + pres + getSymbol(); // ')'
+      }
+      else if(symbol === '?') {
+         var pres = getExpression({inForeach:inForeach,onlyOneValue:true,value:true});
+         res += '?' + pres + getSymbol(); // ':'
       }
       else if(symbol === ';') {
          if(value) {
@@ -494,8 +530,8 @@
             --i;
             return res;
          }
-         return res + parseForeach(inForeach);
-      }               
+         return res + parseForeach(inForeach, symbol);
+      }
       else if(inForeach && (symbol === "break" || symbol === "continue" || symbol === "throw" || symbol === "return")) {
          if(value) {
             i = deb;
@@ -504,12 +540,35 @@
          return res + foreachReplacements(symbol);
       }
       else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function') {
+         var tmp;
          if(value && symbol !== 'function') {
             i = deb;
             return '';
          }
-
+         else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol))) {
+            return res + tmp;
+         }
          return res + symbol + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+      }
+      else if(symbol === 'let') {
+         var d = i;
+         symbol = getSymbol();
+         if(type === whitespace) {
+            pres += symbol;
+            symbol = getSymbol();
+         }
+         i = d;
+         if(symbol === '(') {
+            if(letExpressionSupported) {
+               return res + 'let' + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+            }
+            else {
+               return res + '(function(){var ' + getExpression({inForeach:inForeach}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach}) + ')()';
+            }
+         }
+         else {
+            return res + (letDeclarationSupported ? 'let' : 'var') + getExpression({inForeach:inForeach});
+         }
       }
       else if(symbol === 'do') {
          if(value) {
@@ -624,12 +683,21 @@
             }
             res += white + '.' + symbol2;
          }
-         else if(symbol === '-' && i < len && s[i] === '>' && (oldType & (variable | closeParen))) {
+         else if(symbol === '?') {
+            var pres = getExpression({inForeach:inForeach,onlyOneValue:true,value:true});
+            res += '?' + pres + getSymbol(); // ':'
+         }
+         else if(symbol === '=>'  && (oldType & (variable | closeParen))) {
             ++i;
             var expr = getExpression({inForeach:inForeach});
-            res = 'function' +
-                  (oldType === closeParen ? res : '(' + res + ')') +
-                  (expr.trim()[0] === '{' ? expr : '{return ' + expr + '}');
+            if(arrowFunctionSupported) {
+               res += '=>' + exp;
+            }
+            else {
+               res = 'function' +
+                     (oldType === closeParen ? res : '(' + res + ')') +
+                     (expr.trim()[0] === '{' ? expr : '{return ' + expr + '}');
+            }
          }
          else if(symbol === '[') {
             res += white + symbol + getExpression({inForeach:inForeach}) + getSymbol(); // symbol should be ']'
@@ -656,10 +724,15 @@
             return res + white + symbol;
          }
          else if(symbol === ':') {
-            var matches = [];
+            if(value) {
+               --i;
+               return res + white;
+            }
+
+            var matches = [], d;
             if(matches = /([\s]*)[\S]+/g.exec(res)) {
                var varName = res.trim();
-               var tmp = matches[1] + 'var ' + varName + white + '=';
+               var tmp = matches[1] + (letDeclarationSupported ? 'let ' : 'var ') + varName + white + '=';
                var defaultValue = '';
                symbol = getSymbol();
                if(type === whitespace) {
@@ -671,27 +744,34 @@
                   symbol = getSymbol();
                   if(type === whitespace) {
                      if(symbol !== ' ') {
-                        tmp += symbol;
+                        white = symbol;
                      }
                      symbol = getSymbol();
                   }
+                  else {
+                     white = '';
+                  }
+
                   if(symbol === '(') {
-                     defaultValue = getSymbol();
+                     defaultValue = getExpression({inForeach:inForeach});
                      if(getSymbol() !== ')') {
                         i = deb;
                         return res;
                      }
+                     tmp += white;
+                     white = '';
                      symbol = getSymbol();
                   }
 
                   if(type === whitespace) {
                      if(symbol !== ' ') {
-                        tmp += symbol;
+                        white = symbol;
                      }
                      symbol = getSymbol();
                   }
+
                   if(symbol === '=' && typeOfVar.toLowerCase() !== 'set') {
-                     return tmp + getExpression({inForeach:inForeach});
+                     return tmp + white + getExpression({inForeach:inForeach});
                   }
                   else {
                      switch(typeOfVar.toLowerCase()) {
@@ -773,6 +853,7 @@
                      default:
                         tmp += 'new ' + typeOfVar;
                      }
+                     tmp += white;
                   }
 
                   if(symbol === ';') {
@@ -842,7 +923,7 @@
 
                   return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
                }
-               else if(symbol === 'contains' || symbol === 'subsetof') {
+               else if(symbol === 'contains' || symbol === 'subsetof' || symbol === 'has') {
                   i = deb2;
                   return res + '.' + (symbol === 'subsetof' ? 'subsetOf' : symbol) + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
                }
@@ -863,9 +944,8 @@
       return res;
    }
 
-   function parseForeach(inForeach) {
+   function parseForeach(inForeach, keyword) {
       var deb = i;
-
       var symbol = getSymbol(), beforeParenthesis = '';
       if(type === whitespace) {
          beforeParenthesis = symbol;
@@ -874,19 +954,33 @@
 
       if(symbol !== '(') {
          i = deb;
-         return 'foreach';
+         return keyword;
       }
 
       var expr1  = getExpression({inForeach:inForeach}),
-          inExpr = getSymbol();
+          inExpr = getSymbol(),
+          declarationSymbol = '';
+
+      if(IterationsSupported) {
+         if(keyword === 'foreach' && !expr1.match(/^[\s]*(?:let|var) ?/)) {
+            expr1 = (letDeclarationSupported ? 'let ' : 'var ') + expr1;
+         }
+      }
+      else {
+         var key = /^[\s]*(let|var)/.exec(expr1);
+         if(key || keyword === 'foreach') {
+            declarationSymbol = (key ? key[1] + ' ' : false) || (letDeclarationSupported ? 'let ' : 'var ');
+         }
+         expr1 = expr1.replace(/^[\s]*(?:let|var) ?/, '');
+      }
 
       if(type === whitespace) {
          expr1 += inExpr;
          inExpr = getSymbol();
       }
-      if(inExpr !== 'in') {
+      if(inExpr !== 'in' && inExpr !== 'of') {
          i = deb;
-         return 'foreach';
+         return keyword;
       }
       var white = getSymbol();
       if(s[i] === '{') {
@@ -896,7 +990,7 @@
          symbol = getSymbol();
          if(symbol !== ',') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
          symbol = getSymbol();
          if(type === whitespace) {
@@ -905,17 +999,17 @@
          }
          if(symbol !== '.') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
          symbol = getSymbol();
          if(symbol !== '.') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
          symbol = getSymbol();
          if(symbol !== '.') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
 
          symbol = getSymbol();
@@ -926,13 +1020,13 @@
 
          if(symbol !== ',') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
          var n2 = getExpression({inForeach:inForeach});
 
          if(getSymbol() !== '}') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
 
          symbol = getSymbol();
@@ -943,7 +1037,7 @@
 
          if(symbol !== ')') {
             i = deb;
-            return 'foreach';
+            return keyword;
          }
          var foreachBody = getExpression({inForeach:inForeach}), bf = '', ef = '';
          if(foreachBody.trim()[0] !== '{') {
@@ -951,21 +1045,37 @@
             ef = '}';
          }
 
-         return 'for(var ' + expr1 + ' =' + n1 + '; i <= ' + n2 + ';' + white + '++' + expr1 + ')' + bf + foreachBody + ef;
+         return 'for(' + declarationSymbol + expr1 + ' =' + n1 + '; ' + expr1 + ' <= ' + n2 + ';' + white + '++' + expr1 + ')' + bf + foreachBody + ef;
       }
       else {
          var expr2  = getExpression({inForeach:inForeach});
          if(getSymbol() !== ')') {
             i = deb;
-            return 'foreach';
+            return 'for';
          }
 
-         var foreachBody = getExpression({inForeach:true}), bf = '', ef = '';
-         if(foreachBody.trim()[0] !== '{') {
-            bf = '{';
-            ef = '}';
+         var foreachBody = getExpression({inForeach:!IterationsSupported});
+         if(IterationsSupported) {
+            return 'for' + beforeParenthesis + '(' + declarationSymbol + expr1 + ' of ' + expr2 + ')'+ foreachBody;
          }
-         return 'try{(' + expr2 + ').forEach' + beforeParenthesis + '(function(' + expr1 + ')' + bf + foreachBody + ef + ')}catch(e){if(e instanceof Error){throw e}else if(!(e === AutomatonJS.BreakException)){' + (inForeach ? 'throw ' : 'return ') + 'e;}}';
+         else {
+            var  bf = '', ef = '';
+            if(foreachBody.trim()[0] === '{') {
+               if(!declarationSymbol && keyword !== 'foreach') {
+                  foreachBody = foreachBody.replace(/([\s]*)\{/, '$1{' + expr1.replace(/\$/g, '$$$$') + '=arguments[0];');
+               }
+            }
+            else {
+               if(!declarationSymbol && keyword !== 'foreach') {
+                  bf = '{' + expr1 + '=arguments[0];';
+               }
+               else {
+                  bf = '{';
+               }
+               ef = '}';
+            }
+            return 'try{(' + expr2 + ').forEach' + beforeParenthesis + '(function(' + ((declarationSymbol || keyword === 'foreach') ? expr1 : '') + ')' + bf + foreachBody + ef + ')}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){' + (inForeach ? 'throw ' : 'return ') + 'e;}}';
+         }
       }
    }
    
@@ -1028,4 +1138,4 @@
       return l.map(function(e){func(e);});
    };
 
-})(this);
+})(this, this);

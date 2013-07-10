@@ -23,6 +23,124 @@
 
 (function() {
    "use strict";
+   
+   var automatonResult   = null,
+       blockResult       = false,
+       waitingFor        = new Set(),
+       offsetError,
+       not;
+
+   function notify (title, content, type) {
+      if(!not || !not.displayed) {
+         not = new libD.Notify({closeOnClick:true});
+      }
+      not.setTitle(title);
+      not.setDescription(content);
+      not.setType(type);
+   }
+
+   function setTextResult(t, dontNotify) {
+      automatonResult = null;
+      var res = document.createElement('pre');
+      res.textContent = t;
+      results.textContent = '';
+      results.appendChild(res);
+      if(!dontNotify) {
+         if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
+            notify("Program Result",res.cloneNode(true), 'normal');
+         }
+      }
+   }
+
+   function setAutomatonResult(A) {
+      automatonResult = A;
+      var svgCode = Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
+      results.innerHTML = svgCode;
+      if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
+         notify("Program Result", svgCode, 'normal');
+      }
+   }
+
+   function setResult(res) {
+      if(res instanceof Automaton) {
+         setAutomatonResult(res);
+      }
+      else if(res) {
+         setTextResult(res.toString());
+      }
+      else {
+         if(res === undefined) {
+            setTextResult("undefined");
+         }
+         else if(res === null) {
+            setTextResult("null");
+         }
+         else {
+            setTextResult(res);
+         }
+      }
+   }
+
+   function handleError(message, line, stack, char) {
+      var errorTitle = "Error on line " + line + (
+            char === undefined ? ''
+                               : ', character ' + char
+            ),
+          errorText  = message + (
+             stack ? '\nStack trace : \n' + stack
+                   : ''
+          );
+
+      notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/  /g, '  '), "error");
+      setTextResult(errorTitle + "\n" + errorText, true);
+   }
+
+   function execProgram(code) {
+      if(code) {
+         window.loadProgram(code);
+      }
+
+      if(window.userProgram && waitingFor.isEmpty()) {
+         blockResult = false;
+         window.currentAutomaton = AutomataDesigner.currentIndex;
+         var res;
+         try {
+            res = userProgram(window.reallyRun);
+         }
+         catch(e) {
+            if(e instanceof Error && 'stack' in e) {
+               var stack = e.stack.split("\n");
+               for(var i in stack) {
+                  if(stack[i].match(location.href)) {
+                     var details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
+                     if(details) {
+                        handleError(e.message, parseInt(details[1]) - offsetError, e.stack, details[2]);
+                     }
+                     else {
+                        handleError(e.message, e.lineNumber- offsetError, e.stack);
+                     }
+                     return;
+                  }
+               }
+               handleError(e.message || e, e.lineNumber);
+            }
+            else {
+               handleError(e.message || e, e.ineNumber);
+            }
+            return;
+         }
+         if(blockResult) {
+            blockResult = false;
+         }
+         else {
+            setResult(res);
+         }
+      }
+      else {
+         launchAfterImport = true;
+      }
+   }
+
    window.onselectstart = window.ondragstart = function(e) {
       e.preventDefault();
       return false;
@@ -41,7 +159,31 @@
 
    var enableAutoHandlingError = false;
 
+   function automatonJSLoaded() {
+      window.onerror = function(message, url, lineNumber) {
+         if(enableAutoHandlingError) {
+            if(offsetError > -1) {
+               handleError(message + (typeof enableAutoHandlingError === 'string' ?'(in ' + enableAutoHandlingError + ')' : ''), lineNumber - offsetError);
+            }
+            else {
+               offsetError = lineNumber-1;
+            }
+            return true;
+         }
+      };
+      offsetError = -1;
+      window.loadProgram(':');
+   };
+
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
+      if(window.js18Supported) {
+         libD.jsLoad('js/automatonjs.js', automatonJSLoaded, "application/javascript;version=1.8");
+         libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
+      }
+      else {
+         libD.jsLoad('js/automatonjs.js', automatonJSLoaded);
+      }
+
       AutomataDesigner.load();
    
       var splitter          = document.getElementById('splitter'),
@@ -66,8 +208,6 @@
           executeBtn        = document.getElementById('execute'),
           head              = document.querySelector('head'),
           launchAfterImport = false,
-          blockResult       = false,
-          waitingFor        = new Set(),
           exportFN          = '',
           executionTimeout  = 0,
           executeWin,
@@ -173,8 +313,7 @@
          AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
       };
 
-      var automatonResult    = null,
-          exportResultFN     = 'automaton.txt',
+      var exportResultFN     = 'automaton.txt',
           exportResultTextFN = 'result.txt';
 
       exportResult.onclick = function() {
@@ -346,89 +485,11 @@
          setResult(arguments[0].apply(window, [].slice.call(arguments, 1)));
       };
 
-      window.execProgram = function(code) {
-         if(code) {
-            window.loadProgram(code);
-         }
-
-         if(window.userProgram && waitingFor.isEmpty()) {
-            blockResult = false;
-            window.currentAutomaton = AutomataDesigner.currentIndex;
-            var res;
-            try {
-               res = userProgram(window.reallyRun);
-            }
-            catch(e) {
-               if(e instanceof Error && 'stack' in e) {
-                  var stack = e.stack.split("\n");
-                  for(var i in stack) {
-                     if(stack[i].match(location.href)) {
-                        var details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
-                        if(details) {
-                           handleError(e.message, parseInt(details[1]) - offsetError, e.stack, details[2]);
-                        }
-                        else {
-                           handleError(e.message, e.lineNumber- offsetError, e.stack);
-                        }
-                        return;
-                     }
-                  }
-                  handleError(e.message || e, e.lineNumber);
-               }
-               else {
-                  handleError(e.message || e, e.ineNumber);
-               }
-               return;
-            }
-            if(blockResult) {
-               blockResult = false;
-            }
-            else {
-               setResult(res);
-            }
-         }
-         else {
-            launchAfterImport = true;
-         }
-      };
-
-      window.setTextResult = function (t, dontNotify) {
-         automatonResult = null;
-         var res = document.createElement('pre');
-         res.textContent = t;
-         results.textContent = '';
-         results.appendChild(res);
-         if(!dontNotify) {
-            if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-               notify("Program Result",res.cloneNode(true), 'normal');
-            }
-         }
-      };
-
-      window.setAutomatonResult = function (A) {
-         automatonResult = A;
-         var svgCode = Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
-         results.innerHTML = svgCode;
-         if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-            notify("Program Result", svgCode, 'normal');
-         }
-      };
-
       window.get_automaton = function(i) {
          if(automataNumber <= i) {
             throw(new Error("get_automaton: The automaton n°" + JSON.stringify(i) + " doesn't exist"));
          }
          return read_automaton(AutomataDesigner.getAutomatonCode(i));
-      };
-
-      var not;
-      window.notify = function(title, content, type) {
-         if(!not || !not.displayed) {
-            not = new libD.Notify({closeOnClick:true});
-         }
-         not.setTitle(title);
-         not.setDescription(content);
-         not.setType(type);
       };
 
       AutomataDesignerGlue.requestSVG = function(index) {
@@ -441,26 +502,6 @@
       };
 
       var freader = new FileReader(), automatonFileName, programFileName;
-
-      function setResult(res) {
-         if(res instanceof Automaton) {
-            setAutomatonResult(res);
-         }
-         else if(res) {
-            setTextResult(res.toString());
-         }
-         else {
-            if(res === undefined) {
-               setTextResult("undefined");
-            }
-            else if(res === null) {
-               setTextResult("null");
-            }
-            else {
-               setTextResult(res);
-            }
-         }
-      }
 
       function openAutomaton() {
          freader.onload = function() {
@@ -535,20 +576,6 @@
             }
          }
       };
-
-      function handleError(message, line, stack, char) {
-         var errorTitle = "Error on line " + line + (
-               char === undefined ? ''
-                                  : ', character ' + char
-               ),
-             errorText  = message + (
-                stack ? '\nStack trace : \n' + stack
-                      : ''
-             );
-
-         notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/  /g, '  '), "error");
-         setTextResult(errorTitle + "\n" + errorText, true);
-      }
 
       function handleImports(includes, includer) {
          for(var i in includes) {
@@ -649,6 +676,9 @@
          window.userProgram = null;
          script = document.createElement('script');
          script.id = 'useralgo';
+         if(js18Supported) {
+            script.type = 'text/javascript;version=1.8';
+         }
          script.textContent = 'function userProgram(run) {"use strict";\n' + AutomatonJS.toPureJS(code, includes) + '\n}';
          enableAutoHandlingError = "user's program";
          head.appendChild(script);
@@ -668,6 +698,9 @@
          }
          script = document.createElement('script');
          script.id = id;
+         if(js18Supported) {
+            script.type = 'text/javascript;version=1.8';
+         }
          script.textContent = AutomatonJS.toPureJS(code, includes);
          enableAutoHandlingError = "module " + includeName;
          head.appendChild(script);
@@ -732,20 +765,6 @@
             }
          }
       };
-
-      var offsetError = -1;
-      window.onerror = function(message, url, lineNumber) {
-         if(enableAutoHandlingError) {
-            if(offsetError > -1) {
-               handleError(message + (typeof enableAutoHandlingError === 'string' ?'(in ' + enableAutoHandlingError + ')' : ''), lineNumber - offsetError);
-            }
-            else {
-               offsetError = lineNumber-1;
-            }
-            return true;
-         }
-      };
-      window.loadProgram(':');
 
       switchmode.onchange();
       onResize();

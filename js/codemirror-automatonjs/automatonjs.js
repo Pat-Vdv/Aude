@@ -19,7 +19,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
       "var": kw("var"), "const": kw("var"), "let": kw("var"),
       "function": kw("function"), "catch": kw("catch"),
       "for": kw("for"), "foreach": kw("foreach"), "switch": kw("switch"), "case": kw("case"), "default": kw("default"),
-      "in": operator,"union": operator, "inter": operator, "minus": operator, "contains":operator, "subsetOf":operator,"elementOf":operator,"belongsTo":operator, "typeof": operator, "instanceof": operator,
+      "in": operator,"of": operator,"union": operator, "inter": operator, "minus": operator, "contains":operator, "subsetOf":operator,"elementOf":operator,"belongsTo":operator, "typeof": operator, "instanceof": operator,
       "true": atom, "false": atom, "null": atom, "undefined": atom, "NaN": atom, "Infinity": atom, "emptySet": atom,
       "this": kw("this")
     };
