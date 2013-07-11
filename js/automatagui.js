@@ -257,7 +257,7 @@
                      ['input', {type:'button', value:'Step', '#':'step'}]
                   ]]],
                   ['div', ['label', [
-                     ['#', 'delay between stepNumbers: '],
+                     ['#', 'delay between steps (ms): '],
                      ['input', {type:'text', '#':'delay', value:EXECUTION_STEP_TIME}]
                   ]]]
                ]], refs),
