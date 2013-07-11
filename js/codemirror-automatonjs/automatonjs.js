@@ -253,6 +253,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
   }
 
   function maybe(wanted) {
+      console.log("maybe");
     return function(type) {
       if (type == wanted) return cont();
       else if (type == "," || type === "}") return pass();
@@ -266,17 +267,17 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     if (type == "keyword b") return cont(pushlex("form"), statement, poplex);
     if (type == "{") return cont(pushlex("}"), block, poplex);
     if (type == ";") return cont();
-    if (type == "if") return cont(pushlex("form"), expression, statement, poplex, maybeelse(cx.state.indented));
+    if (type == "if") return cont(pushlex("form"), expression, statement, poplex, maybeelse);
     if (type == "function") return cont(functiondef);
     if (type == "for") return cont(pushlex("form"), expect("("), pushlex(")"), forspec1, expect(")"),
-                                      poplex, statement, poplex);
+                                   poplex, statement, poplex);
     if (type == "variable") return cont(pushlex("stat"), maybelabel);
     if (type == "switch") return cont(pushlex("form"), expression, pushlex("}", "switch"), expect("{"),
-                                         block, poplex, poplex);
+                                      block, poplex, poplex);
     if (type == "case") return cont(expression, expect(":"));
     if (type == "default") return cont(expect(":"));
     if (type == "catch") return cont(pushlex("form"), pushcontext, expect("("), funarg, expect(")"),
-                                        statement, poplex, popcontext);
+                                     statement, poplex, popcontext);
     return pass(pushlex("stat"), expression, expect(";"), poplex);
   }
   function expression(type) {
@@ -286,6 +287,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     return expressionInner(type, true);
   }
   function maybeexpressionColonNoComma(type) {
+    console.log("maybeexpressionColonNoComma");
     if(type == ':') return cont(expressionNoComma);
     return pass();
   }
