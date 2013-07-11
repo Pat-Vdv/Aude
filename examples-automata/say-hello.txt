@@ -12,7 +12,6 @@
 5
 7
 10
-^Û
 
 "0" ε "11"
 "0" ε "12"
@@ -29,7 +28,7 @@
 "13" h "3"
 
 <representation type="image/svg+xml">
-<svg width="0" height="0" viewBox="0.00 0.00 592.00 200.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="1200" height="790" viewBox="-29.6667 -95.0445 666.667 438.889" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph1" class="graph">
 <title>automaton</title>
 
@@ -186,11 +185,7 @@
 <text text-anchor="middle" x="262" y="170.60000000000002" font-family="Times,serif" font-size="14.00">h</text>
 </g>
 
-<g id="node29" class="node"><title>svg</title>
-<ellipse fill="transparent" stroke="black" cx="42" cy="51.80000000000001" rx="24.4053" ry="24.4053"></ellipse>
-<ellipse fill="transparent" stroke="black" cx="42" cy="51.80000000000001" rx="28.3982" ry="28.3982"></ellipse>
-<text text-anchor="middle" x="42" y="56" font-family="Times,serif" font-size="14.00">svg</text>
-</g>
+
 </g>
 </svg>
 </representation>
