@@ -27,6 +27,7 @@
    var automatonResult   = null,
        blockResult       = false,
        waitingFor        = new Set(),
+       launchAfterImport = false,
        offsetError,
        not;
 
@@ -208,7 +209,6 @@
           executeBtn        = document.getElementById('execute'),
           wordDiv           = document.getElementById('word'),
           head              = document.querySelector('head'),
-          launchAfterImport = false,
           exportFN          = '',
           executionTimeout  = 0,
           executeWin,
@@ -744,7 +744,7 @@
                   executionTimeout = setTimeout(execute, HAND_STEP_TIME);
                }
             }
-         }
+         };
       })();
 
       function stopExecution(index) {
