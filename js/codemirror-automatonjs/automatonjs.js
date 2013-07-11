@@ -339,7 +339,6 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     } else if (type == "number" || type == "string") {
       cx.marked = type + " property";
     }
-    console.log(type);
     if (type == "(") return cont(pushlex(")"), maybeexpression, expect(")"), poplex, maybeoperatorNoComma);
     if (type == "[") return cont(pushlex("]"), commasep(expressionNoComma, "]"), poplex, maybeoperatorNoComma);
     if (type == "{") return cont(pushlex("}"), commasep(objprop, "}"), poplex, maybeoperatorNoComma);
