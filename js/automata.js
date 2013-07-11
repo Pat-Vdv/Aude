@@ -227,6 +227,7 @@
       },
 
       setCurrentState: function(state) {
+         this.lastTakenTransitions.empty();
          if(this.states.contains(state)) {
             this.currentStates.interInPlace([state]);
             this.currentStatesAddAccessiblesByEpsilon();
@@ -234,6 +235,7 @@
       },
 
       setCurrentStates: function(states) {
+         this.lastTakenTransitions.empty();
          if(states.subsetOf(this.states)) {
             this.currentStates = new_set(states);
             this.currentStatesAddAccessiblesByEpsilon();
