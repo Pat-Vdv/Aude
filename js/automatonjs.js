@@ -38,7 +38,7 @@
       pkg.AutomatonJS = {};
    }
 
-   // things needed to executre AutomatonJS code.
+   // things needed to execute AutomatonJS code.
    if(!that.StopIteration) {
       that.StopIteration = {};
    }
@@ -539,9 +539,24 @@
          }
          return res + foreachReplacements(symbol);
       }
-      else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function') {
+      else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === "switch") {
          var tmp;
-         if(value && symbol !== 'function') {
+         if(symbol === 'function') {
+            var d = i;
+            var functionName = getSymbol();
+            if(type === whitespace) {
+               functionName += getSymbol();
+            }
+            if(lastSignificantType === variable) {
+               if(value) {
+                  i = deb;
+                  return '';
+               }
+               return res + symbol + functionName + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+            }
+            i = d;
+         }
+         else if(value) {
             i = deb;
             return '';
          }
@@ -563,7 +578,7 @@
                return res + 'let' + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
             }
             else {
-               return res + '(function(){var ' + getExpression({inForeach:inForeach}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach}) + ')()';
+               return res + '(function(){var ' + getExpression({inForeach:inForeach}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach}) + '})()';
             }
          }
          else {
