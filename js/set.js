@@ -28,8 +28,9 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-(function(pkg) {
+(function(pkg, that) {
    "use strict";
+   var _ = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    pkg.Set = function(l) {
       this.l = {};
       this.listeners = [];
@@ -89,11 +90,11 @@
             if(typeof this.typeConstraint === "string") {
                if(this.typeConstraint === "integer") {
                   if(!(typeof element === 'number' && element % 1 === 0)) {
-                     throw(new Error("pkg.Set.checkConstraint(element) : the element does not satisfies the type constraint."));
+                     throw(new Error(_("pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
                   }
                }
                else if(typeof element !== this.typeConstraint) {
-                  throw(new Error("pkg.Set.checkConstraint(element) : the element does not satisfies the type constraint."));
+                  throw(new Error(_("pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
                }
             }
             else if(!(element instanceof this.typeConstraint)) {
@@ -101,7 +102,7 @@
                   element = pkg.to_set(element); // this is ok to implicitely convert lists to sets
                }
                else {
-                  throw(new Error("pkg.Set.checkConstraint(element) : the element does not satisfies the type constraint."));
+                  throw(new Error(_("pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
                }
             }
          }
@@ -411,9 +412,10 @@
    pkg.empty = function(set) {
       set.empty();
    };
-   
+
    pkg.is_empty = function(set) {
       return set.isEmpty();
    };
 
-})(this);
+   _("fr", "pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.", "pkg.Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
+})(this, this);

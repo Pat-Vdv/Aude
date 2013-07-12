@@ -93,7 +93,7 @@
          errorTitle = libD.format(_("Error on line {0}, character {1}"), line, char);
       }
       else {
-         errorTitle = libD.format(_("Error on line {0}"));
+         errorTitle = libD.format(_("Error on line {0}"), line);
       }
 
       notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/  /g, '  '), "error");
@@ -876,7 +876,7 @@
    _("fr", "Program Result", "Résultat");
    _("fr", '\nStack trace: \n', "\nPile de l\'erreur : \n");
    _("fr", "Error on line {0}, character {1}", "Erreur ligne {0}, caractère {1}");
-   _("fr", "Error on line {0}", "Erreur ligne {0}");
+   _("fr", "Error on line {0}", "Erreur à la ligne {0}");
    _("fr", "Execute the current automaton with a word", "Exécuter l'automate actuel sur un mot");
    _("fr", "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)", "Quel nom voulez-vous donner à l'image exportée ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg)");
    _("fr", "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)", "Quel nom voulez-vous donner au fichier exporté ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)");
