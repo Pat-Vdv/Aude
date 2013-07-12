@@ -46,7 +46,8 @@
    var letDeclarationSupported = false,
        arrowFunctionSupported  = false,
        letExpressionSupported  = false,
-       IterationsSupported     = false;
+       IterationsSupported     = false,
+       constSupported          = false;
        
    try {
       arrowFunctionSupported = eval("(x => true)()");
@@ -60,6 +61,11 @@
 
    try {
      letDeclarationSupported = eval('var a=1, t; if(true){let a = 2;t = a === 2} t && a === 1;');
+   }
+   catch(e){}
+
+   try {
+     constSupported = eval('const a=1; a === 1;');
    }
    catch(e){}
 
@@ -371,7 +377,7 @@
          var bufferSymbol = getSymbol();
          if(type === variable || type === instruction) {
             var v = s[d] + bufferSymbol;
-            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include' || v === 'let') {
+            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include' || v === 'let' || v === 'const') {
                lastSignificantType = type = instruction;
             }
             return v;
@@ -565,26 +571,6 @@
          }
          return res + symbol + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
       }
-      else if(symbol === 'let') {
-         var d = i;
-         symbol = getSymbol();
-         if(type === whitespace) {
-            pres += symbol;
-            symbol = getSymbol();
-         }
-         i = d;
-         if(symbol === '(') {
-            if(letExpressionSupported) {
-               return res + 'let' + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
-            }
-            else {
-               return res + '(function(){var ' + getExpression({inForeach:inForeach}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach}) + '})()';
-            }
-         }
-         else {
-            return res + (letDeclarationSupported ? 'let' : 'var') + getExpression({inForeach:inForeach});
-         }
-      }
       else if(symbol === 'do') {
          if(value) {
             i = deb;
@@ -665,7 +651,31 @@
             i = deb;
             return '';
          }
+         
          else {
+            if(symbol === 'const' && !constSupported) {
+               symbol = letDeclarationSupported ? 'let' : 'var';
+            }
+            else if(symbol === 'let') {
+               var d = i;
+               symbol = getSymbol();
+               if(type === whitespace) {
+                  pres += symbol;
+                  symbol = getSymbol();
+               }
+               i = d;
+               if(symbol === '(') {
+                  if(letExpressionSupported) {
+                     return res + 'let' + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+                  }
+                  else {
+                     return res + '(function(){var ' + getExpression({inForeach:inForeach}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach}) + '})()';
+                  }
+               }
+               else {
+                  return res + (letDeclarationSupported ? 'let' : 'var') + getExpression({inForeach:inForeach});
+               }
+            }
             return res + symbol + getExpression({inForeach:inForeach});
          }
       }
