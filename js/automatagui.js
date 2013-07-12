@@ -28,7 +28,7 @@
        blockResult       = false,
        waitingFor        = new Set(),
        launchAfterImport = false,
-       _                 = libD.l10n(),
+       _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
        not;
 

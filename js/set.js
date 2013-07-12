@@ -30,7 +30,7 @@
 
 (function(pkg, that) {
    "use strict";
-   var _ = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
+   var _ = pkg.setl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    pkg.Set = function(l) {
       this.l = {};
       this.listeners = [];

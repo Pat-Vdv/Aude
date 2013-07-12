@@ -33,7 +33,7 @@
        initialStates      = [], // array containing all the automata's initial state's node
        svgs               = []; // will contain all currently opened automata
 
-   var _ = pkg.AutomataDesignerTranslator = that.libD && that.libD.l10n ? that.libD.l10n() : function(s){return s;};
+   var _ = pkg.AutomataDesignerl10n = that.libD && that.libD.l10n ? that.libD.l10n() : function(s){return s;};
 
    pkg.svgNode      = null;     // <svg> editor
    pkg.svgZoom      = 1;        // current zoom level
@@ -403,23 +403,21 @@
                      }
                   }
                   else if(e.shiftKey) {
-                     if(e.ctrlKey) {
-                        // initial state
-                        setInitialState(nodeMoving);
-                     }
-                     else {
-                        nodeEdit = nodeMoving;
-                        pkg.svgContainer.onmousemove = nodeBinding;
-                        pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        pathEdit.setAttribute('fill', 'none');
-                        pathEdit.setAttribute('stroke', 'black');
+                     nodeEdit = nodeMoving;
+                     pkg.svgContainer.onmousemove = nodeBinding;
+                     pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                     pathEdit.setAttribute('fill', 'none');
+                     pathEdit.setAttribute('stroke', 'black');
 
-                        var ellipse = getBigEllipse(nodeMoving);
-                        var pt = svgcursorPoint(e), p = pointOntoEllipse(ellipse, pt.x, pt.y);
-                        pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegMovetoAbs(p.x, p.y));
-                        pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y,pt.x, pt.y));
-                        pkg.svgNode.appendChild(pathEdit);
-                     }
+                     var ellipse = getBigEllipse(nodeMoving);
+                     var pt = svgcursorPoint(e), p = pointOntoEllipse(ellipse, pt.x, pt.y);
+                     pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegMovetoAbs(p.x, p.y));
+                     pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y,pt.x, pt.y));
+                     pkg.svgNode.appendChild(pathEdit);
+                  }
+                  else if(e.ctrlKey) {
+                     // initial state
+                     setInitialState(nodeMoving);
                   }
                   else {
                      pkg.svgContainer.style.cursor = "move";

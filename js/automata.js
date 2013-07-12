@@ -33,7 +33,7 @@
 (function(pkg, that) {
    "use strict";
 
-   var _      = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;},
+   var _      = pkg.Automatal10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;},
        format = function(s, i){return s.replace("{0}", i)};
 
    pkg.Automaton = function () {
