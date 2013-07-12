@@ -448,7 +448,7 @@
          case "automatoncode":
             AutomataDesigner.disable();
             automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex);
-            toolbar.className = 'automatoncode';
+            toolbar.className = 'designmode';
             codeedit.classList.add('disabled');
             automataedit.classList.remove('disabled');
             automatoncode.classList.remove('disabled');
@@ -921,6 +921,7 @@
    _("fr", "Save", "Enregistrer");
    _("fr", "Save As", "Enregistrer sous");
    _("fr", "Automaton:", "Automate :");
+   _("fr", "Program:", "Programme :");
    _("fr", "Export", "Exporter");
    _("fr", "Redraw", "Redessiner");
    _("fr", "Run a word", "Exécuter un mot");
