@@ -733,7 +733,7 @@
          if(res) {
             res +=',';
          }
-         if(symbols[i] === '\\e') {
+         if(symbols[i].trim() === '\\e') {
             res += 'ε';
          }
          else {
