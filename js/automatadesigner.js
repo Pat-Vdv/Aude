@@ -402,7 +402,7 @@
                         nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
                      }
                   }
-                  else if(e.shiftKey) {
+                  else if(e.shiftKey && !e.ctrlKey) {
                      nodeEdit = nodeMoving;
                      pkg.svgContainer.onmousemove = nodeBinding;
                      pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -415,7 +415,7 @@
                      pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y,pt.x, pt.y));
                      pkg.svgNode.appendChild(pathEdit);
                   }
-                  else if(e.ctrlKey) {
+                  else if(e.ctrlKey && !e.shiftKey) {
                      // initial state
                      setInitialState(nodeMoving);
                   }
@@ -655,7 +655,7 @@
 
       pkg.svgContainer.addEventListener('dblclick', function(e) {
          if(nodeEdit = parentHasClass(e.target, 'node')) {
-            if(e.ctrlKey) { // remove node
+            if(e.shiftKey && e.ctrlKey) { // remove node
                if(nodeEdit === initialState) {
                   alert(_("Sorry, but you can't remove the initial state."));
                }
@@ -707,7 +707,7 @@
             }
          }
          else if(nodeEdit = parentHasClass(e.target, 'edge')) {
-            if(e.ctrlKey) { // delete transition
+            if(e.ctrlKey && e.shiftKey) { // delete transition
                deleteTransition(nodeEdit, null);
             }
             else {
