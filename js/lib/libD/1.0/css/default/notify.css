@@ -38,6 +38,13 @@
 	background:rgba(200,255,200,0.9);
 }
 
+.libD_notify.libD-not-info
+{
+   background:#FFA;
+   background:rgba(255,255,200,0.9);
+}
+
+
 .libD_notify.libD-not-error .libD_notify-title
 {
 	color:#F33
