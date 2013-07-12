@@ -110,7 +110,7 @@
 
       add: function(element) {
          element =  this.checkConstraint(element);
-         if((element instanceof pkg.Set || element instanceof pkg.Tuple) && !this.contains(element)) {
+         if((element instanceof pkg.Set) && !this.contains(element)) {
             var that = this;
             var rep = element.toString();
             var bind = function() {
@@ -281,7 +281,7 @@
          this.typeConstraint = typeConstraint;
       },
 
-      forAll: function(func) {
+      every: function(func) {
          for(var i in this.l) {
             if(!func(this.l[i])) {
                return false;
@@ -309,64 +309,6 @@
             return false;
          }
          return true;
-      }
-   };
-
-   pkg.Tuple = function (l) {
-      this.l = l;
-      this.listeners = [];
-   };
-
-   pkg.Tuple.prototype = {
-      toString: function() {
-         return '(' + this.l.toString() + ')';
-      },
-
-      item: function(i) {
-         return this.l[i];
-      },
-
-      setItem: function(i, v) {
-         this.l[i] = v;
-         this.updated();
-      },
-
-      itemCount: function() {
-         return this.l.length;
-      },
-      
-      addItem: function(v) {
-         return this.l.push(v);
-      },
-
-      removeItem: function(i) {
-         return this.l.splice(i,1);
-      },
-
-      updated: function() {
-         if(!this._blockEvents) {
-            for(var i in this.listeners) {
-               this.listeners[i].callback();
-            }
-         }
-      },
-
-      listen: function(callback) {
-         this.listeners.push(callback);
-      },
-
-      release: function(callback) {
-         for(var i in this.listeners) {
-            if(this.listeners[i] === callback) {
-               this.listeners.splice(i, 1);
-            }
-         }
-      },
-
-      forEach: function(callback) {
-         for(var i in this.l) {
-            callback(this.l[i]);
-         }
       }
    };
 
@@ -440,42 +382,18 @@
       set2 = pkg.to_set(set2);
       for(var i in set1.l) {
          for(var j in set2.l) {
-            set.add(new pkg.Tuple([set1.l[i], set2.l[j]]));
+            set.add([set1.l[i], set2.l[j]]);
          }
       }
       return set;
-   };
-
-   pkg.new_tuple = function (l) {
-      return new pkg.Tuple(l);
-   };
-
-   pkg.item = function (tuple, i) {
-      return tuple.item(i);
-   };
-
-   pkg.set_item = function (tuple, i, v) {
-      return tuple.setItem(i, v);
    };
 
    pkg.set_type_constraint = function (set, type) {
       set.setTypeConstraint(type);
    };
 
-   pkg.for_all = function (set, func) {
-      return set.forAll(func);
-   };
-
-   pkg.add_item = function (tuple, v) {
-      return tuple.addItem(v);
-   };
-
-   pkg.item_count = function (tuple) {
-      return tuple.itemCount();
-   };
-
-   pkg.remove_item = function (tuple, i) {
-      return tuple.removeItem(i);
+   pkg.every = function (set, func) {
+      return set.every(func);
    };
 
    pkg.get_list = function (set) {

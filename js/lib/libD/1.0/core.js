@@ -1630,19 +1630,42 @@ Usage:
 libD.l10n = function()
 {
 	var t = [];
-	return function (lang, orig, translated)
+
+	var f = function (lang, orig, translated)
 	{
 		if(!orig)
-			return libD.lang && t[libD.lang] ? t[libD.lang][lang] : lang; // lang is the default string
+			return libD.lang && t[libD.lang]  && t[libD.lang][lang] ? t[libD.lang][lang] : lang; // lang is the default string
 
 		if(!t[lang])
 			t[lang] = [];
 		t[lang][orig] = translated;
 	};
+   return f;
+};
+
+/*
+Function: format
+   Format arguments into a string. This function is there to ease translations.
+
+Usage:
+   > var actualString = libD.format("My name is {0} and I'm {1}", Roger, 42); // returns "My name is Roger and I'm 42";
+
+Notes:
+   thx http://stackoverflow.com/questions/1353408/messageformat-in-javascript-parameters-in-localized-ui-strings
+Returns:
+   The formatted string.
+*/
+
+libD.format = function(s) {
+    var args = arguments;
+
+    return s.replace(/\{(\d+)\}/g, function() {
+        return args[arguments[1]];
+    });
 };
 
 /*
  Value: lang
- Defines the language to use in scripts using libD and supporting localization. See <libD.l10n> for a convenient way to support localization in your app. Default: en
+ Defines the language to use in scripts using libD and supporting localization. See <libD.l10n> for a convenient way to support localization in your app. Default: the navigator's language, or "en" otherwise.
 */
-libD.lang = (navigator.language.split('-'))[0].toLowerCase() || 'en';
+libD.lang = (this.navigator && (navigator.language || navigator.userLanguage) ? ((navigator.language || navigator.userLanguage).split('-'))[0].toLowerCase() : 'en') || 'en';

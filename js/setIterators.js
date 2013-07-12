@@ -1,4 +1,4 @@
-Set.prototype.iterator = Tuple.prototype.iterator = function() {
+Set.prototype.iterator =  function() {
    for(var i in this.l) {
       yield this.l[i];
    }

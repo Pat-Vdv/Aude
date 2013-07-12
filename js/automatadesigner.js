@@ -22,7 +22,7 @@
 
 // TODO: move initial state's arrow.
 
-(function(pkg, pkgGlue) {
+(function(pkg, pkgGlue, that) {
    "use strict";
    var nodeList,                // list of the states' nodes of the currently designed automaton
        initialStateArrow,       // current initial state arrow node (<g>)
@@ -32,6 +32,8 @@
        initialStateArrows = [], // array containing all the automata's initial state's arrow
        initialStates      = [], // array containing all the automata's initial state's node
        svgs               = []; // will contain all currently opened automata
+
+   var _ = pkg.AutomataDesignerTranslator = that.libD && that.libD.l10n ? that.libD.l10n() : new function(){};
 
    pkg.svgNode      = null;     // <svg> editor
    pkg.svgZoom      = 1;        // current zoom level
@@ -101,9 +103,9 @@
 
       var g = svgWorkingNode.querySelector('g');
       if(g.hasAttribute('transform')) {
-         var translates = g.getAttribute('transform').match(/translate\(([0-9.]+)[\s]+([0-9.]+)\)/),
-             tx = parseFloat(translates[1]),
-             ty = parseFloat(translates[2]);
+         var translates = g.getAttribute('transform').match(/translate\(([0-9.]+)(?:[\s]+([0-9.]+)\))/),
+             tx = parseFloat((translates ? translates[1] : '0') || '0'),
+             ty = parseFloat((translates ? translates[2] : '0') || '0');
          g.removeAttribute('transform');
          var ln = g.querySelectorAll('*');
          for(i=0,len=ln.length; i < len; ++i) {
@@ -366,7 +368,8 @@
                   if(pkg.svgContainer.onmousemove === nodeBinding) {
                      var id = nodeEdit.id + ' ' + nodeMoving.id;
                      if(document.getElementById(id)) {
-                        alert('Désolé, une fèche existe déjà entre ces deux états dans ce sens.');
+                        // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
+                        alert(_('Sorry, there is already a transition between these states in this way.'));
                         pkg.svgNode.removeChild(pathEdit);
                         pkg.svgContainer.onmousemove = null;
                         return;
@@ -384,7 +387,7 @@
                      polygon.setAttribute('stroke', 'black');
 
                      var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                     text.textContent = format_transition(prompt("Nouvelle transition : pouvez-vous entrer les symboles de cette transition séparés par des vigules ? (pour une virgule, encadrez par des guillemets simples ou double ; entre des guillemets, il est possible d'échapper des caractères avec l'antislash ('\\'))") || "\\e");
+                     text.textContent = format_transition(prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), '') || "\\e");
                      text.setAttribute('text-anchor', 'middle');
                      text.setAttribute('font-family', 'Times Roman,serif');
                      text.setAttribute('font-size', '14.00');
@@ -399,8 +402,8 @@
                         nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
                      }
                   }
-                  else if(e.ctrlKey) {
-                     if(e.shiftKey) {
+                  else if(e.shiftKey) {
+                     if(e.ctrlKey) {
                         // initial state
                         setInitialState(nodeMoving);
                      }
@@ -654,9 +657,9 @@
 
       pkg.svgContainer.addEventListener('dblclick', function(e) {
          if(nodeEdit = parentHasClass(e.target, 'node')) {
-            if(e.shiftKey) { // remove node
+            if(e.ctrlKey) { // remove node
                if(nodeEdit === initialState) {
-                  alert("Sorry, but you can't remove the initial state.");
+                  alert(_("Sorry, but you can't remove the initial state."));
                }
                else {
                   var tid = atob(nodeEdit.id);
@@ -670,13 +673,13 @@
             }
             else if(!e.button) { // rename node
                var text = nodeEdit.querySelector('text');
-               var t = prompt("Quel nom voulez-vous donner à l'état ?", text.textContent);
+               var t = prompt(_("Which name do you want for the new state ?"), text.textContent);
                if(t) {
                   var tb = btoa(t);
                   var existingNode;
                   if(existingNode = pkg.svgNode.getElementById(tb)) {
                      if(nodeEdit !== existingNode) {
-                        alert("Désolé, mais un état porte déjà ce nom.");
+                        alert(_("Sorry, but a state is already named like this."));
                      }
                   }
                   else {
@@ -706,12 +709,12 @@
             }
          }
          else if(nodeEdit = parentHasClass(e.target, 'edge')) {
-            if(e.shiftKey) { // delete transition
+            if(e.ctrlKey) { // delete transition
                deleteTransition(nodeEdit, null);
             }
             else {
                var text = nodeEdit.querySelector('text');
-               var t = prompt("Donnez la liste des symboles de cette transition en les séparant par des vigules.\nSi un symbole contient des espaces ou des virgules, le mieux et de les encadrer par des guillemets doubles ou simples (\" \"). Vous pouvez échapper les caractères par une barre oblique.", text.textContent);
+               var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), text.textContent);
                if(t) {
                   text.textContent = format_transition(t);
                }
@@ -1284,4 +1287,12 @@
          seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width);
       }
    }
-})(window.AutomataDesigner = {}, window.AutomataDesignerGlue || (window.AutomataDesignerGlue = {}));
+
+   _("fr", "New transition: ", "Nouvelle transition :");
+   _("fr", "Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible.", "Veuillez donner les symboles de cette transition en les séparant par des vigules.\nEn cas de caractères spéciaux, encadrez par des guillemets doubles. La barre oblique permet d'échapper les caractères.");
+   _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l'état initial.");
+   _("fr", "Which name do you want for the new state ?", "Quel nom voulez-vous donner au nouvel état ?");
+   _("fr", "Sorry, but a state is already named like this.", "Désolé, mais un état porte déjà ce nom.");
+
+   
+})(window.AutomataDesigner = {}, window.AutomataDesignerGlue || (window.AutomataDesignerGlue = {}), this);

@@ -28,6 +28,7 @@
        blockResult       = false,
        waitingFor        = new Set(),
        launchAfterImport = false,
+       _                 = libD.l10n(),
        offsetError,
        not;
 
@@ -48,7 +49,7 @@
       results.appendChild(res);
       if(!dontNotify) {
          if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-            notify("Program Result",res.cloneNode(true), 'normal');
+            notify(_("Program Result"),res.cloneNode(true), 'normal');
          }
       }
    }
@@ -58,7 +59,7 @@
       var svgCode = Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
       results.innerHTML = svgCode;
       if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-         notify("Program Result", svgCode, 'normal');
+         notify(_("Program Result"), svgCode, 'normal');
       }
    }
 
@@ -83,14 +84,17 @@
    }
 
    function handleError(message, line, stack, char) {
-      var errorTitle = "Error on line " + line + (
-            char === undefined ? ''
-                               : ', character ' + char
-            ),
-          errorText  = message + (
-             stack ? '\nStack trace : \n' + stack
-                   : ''
-          );
+      var errorText  = message + (
+                         stack ? _('\nStack trace: \n') + stack
+                               : ''
+                       ),
+          errorTitle;
+      if(char) {
+         errorTitle = libD.format(_("Error on line {0}, character {1}"), line, char);
+      }
+      else {
+         errorTitle = libD.format(_("Error on line {0}"));
+      }
 
       notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/  /g, '  '), "error");
       setTextResult(errorTitle + "\n" + errorText, true);
@@ -251,17 +255,17 @@
             executeWin = libD.newWin({
                content:libD.jso2dom(['div.libD-ws-colors-auto', {'style':'height:100%'}, [
                   ['div', {'#':'root'}, ['label', [
-                     ['#', 'Word: '],
+                     ['#', _('Word: ')],
                      ['input', {type:'text', '#':'word'}],
-                     ['input', {type:'button', value:'Run', '#':'run'}],
-                     ['input', {type:'button', value:'Step', '#':'step'}]
+                     ['input', {type:'button', value:_('Run'), '#':'run'}],
+                     ['input', {type:'button', value:_('Step'), '#':'step'}]
                   ]]],
                   ['div', ['label', [
-                     ['#', 'delay between steps (ms): '],
+                     ['#', _('Delay between steps (ms): ')],
                      ['input', {type:'text', '#':'delay', value:EXECUTION_STEP_TIME}]
                   ]]]
                ]], refs),
-               title:"Execute the current automaton with a word",
+               title:_("Execute the current automaton with a word"),
                top:toolbar.offsetHeight+5,
                right:results.offsetWidth+10
             });
@@ -303,7 +307,7 @@
       };
 
       exportBtn.onclick = function() {
-         var fn = prompt("Which name do you want to give to the exported image ? (give a .dot extension to save as dot format, .svg to save as svg)", exportFN);
+         var fn = prompt(_("Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)"), exportFN);
 
          if(fn) {
             exportFN = fn;
@@ -329,12 +333,12 @@
          AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
       };
 
-      var exportResultFN     = 'automaton.txt',
-          exportResultTextFN = 'result.txt';
+      var exportResultFN     = _('automaton.txt'),
+          exportResultTextFN = _('result.txt');
 
       exportResult.onclick = function() {
          if(automatonResult) {
-            var fn = prompt("Which name do you want to give to the exported file ? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)", exportResultFN);
+            var fn = prompt(_("Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"), exportResultFN);
 
             if(fn) {
                exportResultFN = fn;
@@ -356,7 +360,7 @@
             }
          }
          else {
-            var fn = prompt("Which name do you want to give to the exported text file ?", exportResultTextFN);
+            var fn = prompt(_("Which name do you want to give to the exported text file?"), exportResultTextFN);
             if(fn) {
                exportResultTextFN = fn;
                saveAs(new Blob([results.textContent], {type:'text/plain;charset=utf-8'}), fn);
@@ -503,7 +507,7 @@
 
       window.get_automaton = function(i) {
          if(automataNumber <= i) {
-            throw(new Error("get_automaton: The automaton n°" + JSON.stringify(i) + " doesn't exist"));
+            throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn't exist.")), JSON.stringify(i)));
          }
          return read_automaton(AutomataDesigner.getAutomatonCode(i));
       };
@@ -559,7 +563,11 @@
       
       saveas.onclick = function() {
          var prog = switchmode.value === "program";
-         var n = prompt("Please enter a name for the file in which the " + (prog ? "program" : "automaton") + " will be saved.", (prog ? "algo.ajs":"automaton.txt"));
+         var n = prompt(
+            prog ?
+               _("Please enter a name for the file in which the program will be saved.") :
+               _("Please enter a name for the file in which the automaton will be saved."), (prog ? _("algo.ajs"):_("automaton.txt"))
+         );
          if(n) {
             if(prog) {
                saveProgram(programFileName = n);
@@ -813,7 +821,7 @@
                includeName = JSON.parse(includeName); // should not happen
             }
             catch(e) {
-               handleError("Syntax error: bad import parameter in " + includer);
+               handleError(libD.format(_("Syntax error: bad import parameter in {0}"), includer));
                return;
             }
          }
@@ -825,13 +833,13 @@
       }
 
       window.getScriptFailed = function(includeName, includer, reason) {
-         handleError("Error: import failed:" + reason  + " (in " + includer + ")");
+         handleError(libD.format(_("Error: import failed: '{0}' (in '{1}').")), reason, includer);
       };
 
       window.AutomatonGlue = {
          getScript: function(includeName, includer) {
             if(includeName.match(/^(?:[a-z]+:(?:\\|\/\/?)|\/)/)) { // absolute path
-               handleError("Error: import: absolute paths are not supported in this version (in " + includer + ')');
+               handleError(libD.format(_("Error: import: absolute paths are not supported in this version (in '{0}')'"), includer));
             }
             else {
                try {
@@ -843,7 +851,7 @@
                            window.gotScript(includeName, xhr.responseText);
                         }
                         else {
-                           window.getScriptFailed(includeName, includer, 'The file was not found or you don\'t have enough permissions to read it. (HTTP status:' + xhr.status + ')');
+                           window.getScriptFailed(includeName, includer, libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})', xhr.status)));
                         }
                      }
                   };
@@ -859,5 +867,44 @@
 
       switchmode.onchange();
       onResize();
+      
+      var translatedNodes = document.querySelectorAll('[data-translated-content]');
+      for(var i=0, len = translatedNodes.length; i < len; ++i) {
+         translatedNodes[i].textContent = _(translatedNodes[i].textContent);
+      }
    }, false);
+   _("fr", "Program Result", "Résultat");
+   _("fr", '\nStack trace: \n', "\nPile de l\'erreur : \n");
+   _("fr", "Error on line {0}, character {1}", "Erreur ligne {0}, caractère {1}");
+   _("fr", "Error on line {0}", "Erreur ligne {0}");
+   _("fr", "Execute the current automaton with a word", "Exécuter l'automate actuel sur un mot");
+   _("fr", "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)", "Quel nom voulez-vous donner à l'image exportée ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg)");
+   _("fr", "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)", "Quel nom voulez-vous donner au fichier exporté ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)");
+   _("fr", "Which name do you want to give to the exported text file?", "Quel nom voulez-vous donner au fichier texte exporté ?");
+   _("fr",  "get_automaton: Automaton n°{0} doesn't exist.", "get_automaton: L'automate n°{0} n'existe pas.");
+   _("fr", "Please enter a name for the file in which the program will be saved.", "Veuillez entrer un nom pour le fichier dans lequel le programme sera enregistré.");
+   _("fr", "Please enter a name for the file in which the automaton will be saved.", "Veuillez entrer un nom pour le fichier dans lequel l'automate sera enregistré.");
+   _("fr", "Syntax error: bad import parameter in {0}", "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}");
+   _("fr", "Error: import failed: '{0}' (in '{1}').", "Erreur : l'import a échoué: '{0}' (depuis '{1}').");
+   _("fr", "Error: import: absolute paths are not supported in this version (in '{0}')'", "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis '{0}').");
+   _("fr", "Mode:", "Mode :");
+   _("fr", "Execute Program", "Lancer le programme");
+   _("fr", "Design", "Dessin");
+   _("fr", "Program", "Programme");
+   _("fr", "Automaton code", "Code de l'automate");
+   _("fr", "Open", "Ouvrir");
+   _("fr", "Save", "Enregistrer");
+   _("fr", "Save As", "Enregistrer sous");
+   _("fr", "Automaton:", "Automate :");
+   _("fr", "Export", "Exporter");
+   _("fr", "Redraw", "Redessiner");
+   _("fr", "Run a word", "Exécuter un mot");
+   _("fr", "Export result", "Exporter le résultat");
+   _("fr", "Automaton n°", "Automate n°");
+   _("fr", "result.txt", "resultat.txt");
+   _("fr", "automaton.txt", "automate.txt");
+   _("fr", "Word: ", "Mot : ");
+   _("fr", "Run", "Exécuter");
+   _("fr", "Step", "Un pas");
+   _("fr", "Delay between steps (ms): ", "Pause entre les étapes (ms) : ");
 })();
