@@ -33,7 +33,7 @@
        initialStates      = [], // array containing all the automata's initial state's node
        svgs               = []; // will contain all currently opened automata
 
-   var _ = pkg.AutomataDesignerTranslator = that.libD && that.libD.l10n ? that.libD.l10n() : new function(){};
+   var _ = pkg.AutomataDesignerTranslator = that.libD && that.libD.l10n ? that.libD.l10n() : function(s){return s;};
 
    pkg.svgNode      = null;     // <svg> editor
    pkg.svgZoom      = 1;        // current zoom level
