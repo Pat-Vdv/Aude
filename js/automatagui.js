@@ -202,6 +202,7 @@
           automatoncodeedit = document.getElementById('automatoncodeedit'),
           leftPane          = document.getElementById('left-pane'),
           fileautomaton     = document.getElementById('fileautomaton'),
+          drawToolbar       = document.getElementById('draw-toolbar'),
           open              = document.getElementById('open'),
           save              = document.getElementById('save'),
           saveas            = document.getElementById('saveas'),
@@ -327,7 +328,18 @@
             }
          }
       };
-      
+
+      document.getElementById('draw-toolbar-btn').onclick = function() {
+         drawToolbar.classList.toggle('disabled');
+         onResize();
+      };
+
+      var drawToolbarButtons = drawToolbar.querySelectorAll('button');
+      for(var i=0,len = drawToolbarButtons.length; i < len; ++i) {
+         drawToolbarButtons[i].onclick = function() {
+            notify(this.textContent, _(this.value), 'info');
+         };
+      }
       document.getElementById('redraw').onclick = function() {
          automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, true);
          AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
@@ -865,12 +877,25 @@
          }
       };
 
+      window.helpSymbols = function(e) {
+         if(e === "show") {
+            notify(_("Howto: input symbols"), '<div style="max-width:80ex">' + _( "<p>In the window which will invit you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surrond them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quuotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>") + '</div>', "info");
+         }
+         else {
+            setTimeout(window.helpSymbols, 0, "show");
+         }
+      };
+
       switchmode.onchange();
       onResize();
       
       var translatedNodes = document.querySelectorAll('[data-translated-content]');
       for(var i=0, len = translatedNodes.length; i < len; ++i) {
          translatedNodes[i].textContent = _(translatedNodes[i].textContent);
+      }
+      translatedNodes = document.querySelectorAll('[data-translated-title]');
+      for(var i=0, len = translatedNodes.length; i < len; ++i) {
+         translatedNodes[i].title = _(translatedNodes[i].title);
       }
    }, false);
    _("fr", "Program Result", "Résultat");
@@ -882,8 +907,8 @@
    _("fr", "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)", "Quel nom voulez-vous donner au fichier exporté ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)");
    _("fr", "Which name do you want to give to the exported text file?", "Quel nom voulez-vous donner au fichier texte exporté ?");
    _("fr",  "get_automaton: Automaton n°{0} doesn't exist.", "get_automaton: L'automate n°{0} n'existe pas.");
-   _("fr", "Please enter a name for the file in which the program will be saved.", "Veuillez entrer un nom pour le fichier dans lequel le programme sera enregistré.");
-   _("fr", "Please enter a name for the file in which the automaton will be saved.", "Veuillez entrer un nom pour le fichier dans lequel l'automate sera enregistré.");
+   _("fr", "Please enter a name for the file in which the program will be saved.", "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré.");
+   _("fr", "Please enter a name for the file in which the automaton will be saved.", "Veuillez saisir un nom pour le fichier dans lequel l'automate sera enregistré.");
    _("fr", "Syntax error: bad import parameter in {0}", "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}");
    _("fr", "Error: import failed: '{0}' (in '{1}').", "Erreur : l'import a échoué: '{0}' (depuis '{1}').");
    _("fr", "Error: import: absolute paths are not supported in this version (in '{0}')'", "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis '{0}').");
@@ -907,4 +932,29 @@
    _("fr", "Run", "Exécuter");
    _("fr", "Step", "Un pas");
    _("fr", "Delay between steps (ms): ", "Pause entre les étapes (ms) : ");
+   _("fr", "Load the result automaton into the editor", "Charger l'automate résultat dans l'éditeur");
+   _("fr", "To create a new state, double-click on the drawing area where you want it to be.", "Pour créer un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous le voulez.");
+   _("fr", "To add a new transition, shift-click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour ajouter une nouvelle transition, cliquez sur l'état de départ en appuyant sur Maj puis cliquez sur l'état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");
+   _("fr", "To modify the name of a state, double-click on it.", "Pour changer le nom d'un état, double-cliquez sur celui-ci.");
+   _("fr", "To modify symbols of a transition, double click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour modifier les symboles d'une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");
+   _("fr", "To remove a state, Shift+Ctrl-double-click on it.", "Pour supprimer un état, double-cliquez dessus en maintenant Shift et Ctrl enfoncés.");
+   _("fr", "To remove a transition, Shift+Ctrl-double-click on its arrow.", "Pour supprimer une transition, double-cliquez sur sa flèche en maintenant Shift et Ctrl enfoncés");
+   _("fr", "To set a non-accepting state as accepting (and conversely), right-click on it.", "Pour rendre un état non-accepteur accepteur (et inversement), cliquez droit sur celui-ci.");
+   _("fr", "To set a state as the initial state, ctrl+click on it.", "Pour faire d'un état l'état initial, cliquez dessus en appuyant sur la touche Ctrl.");
+   _("fr", "To make a transition straight, ctrl+click on its arrow or its label.", "Pour rendre une transition droite, cliquez sur sa flèche ou son étiquette avec la touche Ctrl enfoncée.");
+   _("fr", "New state", "Nouvel état");
+   _("fr", "New transition", "Nouvelle transition");
+   _("fr", "Modify state's name", "Modifier le nom d'un état");
+   _("fr", "Modify transitions' symbols", "Modifier les symboles d'une transition");
+   _("fr", "Remove a state", "Supprimer un état");
+   _("fr", "Remove a transition", "Supprimer une transition");
+   _("fr", "Toggle accepting/non accepting", "Changer accepteur/non accepteur");
+   _("fr", "Set a state as initial", "Rendre un état initial");
+   _("fr", "Make a transition straight", "Rendre une transition droite");
+   _("fr", "Toggle the design toolbar", "Afficher/Masquer la barre d'outils de dessin");
+   _("fr", "Howto: input symbols", "Comment saisir des symboles");
+   _("fr", "<p>In the window which will invit you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surrond them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quuotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>",
+     "<p>Dans la fenêtre qui vous proposera de saisir des symboles, entrez simplement le symbole que vous voulez associer à la transition.</p><p>Si vous voulez saisir plusieurs symboles, séparez-les par des virgules.</p><p>Si vous voulez saisir des symboles contenant des espaces ou des virgules, encadrez-les par des guillemets doubles.</p><p>Si vous avez besoin de saisir un symbole contenant des guillemets ou des slashs, précédez ces deux caractères par un slash et encadrez le symbole par des guillemets.</p><p>Pour insérer un epsilon (ε-transition), vous pouvez le saisir directement ou utiliser <code>\\e</code>.</p>");
+   _("fr", "Create a new automaton", "Créer un nouvel automate");
+   _("fr", "Remove current automaton", "Supprimer cet automate");
 })();

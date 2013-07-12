@@ -22,6 +22,7 @@ html,body {
    right:25%;
    overflow:hidden;
 }
+
 #splitter {
    position:absolute;
    left:75%;
@@ -30,6 +31,7 @@ html,body {
    width:4px;
    background:silver
 }
+
 #toolbar {
    position:absolute;
    z-index:100;
@@ -97,12 +99,15 @@ html,body {
    overflow:auto;
    white-space:pre-wrap;
 }
+
 #splitter {
    cursor:ew-resize;
 }
-.pane.disabled {
-   display:none
+
+.disabled {
+   display:none !important;
 }
+
 #codeedit, #automatoncode {
    top:0;
    left:0;
