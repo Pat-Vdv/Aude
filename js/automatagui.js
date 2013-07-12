@@ -623,7 +623,7 @@
       (function() {
          var word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep;
          execute = function(byStep, w, ind) {
-            if(w) {
+            if(typeof w === 'string') {
                word  = w;
                index = ind;
                currentSymbolNumber = 0;
