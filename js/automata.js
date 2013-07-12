@@ -30,8 +30,11 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-(function(pkg) {
+(function(pkg, that) {
    "use strict";
+
+   var _      = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;},
+       format = function(s, i){return s.replace("{0}", i)};
 
    pkg.Automaton = function () {
       this.states = new Set();
@@ -90,7 +93,7 @@
             this.states = to_set(states);
          }
          else {
-            throw(new Error('setStates() : the given argument is not a set'));
+            throw(new Error(_('Automaton.setStates(): The given argument is not a set')));
          }
       },
 
@@ -107,7 +110,7 @@
             this.finalStates = to_set(states);
          }
          else {
-            throw(new Error('setFinalStates() : the given argument is not a set'));
+            throw(new Error(_('Automaton.setFinalStates(): The given argument is not a set')));
          }
       },
 
@@ -293,7 +296,7 @@
  
       runSymbol: function(symbol, transitionsTable, dontEraseTakenTransitions) {
          if(symbol === pkg.epsilon) {
-            throw(new Error("Automaton.runSymbol: epsilon is forbidden."));
+            throw(new Error(_("Automaton.runSymbol(): epsilon is forbidden.")));
          }
 
          if(!this.Sigma.contains(symbol)) {
@@ -570,7 +573,7 @@
                j = lastIndex;
             }
             if(!closed) {
-               throw(new Error("read_automaton: Line " + i+1 + " is malformed"));
+               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
             }
             return set;
          }
@@ -592,7 +595,7 @@
                lastIndex = j+1;
             }
             if(!closed) {
-               throw(new Error("read_automaton: Line " + i+1 + " is malformed"));
+               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
             }
             return tuple;
          }
@@ -741,4 +744,9 @@
    };
 
    pkg.epsilon = 'ε';
-})(this);
+   _("fr", "Automaton.setStates(): The given argument is not a set", "Automaton.setStates() : L'argument donné n'est pas un ensemble");
+   _("fr", "Automaton.setFinalStates(): The given argument is not a set", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble");
+   _("fr", "Automaton.runSymbol(): epsilon is forbidden.", "Automaton.runSymbol(): epsilon est interdit.");
+   _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
+
+})(this, this);
