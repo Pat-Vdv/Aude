@@ -1660,7 +1660,7 @@ libD.format = function(s) {
     var args = arguments;
 
     return s.replace(/\{(\d+)\}/g, function() {
-        return args[arguments[1]];
+        return args[(parseInt(arguments[1]) || 0)+1];
     });
 };
 
