@@ -56,22 +56,26 @@
    catch(e){}
 
    try {
-     letExpressionSupported  = eval('var a=1, t; let (a=2){if(a === 2){t = true}}; t && a === 1;');
+     letExpressionSupported  = eval('(function(){var a=1, t; let (a=2){if(a === 2){t = true}}; return t && a === 1;})();');
    }
    catch(e){}
 
    try {
-     letDeclarationSupported = eval('var a=1, t; if(true){let a = 2;t = a === 2} t && a === 1;');
+     letDeclarationSupported = eval('(function(){var a=1, t; if(true){let a = 2;t = a === 2} return t && a === 1;})();');
    }
    catch(e){}
 
    try {
-     constSupported = eval('const a=1; a === 1;');
+      constSupported         = eval("(function(){const a=1; try{a=2;}catch(e){return true;} return false;})();");
    }
-   catch(e){}
+   catch(e){
+      if(e instanceof TypeError) {
+         constSupported = true;
+      }
+   }
 
    try {
-      IterationsSupported    = eval("for(let i of [1,2]){} true")
+      IterationsSupported    = eval("(function(){for(let i of [1,2]){} return true;})()");
    }
    catch(e){}
 
@@ -153,6 +157,10 @@
        instruction     = 8192,
        closeBracket    = 16384,
        end             = 0;
+
+   function copy(constraintedVariables) {
+      return {type:constraintedVariables.type.copy(), consts:constraintedVariables.consts.copy()};
+   }
 
    function parseUnsignedNumber() {
       var dotEncountered, d = i;
@@ -495,7 +503,7 @@
           value        = options.value || options.onlyOneValue,
           inForeach    = options.inForeach,
           onlyOneValue = options.onlyOneValue,
-          constraintedVariables = options.constraintedVariables || new Set();
+          constraintedVariables = options.constraintedVariables;
 
       if(endSymbols.hasOwnProperty(symbol)) {
          i = deb;
@@ -527,7 +535,7 @@
          }
          else {
             i = deb;
-            pres = toPureJS({'}':true}, inForeach, constraintedVariables.copy());
+            pres = toPureJS({'}':true}, inForeach, copy(constraintedVariables));
             res += '{' + pres  + getSymbol(); // '}'
          }
       }
@@ -584,7 +592,7 @@
                   i = deb;
                   return '';
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
             }
             i = d;
          }
@@ -595,14 +603,14 @@
          else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol))) {
             return res + tmp;
          }
-         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
       }
       else if(symbol === 'do') {
          if(value) {
             i = deb;
             return '';
          }
-         res += symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+         res += symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
          var symbol2 = getSymbol();
          var d = i;
          if(type === whitespace) {
@@ -610,7 +618,7 @@
             symbol2 = getSymbol();
          }
          if(symbol2 === 'while') {
-            return res + symbol2 + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+            return res + symbol2 + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
          }
          i = d;
          return res;
@@ -620,7 +628,7 @@
             i = deb;
             return '';
          }
-         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
       }
       else if(symbol === 'emptySet') {
          res += 'new Set(';
@@ -680,6 +688,11 @@
          else {
             if(symbol === 'const' && !constSupported) {
                symbol = letDeclarationSupported ? 'let' : 'var';
+               var d = i, varName = getExpression({onlyOneValue:true}).trim();
+               i = d;
+               res += symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
+               constraintedVariables.consts.add(varName);
+               return res;
             }
             else if(symbol === 'let') {
                var d = i;
@@ -691,10 +704,10 @@
                i = d;
                if(symbol === '(') {
                   if(letExpressionSupported) {
-                     return res + 'let' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+                     return res + 'let' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
                   }
                   else {
-                     return res + '(function(){var ' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()}) + '})()';
+                     return res + '(function(){var ' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)}) + '})()';
                   }
                }
                else {
@@ -739,7 +752,7 @@
          }
          else if(symbol === '=>'  && (oldType & (variable | closeParen))) {
             ++i;
-            var expr = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
+            var expr = getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
             if(arrowFunctionSupported) {
                res += '=>' + exp;
             }
@@ -782,7 +795,7 @@
             var matches = [], d;
             if(matches = /([\s]*)[\S]+/g.exec(res)) {
                var varName = res.trim();
-               constraintedVariables.add(varName);
+               constraintedVariables.type.add(varName);
                var tmp = matches[1] + (letDeclarationSupported ? 'let ' : 'var ') + varName + white + '=';
                var defaultValue = '';
                symbol = getSymbol();
@@ -819,7 +832,7 @@
                   switch(typeOfVar.toLowerCase()) {
                   case "integer":
                      tmp += defaultValue ? ('AutomatonJS.as(0,' + defaultValue + ', true)') : '0';
-                     constraintedVariables.add('0' + varName);
+                     constraintedVariables.type.add('0' + varName);
                      break;
                   case "list":
                   case "array":
@@ -916,8 +929,13 @@
             else if(symbol === '!=') {
                return white + "!AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
-            else if(symbol === '=' && constraintedVariables.contains(res.trim())) {
-               return white + res + '=AutomatonJS.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.contains('0' + res.trim()) ? 'true':'false') + ')';
+            else if(symbol === '=') {
+               if(constraintedVariables.type.contains(res.trim())) {
+                  return white + res + '=AutomatonJS.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
+               }
+               else if(!constSupported && constraintedVariables.consts.contains(res.trim())) {
+                  return white + res.replace(/[\S]+/g, '') + '(function(){throw new Error("TypeError: ' + res.trim() + ' is read-only");})()' + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}).replace(/[\S]+/g, '');
+               }
             }
 
             return res + white + symbol + getExpression({inForeach:inForeach,value:value,constraintedVariables:constraintedVariables});
@@ -1073,7 +1091,7 @@
             i = deb;
             return keyword;
          }
-         var foreachBody = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()}), bf = '', ef = '';
+         var foreachBody = getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)}), bf = '', ef = '';
          if(foreachBody.trim()[0] !== '{') {
             bf = '{';
             ef = '}';
@@ -1088,7 +1106,7 @@
             return 'for';
          }
 
-         var foreachBody = getExpression({inForeach:!IterationsSupported,constraintedVariables:constraintedVariables.copy()});
+         var foreachBody = getExpression({inForeach:!IterationsSupported,constraintedVariables:copy(constraintedVariables)});
          if(IterationsSupported) {
             return 'for' + beforeParenthesis + '(' + declarationSymbol + expr1 + ' of ' + expr2 + ')'+ foreachBody;
          }
@@ -1118,7 +1136,7 @@
          endSymbols = {};
       }
       if(!constraintedVariables) {
-         constraintedVariables = new Set();
+         constraintedVariables = {type:new Set,consts:new Set};
       }
       var res='', symbol, beforeSymbol = i;
       do {
