@@ -34,6 +34,7 @@
 
 (function(pkg, that) {
    "use strict";
+   var _ = pkg.AutomatonJS10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    if(!pkg.AutomatonJS) {
       pkg.AutomatonJS = {};
    }
@@ -74,6 +75,7 @@
    }
    catch(e){}
 
+   // checks "real" equality between v1 and v2
    pkg.AutomatonJS.eq = function(v1, v2) {
       return v1 === v2 || (
             typeof v1 === typeof v2
@@ -93,6 +95,35 @@
             )
          )
       );
+   };
+
+   // checks if value can be assigned to variable and return the right value. integerCheck enforce value being an integer.
+   pkg.AutomatonJS.as = function(variable, value, integerCheck) {
+      if(variable instanceof Set && value instanceof Set) {
+         if(!variable.typeConstraint  || variable.typeConstraint === value.constaintType) {
+            return value;
+         }
+         else {
+            var newVal = new Set();
+            newVal.setTypeConstraint(variable.typeConstraint);
+            newVal.unionInPlace(value);
+            return value;
+         }
+      }
+
+      if(value !== null && value !== undefined && variable !== null && value !== undefined) {
+         if(typeof value !== typeof variable && value.constructor !== variable.constructor) {
+            throw new Error(_("Assignation Error: types of the value and the variable don't match."));
+         }
+         if(integerCheck && value % 1 !== 0) {
+            throw new Error(_("Assignation Error: types of the value and the variable don't match."));
+         }
+         return value;
+      }
+      if(value !== variable) {
+         throw new Error(_("Assignation Error: types of the value and the variable don't match."));
+      }
+      return value;
    };
 
    Object.defineProperty(Object.prototype, 'forEach', {
@@ -427,7 +458,7 @@
          }
          else {
             var lowerType = symbol.toLowerCase();
-            if(lowerType === "integer") {
+            if(lowerType === "integer" || lowerType === "int") {
                symbol = '"integer"';
             }
             else if(lowerType === "number" || lowerType === "float") {
@@ -438,12 +469,6 @@
             }
             else if(lowerType === 'automata') {
                symbol = 'Automata';
-            }
-            else if(lowerType === 'element') {
-               symbol = 'Element';
-            }
-            else if(lowerType === 'tuple') {
-               symbol = 'Tuple';
             }
             else if(lowerType === 'set') {
                symbol = 'Set';
@@ -467,9 +492,10 @@
           deb          = i,
           symbol       = getSymbol(),
           endSymbols   = options.endSymbols || {},
-          value        = options.value,
+          value        = options.value || options.onlyOneValue,
           inForeach    = options.inForeach,
-          onlyOneValue = options.onlyOneValue;
+          onlyOneValue = options.onlyOneValue,
+          constraintedVariables = options.constraintedVariables || new Set();
 
       if(endSymbols.hasOwnProperty(symbol)) {
          i = deb;
@@ -489,7 +515,7 @@
          deb = i;
          var pres = '';
          do {
-            pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true,onlyOneValue:true});
+            pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
             symbol = getSymbol();
             if(type === whitespace) {
                pres += symbol;
@@ -501,7 +527,7 @@
          }
          else {
             i = deb;
-            pres = toPureJS({'}':true}, inForeach);
+            pres = toPureJS({'}':true}, inForeach, constraintedVariables.copy());
             res += '{' + pres  + getSymbol(); // '}'
          }
       }
@@ -514,7 +540,7 @@
          res += '(' + pres + getSymbol(); // ')'
       }
       else if(symbol === '?') {
-         var pres = getExpression({inForeach:inForeach,onlyOneValue:true,value:true});
+         var pres = getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
          res += '?' + pres + getSymbol(); // ':'
       }
       else if(symbol === ';') {
@@ -529,7 +555,7 @@
             --i;
             return res;
          }
-         return res + ',' + getExpression({inForeach:true, value:false, endSymbols:endSymbols});
+         return res + ',' + getExpression({inForeach:true, value:false, endSymbols:endSymbols,constraintedVariables:constraintedVariables});
       }
       else if(symbol === 'foreach') {
          if(value) {
@@ -558,7 +584,7 @@
                   i = deb;
                   return '';
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
             }
             i = d;
          }
@@ -569,14 +595,14 @@
          else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol))) {
             return res + tmp;
          }
-         return res + symbol + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
       }
       else if(symbol === 'do') {
          if(value) {
             i = deb;
             return '';
          }
-         res += symbol + getExpression({inForeach:inForeach});
+         res += symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
          var symbol2 = getSymbol();
          var d = i;
          if(type === whitespace) {
@@ -584,7 +610,7 @@
             symbol2 = getSymbol();
          }
          if(symbol2 === 'while') {
-            return res + symbol2 + getExpression({inForeach:inForeach});
+            return res + symbol2 + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
          }
          i = d;
          return res;
@@ -594,7 +620,7 @@
             i = deb;
             return '';
          }
-         return res + symbol + getExpression({inForeach:inForeach});
+         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
       }
       else if(symbol === 'emptySet') {
          res += 'new Set(';
@@ -645,13 +671,12 @@
       }
       else if(type === instruction) {
          if(symbol === 'new' || (!value && symbol === 'delete') || symbol === 'typeof') {
-            res += symbol + getExpression({inForeach:inForeach, value:true, onlyOneValue:true});
+            res += symbol + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables});
          }
          else if(value) {
             i = deb;
             return '';
          }
-         
          else {
             if(symbol === 'const' && !constSupported) {
                symbol = letDeclarationSupported ? 'let' : 'var';
@@ -666,17 +691,17 @@
                i = d;
                if(symbol === '(') {
                   if(letExpressionSupported) {
-                     return res + 'let' + getExpression({inForeach:inForeach}) + getExpression({inForeach:inForeach});
+                     return res + 'let' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
                   }
                   else {
-                     return res + '(function(){var ' + getExpression({inForeach:inForeach}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach}) + '})()';
+                     return res + '(function(){var ' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()}) + '})()';
                   }
                }
                else {
-                  return res + (letDeclarationSupported ? 'let' : 'var') + getExpression({inForeach:inForeach});
+                  return res + (letDeclarationSupported ? 'let' : 'var') + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
                }
             }
-            return res + symbol + getExpression({inForeach:inForeach});
+            return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
          }
       }
       else {
@@ -709,12 +734,12 @@
             res += white + '.' + symbol2;
          }
          else if(symbol === '?') {
-            var pres = getExpression({inForeach:inForeach,onlyOneValue:true,value:true});
+            var pres = getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
             res += '?' + pres + getSymbol(); // ':'
          }
          else if(symbol === '=>'  && (oldType & (variable | closeParen))) {
             ++i;
-            var expr = getExpression({inForeach:inForeach});
+            var expr = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()});
             if(arrowFunctionSupported) {
                res += '=>' + exp;
             }
@@ -725,21 +750,21 @@
             }
          }
          else if(symbol === '[') {
-            res += white + symbol + getExpression({inForeach:inForeach}) + getSymbol(); // symbol should be ']'
+            res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getSymbol(); // symbol should be ']'
          }
          else if(symbol === '(') {
             if(oldType !== variable) {
                i = deb;
                return res;
             }
-            res += white + symbol + getExpression({inForeach:inForeach}) + getSymbol(); // symbol should be ')'
+            res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getSymbol(); // symbol should be ')'
          }
          else if(symbol === ',') {
-            if(onlyOneValue) {
+            if(onlyOneValue || options.noComma) {
                i = deb;
                return res;
             }
-            res += white + symbol + getExpression({inForeach:inForeach, value:value, endSymbols:endSymbols});
+            res += white + symbol + getExpression({inForeach:inForeach,value:value,endSymbols:endSymbols,constraintedVariables:constraintedVariables});
          }
          else if(symbol === ';') {
             if(value) {
@@ -757,6 +782,7 @@
             var matches = [], d;
             if(matches = /([\s]*)[\S]+/g.exec(res)) {
                var varName = res.trim();
+               constraintedVariables.add(varName);
                var tmp = matches[1] + (letDeclarationSupported ? 'let ' : 'var ') + varName + white + '=';
                var defaultValue = '';
                symbol = getSymbol();
@@ -778,7 +804,7 @@
                   }
 
                   if(symbol === '(') {
-                     defaultValue = getExpression({inForeach:inForeach});
+                     defaultValue = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
                      if(getSymbol() !== ')') {
                         i = deb;
                         return res;
@@ -795,103 +821,90 @@
                      symbol = getSymbol();
                   }
 
-                  if(symbol === '=' && typeOfVar.toLowerCase() !== 'set') {
-                     return tmp + white + getExpression({inForeach:inForeach});
-                  }
-                  else {
-                     switch(typeOfVar.toLowerCase()) {
-                     case "integer":
-                        tmp += defaultValue || '0';
-                        break;
-                     case "list":
-                     case "array":
-                     case "table":
-                        tmp += defaultValue || "[]";
-                        break;
-                     case "state":
-                     case "string":
-                        tmp += defaultValue || '""';
-                        break;
-                     case "bool":
-                     case "boolean":
-                        tmp += 'false';
-                        break;
-                     case "automaton":
-                        tmp += defaultValue ? 'get_automaton(' + defaultValue + ')' : 'new Automaton';
-                        break;
-                     case "set":
-                        if(symbol === '=') {
-                           tmp += 'to_set(' +  getExpression({inForeach:inForeach, value:true}) + ')';
-                           symbol = getSymbol();
-                           if(type === whitespace) {
-                              tmp += symbol;
-                              symbol = getSymbol();
-                           }
-                        }
-                        else if(!defaultValue){
-                           tmp += 'new Set';
-                        }
-                        if(symbol === ';') {
-                           return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '') + ';';
-                        }
-                        else {
-                           if(symbol === 'of') {
-                              var constraint = getConstraintString();
-                              if(constraint) {
-                                 tmp += ';' + varName + '.setTypeConstraint(' + constraint + ')';
-                              }
-                              else {
-                                 i = deb;
-                                 return res;
-                              }
-                              symbol = getSymbol();
-                              if(type === whitespace) {
-                                 if(symbol !== ' ') {
-                                    tmp += symbol;
-                                 }
-                                 symbol = getSymbol();
-                              }
-                              if(symbol === '=') {
-                                 tmp += ';' + varName + '.unionInPlace(' + getExpression({inForeach:inForeach, value:true}) + ')';
-                                 symbol = getSymbol();
-                                 if(type === whitespace) {
-                                    if(symbol !== ' ') {
-                                       tmp += symbol;
-                                    }
-                                    symbol = getSymbol();
-                                 }
-                              }
-                              if(symbol === ';') {
-                                 return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '') + symbol;
-                              }
-                              else {
-                                 i-= symbol.length;
-                                 return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '');
-                              }
-                           }
-                           else {
-                              i-= symbol.length;
-                              return tmp + (defaultValue ? 'to_set(' + defaultValue + ')' : '');
-                           }
-                        }
-                        break;
-                     default:
-                        tmp += 'new ' + typeOfVar;
-                     }
-                     tmp += white;
-                  }
-
-                  if(symbol === ';') {
-                     return tmp + symbol;
+                  if(symbol === '=') {
+                     defaultValue = getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables});
                   }
                   else {
                      i-= symbol.length;
-                     return tmp;
                   }
+                  switch(typeOfVar.toLowerCase()) {
+                  case "integer":
+                     return tmp + defaultValue ? ('AutomatonJS.as(0,' + defaultValue + ', true)') : '0';
+                     constraintedVariables.add('0' + varName);
+                     break;
+                  case "list":
+                  case "array":
+                  case "table":
+                     return tmp + defaultValue ? ('AutomatonJS.as([],' + defaultValue + ')') : '[]';
+                     break;
+                  case "state":
+                  case "string":
+                     return tmp + defaultValue ? ('AutomatonJS.as("",' + defaultValue + ')') : '""';
+                     break;
+                  case "bool":
+                  case "boolean":
+                     return tmp + defaultValue ? ('AutomatonJS.as(false,' + defaultValue + ')') : 'false';
+                     break;
+                  case "automaton":
+                     return tmp + defaultValue ? 'get_automaton(' + defaultValue + ')' : 'new Automaton';
+                     break;
+                  case "set":
+                     if(defaultValue) {
+                        if(defaultValue.trim().substr(0,7) === 'to_set(') {
+                           return tmp + defaultValue;
+                        }
+                        else {
+                           return tmp + 'to_set(' +  defaultValue + ')';
+                        }
+                     }
+                     else {
+                        tmp += 'new Set()';
+                        symbol = getSymbol();
+                        var white2 = '';
+                        if(type === whitespace) {
+                           if(symbol !== ' ') {
+                              white2 = symbol;
+                           }
+                           symbol = getSymbol();
+                        }
+                        console.log(symbol);
+                        if(symbol === 'of') {
+                           var constraint = getConstraintString();
+                           if(constraint) {
+                              tmp += ';' + white2 + varName + '.setTypeConstraint(' + constraint + ')';
+                           }
+                           else {
+                              i = deb;
+                              return res;
+                           }
+                           symbol = getSymbol();
+                           if(type === whitespace) {
+                              if(symbol !== ' ') {
+                                 tmp += symbol;
+                              }
+                              symbol = getSymbol();
+                           }
+                           if(symbol === '=') {
+                              tmp += ';' + varName + '.unionInPlace(' + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ')';
+                           }
+                        }
+                        else {
+                           i-= symbol.length;
+                        }
+                     }
+                     break;
+                  default:
+                     tmp += 'new ' + typeOfVar;
+                  }
+                  tmp += white;
+               }
+
+               if(symbol === ';') {
+                  return tmp + symbol;
                }
                else {
-                  i = deb;
-                  return res;
+                  i-= symbol.length;
+                  return tmp;
                }
             }
             else {
@@ -905,13 +918,16 @@
                return res;
             }
             if(symbol === '==') {
-               return white + "AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+               return white + "AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
             else if(symbol === '!=') {
-               return white + "!AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+               return white + "!AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+            }
+            else if(symbol === '=' && constraintedVariables.contains(res.trim())) {
+               return white + res + '=AutomatonJS.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.contains('0' + res.trim()) ? 'true':'false') + ')';
             }
 
-            return res + white + symbol + getExpression({inForeach:inForeach});
+            return res + white + symbol + getExpression({inForeach:inForeach,value:value,constraintedVariables:constraintedVariables});
          }
          else if(")]}".indexOf(symbol) !== -1) {
             i = deb + white.length;
@@ -930,7 +946,7 @@
             else {
                symbol = symbol.toLowerCase();
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has') {
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
                if(type === whitespace) {
                   white2 = symbol2 === ' ' ? '' : symbol2;
@@ -946,19 +962,19 @@
                      return res;
                   }
 
-                  return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+                  return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else if(symbol === 'contains' || symbol === 'subsetof' || symbol === 'has') {
                   i = deb2;
-                  return res + '.' + (symbol === 'subsetof' ? 'subsetOf' : symbol) + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+                  return res + '.' + (symbol === 'subsetof' ? 'subsetOf' : symbol) + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else if(symbol === 'elementof' || symbol === 'belongsto') {
                   i = deb2;
-                  return getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + '.contains(' + (white === ' ' ? '' : white) + res + ')';
+                  return getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + '.contains(' + (white === ' ' ? '' : white) + res + ')';
                }
                else {
                   i = deb2;
-                  return white + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, value:true, onlyOneValue:true}) + ')';
+                  return white + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
             }
             i = deb;
@@ -969,7 +985,7 @@
       return res;
    }
 
-   function parseForeach(inForeach, keyword) {
+   function parseForeach(inForeach, keyword,constraintedVariables) {
       var deb = i;
       var symbol = getSymbol(), beforeParenthesis = '';
       if(type === whitespace) {
@@ -982,7 +998,7 @@
          return keyword;
       }
 
-      var expr1  = getExpression({inForeach:inForeach}),
+      var expr1  = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}),
           inExpr = getSymbol(),
           declarationSymbol = '';
 
@@ -1011,7 +1027,7 @@
       if(s[i] === '{') {
          ++i;
          var end = {',' : true};
-         var n1 = white + getExpression({inForeach:inForeach, value:true, endSymbols:end});
+         var n1 = white + getExpression({inForeach:inForeach, value:true, endSymbols:end,constraintedVariables:constraintedVariables});
          symbol = getSymbol();
          if(symbol !== ',') {
             i = deb;
@@ -1047,7 +1063,7 @@
             i = deb;
             return keyword;
          }
-         var n2 = getExpression({inForeach:inForeach});
+         var n2 = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
 
          if(getSymbol() !== '}') {
             i = deb;
@@ -1064,7 +1080,7 @@
             i = deb;
             return keyword;
          }
-         var foreachBody = getExpression({inForeach:inForeach}), bf = '', ef = '';
+         var foreachBody = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables.copy()}), bf = '', ef = '';
          if(foreachBody.trim()[0] !== '{') {
             bf = '{';
             ef = '}';
@@ -1073,13 +1089,13 @@
          return 'for(' + declarationSymbol + expr1 + ' =' + n1 + '; ' + expr1 + ' <= ' + n2 + ';' + white + '++' + expr1 + ')' + bf + foreachBody + ef;
       }
       else {
-         var expr2  = getExpression({inForeach:inForeach});
+         var expr2  = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
          if(getSymbol() !== ')') {
             i = deb;
             return 'for';
          }
 
-         var foreachBody = getExpression({inForeach:!IterationsSupported});
+         var foreachBody = getExpression({inForeach:!IterationsSupported,constraintedVariables:constraintedVariables.copy()});
          if(IterationsSupported) {
             return 'for' + beforeParenthesis + '(' + declarationSymbol + expr1 + ' of ' + expr2 + ')'+ foreachBody;
          }
@@ -1104,13 +1120,16 @@
       }
    }
    
-   function toPureJS(endSymbols, inForeach) {
+   function toPureJS(endSymbols, inForeach, constraintedVariables) {
       if(!endSymbols) {
          endSymbols = {};
       }
+      if(!constraintedVariables) {
+         constraintedVariables = new Set();
+      }
       var res='', symbol, beforeSymbol = i;
       do {
-         res += getExpression({inForeach:inForeach, value:false, endSymbols:endSymbols});
+         res += getExpression({inForeach:inForeach, value:false, endSymbols:endSymbols, constraintedVariables:constraintedVariables});
          if(i === beforeSymbol) {
             symbol = getSymbol();
             if(endSymbols.hasOwnProperty(symbol)) {
@@ -1163,4 +1182,5 @@
       return l.map(function(e){func(e);});
    };
 
+   _("fr", "Assignation Error: types of the value and the variable don't match.", "Erreur d\'affectation : la valeur et la variable ont des types qui ne correspondent pas.")
 })(this, this);
