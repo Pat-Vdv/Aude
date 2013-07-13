@@ -803,17 +803,6 @@
                      white = '';
                   }
 
-                  if(symbol === '(') {
-                     defaultValue = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
-                     if(getSymbol() !== ')') {
-                        i = deb;
-                        return res;
-                     }
-                     tmp += white;
-                     white = '';
-                     symbol = getSymbol();
-                  }
-
                   if(type === whitespace) {
                      if(symbol !== ' ') {
                         white = symbol;
@@ -829,33 +818,28 @@
                   }
                   switch(typeOfVar.toLowerCase()) {
                   case "integer":
-                     return tmp + defaultValue ? ('AutomatonJS.as(0,' + defaultValue + ', true)') : '0';
+                     tmp += defaultValue ? ('AutomatonJS.as(0,' + defaultValue + ', true)') : '0';
                      constraintedVariables.add('0' + varName);
                      break;
                   case "list":
                   case "array":
                   case "table":
-                     return tmp + defaultValue ? ('AutomatonJS.as([],' + defaultValue + ')') : '[]';
+                     tmp += defaultValue ? ('AutomatonJS.as([],' + defaultValue + ')') : '[]';
                      break;
                   case "state":
                   case "string":
-                     return tmp + defaultValue ? ('AutomatonJS.as("",' + defaultValue + ')') : '""';
+                     tmp += defaultValue ? ('AutomatonJS.as("",' + defaultValue + ')') : '""';
                      break;
                   case "bool":
                   case "boolean":
-                     return tmp + defaultValue ? ('AutomatonJS.as(false,' + defaultValue + ')') : 'false';
+                     tmp += defaultValue ? ('AutomatonJS.as(false,' + defaultValue + ')') : 'false';
                      break;
                   case "automaton":
-                     return tmp + defaultValue ? 'get_automaton(' + defaultValue + ')' : 'new Automaton';
+                     tmp += defaultValue ? 'get_automaton(' + defaultValue + ')' : 'new Automaton';
                      break;
                   case "set":
                      if(defaultValue) {
-                        if(defaultValue.trim().substr(0,7) === 'to_set(') {
-                           return tmp + defaultValue;
-                        }
-                        else {
-                           return tmp + 'to_set(' +  defaultValue + ')';
-                        }
+                        tmp += (defaultValue.trim().substr(0,7) === 'to_set(') ? defaultValue : 'to_set(' +  defaultValue + ')';
                      }
                      else {
                         tmp += 'new Set()';
@@ -887,6 +871,9 @@
                            if(symbol === '=') {
                               tmp += ';' + varName + '.unionInPlace(' + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ')';
                            }
+                           else {
+                              i -= symbol.length;
+                           }
                         }
                         else {
                            i-= symbol.length;
@@ -899,12 +886,18 @@
                   tmp += white;
                }
 
+               symbol = getSymbol();
+               white = '';
+               if(type === whitespace) {
+                  white = symbol;
+                  symbol = getSymbol();
+               }
                if(symbol === ';') {
-                  return tmp + symbol;
+                  return tmp + white + symbol;
                }
                else {
                   i-= symbol.length;
-                  return tmp;
+                  return tmp + white;
                }
             }
             else {
