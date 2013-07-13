@@ -522,15 +522,17 @@
       if(symbol === '{') {
          deb = i;
          var pres = '';
-         do {
-            pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
-            symbol = getSymbol();
-            if(type === whitespace) {
-               pres += symbol;
+         if(!options.noset) {
+            do {
+               pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
                symbol = getSymbol();
-            }
-         } while(symbol === ',');
-         if(symbol === '}') {
+               if(type === whitespace) {
+                  pres += symbol;
+                  symbol = getSymbol();
+               }
+            } while(symbol === ',');
+         }
+         if(!options.noset && symbol === '}') {
             res += 'to_set([' + pres + '])';
          }
          else {
@@ -570,7 +572,7 @@
             --i;
             return res;
          }
-         return res + parseForeach(inForeach, symbol);
+         return res + parseForeach(inForeach, symbol, constraintedVariables);
       }
       else if(inForeach && (symbol === "break" || symbol === "continue" || symbol === "throw" || symbol === "return")) {
          if(value) {
@@ -592,7 +594,7 @@
                   i = deb;
                   return '';
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
+               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables), noset:true});
             }
             i = d;
          }
@@ -600,17 +602,17 @@
             i = deb;
             return '';
          }
-         else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol))) {
+         else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol, constraintedVariables))) {
             return res + tmp;
          }
-         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
+         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset:true});
       }
       else if(symbol === 'do') {
          if(value) {
             i = deb;
             return '';
          }
-         res += symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
+         res += symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset:true});
          var symbol2 = getSymbol();
          var d = i;
          if(type === whitespace) {
@@ -864,7 +866,6 @@
                            }
                            symbol = getSymbol();
                         }
-                        console.log(symbol);
                         if(symbol === 'of') {
                            var constraint = getConstraintString();
                            if(constraint) {
@@ -995,6 +996,75 @@
       // should never be reached
       return res;
    }
+   
+   function comprehensiveSet(inForeach, end, constraintedVariables, declarationSymbol, deb, white, expr1) {
+      if(s[i] === '{') {
+         ++i;
+         var end = {',' : true};
+         var n1 = white + getExpression({inForeach:inForeach, value:true, endSymbols:end,constraintedVariables:constraintedVariables});
+         var symbol = getSymbol();
+         if(symbol !== ',') {
+            i = deb;
+            return '';
+         }
+         symbol = getSymbol();
+         if(type === whitespace) {
+            white += symbol;
+            symbol = getSymbol();
+         }
+         if(symbol !== '.') {
+            i = deb;
+            return '';
+         }
+         symbol = getSymbol();
+         if(symbol !== '.') {
+            i = deb;
+            return '';
+         }
+         symbol = getSymbol();
+         if(symbol !== '.') {
+            i = deb;
+            return '';
+         }
+
+         symbol = getSymbol();
+         if(type === whitespace) {
+            white += symbol;
+            symbol = getSymbol();
+         }
+
+         if(symbol !== ',') {
+            i = deb;
+            return '';
+         }
+         var n2 = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
+
+         if(getSymbol() !== '}') {
+            i = deb;
+            return '';
+         }
+
+         symbol = getSymbol();
+         if(type === whitespace) {
+            white += symbol;
+            symbol = getSymbol();
+         }
+
+         if(symbol !== ')') {
+            i = deb;
+            return '';
+         }
+         var foreachBody = getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)}), bf = '', ef = '';
+         if(foreachBody.trim()[0] !== '{') {
+            bf = '{';
+            ef = '}';
+         }
+         declarationSymbol = declarationSymbol || (/^[\s]*(let|var)/.exec(expr1) || ['', (letDeclarationSupported ? 'let' : 'var')])[1];
+         expr1 = expr1.replace(/^([\s]*)(?:let|var)/, '$1');
+         return 'for(' + declarationSymbol + ' ' + expr1 + ' =' + n1 + '; ' + expr1.trim() + ' <= ' + n2 + ';' + white + '++' + expr1.trim() + ')' + bf + foreachBody + ef;
+      }
+      return '';
+   }
 
    function parseForeach(inForeach, keyword,constraintedVariables) {
       var deb = i;
@@ -1034,70 +1104,10 @@
          i = deb;
          return keyword;
       }
-      var white = getSymbol();
-      if(s[i] === '{') {
-         ++i;
-         var end = {',' : true};
-         var n1 = white + getExpression({inForeach:inForeach, value:true, endSymbols:end,constraintedVariables:constraintedVariables});
-         symbol = getSymbol();
-         if(symbol !== ',') {
-            i = deb;
-            return keyword;
-         }
-         symbol = getSymbol();
-         if(type === whitespace) {
-            white += symbol;
-            symbol = getSymbol();
-         }
-         if(symbol !== '.') {
-            i = deb;
-            return keyword;
-         }
-         symbol = getSymbol();
-         if(symbol !== '.') {
-            i = deb;
-            return keyword;
-         }
-         symbol = getSymbol();
-         if(symbol !== '.') {
-            i = deb;
-            return keyword;
-         }
 
-         symbol = getSymbol();
-         if(type === whitespace) {
-            white += symbol;
-            symbol = getSymbol();
-         }
-
-         if(symbol !== ',') {
-            i = deb;
-            return keyword;
-         }
-         var n2 = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
-
-         if(getSymbol() !== '}') {
-            i = deb;
-            return keyword;
-         }
-
-         symbol = getSymbol();
-         if(type === whitespace) {
-            white += symbol;
-            symbol = getSymbol();
-         }
-
-         if(symbol !== ')') {
-            i = deb;
-            return keyword;
-         }
-         var foreachBody = getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)}), bf = '', ef = '';
-         if(foreachBody.trim()[0] !== '{') {
-            bf = '{';
-            ef = '}';
-         }
-
-         return 'for(' + declarationSymbol + expr1 + ' =' + n1 + '; ' + expr1 + ' <= ' + n2 + ';' + white + '++' + expr1 + ')' + bf + foreachBody + ef;
+      var white = getSymbol(), d=i, c = comprehensiveSet(inForeach, end, constraintedVariables, declarationSymbol, d, white, expr1);
+      if(c) {
+         return c;
       }
       else {
          var expr2  = getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
