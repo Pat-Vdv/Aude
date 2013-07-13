@@ -253,7 +253,6 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
   }
 
   function maybe(wanted) {
-      console.log("maybe");
     return function(type) {
       if (type == wanted) return cont();
       else if (type == "," || type === "}") return pass();
@@ -287,7 +286,6 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
     return expressionInner(type, true);
   }
   function maybeexpressionColonNoComma(type) {
-    console.log("maybeexpressionColonNoComma");
     if(type == ':') return cont(expressionNoComma);
     return pass();
   }
