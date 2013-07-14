@@ -528,7 +528,7 @@
       if(symbol === '{') {
          deb = i;
          var pres = '';
-         if(!options.noset && !(i+1 < len && s[i+1] !== '}')) {
+         if(!options.noset && !(i+1 < len && s[i+1] === '}')) {
             do {
                pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
                symbol = getSymbol();
