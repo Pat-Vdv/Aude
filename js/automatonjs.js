@@ -44,14 +44,20 @@
       that.StopIteration = {};
    }
 
-   var letDeclarationSupported = false,
-       arrowFunctionSupported  = false,
-       letExpressionSupported  = false,
-       IterationsSupported     = false,
-       constSupported          = false;
-       
+   var letDeclarationSupported  = false,
+       arrowFunctionSupported   = false,
+       letExpressionSupported   = false,
+       IterationsSupported      = false,
+       constSupported           = false,
+       abbreviatedFunctionSupported = false;
+
    try {
       arrowFunctionSupported = eval("(x => true)()");
+   }
+   catch(e){}
+
+   try {
+      abbreviatedFunctionSupported = eval("(function() true)()");
    }
    catch(e){}
 
@@ -503,6 +509,14 @@
          return '';
       }
    }
+   
+   function functionBody(s) {
+      if(!abbreviatedFunctionSupported && s.trim()[0] !== '{') {
+         return '{return ' + s + '}';
+      }
+      return s;
+   }
+
    function getExpression(options) {
       var res          = '',
           deb          = i,
@@ -604,9 +618,12 @@
                   i = deb;
                   return '';
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables), noset:true});
+               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables), noset:true}));
             }
             i = d;
+            lastSignificantType = type = instruction;
+            return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset:true}));
+
          }
          else if(value) {
             i = deb;
