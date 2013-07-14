@@ -251,6 +251,7 @@
             return parseUnsignedNumber();
          }
          lastSignificantType = type = dot;
+         ++i;
          return '.';
       }
       else if(type !== variable &&  '0123456789'.indexOf(s[i]) !== -1) {
@@ -527,7 +528,7 @@
       if(symbol === '{') {
          deb = i;
          var pres = '';
-         if(!options.noset) {
+         if(!options.noset && !(i+1 < len && s[i+1] !== '}')) {
             do {
                pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
                symbol = getSymbol();
@@ -839,6 +840,7 @@
                   }
                   switch(typeOfVar.toLowerCase()) {
                   case "integer":
+                  case "int":
                      tmp += defaultValue ? ('AutomatonJS.as(0,' + defaultValue + ', true)') : '0';
                      constraintedVariables.type.add('0' + varName);
                      break;
