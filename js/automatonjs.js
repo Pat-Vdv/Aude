@@ -528,7 +528,7 @@
       if(symbol === '{') {
          deb = i;
          var pres = '';
-         if(!options.noset && !(i+1 < len && s[i+1] === '}')) {
+         if(!options.noset) {
             do {
                pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
                symbol = getSymbol();
@@ -538,11 +538,12 @@
                }
             } while(symbol === ',');
          }
-         if(!options.noset && symbol === '}') {
+         if(!options.noset && symbol === '}' && !s.substring(deb-1, i).match(/^\{[\s]*\}$/)) {
             res += 'to_set([' + pres + '])';
          }
          else {
             i = deb;
+            lastSignificantType = type = openBracket;
             pres = toPureJS({'}':true}, inForeach, copy(constraintedVariables));
             res += '{' + pres  + getSymbol(); // '}'
          }
