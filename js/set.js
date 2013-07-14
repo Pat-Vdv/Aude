@@ -191,6 +191,22 @@
          return true;
       },
 
+      symDiff: function(set) {
+         var r = new pkg.Set();
+         set = pkg.to_set(set);
+         for(var i in this.l) {
+            if(!set.contains(this.l[i])) {
+               r.add(this.l[i]);
+            }
+         }
+         for(var i in set.l) {
+            if(!this.contains(set.l[i])) {
+               r.add(set.l[i]);
+            }
+         }
+         return r;
+      },
+
       plus: function() {
          var r = new pkg.Set();
          r.unionInPlace(this);
@@ -398,16 +414,20 @@
    };
 
    pkg.get_list = function (set) {
-      return set.getList();
+      return pkg.to_set(set).getList();
    };
 
    pkg.get_sorted_list = function (set) {
-      return set.getSortedList();
+      return pkg.to_set(set).getSortedList();
    };
 
    pkg.powerset = function (set) {
-      return set.powerset();
+      return pkg.to_set(set).powerset();
    };
+
+   pkg.symDiff = function(set1, set2) {
+      return pkg.to_set(set1).symDiff(set2);
+   }
 
    pkg.empty = function(set) {
       set.empty();

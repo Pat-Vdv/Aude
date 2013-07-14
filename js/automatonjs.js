@@ -44,16 +44,12 @@
       that.StopIteration = {};
    }
 
-   var letDeclarationSupported  = false,
-       arrowFunctionSupported   = false,
-       letExpressionSupported   = false,
-       IterationsSupported      = false,
-       constSupported           = false,
-<<<<<<< HEAD
+   var letDeclarationSupported      = false,
+       arrowFunctionSupported       = false,
+       letExpressionSupported       = false,
+       IterationsSupported          = false,
+       constSupported               = false,
        abbreviatedFunctionSupported = false;
-=======
-       abregedFunctionSupported = false;
->>>>>>> cbf61615c6866d0c664d606d494b1d753e6cd664
 
    try {
       arrowFunctionSupported = eval("(x => true)()");
@@ -61,11 +57,7 @@
    catch(e){}
 
    try {
-<<<<<<< HEAD
       abbreviatedFunctionSupported = eval("(function() true)()");
-=======
-      abregedFunctionSupported = eval("(function() true)()");
->>>>>>> cbf61615c6866d0c664d606d494b1d753e6cd664
    }
    catch(e){}
 
@@ -519,11 +511,7 @@
    }
    
    function functionBody(s) {
-<<<<<<< HEAD
       if(!abbreviatedFunctionSupported && s.trim()[0] !== '{') {
-=======
-      if(!abregedFunctionSupported && s.trim()[0] !== '{') {
->>>>>>> cbf61615c6866d0c664d606d494b1d753e6cd664
          return '{return ' + s + '}';
       }
       return s;
@@ -1007,7 +995,14 @@
             else {
                symbol = symbol.toLowerCase();
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has' || symbol === 'symdiff') {
+               if(symbol === 'symdiff') {
+                  symbol = 'symDiff';
+               }
+               else if(symbol === 'subsetof') {
+                  symbol = 'subsetOf';
+               }
+      
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
                if(type === whitespace) {
                   white2 = symbol2 === ' ' ? '' : symbol2;
@@ -1018,16 +1013,16 @@
                }
 
                if(type === operator) {
-                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto') {
+                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'subsetOf' || symbol === 'elementof' || symbol === 'belongsto') {
                      i = deb;
                      return res;
                   }
 
                   return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
-               else if(symbol === 'contains' || symbol === 'subsetof' || symbol === 'has') {
+               else if(symbol === 'contains' || symbol === 'subsetOf' || symbol === 'has' || symbol === 'symDiff') {
                   i = deb2;
-                  return res + '.' + (symbol === 'subsetof' ? 'subsetOf' : symbol) + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+                  return res + '.' + symbol + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else if(symbol === 'elementof' || symbol === 'belongsto') {
                   i = deb2;
