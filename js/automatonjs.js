@@ -49,7 +49,11 @@
        letExpressionSupported   = false,
        IterationsSupported      = false,
        constSupported           = false,
+<<<<<<< HEAD
        abbreviatedFunctionSupported = false;
+=======
+       abregedFunctionSupported = false;
+>>>>>>> cbf61615c6866d0c664d606d494b1d753e6cd664
 
    try {
       arrowFunctionSupported = eval("(x => true)()");
@@ -57,7 +61,11 @@
    catch(e){}
 
    try {
+<<<<<<< HEAD
       abbreviatedFunctionSupported = eval("(function() true)()");
+=======
+      abregedFunctionSupported = eval("(function() true)()");
+>>>>>>> cbf61615c6866d0c664d606d494b1d753e6cd664
    }
    catch(e){}
 
@@ -511,7 +519,11 @@
    }
    
    function functionBody(s) {
+<<<<<<< HEAD
       if(!abbreviatedFunctionSupported && s.trim()[0] !== '{') {
+=======
+      if(!abregedFunctionSupported && s.trim()[0] !== '{') {
+>>>>>>> cbf61615c6866d0c664d606d494b1d753e6cd664
          return '{return ' + s + '}';
       }
       return s;
