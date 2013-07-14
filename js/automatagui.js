@@ -221,6 +221,7 @@
           CURRENT_FINAL_STATE_COLOR     = localStorage.CURRENT_FINAL_STATE_COLOR     || 'rgba(90, 160, 0, 0.5)',
           CURRENT_TRANSITION_COLOR      = localStorage.CURRENT_TRANSITION_COLOR      || '#BD5504',
           CURRENT_STATE_COLOR           = localStorage.CURRENT_STATE_COLOR           || '#FFFF7B',
+          STATE_REFUSED                 = localStorage.STATE_REFUSED                 || 'rgba(255, 50, 50, 0.5)',
           CURRENT_TRANSITION_PULSE_TIME_FACTOR = parseFloat(localStorage.CURRENT_TRANSITION_PULSE_TIME_FACTOR) || 0.6,
           CURRENT_TRANSITION_PULSE_TIME_STEP   = 600,
           HAND_STEP_TIME                       = 250,
@@ -722,6 +723,18 @@
                   }
                }
                listOfExecutions = newListOfExecutions;
+            }
+
+            if(stepNumber && !currentStates.length) {
+               var states = currentAutomaton.getStates().getList();
+               for(var i in states) {
+                  AutomataDesigner.stateSetBackgroundColor(
+                     index,
+                     states[i].toString(),
+                     STATE_REFUSED
+                  );
+               }
+               stepNumber = -1;
             }
 
             if((currentTransitions && EXECUTION_STEP_TIME) || stepNumber === -1) {
