@@ -489,6 +489,9 @@
             else if(lowerType === "bool" || lowerType === "boolean" ||  lowerType === "string" || lowerType === "object" || lowerType === "undefined") {
                symbol = '"' + lowerType + '"';
             }
+            else if(lowerType === 'function') {
+               symbol = '"function"';
+            }
             else if(lowerType === 'state') {
                symbol = 'null'; // FIXME: no constraint for states
             }
@@ -859,7 +862,10 @@
                      tmp += defaultValue ? ('AutomatonJS.as(false,' + defaultValue + ')') : 'false';
                      break;
                   case "automaton":
-                     tmp += defaultValue ? 'get_automaton(' + defaultValue + ')' : 'new Automaton';
+                     tmp += defaultValue ? '(AutomatonJS.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
+                     break;
+                  case "function":
+                     tmp += defaultValue ? '(AutomatonJS.as(function(){},' + defaultValue + ')' : 'function(){}';
                      break;
                   case "set":
                      if(defaultValue) {
