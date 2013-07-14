@@ -4,7 +4,7 @@
 // NEEDS: set.js
 
 /*
-   Copyright (c) 1998, Raphaël Jakse (Université Joseph Fourier)
+   Copyright (c) 2013, Raphaël Jakse (Université Joseph Fourier)
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are met:
@@ -300,6 +300,7 @@
          }
 
          if(!this.Sigma.contains(symbol)) {
+            this.lastTakenTransitions.empty();
             this.currentStates.empty();
             return false;
          }
