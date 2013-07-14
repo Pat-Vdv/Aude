@@ -120,7 +120,7 @@
             throw new Error(_("Assignation Error: types of the value and the variable don't match."));
          }
          if(integerCheck && value % 1 !== 0) {
-            throw new Error(_("Assignation Error: types of the value and the variable don't match."));
+            return Math.floor(value);
          }
          return value;
       }
@@ -132,6 +132,7 @@
 
    Object.defineProperty(Object.prototype, 'forEach', {
       enumerable:false,
+      writable: true,
       value: function(callback) {
          for(var i in this) {
             if(this.hasOwnProperty(i)) {
@@ -163,34 +164,34 @@
    }
 
    function parseUnsignedNumber() {
-      var dotEncountered, d = i;
+      var dotEncountered = false, d = i;
       if(i < len && s[i] === '0') {
          ++i;
          if(i < len && s[i] === 'x' || s[i] === 'X') {
             do {
                ++i;
-            } while('0123456789ABCDEF'.indexOf(s[i].toLowerCase()) !== -1);
+            } while('0123456789ABCDEF'.indexOf(s[i].toUpperCase()) !== -1);
+            return s.substring(d, i);
          }
       }
-      else {
-         while(i < len && '0123456789'.indexOf(s[i]) !== -1 || (!dotEncountered && s[i] === '.')) {
-            if(!dotEncountered) {
-               dotEncountered =  s[i] === '.';
-            }
-            ++i;
+
+      while(i < len && ('0123456789'.indexOf(s[i]) !== -1 || (!dotEncountered && s[i] === '.'))) {
+         if(!dotEncountered) {
+            dotEncountered =  s[i] === '.';
          }
-         // TODO: checking if the number is correct (e.g: doesn't end with a dot)
-         if(i < len && s[i] === 'e' || s[i] === 'E') {
-            ++i;
-            if(i < len && s[i] === '+' || s[i] === '-') {
-               ++i;
-            }
-         }
-         while(i < len && '0123456789'.indexOf(s[i]) !== -1) {
+         ++i;
+      }
+      // TODO: checking if the number is correct (e.g: doesn't end with a dot)
+      if(i < len && s[i] === 'e' || s[i] === 'E') {
+         ++i;
+         if(i < len && s[i] === '+' || s[i] === '-') {
             ++i;
          }
       }
-      type=number;
+      while(i < len && '0123456789'.indexOf(s[i]) !== -1) {
+         ++i;
+      }
+      type = lastSignificantType = number;
       return s.substring(d,i);
    }
 
@@ -233,19 +234,19 @@
             ++i;
          }
          type = whitespace;
-         var d = i;
+         var d   = i,
+             lst = lastSignificantType;
          getSymbol();
          if(type !== whitespace) {
             i = d;
+            lastSignificantType = lst;
             type = whitespace;
          }
 
          return s.substring(deb,i);
       }
       else if(s[i] === '.') {
-         ++i;
-         if('0123456789'.indexOf(s[i]) !== -1) {
-            --i;
+         if(i+1 < len && '0123456789'.indexOf(s[i+1]) !== -1) {
             lastSignificantType = type = number;
             return parseUnsignedNumber();
          }
@@ -375,13 +376,16 @@
             } while(i+1 < len && (s[i] !== '*' || s[i+1] !== '/'));
             type = whitespace;
             deb = i;
+            var lst = lastSignificantType;
             getSymbol();
             if(type !== whitespace) {
                i = deb;
+               lastSignificantType = lst;
                type = whitespace;
             }
          }
          else {
+            console.log(i, lastSignificantType);
             if(lastSignificantType & (number | variable | closeParen | closeBracket)) {
                lastSignificantType = type = operator;
                if(s[i] === '=') {
@@ -505,16 +509,17 @@
           onlyOneValue = options.onlyOneValue,
           constraintedVariables = options.constraintedVariables;
 
-      if(endSymbols.hasOwnProperty(symbol)) {
-         i = deb;
-         return res;
-      }
-
       if(type === whitespace) {
          res += symbol;
          deb = i;
          symbol = getSymbol();
       }
+
+      if(endSymbols.hasOwnProperty(symbol)) {
+         i = deb;
+         return res;
+      }
+
       if(")]}".indexOf(symbol) !== -1) {
          i = deb;
          return res;
@@ -728,10 +733,6 @@
          oldType = lastSignificantType;
          deb = i;
          symbol = getSymbol();
-         if(endSymbols.hasOwnProperty(symbol)) {
-            i = deb;
-            return res;
-         }
 
          if(type === whitespace) {
             white = symbol;
@@ -739,6 +740,11 @@
          }
          else {
             white = '';
+         }
+
+         if(endSymbols.hasOwnProperty(symbol)) {
+            i = deb;
+            return res;
          }
 
          if(type === dot) {
@@ -930,9 +936,14 @@
             else if(symbol === '!=') {
                return white + "!AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
-            else if(symbol === '=') {
+            else if(symbol[symbol.length-1] === '=') {
                if(constraintedVariables.type.contains(res.trim())) {
-                  return white + res + '=AutomatonJS.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
+                  if(symbol.length > 1) {
+                     return white + res + '=AutomatonJS.as(' + res.trim() + ',' +  res.trim() + symbol.substr(0,symbol.length-1) + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
+                  }
+                  else {
+                     return white + res + '=AutomatonJS.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
+                  }
                }
                else if(!constSupported && constraintedVariables.consts.contains(res.trim())) {
                   return white + res.replace(/[\S]+/g, '') + '(function(){throw new Error("TypeError: ' + res.trim() + ' is read-only");})()' + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}).replace(/[\S]+/g, '');
