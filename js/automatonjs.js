@@ -784,7 +784,7 @@
             ++i;
             var expr = getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
             if(arrowFunctionSupported) {
-               res += '=>' + exp;
+               res += '=>' + expr;
             }
             else {
                res = 'function' +
@@ -997,10 +997,10 @@
             }
             if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has' || symbol === 'symdiff') {
                if(symbol === 'symdiff') {
-                  symbol = 'symDiff';
+                  symbol = 'sym_diff';
                }
                else if(symbol === 'subsetof') {
-                  symbol = 'subsetOf';
+                  symbol = 'subset_of';
                }
       
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
@@ -1013,20 +1013,20 @@
                }
 
                if(type === operator) {
-                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'subsetOf' || symbol === 'elementof' || symbol === 'belongsto') {
+                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff') {
                      i = deb;
                      return res;
                   }
 
                   return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
-               else if(symbol === 'contains' || symbol === 'subsetOf' || symbol === 'has' || symbol === 'symDiff') {
+               else if(symbol === 'contains' || symbol === 'subset_of' || symbol === 'has' || symbol === 'sym_diff') {
                   i = deb2;
-                  return res + '.' + symbol + '(' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+                  return ' ' + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else if(symbol === 'elementof' || symbol === 'belongsto') {
                   i = deb2;
-                  return getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + '.contains(' + (white === ' ' ? '' : white) + res + ')';
+                  return 'contains(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ','  + (white === ' ' ? '' : white) + res + ')';
                }
                else {
                   i = deb2;
