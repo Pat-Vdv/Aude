@@ -650,7 +650,7 @@
             
             alert(add1(2)); // 3
       >>>]
-      For more informations about Javascript literals, you can look at [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,_variables,_and_literals || MDN's Values, variables, and literals]][footnote https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,_variables,_and_literals] or the ECMAScript documentation.
+      For more information about Javascript literals, you can look at [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,_variables,_and_literals || MDN's Values, variables, and literals]][footnote https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,_variables,_and_literals] or the ECMAScript documentation.
       For regular expressions, you can refer to [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions]][footnote https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions].
    ]
 
@@ -710,10 +710,11 @@
          | [c a  & b]     | [c a] AND [c b]
          | [c a ~| b]     | [c a] OR  [c b]
          | [c a ^ b]      | [c a] XOR [c b]
-         | [c > a  << n]  | FIXME
-         | [c > a  >> n]  | FIXME
-         | [c > a ~<<< n] | FIXME
-         | [c > a >>> n]  | FIXME
+         | [c > a  << n]  | Left shift. Shifts [c a] in binary representation [c n] (< 32) bits to the left, shifting in zeros from the right.
+         | [c > a  >> n]  | Right shift. Shifts [c a] in binary representation [c n] (< 32) bits to the left, shifting in zeros from the right.
+         | [c > a >>> n]  | Shifts [c a] in binary representation [c n] (< 32) bits to the right, discarding bits shifted off, and shifting in zeros from the left.
+
+         For more information about bitwise operators, you might want to read the Bitwise Operators page of MDN where the last three lines of this table come from: ([[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators]]).
       ]
 
       [ = Assigning counterparts of these operators
