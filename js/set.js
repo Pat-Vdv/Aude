@@ -343,7 +343,7 @@
    };
 
    pkg.contains = pkg.has = function (set, element) {
-      return set.l in element;
+      return to_set(set).contains(element);
    };
 
    pkg.add = function (set, element) {
@@ -425,8 +425,12 @@
       return pkg.to_set(set).powerset();
    };
 
-   pkg.symDiff = function(set1, set2) {
+   pkg.sym_diff = function(set1, set2) {
       return pkg.to_set(set1).symDiff(set2);
+   }
+   
+   pkg.subset_of = function(set1, set2) {
+      return pkg.to_set(set1).subsetOf(set2);
    }
 
    pkg.empty = function(set) {
