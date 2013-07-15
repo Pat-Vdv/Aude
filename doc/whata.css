@@ -1,0 +1,180 @@
+.whata p {text-indent:2ex; padding:O;margin:0.8ex}
+.whata li p{text-indent:0;margin:0;padding:0}
+
+.whata-quote{margin-right:1em}
+
+.whata-quote-header
+{
+	text-align:right;
+	font-style:italic;
+	margin-left:1em;
+	margin-top:0;
+	margin-bottom:0;
+	font-size:0.8em;
+	font-weight:bold;
+	color:#555
+}
+
+.whata-quote-header a{color:inherit}
+
+.whata blockquote
+{
+	padding-top:0.5ex;
+	padding-bottom:0.5ex;
+	padding-left:1ex;
+	padding-right:1ex;
+	margin-top:1ex;
+	margin-left:2.5em;
+	margin-bottom:0.5em;
+	background:#E4EEF3;
+	background:rgba(255,255,255,0.4);
+	border:1px solid #DDD
+}
+
+.whata blockquote p:first-child{margin-top:0.5ex}
+.whata blockquote p:last-child{margin-bottom:0.5ex}
+
+.whata-code-block, .whata-output
+{
+	background:white;
+	background:rgba(255,255,255,0.8);
+	margin-left:2em;
+	border:1px solid silver;
+	border-left:2px solid gray;
+	margin-right:1em;
+	overflow:auto
+}
+.whata-geshi .ln
+{
+	background:#EEE;
+	padding-left:0.5ex;
+	padding-right:0.5ex
+}
+
+.whata-code-block pre:not(.whata-geshi pre)
+{
+	margin:0;
+	overflow:auto
+}
+
+.whata-geshi td.de1 pre{margin-left:1ex}
+
+.whata-code-block a{text-decoration:none}
+
+.whata a
+{
+	font-weight:bold;
+	text-decoration:none
+}
+
+.whata a:hover{text-decoration:underline}
+.whata a:link{color:#555}
+.whata a:visited{color:#888}
+
+.whata-align-center{text-align:center}
+.whata-align-left{text-align:left}
+.whata-align-right{text-align:right}
+.whata-align-justify{text-align:justify}
+
+.whata-table
+{
+	margin-left:auto;
+	margin-right:auto;
+	border-collapse:collapse
+}
+
+.whata-table td, .whata-table th
+{
+	border:1px solid #555;
+	padding:3px;
+	background:#EEE;
+	background:rgba(255,255,255,0.6)
+}
+
+.whata-table th
+{
+	background:#EEE;
+	background:rgba(220,220,220,0.7)
+}
+
+.whata-float-left{float:left;margin-right:1ex;margin-bottom:0.5ex;margin-top:0.5ex}
+.whata-float-right{float:right;margin-left:1ex;margin-bottom:0.5ex;margin-top:0.5ex}
+.whata-float-center{text-align:center; vertical-align:middle}
+
+.whata-clear, .whata-tag-clear{clear:both}
+
+.whata-list-a{list-style-type:lower-alpha}
+.whata-list-A{list-style-type:upper-alpha}
+.whata-list-i{list-style-type:lower-roman}
+.whata-list-I{list-style-type:upper-roman}
+.whata-list-circle{list-style-type:circle}
+.whata-list-disc{list-style-type:disc}
+.whata-list-square{list-style-type:square}
+.whata-list-1{list-style-type:decimal}
+
+.whata img {
+	vertical-align:middle
+}
+
+.whata .float {
+   margin:1ex
+}
+
+.whata-code-block.whata-pcode, .whata-pcode code {
+	font-family:STIXGeneral, serif;
+	font-size:1em;
+	overflow:hidden
+}
+
+.whata-illustr {
+   margin:auto;
+   text-align:center
+}
+
+.whata-illustr>pre,.whata-illustr>div,.whata-illustr>img {
+   display:inline-block;
+}
+.whata-illustr > * {
+   text-align:justify
+}
+.whata-illustr > img {
+   text-align:center;
+}
+.whata-footref {
+   font-size:small;
+}
+
+.whata-footref :link {
+   color:#051;
+}
+
+.whata-footnotes {
+   border-top:1px solid gray;
+   font-size:small
+}
+
+.whata-footref {
+   font-size:x-small
+}
+
+.whata-footnotes>ul {
+   list-style:none
+}
+
+.whata-footnote-link:after {
+   content: " :";
+   margin-right:0.5ex;
+}
+.whata-footnote-link {
+   float:left
+}
+
+.whata-algorithmic-procedure-name {
+   font-variant: small-caps;
+}
+
+.whata-algorithmic-title {
+   font-size:1em;
+   font-weight:bold;
+   margin:0;
+}
