@@ -1,0 +1,80 @@
+.whata-div>img:first-child:last-child {
+	display:block;
+	margin:auto;
+}
+
+.very-compact p:before{content:"  "}
+.very-compact p {
+	display:inline;
+	margin:0;
+	padding:0
+}
+
+#doc-author, #doc-date {
+	font-size:1rem;
+	text-align:center
+}
+
+.whata-code-block {
+	font-size:0.8rem
+}
+
+.cib>*, .ib
+{
+	display:inline-block;
+	vertical-align:middle
+}
+
+body {
+	text-align:justify
+}
+
+.whata {
+	padding: 0 2ex 0 2ex
+}
+
+.whata-pcode {
+	white-space:pre-wrap
+}
+
+pre {
+	margin:0;
+}
+
+.whata-code-block, .whata-output, .whata-input, .whata-algorithmic {
+	margin-top:1ex;
+	margin-bottom:1ex
+}
+
+pre.illustr {
+	margin-top:0.5ex;
+	margin-bottom:0.5ex;	
+}
+
+.whata ul>li {
+   list-style:none;
+   position:relative;
+   margin-left:4ex;
+}
+
+.whata ul {
+      padding-left:1ex
+}
+
+.whata ul>li:before {
+   content:"–";
+   white-space:pre;
+   position:absolute;
+   left:-3ex;
+   top:0;
+}
+
+.whata-algorithmic-comment:before {
+   content:"▹";
+   display:inline-block;
+   padding:0 0.5ex 0 1ex
+}
+
+.whata-algorithmic-comment {
+   float:right
+}
