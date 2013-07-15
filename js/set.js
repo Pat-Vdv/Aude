@@ -44,10 +44,10 @@
     * 
     * Note: Any function of this class, this constructor included, that takes a Set as parameter also accepts any object that can be turned into a set (e.g. Object, Array variables). For the sake of readability, this is not mentioned elsewhere.
     * 
-    * @class Set
+    * @class
+    * @alias Set
 
     * @param {Set} [l] This optional parameter is an Array, a Set or an Object containing the elements to add to the newly created set.
-    * @returns {Object} Returns a new Set object.
     */
    pkg.Set = function(l) {
       this.l = {};
@@ -94,12 +94,10 @@
 
    pkg.Set.prototype = {
       /**
-       * This method tests the presence of an element in the set. The <has> method is an alias of this method.
+       * This method tests the presence of an element in the set. The has method is an alias of this method.
        * @method contains
        * @memberof Set
        * @param {any} element The element of which the presence in the set must be tested.
-       * @alias has
-       * @alias contains
        * @returns {Boolean} Returns true if the element belongs to the set, false otherwise.
 
        */
@@ -110,12 +108,10 @@
       },
  
       /**
-       * This method tests the presence of an element in the set. It is an alias of the method <contains>.
+       * This method tests the presence of an element in the set. It is an alias of the method contains.
        * @method has
        * @memberof Set
        * @param {any} element The element of which the presence in the set must be tested.
-       * @alias has
-       * @alias contains
        * @returns {Boolean} Returns true if the element belongs to the set, false otherwise.
        */
       has: function(element) {
@@ -200,7 +196,7 @@
        * This method calculates the cardinal (i.e the number of elements) of the set.
        * @method card
        * @memberof Set
-       * @returns {integer} Returns the cardinal of the set.
+       * @returns {number} Returns the cardinal of the set.
        * @see Set#isEmpty
        */
       card: function() {

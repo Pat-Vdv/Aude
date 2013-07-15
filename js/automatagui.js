@@ -186,7 +186,8 @@
          libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
       }
       else {
-         libD.jsLoad('js/automatonjs.js', automatonJSLoaded);
+         // workaround chromium issue #45702
+         libD.jsLoad('js/automatonjs.js' + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), automatonJSLoaded);
       }
 
       AutomataDesigner.load();
@@ -878,7 +879,8 @@
             else {
                try {
                   var xhr = new XMLHttpRequest();
-                  xhr.open('get', 'algos/' + includeName, false);
+                  //workaround chromium issue #45702
+                  xhr.open('get', 'algos/' + includeName + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), false);
                   xhr.onreadystatechange = function() {
                      if(xhr.readyState === 4) {
                         if(!xhr.status || xhr.status === 200) {
