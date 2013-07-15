@@ -87,7 +87,7 @@
 
    // checks "real" equality between v1 and v2
    pkg.AutomatonJS.eq = function(v1, v2) {
-      return v1 === v2 || (
+      return v1 == v2 || (
             typeof v1 === typeof v2
          && (v1 instanceof Set && v2 instanceof Set
             ? v1.card() === v2.card() && !minus(v1, v2).card()
@@ -618,11 +618,11 @@
                   i = deb;
                   return '';
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables), noset:true}));
+               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables), noset:true}));
             }
             i = d;
             lastSignificantType = type = instruction;
-            return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset:true}));
+            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset:true}));
 
          }
          else if(value) {
@@ -632,14 +632,14 @@
          else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol, constraintedVariables))) {
             return res + tmp;
          }
-         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset:true});
+         return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getExpression({inForeach:(symbol === 'while' || symbol === 'for' || symbol === 'switch') ? false : inForeach,constraintedVariables:copy(constraintedVariables),noset:true});
       }
       else if(symbol === 'do') {
          if(value) {
             i = deb;
             return '';
          }
-         res += symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset:true});
+         res += symbol + getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset:true});
          var symbol2 = getSymbol();
          var d = i;
          if(type === whitespace) {
@@ -822,7 +822,7 @@
                return res + white;
             }
 
-            var matches = [], d;
+            var matches = [], d=i;
             if(matches = /([\s]*)[\S]+/g.exec(res)) {
                var varName = res.trim();
                constraintedVariables.type.add(varName);
@@ -830,6 +830,11 @@
                var defaultValue = '';
                symbol = getSymbol();
                if(type === whitespace) {
+                  if(symbol.match("\n")) {
+                     i = d;
+                     type = lastSignificantType = operator;
+                     return res + white + ':' + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
+                  }
                   tmp += symbol;
                   symbol = getSymbol();
                }
@@ -957,10 +962,10 @@
                return res;
             }
             if(symbol === '==') {
-               return white + "AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+               return white + " AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
             else if(symbol === '!=') {
-               return white + "!AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+               return white + " !AutomatonJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
             else if(symbol[symbol.length-1] === '=') {
                if(constraintedVariables.type.contains(res.trim())) {
