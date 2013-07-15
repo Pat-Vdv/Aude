@@ -366,40 +366,47 @@
 
                if(nodeMoving = parentHasClass(e.target, 'node')) {
                   if(pkg.svgContainer.onmousemove === nodeBinding) {
-                     var id = nodeEdit.id + ' ' + nodeMoving.id;
-                     if(document.getElementById(id)) {
-                        // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
-                        alert(_('Sorry, there is already a transition between these states in this way.'));
-                        pkg.svgNode.removeChild(pathEdit);
+                     var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), '');
+                     if(trans === null) {
+                        pathEdit.parentNode.removeChild(pathEdit);
                         pkg.svgContainer.onmousemove = null;
-                        return;
                      }
-                     var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                     g.id = id;
-                     g.setAttribute('class', 'edge');
-                     var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-                     title.textContent = atob(nodeEdit.id) + '->' + atob(nodeMoving.id);
-                     g.appendChild(title);
+                     else {
+                        var id = nodeEdit.id + ' ' + nodeMoving.id;
+                        if(document.getElementById(id)) {
+                           // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
+                           alert(_('Sorry, there is already a transition between these states in this way.'));
+                           pkg.svgNode.removeChild(pathEdit);
+                           pkg.svgContainer.onmousemove = null;
+                           return;
+                        }
+                        var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        g.id = id;
+                        g.setAttribute('class', 'edge');
+                        var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                        title.textContent = atob(nodeEdit.id) + '->' + atob(nodeMoving.id);
+                        g.appendChild(title);
 
-                     var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+                        var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
 
-                     polygon.setAttribute('fill', 'black');
-                     polygon.setAttribute('stroke', 'black');
+                        polygon.setAttribute('fill', 'black');
+                        polygon.setAttribute('stroke', 'black');
 
-                     var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                     text.textContent = format_transition(prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), '') || "\\e");
-                     text.setAttribute('text-anchor', 'middle');
-                     text.setAttribute('font-family', 'Times Roman,serif');
-                     text.setAttribute('font-size', '14.00');
-                     cleanTransitionPos(pathEdit, polygon, text, nodeEdit, nodeMoving);
-                     g.appendChild(pathEdit);
-                     g.appendChild(polygon);
-                     g.appendChild(text);
-                     pkg.svgNode.querySelector('g').appendChild(g);
-                     pkg.svgContainer.onmousemove = null;
-                     nodeList[atob(nodeMoving.id)].t.push([g, false]); // false : state is not origin
-                     if(nodeEdit !== nodeMoving) {
-                        nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
+                        var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        text.textContent = format_transition(trans || "\\e");
+                        text.setAttribute('text-anchor', 'middle');
+                        text.setAttribute('font-family', 'Times Roman,serif');
+                        text.setAttribute('font-size', '14.00');
+                        cleanTransitionPos(pathEdit, polygon, text, nodeEdit, nodeMoving);
+                        g.appendChild(pathEdit);
+                        g.appendChild(polygon);
+                        g.appendChild(text);
+                        pkg.svgNode.querySelector('g').appendChild(g);
+                        pkg.svgContainer.onmousemove = null;
+                        nodeList[atob(nodeMoving.id)].t.push([g, false]); // false : state is not origin
+                        if(nodeEdit !== nodeMoving) {
+                           nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
+                        }
                      }
                   }
                   else if(e.shiftKey && !e.ctrlKey) {
@@ -713,8 +720,8 @@
             else {
                var text = nodeEdit.querySelector('text');
                var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), text.textContent);
-               if(t) {
-                  text.textContent = format_transition(t);
+               if(t !== null) {
+                  text.textContent = format_transition(t || '\\e');
                }
             }
          }
