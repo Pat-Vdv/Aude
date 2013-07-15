@@ -34,7 +34,10 @@
    "use strict";
 
    function dotState(q) {
-      var s = q.toString() || "_default";
+      if(q === null || q === undefined) {
+         throw new Error("State is empty");
+      }
+      var s = q.toString();
       return JSON.stringify(s).replace(/&/g, '&amp;') + "[id=\"" + btoa(s) + "\"]";
    }
 
@@ -62,11 +65,14 @@
          title = "automaton";
       }
 
-      var initialState       = A.getInitialState() || '_default',
+      var initialState       = A.getInitialState(),
           NonAcceptingStates = A.getStates(),
           AcceptingStates    = A.getFinalStates().getList(),
           q;
 
+      if(initialState === null || initialState === undefined) {
+         throw new Error("Automaton has no initial state.");
+      }
       NonAcceptingStates = NonAcceptingStates.minusInPlace(AcceptingStates).getList();
 
       var res = catln("digraph ", JSON.stringify(title), " {\n\trankdir=LR\n\t_begin [style = invis];");
@@ -109,7 +115,10 @@
          }
          table[t.startState][t.endState].add(t.symbol);
       }
-      res += cat("\t_begin -> ", JSON.stringify(initialState.toString().replace(/&/g, '&amp;') || "_default"), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
+      if(initialState === null || initialState === undefined) {
+         throw new Error("Initial state is not set.");
+      }
+      res += cat("\t_begin -> ", JSON.stringify(initialState.toString().replace(/&/g, '&amp;')), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
 
       for (var startState in table) {
          var trans = table[startState];

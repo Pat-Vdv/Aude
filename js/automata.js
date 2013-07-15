@@ -1,8 +1,6 @@
 /*jslint browser: true, ass: true, continue: true, es5: false, forin: true, todo: true, vars: true, white: true, indent: 3 */
 /*jshint noarg:true, noempty:true, eqeqeq:true, boss:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
 
-// NEEDS: set.js
-
 /*
    Copyright (c) 2013, Raphaël Jakse (Université Joseph Fourier)
    All rights reserved.
@@ -30,12 +28,25 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/**
+ * @file This is a class to manipulate automata in Javascript
+ * @author Raphaël Jakse
+ * @requires set.js
+ * 
+ */
+
 (function(pkg, that) {
    "use strict";
 
    var _      = pkg.Automatal10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;},
        format = function(s, i){return s.replace("{0}", i)};
 
+   /**
+    * A class to manipulate automata in Javascript.
+
+    * @class
+    * @alias set
+    */
    pkg.Automaton = function () {
       this.states = new Set();
       this.trans = new Set();
@@ -49,6 +60,15 @@
    };
 
    pkg.Automaton.prototype = {
+      /**
+       * This method adds a state to the automaton.
+       * @method
+       * @memberof Automaton
+       * @param {any} state The state to add, can be of any type.
+       * @param {boolean} [final] If given and true, the state will be a final (accepting) state.
+       * @see addFinalState
+       * @see addAcceptingState
+       */
       addState: function (state, final) {
          this.states.add(state);
          if(final) {
@@ -56,38 +76,99 @@
          }
       },
 
+      /**
+       * This method adds a final (accepting) state to the automaton. If the state is already there, makes it final
+       * @method
+       * @memberof Automaton
+       * @param {any} state The state to add, can be of any type.
+       */
       addFinalState: function(state) {
          this.addState(state, true);
       },
 
+      /**
+       * This method is an alias of the addFinalStateState method
+       * @see Automaton#addFinalState
+       */
+      addAcceptingState: function(state) {
+         this.addState(state, true);
+      },
+
+      /**
+       * This method is an alias of the addFinalStateState method
+       * @see Automaton#addFinalState
+       */
       setFinalState: function(state) {
          this.addState(state, true);
       },
 
+      /**
+       * This method removes a state from the set of final states of the automaton
+       * @method
+       * @memberof Automaton
+       * @param {any} state The state to add, can be of any type.
+       */
       setNonFinalState: function(state) {
          this.finalStates.remove(state);
       },
 
+      /**
+       * This method is an alias of the addFinalStateState method
+       * @method
+       * @memberof Automaton
+       * @see Automaton#addFinalState
+       */
       setAcceptingState: function(state) {
          this.addState(state, true);
       },
 
+      /**
+       * This method is an alias of the setNonFinalState method
+       * @method
+       * @memberof Automaton
+       * @see Automaton#setNonFinalState
+       */
       setNonAcceptingState: function(state) {
          this.finalStates.remove(state);
       },
 
+      /**
+       * This method returns the set of non final (accepting) states of the automaton
+       * @method
+       * @memberof Automaton
+       * @returns {Set} The set of non final states
+       */
       getNonFinalStates: function() {
          return minus(a.getStates() - a.getFinalStates());
       },
- 
+
+      /**
+       * This method is an alias of the getNonAcceptingStates method
+       * @method
+       * @memberof Automaton
+       * @returns {Set} The set of non final states
+       * @see Automaton#getNonAcceptingStates
+       */
       getNonAcceptingStates: function() {
          return minus(a.getStates() - a.getFinalStates());
       },
 
+      /**
+       * This method returns the set of states of the automaton
+       * @method
+       * @memberof Automaton
+       * @returns {Set} The set of non final states
+       */
       getStates: function() {
          return this.states;
       },
 
+      /**
+       * This method sets the set of states of the automaton
+       * @method
+       * @memberof Automaton
+       * @param {Set} states The set new set of states of the automaton
+       */
       setStates: function(states) {
          if(states instanceof Set || states instanceof Array) {
             this.states = to_set(states);
@@ -97,14 +178,36 @@
          }
       },
 
+      /**
+       * This method returns the set of final (accepting) states of the automaton
+       * @method
+       * @memberof Automaton
+       * @returns {Set} The set of final states of the automaton
+       * @see Automaton#setFinalStates
+       * @see Automaton#setFinalState
+       */
       getFinalStates: function() {
          return this.finalStates;
       },
 
+       /**
+       * This method is an alias of the getFinalStates method
+       * @method
+       * @memberof Automaton
+       * @returns {Set} The set of final states of the automaton
+       * @see Automaton#getFinalStates
+       */
       getAcceptingStates: function() {
          return this.finalStates;
       },
 
+      /**
+       * This method sets the set of final (accepting) states of the automaton. Every other state is set to non final.
+       * @method
+       * @memberof Automaton
+       * @param {Set} states The new set of final states of the automaton
+       * @see Automaton#getAcceptingStates
+       */
       setFinalStates: function(states) {
          if(states instanceof Set || states instanceof Array) {
             this.finalStates = to_set(states);
@@ -114,10 +217,23 @@
          }
       },
 
+      /**
+       * This method is an alias of the setFinalStates method
+       * @method
+       * @memberof Automaton
+       * @see Automaton#setFinalStates
+       */
       setAcceptingStates: function(states) {
          return this.setFinalState(states);
       },
 
+      /**
+       * This method sets the initial state of the automaton
+       * @method
+       * @memberof Automaton
+       * @param {any} state The new initial state of the automaton
+       * @see Automaton#getInitialState
+       */
       setInitialState: function(state) {
          this.states.add(state);
          this.q_init = state;
@@ -126,27 +242,78 @@
          }
       },
 
+      /**
+       * This method returns the initial state of the automaton
+       * @method
+       * @memberof Automaton
+       * @returns {any} The initial state of the automaton
+       * @see Automaton#setInitialState
+       */
       getInitialState: function() {
          return this.q_init;
       },
 
+      /**
+       * This method removes a state from the automaton
+       * @method
+       * @memberof Automaton
+       * @param {any} the state to remove
+       * @see addState
+       */
       removeState: function (state) {
          this.states.remove(state);
          this.finalStates.remove(state);
       },
 
+      /**
+       * This method checks if the automaton has the state given in parameter
+       * @method
+       * @memberof Automaton
+       * @param {any} state The state to check
+       * @returns {boolean} Returns true if the states is in the automaton, false otherwise.
+       */
       hasState: function(state) {
          return this.states.contains(state);
       },
 
+      /**
+       * This method checks if the state given in parameter is a final state of this automaton
+       * @method
+       * @memberof Automaton
+       * @param {any} state The state to check
+       * @returns {boolean} Returns true if the states is in the automaton, false otherwise.
+       */
       isFinalState: function(state) {
          return this.finalStates.contains(state);
       },
 
+       /**
+       * This method is an alias of the isFinalState method
+       * @method
+       * @memberof Automaton
+       * @returns {boolean} Returns true if the states is in the automaton, false otherwise.
+       * @see Automaton#isFinalState
+       */
       isAcceptingState: function(state) {
          return this.finalStates.contains(state);
       },
 
+       /**
+        * This method adds a transition to the automaton. It can takes one or three arguments: a Transition object, or a state, a symbol and a state. This method automatically adds states and symbols which have not yet been added to the automaton.
+        * 
+        * @example
+        *   A = new Automaton();
+        *   A.setInitialState(1);
+        *   A.addFinalState(2);
+        *   A.addTransition(1, 'a', 2);
+        *   var t = new Transition(1, epsilon, 2);
+        *   A.addTransition(t);
+        * @see Automaton#removeTransition
+        * @see Automaton#hasTransition
+        * @see Automaton#getTransitions
+        * @see Automaton#getTransitionsTable
+        * @see Transition
+        */
       addTransition: function(t) {
          if(arguments.length > 1) {
             return this.addTransition(new pkg.Transition(arguments[0], arguments[1], arguments[2]));
@@ -158,10 +325,36 @@
          this.trans.add(t);
       },
 
+      /**
+       * This function removes a transition to the automaton. It can takes one or three arguments: a Transition object, or a state, a symbol and a state. Don't forget to remove states or symbol that should also be removed, if necessary; this method does not do that automatically.
+       * 
+       * @see Automaton#addTransition
+       * @see Automaton#hasTransition
+       * @see Automaton#getTransitions
+       * @see Automaton#getTransitionsTable
+       * @see Transition
+       * @see Automaton#removeSymbol
+       * @see Automaton#removeState
+       */
       removeTransition: function(t) {
+         if(arguments.length > 1) {
+            return this.removeTransition(new pkg.Transition(arguments[0], arguments[1], arguments[2]));
+         }
+
          this.trans.remove(t);
       },
 
+       /**
+        * This method checks if a transition exists in the automaton. It can takes one or three arguments: a Transition object, or a state, a symbol and a state.
+        * 
+        * @returns {boolean} Returns true if the transition exists, false otherwise
+        * @see Automaton#addTransition
+        * @see Automaton#removeTransition
+        * @see Automaton#hasTransition
+        * @see Automaton#getTransitions
+        * @see Automaton#getTransitionsTable
+        * @see Transition
+        */
       hasTransition: function(t) {
          if(arguments.length > 1) {
             return this.hasTransition(new pkg.Transition(arguments[0], arguments[1], arguments[2]));
@@ -170,16 +363,26 @@
          return this.trans.contains(t);
       },
 
+      /**
+       * This method returns the set of transitions of the automaton
+       * @returns {Set} Returns the set of transitions of the Automaton
+       * @see Automaton#addTransition
+       * @see Automaton#removeTransition
+       * @see Automaton#hasTransition
+       * @see Automaton#getTransitionsTable
+       * @see Transition
+       */
       getTransitions: function() {
          return this.trans;
       },
 
+      /**
+       * This method returns the set of symbols of the Automaton.
+       * @returns {Set} Returns the alphabet of the automaton
+       * @see Automaton#addSymbol
+       */
       getAlphabet: function() {
          return this.Sigma;
-      },
-
-      getSymbolList: function() {
-         return this.Sigma.getList();
       },
 
       getTransitionsTable: function() {
@@ -428,11 +631,11 @@
    };
 
    pkg.get_symbol_list = function (a) {
-      return a.getSymbolList(a);
+      return a.getAlphabet(a).getList();
    };
 
    pkg.get_sorted_symbol_list = function (a) {
-      return a.getSymbolList(a).sort();
+      return a.getAlphabet(a).getList().sort();
    };
 
    pkg.set_alphabet = function (a, alphabet) {
@@ -642,7 +845,10 @@
    // get the automaton code
    pkg.automaton_code = function (a) {
       var q_init = a.getInitialState();
-      var r = (q_init || "_default").toString() + "\n";
+      if(q_init === undefined || q_init === null) {
+         return "";
+      }
+      var r = q_init.toString() + "\n";
       var F = a.getFinalStates();
       var Fl = F.getList();
       var Q = a.getStates().getSortedList();

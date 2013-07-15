@@ -325,7 +325,13 @@
                saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type:'text/plain;charset=utf-8'}), fn);
             }
             else {
-               saveAs(new Blob([automaton2dot(get_automaton(AutomataDesigner.currentIndex))], {type:'text/plain;charset=utf-8'}), fn);
+               var A = get_automaton(AutomataDesigner.currentIndex);
+               if(A) {
+                  saveAs(new Blob([automaton2dot(A)], {type:'text/plain;charset=utf-8'}), fn);
+               }
+               else {
+                  notify(_("There is no automaton to save."));
+               }
             }
          }
       };
@@ -343,7 +349,9 @@
       }
       document.getElementById('redraw').onclick = function() {
          automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, true);
-         AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+         if(automatoncodeedit.value) {
+            AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+         }
       };
 
       var exportResultFN     = _('automaton.txt'),
@@ -519,10 +527,11 @@
       };
 
       window.get_automaton = function(i) {
-         if(automataNumber <= i) {
-            throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn't exist.")), JSON.stringify(i)));
+         var acode;
+         if(automataNumber <= i ||  !(acode = AutomataDesigner.getAutomatonCode(i))) {
+            throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn't exist."), JSON.stringify(i))));
          }
-         return read_automaton(AutomataDesigner.getAutomatonCode(i));
+         return read_automaton(acode);
       };
 
       AutomataDesignerGlue.requestSVG = function(index) {
@@ -971,4 +980,5 @@
      "<p>Dans la fenêtre qui vous proposera de saisir des symboles, entrez simplement le symbole que vous voulez associer à la transition.</p><p>Si vous voulez saisir plusieurs symboles, séparez-les par des virgules.</p><p>Si vous voulez saisir des symboles contenant des espaces ou des virgules, encadrez-les par des guillemets doubles.</p><p>Si vous avez besoin de saisir un symbole contenant des guillemets ou des slashs, précédez ces deux caractères par un slash et encadrez le symbole par des guillemets.</p><p>Pour insérer un epsilon (ε-transition), vous pouvez le saisir directement ou utiliser <code>\\e</code>.</p>");
    _("fr", "Create a new automaton", "Créer un nouvel automate");
    _("fr", "Remove current automaton", "Supprimer cet automate");
+   _("fr", "There is no automaton to save.", "Il n'y a pas d'automate à enregistrer.");
 })();
