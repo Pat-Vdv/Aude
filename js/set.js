@@ -28,9 +28,23 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/**
+ * @author  Raphaël Jakse
+ * @file This is a library for manipulating mathematical sets.
+ * @note Any function of this package that taked a Set also accepts any object that can be turned into a set (e.g. Object, Array variables).
+ * @version 0.1a
+ */
+
 (function(pkg, that) {
    "use strict";
    var _ = pkg.setl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
+   
+   /**
+    * @classDescription class to manipulate sets.
+    * @class Set Set
+    * @param {Array, Set,Object} [l] This optional parameter is an Array, a Set or an Object containing the elements to add to the newly created set.
+    * @returns {Object} Returns a new Set object.
+    */
    pkg.Set = function(l) {
       this.l = {};
       this.listeners = [];
@@ -75,26 +89,54 @@
    }
 
    pkg.Set.prototype = {
+      /**
+       * This method tests the presence of an element in the set. The <has> method is an alias of this method.
+       * @method contains
+       * @memberof Set
+       * @param {Any type} element The element of which the presence in the set must be tested.
+       * @alias has
+       * @alias contains
+       * @returns {Boolean} Returns true if the element belongs to the set, false otherwise.
+
+       */
       contains: function(element) {
          element =  this.checkConstraint(element);
          return element in this.l;
          // fixme: this.l[element] === element doesn't work correctly because [1,4] !== [1,4]
       },
  
+      /**
+       * This method tests the presence of an element in the set. It is an alias of the method <contains>.
+       * @method has
+       * @memberof Set
+       * @param {Any type} element The element of which the presence in the set must be tested.
+       * @alias has
+       * @alias contains
+       * @returns {Boolean} Returns true if the element belongs to the set, false otherwise.
+       */
       has: function(element) {
          return this.contains(element);
       },
 
+      /**
+       * This method raise an exception if an element does not verifies the constraints to belong to the set.
+       * @method checkConstraint
+       * @memberof Set
+       * @param {any Type} element The element to check.
+       * @exception {Error} Throws an error if the element does not satisfy the constrains.
+       * @returns {any Type} Returns an eventually adapted version of the element (e.g. if the constraint is the element to be a set, if the element was an Array or an Object, it is turned into a Set).
+       * @see Set#setTypeConstraint
+       */
       checkConstraint: function(element) {
          if(this.typeConstraint) {
             if(typeof this.typeConstraint === "string") {
                if(this.typeConstraint === "integer") {
                   if(!(typeof element === 'number' && element % 1 === 0)) {
-                     throw(new Error(_("pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
+                     throw(new Error(_("pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.")));
                   }
                }
                else if(typeof element !== this.typeConstraint) {
-                  throw(new Error(_("pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
+                  throw(new Error(_("pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.")));
                }
             }
             else if(!(element instanceof this.typeConstraint)) {
@@ -109,6 +151,13 @@
          return element;
       },
 
+      /**
+       * This method adds an element to the set.
+       * @method add
+       * @memberof Set
+       * @param {any Type} element the element to add to the set.
+       * @exception {Error} throws an error if the element does not verify the belonging constraints.
+       */
       add: function(element) {
          element =  this.checkConstraint(element);
          if((element instanceof pkg.Set) && !this.contains(element)) {
@@ -132,11 +181,24 @@
          this.updated('add', element);
       },
 
+      /**
+       * This method removes an element from the set.
+       * @method remove
+       * @memberof Set
+       * @param {any Type} element The element to remove from the set.
+       */
       remove: function(element) {
          delete this.l[element];
          this.updated('remove', element);
       },
 
+      /**
+       * This method calculates the cardinal (i.e the number of elements) of the set.
+       * @method card
+       * @memberof Set
+       * @returns {integer} Returns the cardinal of the set.
+       * @see Set#isEmpty
+       */
       card: function() {
          var s=0;
          for(var i in this.l) {
@@ -144,6 +206,17 @@
          }
          return s;
       },
+
+      /**
+       * This method adds the elements of the set given in parameter to the set.
+       * @method unionInPlace
+       * @memberof Set
+       * @param {Set} set The set with which the union is done.
+       * @returns {Set} Returns the set itself.
+       * @see Set#interInPlace
+       * @see Set#minusInPlace
+       * @see Set#union
+       */
 
       unionInPlace: function(set) {
          set = pkg.to_set(set);
@@ -155,6 +228,17 @@
          this.updated('unionInPlace', set);
          return this;
       },
+
+      /**
+       * This method removes the elements of the set which are not in the set given in parameter.
+       * @method interInPlace
+       * @memberof Set
+       * @param {Set} set The set with which the intersection is done.
+       * @returns {Set} Returns the set itself.
+       * @see Set#unionInPlace
+       * @see Set#minusInPlace
+       * @see Set#inter
+       */
 
       interInPlace: function(set) {
          set = pkg.to_set(set);
@@ -170,6 +254,16 @@
          return this;
       },
 
+      /**
+       * This method removes the elements of the set which are in the set given in parameter.
+       * @method minusInPlace
+       * @memberof Set
+       * @param {Set} set The set with which the difference is done.
+       * @returns {Set} Returns the set itself.
+       * @see Set#interInPlace
+       * @see Set#unionInPlace
+       * @see Set#minus
+       */
       minusInPlace: function(set) {
          set = pkg.to_set(set);
          this._blockEvents = true;
@@ -181,6 +275,13 @@
          return this;
       },
 
+      /**
+       * This method checks if the set is a subset of the set given in parameter.
+       * @memberof Set
+       * @method subsetOf
+       * @param {Set} set The set which is tested to be the superset of the set.
+       * @returns {Boolean} Returns true if the set is a subset of the set given in parameter, false otherwise.
+       */
       subsetOf: function(set) {
          set = pkg.to_set(set);
          for(var i in this.l) {
@@ -191,6 +292,17 @@
          return true;
       },
 
+      /**
+       * This method returns the symmetric difference of the set and the set given in parameter.
+       * @memberof Set
+       * @method symDiff
+       * @param {Set} set The set with which the symmetric difference is done.
+       * @returns {Set} Returns the result of the symmetric difference.
+       * @see Set#minus
+       * @see Set#union
+       * @see Set#inter
+       * @see Set#plus
+       */
       symDiff: function(set) {
          var r = new pkg.Set();
          set = pkg.to_set(set);
@@ -207,6 +319,19 @@
          return r;
       },
 
+
+      /**
+       * This method returns a new set, which contains elements of the set and element passed in argument.
+       * @memberof Set
+       * @method plus
+       * @param {Any type} ... The elements to add to the set.
+       * @returns {Set} Returns the newly formed set.
+       * @see Set#minus
+       * @see Set#union
+       * @see Set#inter
+       * @see Set#symDiff
+       * @note The set isn't modified.
+       */
       plus: function() {
          var r = new pkg.Set();
          r.unionInPlace(this);
@@ -215,7 +340,13 @@
          }
          return r;
       },
-    
+
+      /**
+       * This method calculates the powerset of the set.
+       * @method powerset
+       * @memberof Set
+       * @returns {Set} Returns the powerset of the set.
+       */
       powerset: function() {
          if(this.card() === 0) {
             return new pkg.Set([new pkg.Set()]);
@@ -237,6 +368,14 @@
          }
       },
 
+      /**
+       * This method returns a list containing elements of the set.
+       * @method getList
+       * @memberof Set
+       * @note the ordering of the created list isn't defined.
+       * @returns {Array} Returns the list of the elements of the set.
+       * @see Set#getSortedList
+       */
       getList: function() {
          var r = [];
          for(var i in this.l) {
@@ -245,10 +384,25 @@
          return r;
       },
 
+      /**
+       * This method returns a sorted list containing elements of the set.
+       * @method getSortedList
+       * @memberof Set
+       * @note the ordering of the created list is defined by the sort method of arrays.
+       * @returns {Array} Returns the list of the elements of the set.
+       * @see Set#getSortedList
+       */
       getSortedList: function() {
          return this.getList().sort();
       },
 
+      /**
+       * This method returns a string representation of the set.
+       * @method toString
+       * @memberof Set
+       * @note ATTENTION: This method is not stabilized yet. The string representation of the set is still to be defined.
+       * @returns {string} Returns the string representation of the set.
+       */
       toString: function() {
          var res = '';
          var l = this.getSortedList();
@@ -266,6 +420,14 @@
          return '{' + res + '}';
       },
 
+      /**
+       * This method should be called whenever the set is modified.
+       * @method updated
+       * @private
+       * @memberof Set
+       * @param {string} event A string representing what modified the set (add, remove, ...).
+       * @param {Any Type} object An object you want to attach to the event.
+       */
       updated: function(event, object) {
          if(!this._blockEvents) {
             for(var i in this.listeners) {
@@ -276,10 +438,26 @@
          }
       },
 
+      /**
+       * This method is to track modifications of the set (element removed, element added,...).
+       * @method listen
+       * @private
+       * @memberof Set
+       * @param {Function} callback Function which will be called when the given event was fired.
+       * @param {string} event The event to track, or "all" to track all events.
+       */
       listen: function(callback, event) {
          this.listeners.push({event:event,callback:callback});
       },
 
+      /**
+       * This method is to stop tracking modifications of the set.
+       * @method release
+       * @private
+       * @memberof Set
+       * @param {Function} callback Function which was called when the given event was fired.
+       * @param {string} event The event which was tracked, or "all".
+       */
       release: function(callback, event) {
          for(var i in this.listeners) {
             if(this.listeners[i].event === event && this.listeners[i].callback === callback) {
@@ -288,16 +466,37 @@
          }
       },
 
+      /**
+       * This method is to iterate over all the elements of the set.
+       * @method forEach
+       * @memberof Set
+       * @param {Function} callback Function which will be called on each element. This function will be called with one argument: the element of the current iteration.
+       * @note To stop iterating at any time, throw an exception from within the function.
+       */
       forEach: function(callback) {
          for(var i in this.l) {
             callback(this.l[i]);
          }
       },
 
+      /**
+       * This method is to set a type constraint on elements that will be added to the set.
+       * @method setTypeConstraint
+       * @memberof Set
+       * @param {Any type} typeConstraint a string representation of a Javascript basic type, or a constructor of a Javascript class.
+       * @note This function should always be called when the set is empty because it doesn't check the constraint on the current elements of the set.
+       */
       setTypeConstraint: function(typeConstraint) {
          this.typeConstraint = typeConstraint;
       },
 
+      /**
+       * This method is to verify a property on each element of the set. If the function passed in argument returns true for all elements of the set, this method returns true; false otherwise.
+       * @method every
+       * @memberof Set
+       * @param {Function} func Function which will be called on each element. This function should return true or false.
+       * @note To stop iterating at any time, throw an exception from within the function, or return false. Iterating is stopped whenever all elements have been tested, or the callback function returns false.
+       */
       every: function(func) {
          for(var i in this.l) {
             if(!func(this.l[i])) {
@@ -307,10 +506,20 @@
          return true;
       },
 
+      /**
+       * This method returns a copy of the set.
+       * @method copy
+       * @memberof Set
+      */
       copy : function() {
          return new pkg.Set(this);
       },
 
+      /**
+       * This method empties the set.
+       * @method empty
+       * @memberof Set
+      */
       empty : function() {
          var l = this.getList();
          this._blockEvents = true;
@@ -320,7 +529,13 @@
          this._blockEvents = false;
          this.updated('empty');
       },
- 
+
+      /**
+       * This method tests whether the set is empty or not.
+       * @method isEmpty
+       * @memberof Set
+       * @returns {Boolean} Returns true if the set is empty, false otherwise.
+      */
       isEmpty : function() {
          for(var i in this.l) {
             return false;
@@ -441,5 +656,5 @@
       return set.isEmpty();
    };
 
-   _("fr", "pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.", "pkg.Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
+   _("fr", "pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.", "pkg.Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
 })(this, this);
