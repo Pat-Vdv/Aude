@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head><meta http-equiv="content-type" content="text/html; charset=utf-8" /><title>AutomatonJS — Programming Language for automata</title><meta name="author" content="Raphaël Jakse (raphael dot jakse at gmail dot com)" /><link rel="stylesheet" href="whata.css" /><link rel="stylesheet" href="geshi.css" /><link rel="stylesheet" href="notes.css" /><script type="text/javascript"
+         src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+      </script>
+      <script>
+         MathJax.Hub.Config({
+            tex2jax: {
+               inlineMath : [],
+               displayMath : [],
+               ignoreClass: "tex2jax_ignore",
+               processClass: "tex2jax_process",
+//             preview: "none",
+               preferredFont: "STIX",
+               processEnvironments: false
+            }
+         });
+      </script>
+   </head>
+   <body class="whata"><h1 id="doc-title">AutomatonJS — Programming Language for automata</h1><p id="doc-author">Raphaël Jakse (raphael dot jakse at gmail dot com)</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"> Introduction</h1><p>AutomatonJS is a dedicated language. Its goal is easing the task of writing algorithms working on automata in a pedagogic and intuitive way. Of course, intuition is a rather personal element and two different persons can have different feelings on what they find intuitive or not, so trying to design an intuitive language that will please everybody might be a waste of time. Therefore, instead of just being intuitive, defining more precise directions to follow when designing the language should be a good start.</p><p>So far, these directions were considered:</p><ol><li><p> Do not reinvent everything. Instead, try to aggregate wonderful ideas to conceive a wonderful language. This has several advantage:</p><ol><li><p> With a good probability, what exists was already deeply though by other people we can probably trust, so the idea is well-tried, ready for usage. By using other people ideas when they exist give them credit on their work and save your time for completely new, unexplored ideas.</p></li><li><p> If a way of doing things is already spread, people don't have to learn something new. While learning new things is great, be forced to learn a new programming language to do a specific task can make people give up the usage of the tool.</p></li></ol></li><li><p> Close to the mathematics. Scientific students and scientists are in the target of the language and math is (should be, at least!) a familiar language through these people. Mathematical language is precise, clear and concise and algorithms on automaton are often described with mathematical notation.</p></li><li><p> Be explicit. No weird symbols, no weird idioms. Unfortunately, mathematical symbols can be difficult to handle while programming. However, ASCII art to represent them is not desirable. The code should be readable for newcomers and gessing sense of expressions of the language should be easy and reliable. <code><code class="whata-cdata">|_|</code></code> and <code><code class="whata-cdata"> /\</code></code> for the union and the intersection operators are hard to understand. &quot;union&quot; and &quot;inter&quot; are more likely to be understood at the first glance.</p></li></ol><p>In &quot;do not reinvent everything&quot;, we have &quot;do not reinvent a new language&quot;. More precisely, AutomatonJS is not really a new language: choice to base AutomatonJS on a already existant language was made, with these advantages in mind:</p><ul><li><p> Real dedicated languages, by design, are limited. They have features their authors thought of and as time flies, successful dedicated languages tend to be generalist. Lets have a full-featured language which already has its community and its ecosystem.</p></li><li><p> Less work for more. An already existent language already has well-tried tools like interpreters, (JIT-)compilers, debuggers, editors, etc. and these tools have been made powerful by years.</p></li><li><p> If the community of the base language is already large, people will find documentation and help more easily and less people will have to learn a new language.</p></li></ul><p>The choice of the base language was taken with these points in mind:</p><ul><li><p> relatively familiar syntax (close to C's) for most people</p></li><li><p> Great community</p></li><li><p> Great tools</p></li><li><p> Web-compatible, that is to say, easy to run in a browser.</p></li><li><p> Strong type handling, which is better for both pedagogic and debugging concerns.</p></li></ul><p>Based of these points, a language comes rapidly in mind: Javascript. Javascript is the only one language to run in browser natively and present browsers competitions imply constant enhancement of the language and the tools running it (engines, interpreters, JIT compilers, debuggers), their speed included. Its C-like syntax is also a great point.</p><p>In fact, pure Javascript in its ECMAScript 6 version (still to be released) is very close to what seems to be needed to play with automata comfortably. What is still to add to the language is an Automaton class, a decent set handling and a better type handling: that's what is AutomatonJS for. Learning AutomatonJS is learning pure Javascript plus the few additions of AutomatonJS to Javascript. The base language of AutomatonJS is Javascript in its <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode" class="whata-link"> strict mode</a><sup class="whata-footref" id="whata-footref-1"><a href="#whata-footnote-1">[1]</a></sup>.</p><p>Given that, the goal is to stay very close to Javascript and to add just what we need. However, except Firefox, browsers of nowadays still don't support ECMAScript 6. Unfortunately, unlike ECMAScript 6, older versions of ECMAScript are really lacking things. As a result, work has been done to support some ECMAScript 6 points even in non-ecmascript 6 browsers.</p><p>In this documentation, differences between what is done when coding in pure Javascript and what should be done in AutomatonJS instead will be highlighted. This includes usage of some ECMAScript 6 subtleties. This documentation is not there to learn how to program. It is here to present the most important features of Javascript that should be known to program in AutomatonJS and to cover additions of AutomatonJS to Javascript and best practices to follow when programming in AutomatonJS.</p><p>Let's go.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"><span class="whata-title-number">1 </span> Statements in Javascript</h1><p>Statements, in Javascript, are instructions or expression ended by a semicolon, or control flow statements (which don't end with a semicolon). Empty statements are also allowed, so e.g. writing a semicolon right after an <code>if</code> statement is valid.</p><p>The semicolon is often optional, so a end of line can replace entirely a semicolon. To see when the semicolon can be omitted, you can look at the <a href="http://www.ecma-international.org/ecma-262/5.1/?sec-7.9" class="whata-link"> Section 7.9 of the ECMAScript 5.1 language specification</a><sup class="whata-footref" id="whata-footref-2"><a href="#whata-footnote-2">[2]</a></sup>.</p><p>Statements can be grouped at any time with curly brackets. Thus, this is valid :<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="de1"><pre class="de1">hello<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+ 
+<span class="br0">&#123;</span>
+   action<span class="br0">&#40;</span><span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+   action<span class="br0">&#40;</span><span class="nu0">2</span><span class="br0">&#41;</span><span class="sy0">;</span>
+   action<span class="br0">&#40;</span><span class="nu0">3</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+ 
+hello<span class="br0">&#40;</span><span class="nu0">2</span><span class="br0">&#41;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div><p>Curly brackets introducing a new scope, in browsers that support the <code>let</code> keyword natively, these two following codes are equivalent:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1">let<span class="br0">&#40;</span>i<span class="sy0">=</span><span class="nu0">2</span><span class="sy0">,</span> d<span class="sy0">=</span><span class="st0">&quot;hello&quot;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   console.<span class="me1">log</span><span class="br0">&#40;</span>d<span class="br0">&#41;</span><span class="sy0">;</span>
+   <span class="sy0">++</span>i<span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="co1">// i and d are undefined everywhere</span></pre></td></tr></tbody></table></div><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1"><span class="br0">&#123;</span>
+   let i<span class="sy0">=</span><span class="nu0">2</span><span class="sy0">,</span> d<span class="sy0">=</span><span class="st0">&quot;hello&quot;</span><span class="sy0">;</span>
+   console.<span class="me1">log</span><span class="br0">&#40;</span>d<span class="br0">&#41;</span><span class="sy0">;</span>
+   <span class="sy0">++</span>i<span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="co1">// i and d are undefined in browser supporting let declarations</span></pre></td></tr></tbody></table></div><p>Although the semicolon can be optional, I strongly advise you to always write it unless you really know what you are doing. This is particularly true in AutomatonJS, which sometimes rely on semicolons to make the difference between a set literal and a block of instructions.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"><span class="whata-title-number">2 </span> Declaring variables</h1><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">2.1 </span> The <code>var</code> statement</h1><p>In Javascript, declaring variables is done with the <code>var</code> keyword :<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">var</span> v <span class="sy0">=</span> <span class="st0">&quot;Hello world!&quot;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div><p>While this is possible is AutomatonJS, this is not advised. The <code>let</code> keyword is preferred.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">2.2 </span> The <code>let</code> statement</h1><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+</pre></td><td class="de1"><pre class="de1">let v <span class="sy0">=</span> <span class="st0">&quot;Hello world!&quot;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div><p>The <code>let</code> keyword, when natively supported by the browser, acts differently than <code>var</code>. The <code>var</code> keyword define the variable at the function level :</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1">let enstein <span class="sy0">=</span> <span class="st0">&quot;a scientist&quot;</span><span class="sy0">;</span>
+<span class="kw1">if</span><span class="br0">&#40;</span>enstein<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="kw1">var</span> firstName <span class="sy0">=</span> <span class="st0">&quot;albert&quot;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">else</span> <span class="br0">&#123;</span>
+   <span class="kw1">var</span> firstName <span class="sy0">=</span> <span class="st0">&quot;roger&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+alert<span class="br0">&#40;</span>firstName<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows &quot;albert&quot;.</span></pre></td></tr></tbody></table></div><p>On the contrary, <code>let</code> works at block-level:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1">let enstein <span class="sy0">=</span> <span class="st0">&quot;a scientist&quot;</span><span class="sy0">;</span>
+<span class="kw1">if</span><span class="br0">&#40;</span>enstein<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   let firstName <span class="sy0">=</span> <span class="st0">&quot;albert&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">else</span> <span class="br0">&#123;</span>
+   let firstName <span class="sy0">=</span> <span class="st0">&quot;roger&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+alert<span class="br0">&#40;</span>firstName<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// ERROR, firstName is not defined.</span></pre></td></tr></tbody></table></div><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">2.2.1 </span> Current limitation</h1><p>In browsers that not support <code>let</code> natively, <code>let</code> acts like <code>var</code>. That is to say, the previous code shows &quot;albert&quot; instead of issuing an error. As of Jully 2013, Firefox is the only browser to show the right behavior.</p></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">2.3 </span> The <code>let</code> expression</h1><p>The <code>let</code> expression allows you to declare a variable inside a block.<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="de1"><pre class="de1">let f <span class="sy0">=</span> <span class="nu0">5</span><span class="sy0">;</span>
+ 
+let <span class="br0">&#40;</span>i<span class="sy0">=</span><span class="nu0">2</span><span class="sy0">,</span> d<span class="sy0">=</span><span class="nu0">3</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   alert<span class="br0">&#40;</span>i <span class="sy0">*</span> d <span class="sy0">*</span> f<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows 30</span>
+   d <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+   f <span class="sy0">=</span> <span class="nu0">9</span><span class="sy0">;</span>
+   alert<span class="br0">&#40;</span>d<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows 0;</span>
+<span class="br0">&#125;</span>
+<span class="co1">// f is still defined and is equal to 9</span>
+<span class="co1">// but i and d are not.</span></pre></td></tr></tbody></table></div><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">2.3.1 </span> Current limitation</h1><p>In browsers that don't support the let expression natively, you cannot define things inside the <code>let</code> expression and have it defined outside when going out the let block :<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="de1"><pre class="de1">let f <span class="sy0">=</span> <span class="nu0">5</span><span class="sy0">;</span>
+ 
+let <span class="br0">&#40;</span>i<span class="sy0">=</span><span class="nu0">2</span><span class="sy0">,</span> d<span class="sy0">=</span><span class="nu0">3</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  <span class="kw1">var</span> g <span class="sy0">=</span> <span class="nu0">2</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+ 
+alert<span class="br0">&#40;</span>g<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// g is not defined in Chromium, but is equal to 2 in Firefox.</span></pre></td></tr></tbody></table></div><p>Anyway, don't use the <code>var</code> keyword. Use <code>let</code> and don't define variable inside a block to have it define outside. Instead, write:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="de1"><pre class="de1">let f <span class="sy0">=</span> <span class="nu0">5</span><span class="sy0">;</span>
+let g<span class="sy0">;</span> <span class="co1">// that where g should be defined anyway</span>
+let <span class="br0">&#40;</span>i<span class="sy0">=</span><span class="nu0">2</span><span class="sy0">,</span> d<span class="sy0">=</span><span class="nu0">3</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  g <span class="sy0">=</span> <span class="nu0">2</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+ 
+alert<span class="br0">&#40;</span>g<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// this shows 2 everywhere.</span></pre></td></tr></tbody></table></div></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">2.4 </span> Typed declaration</h1><p>This is a AutomatonJS specific way of defining variables and is the recommended way of doing things as it forces the developer not to change the type of variables.</p><p>The syntax is the following :</p><pre class="whata-code-block"><code>variable_name : Type;
+variable_name : Type = initial_value;
+variable_name : Set of Type;</code></pre><p>Where Type is one of these case-insensitive keywords (keyword inside the same item list are equivalent):</p><ul><li><p> String</p></li><li><p> Integer or int</p></li><li><p> Number or float</p></li><li><p> Boolean or bool</p></li><li><p> Set</p></li><li><p> Automaton</p></li><li><p> Object (native Javascript Object)</p></li><li><p> List, Table, Array</p></li><li><p> Function</p></li></ul><p>Additionally, Type can be any defined Javascript class. In this case, Type is case-sensitive.</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">2.4.1 </span> Examples :</h1><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="de1"><pre class="de1">i <span class="sy0">:</span> Integer<span class="sy0">;</span>        <span class="co1">// i is an integer initialized to 0;</span>
+j <span class="sy0">:</span> Integer <span class="sy0">=</span> <span class="nu0">2</span><span class="sy0">;</span>    <span class="co1">// j is an integer initialized to 2;</span>
+d <span class="sy0">:</span> <span class="kw4">Number</span><span class="sy0">;</span>         <span class="co1">// d is a number initialized to 0;</span>
+l <span class="sy0">:</span> List<span class="sy0">;</span>           <span class="co1">// l is a Javascript native Array.</span>
+s <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>         <span class="co1">// s is an empty string</span>
+A <span class="sy0">:</span> Automaton<span class="sy0">;</span>      <span class="co1">// A is an Automaton</span>
+B <span class="sy0">:</span> Set<span class="sy0">;</span>            <span class="co1">// B is a set which can contain anything</span>
+C <span class="sy0">:</span> Set of Integer<span class="sy0">;</span> <span class="co1">// C is a Set restricted to integers.</span>
+D <span class="sy0">:</span> Set of Set<span class="sy0">;</span>     <span class="co1">// D is a Set of Set</span></pre></td></tr></tbody></table></div></section><p>Typed declarations define variable in the block, not in the function, when let is natively supported by the browser. They behave exactly like the AutomatonJS <code>let</code> keyword.</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">2.4.2 </span> Current limitations</h1><p>The limitations are the same as for <code>let</code> : the scope of definition is wrong in browsers which don't support the <code>let</code> keyword natively.</p><p>Moreover, constraint on sets of sets can't be fully writen with a typed declaration:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+</pre></td><td class="de1"><pre class="de1">s <span class="sy0">:</span> Set of Set of Integer<span class="sy0">;</span> <span class="co1">// this won't work</span></pre></td></tr></tbody></table></div></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">2.5 </span> The <code>const</code> statement</h1><p>The <code>const</code> statement lets you define constants. It does exactly the same as the <code>let</code> keyword, but forbids the modification of the defined variable.</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">const</span> bestYear <span class="sy0">=</span> <span class="nu0">1993</span><span class="sy0">;</span>
+ 
+bestYear <span class="sy0">=</span> <span class="nu0">1992</span><span class="sy0">;</span> <span class="co1">// TypeError: s is read-only</span></pre></td></tr></tbody></table></div><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">2.5.1 </span> Current limitations</h1><p><code>const</code> defines constants at function level, like <code>var</code>, where it should define them at block level, like <code>let</code>:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">if</span><span class="br0">&#40;</span><span class="kw2">true</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  <span class="kw1">const</span> g <span class="sy0">=</span> <span class="nu0">2</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> g<span class="sy0">;</span> <span class="co1">// returns 2 instead of raising an error about g being undefined.</span></pre></td></tr></tbody></table></div></section></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"><span class="whata-title-number">3 </span> Control flow statements</h1><p>Control flow statements let you structure your programs. They allow the execution or the repetition of a set of instructions under certain conditions and change the order of execution of the code in a logical way.</p><p>In AutomatonJS, like in Javascript, conditions are surrounded by parenthesis and instructions can be grouped with curly brackets.<br />Like in C, curly brackets can be omitted when a block of instructions is reduced to one instruction.</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">3.1 </span> The <code>if</code> / <code>else</code> statement</h1><p>The <code>if</code> statement look like the following:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">if</span><span class="br0">&#40;</span>condition<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="co1">// instructions to execute if condition is verified</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div><p>With the <code>else</code> part:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">if</span><span class="br0">&#40;</span>condition<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="co1">// instructions to execute  if condition is verified</span>
+<span class="br0">&#125;</span>
+<span class="kw1">else</span> <span class="br0">&#123;</span>
+   <span class="co1">// instructions to execute  if condition is not verified</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div><p>There is no <code>elseif</code> keyword. However, Javascript's syntax let you write things like:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">if</span><span class="br0">&#40;</span>whereToStudy <span class="sy0">===</span> ujf<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">=</span> <span class="st0">&quot;right decision&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">else</span> <span class="kw1">if</span><span class="br0">&#40;</span>holidays<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">=</span> <span class="st0">&quot;rest a little&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">else</span> <span class="kw1">if</span><span class="br0">&#40;</span>student<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">=</span> <span class="st0">&quot;stages are great&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">else</span> <span class="br0">&#123;</span>
+   res <span class="sy0">=</span> <span class="st0">&quot;unhandled case&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">3.2 </span> Loop statements</h1><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">3.2.1 </span> The <code>while statement</code></h1><p>The <code>while</code> statement looks like the following:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+</pre></td><td class="de1"><pre class="de1">while<span class="br0">&#40;</span>condition<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="co1">// instuctions to execute while condition is true</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">3.2.2 </span> The <code>do...while</code> statement</h1><p>The <code>do...while</code> statement looks like the following:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">do</span> <span class="br0">&#123;</span>
+   <span class="co1">// instructions executed one time, an then re-executed until condition is false</span>
+<span class="br0">&#125;</span>
+while<span class="br0">&#40;</span>condition<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// notice the semicolon here</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">3.2.3 </span> The <code>for</code> statement</h1><p>The <code>for</code> statement looks like this:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">for</span><span class="br0">&#40;</span>initialisation <span class="sy0">;</span> condition <span class="sy0">;</span> iterationStatement<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="co1">// instruction to be executed while condition is true</span>
+   <span class="co1">// iterationStatement after each iteration</span>
+   <span class="co1">// initialisation is executed before entering the loop.</span>
+   <span class="co1">// the scope of the initialisation is that of the body of the loop</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div><p>Example:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1">let res <span class="sy0">=</span> <span class="st0">&quot;&quot;</span><span class="sy0">;</span>
+<span class="kw1">for</span><span class="br0">&#40;</span>let line<span class="sy0">=</span><span class="st0">&quot;I won't write crappy code anymore&quot;</span><span class="sy0">,</span> i<span class="sy0">=</span><span class="nu0">0</span><span class="sy0">,</span> count<span class="sy0">=</span><span class="nu0">100</span><span class="sy0">;</span> i <span class="sy0">&lt;</span> count<span class="sy0">;</span> <span class="sy0">++</span>i<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">+=</span> line <span class="sy0">+</span> <span class="st0">&quot;<span class="es0">\n</span>&quot;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="co1">// here: line, i and count are not defined</span>
+<span class="kw1">return</span> res<span class="sy0">;</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">3.2.4 </span> The <code>foreach</code> statement</h1><p>This is an AutomatonJS-specific structure. It let you iterate over sets and lists in a natural way.</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> <span class="br0">&#91;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">6</span><span class="sy0">,</span><span class="nu0">8</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#93;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">+=</span> e.<span class="me1">toString</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">+</span> <span class="st0">' '</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="co1">// here, e is undefined</span>
+alert<span class="br0">&#40;</span>res<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows &quot;2 4 6 8 10 &quot;</span></pre></td></tr></tbody></table></div><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span> <span class="sy0">=</span> <span class="st0">&quot;H-Ways to greet somebody in English : &quot;</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> <span class="br0">&#123;</span><span class="st0">&quot;hey&quot;</span><span class="sy0">,</span> <span class="st0">&quot;hello&quot;</span><span class="sy0">,</span> <span class="st0">&quot;hi&quot;</span><span class="br0">&#125;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">+=</span> e <span class="sy0">+</span> <span class="st0">' '</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> res<span class="sy0">;</span> <span class="co1">// &quot;H-Ways to greet somebody in English : hey hi hello &quot;</span></pre></td></tr></tbody></table></div><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">3.2.4.1 </span> Warning: do not modify the element of iteration</h1><p>Do not do that, it will break things or result in unexpected behaviors:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1">s <span class="sy0">:</span> Set of Set <span class="sy0">=</span> <span class="br0">&#123;</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="br0">&#93;</span> <span class="sy0">,</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span> <span class="nu0">4</span><span class="br0">&#93;</span><span class="sy0">,</span> <span class="br0">&#91;</span><span class="nu0">6</span><span class="sy0">,</span> <span class="nu0">5</span><span class="br0">&#93;</span> <span class="br0">&#125;</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> s<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   e.<span class="me1">push</span><span class="br0">&#40;</span><span class="nu0">3</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> <span class="br0">&#91;</span>s.<span class="me1">toString</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">,</span> s contains <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="br0">&#93;</span><span class="br0">&#93;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div><p>This code returns a couple : the string representation of the set and a boolean indicating whether <code><code class="whata-cdata"> [1,2,3] </code></code> belongs to the set.</p><p><code><code class="whata-cdata"> [1,2,3] </code></code> is present in the string representation of the set (and is indeed present in the set), but cannot be found.</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1">s <span class="sy0">:</span> Set of Set <span class="sy0">=</span> <span class="br0">&#123;</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="br0">&#93;</span> <span class="sy0">,</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span> <span class="nu0">4</span><span class="br0">&#93;</span><span class="sy0">,</span> <span class="br0">&#91;</span><span class="nu0">6</span><span class="sy0">,</span> <span class="nu0">5</span><span class="br0">&#93;</span> <span class="br0">&#125;</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> s<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   e <span class="sy0">=</span> <span class="br0">&#91;</span>e<span class="br0">&#91;</span><span class="nu0">0</span><span class="br0">&#93;</span><span class="sy0">,</span> <span class="nu0">0</span><span class="br0">&#93;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> <span class="br0">&#91;</span>s.<span class="me1">toString</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">,</span> s contains <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">0</span><span class="br0">&#93;</span><span class="br0">&#93;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div><p>Here, the set remains unchanged, as e was a <i>reference</i> to the successive elements of s and the assignation operator scratches this references instead of modifying the actual element of the set. This is also true for simple elements as numbers, strings, regular expressions, ... modifying them by an assignation breaks the reference and do not affect the parent.</p><p>This works:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1">s <span class="sy0">:</span> Set of Set <span class="sy0">=</span> <span class="br0">&#123;</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="br0">&#125;</span> <span class="sy0">,</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span> <span class="nu0">4</span><span class="br0">&#125;</span><span class="sy0">,</span> <span class="br0">&#123;</span><span class="nu0">6</span><span class="sy0">,</span> <span class="nu0">5</span><span class="br0">&#125;</span> <span class="br0">&#125;</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> s<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   e.<span class="me1">add</span><span class="br0">&#40;</span><span class="st0">&quot;hello&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> <span class="br0">&#91;</span>s.<span class="me1">toString</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">,</span> s contains <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span> <span class="nu0">2</span><span class="sy0">,</span> <span class="st0">&quot;hello&quot;</span><span class="br0">&#125;</span><span class="br0">&#93;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div><p>Because sets inside sets tell their parents about their modifications. But be very careful with this, as habits of modifying the element of iteration can rapidly be taken, even when this hurts.</p><p>Please, don't modify the set or the list you are iterating on during the loop, this results in undefined behaviors, as in many languages:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1">s <span class="sy0">:</span> List <span class="sy0">=</span>  <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#93;</span><span class="sy0">;</span>
+r <span class="sy0">:</span> Set<span class="sy0">;</span>
+ 
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> l<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  l.<span class="me1">push</span><span class="br0">&#40;</span>e<span class="sy0">+</span><span class="nu0">10</span><span class="br0">&#41;</span><span class="sy0">;</span>
+  r.<span class="me1">add</span><span class="br0">&#40;</span>e<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span> <span class="co1">// infinite loop</span>
+<span class="kw1">return</span> r<span class="sy0">;</span></pre></td></tr></tbody></table></div><p>Why should this loop be infinite...</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1">s <span class="sy0">:</span> Set <span class="sy0">=</span>  <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span><span class="sy0">;</span>
+r <span class="sy0">:</span> Set<span class="sy0">;</span>
+ 
+foreach<span class="br0">&#40;</span>e <span class="kw1">in</span> s<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  s.<span class="me1">add</span><span class="br0">&#40;</span>e<span class="sy0">+</span><span class="nu0">10</span><span class="br0">&#41;</span><span class="sy0">;</span>
+  r.<span class="me1">add</span><span class="br0">&#40;</span>e<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> r<span class="sy0">;</span> <span class="co1">// returns {1,2,3,4,5}</span></pre></td></tr></tbody></table></div><p>...whereas this one should end ?</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">3.2.4.2 </span> A mathematical way of writing some <code>for</code> loops</h1><p>You can use <code>foreach</code> to write some <code>for</code> loops with a syntax closer to mathematics :</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">for</span><span class="br0">&#40;</span>let i<span class="sy0">=</span><span class="nu0">1</span><span class="sy0">;</span> i <span class="sy0">&lt;=</span> <span class="nu0">10</span><span class="sy0">;</span> <span class="sy0">++</span>i<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   console.<span class="me1">log</span><span class="br0">&#40;</span>i<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div><p>is exactly equivalent to, and is the generated code for:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+</pre></td><td class="de1"><pre class="de1">foreach<span class="br0">&#40;</span>i <span class="kw1">in</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span>...<span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#125;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   console.<span class="me1">log</span><span class="br0">&#40;</span>i<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre></td></tr></tbody></table></div><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-5"><span class="whata-title-number">3.2.4.2.1 </span> Note</h1><p>As comprehensive sets are still not supported by AutomatonJS, <code>{1,...,10}</code> is not a real set literal. As a result, you cannot write things like:<br /></p><pre class="whata-code-block"><code>s : Set = {1,...,10}; // this should be possible in the future, but is still a syntax error for the moment.</code></pre><p>You can only write <code>{a,...,b}</code> sets in <code>foreach</code> loops, with <code>a</code> and <code>b</code> being any number or integer variables.</p></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">3.2.4.3 </span> Note</h1><p>If you prefer using <code>of</code> instead of <code>in</code>, is  the <code>foreach</code> construct it's up to you.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">3.2.4.4 </span> Current limitation</h1><p>Breaking to a specified label doesn't work in browser not natively supporting the <code>for...of</code> structure. simple <code>break</code> will however work as expected.</p></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">3.2.5 </span> The <code>for...in</code> statement</h1><p>The <code>for...in</code> statement is a Javascript construction to iterate over indexes of lists or enumerable properties of objects.<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>
+l   <span class="sy0">:</span> List <span class="sy0">=</span>  <span class="br0">&#91;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">6</span><span class="sy0">,</span><span class="nu0">8</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#93;</span><span class="sy0">;</span>
+ 
+<span class="kw1">for</span><span class="br0">&#40;</span>let i <span class="kw1">in</span> l<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">+=</span> i <span class="sy0">+</span> <span class="st0">': '</span> <span class="sy0">+</span> l<span class="br0">&#91;</span>i<span class="br0">&#93;</span> <span class="sy0">+</span> <span class="st0">'<span class="es0">\n</span>'</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> res<span class="sy0">;</span>
+<span class="coMULTI">/* returns :</span>
+<span class="coMULTI">   &quot;0: 2</span>
+<span class="coMULTI">    1: 4</span>
+<span class="coMULTI">    2: 6</span>
+<span class="coMULTI">    3: 8</span>
+<span class="coMULTI">    4: 10&quot;</span>
+<span class="coMULTI">*/</span></pre></td></tr></tbody></table></div><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">3.2.5.1 </span> Note</h1><ul><li><p> <code>for...in</code> has not much sense on sets, as their elements have no indexes. Use <code>foreach</code> or <code>for...of</code> instead.</p></li><li><p> if you need the index corresponding to the last iteration, declare the iteration variable before the loop :</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1">l   <span class="sy0">:</span> List <span class="sy0">=</span>  <span class="br0">&#91;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">6</span><span class="sy0">,</span><span class="nu0">8</span><span class="sy0">,</span><span class="nu0">10</span><span class="br0">&#93;</span><span class="sy0">;</span>
+i   <span class="sy0">:</span> Integer<span class="sy0">;</span>
+<span class="kw1">for</span><span class="br0">&#40;</span>i <span class="kw1">in</span> l<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="co1">// do something here</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> i<span class="sy0">;</span> <span class="co1">// returns 4</span></pre></td></tr></tbody></table></div></li></ul></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">3.2.6 </span> The <code>for...of</code> statement</h1><p>The <code>for...of</code> statement is a more complicated yet more flexible way to do what <code>foreach</code> does. It is an ECMAScript 6 structure handled by AutomatonJS when browsers do not handle it themselves.<br />The real difference between foreach and <code>for...of</code> if that the iteration variable must be explicitly declared :<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>
+ 
+<span class="kw1">for</span><span class="br0">&#40;</span>let i of <span class="br0">&#91;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">6</span><span class="sy0">,</span><span class="nu0">8</span><span class="br0">&#93;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">+=</span> i <span class="sy0">+</span> <span class="st0">' '</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> res<span class="sy0">;</span></pre></td></tr></tbody></table></div><p>If you need to know what was the last iterated element in the loop, <code>foreach</code> does not really help you. On the contrary, <code>for...of</code>, while probably less intuitive, let you do this in an elegant way:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>
+ 
+i <span class="sy0">:</span> integer<span class="sy0">;</span>
+<span class="kw1">for</span><span class="br0">&#40;</span>i of <span class="br0">&#91;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">6</span><span class="sy0">,</span><span class="nu0">8</span><span class="br0">&#93;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   res <span class="sy0">+=</span> i <span class="sy0">+</span> <span class="st0">' '</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> i<span class="sy0">;</span> <span class="co1">// returns 8</span></pre></td></tr></tbody></table></div><p>If you want to stay compatible with pure ECMAScript, use <code>for..of</code> instead of <code>foreach</code>.</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">3.2.6.1 </span> Current limitation</h1><p>Breaking to a specified label doesn't work in browser not natively supporting the <code>for...of</code> structure. simple <code>break</code> will however work as expected.</p></section></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">3.3 </span> The <code>break</code> statement</h1><p><code>break</code> lets you immediately get out of a loop even if the condition is true / if there are still instructions to execute:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>i <span class="kw1">in</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#93;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="kw1">if</span><span class="br0">&#40;</span>i <span class="sy0">===</span> <span class="nu0">3</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+      <span class="kw1">break</span><span class="sy0">;</span>
+   <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+alert<span class="br0">&#40;</span><span class="st0">'done'</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows 'done'</span>
+<span class="kw1">return</span> res<span class="sy0">;</span> <span class="co1">// returns &quot;1 2 &quot;</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">3.4 </span> The <code>continue</code> statement</h1><p><code>continue</code> lets you jump to the next iteration, or get out of the current loop if no iterations remain, without executing the rest of the current iteration's instructions:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1">res <span class="sy0">:</span> <span class="kw4">String</span><span class="sy0">;</span>
+foreach<span class="br0">&#40;</span>i <span class="kw1">in</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#93;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   <span class="kw1">if</span><span class="br0">&#40;</span>i <span class="sy0">===</span> <span class="nu0">3</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+      <span class="kw1">continue</span><span class="sy0">;</span>
+   <span class="br0">&#125;</span>
+   res <span class="sy0">+=</span> i <span class="sy0">+</span> <span class="st0">' '</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="kw1">return</span> res<span class="sy0">;</span> <span class="co1">// returns &quot;1 2 4 5 &quot;, note the missing 3.</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">3.5 </span> The <code>return</code> statement</h1><p><code>return</code> lets you leave the current function, or program, leaving a value at the same time. You can return everywhere in your program or your function, even in a loop.</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">function</span> hello<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+   while<span class="br0">&#40;</span><span class="kw2">true</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+      <span class="kw1">return</span> <span class="st0">&quot;world&quot;</span><span class="sy0">;</span>
+   <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+ 
+<span class="kw1">return</span> <span class="st0">&quot;hello &quot;</span> <span class="sy0">+</span> hello<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">+</span> <span class="st0">'.'</span><span class="sy0">;</span> <span class="co1">// returns &quot;hello world.&quot;</span></pre></td></tr></tbody></table></div></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"><span class="whata-title-number">4 </span> <code>function</code> statements</h1><p>Functions are fundamental to write and structure good non trivial programs. In Javascript, you can define functions at anytime (e.g. functions can be nested and can be defined in loops or if-else statements). They can take arguments and can call themselves.</p><p>Here is an implementation of the factorial:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">function</span> fact<span class="br0">&#40;</span>n<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  <span class="kw1">if</span><span class="br0">&#40;</span>n <span class="sy0">&lt;</span> <span class="nu0">2</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span>
+  <span class="br0">&#125;</span>
+  <span class="kw1">return</span> n <span class="sy0">*</span> fact<span class="br0">&#40;</span>n<span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+ 
+<span class="kw1">return</span> fact<span class="br0">&#40;</span><span class="nu0">6</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// calling fact with 6. returns 720.</span></pre></td></tr></tbody></table></div><p>If a function takes more than one arguments, they are separated with commas.</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1"><span class="kw1">function</span> sameParity<span class="br0">&#40;</span>a<span class="sy0">,</span>b<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  <span class="kw1">return</span> a <span class="sy0">%</span> <span class="nu0">2</span> <span class="sy0">===</span> b <span class="sy0">%</span> <span class="nu0">2</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+ 
+<span class="kw1">return</span> sameParity<span class="br0">&#40;</span><span class="nu0">6</span><span class="sy0">,</span> <span class="nu0">2</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// returns true.</span></pre></td></tr></tbody></table></div><p>Functions have access to the variable of the scope in which they were defined:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+</pre></td><td class="de1"><pre class="de1">women <span class="sy0">:</span> Set <span class="sy0">=</span> <span class="br0">&#123;</span><span class="st0">&quot;Marie Curie&quot;</span><span class="sy0">,</span> <span class="st0">&quot;Sophie Germain&quot;</span><span class="sy0">,</span> <span class="st0">&quot;Rita Levi&quot;</span><span class="br0">&#125;</span><span class="sy0">;</span>
+<span class="kw1">function</span> isAWoman<span class="br0">&#40;</span>p<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+  <span class="kw1">return</span> women contains p<span class="sy0">;</span>
+<span class="br0">&#125;</span>
+ 
+<span class="kw1">return</span> isAWoman<span class="br0">&#40;</span><span class="st0">&quot;Marie Curie&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// returns true.</span></pre></td></tr></tbody></table></div></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"><span class="whata-title-number">5 </span> Literals</h1><p>In AutomatonJS, literals are the same as Javascript, plus sets.<br />Briefly, we have numbers, strings, objects, arrays, regular expressions and functions.</p><p>An important thing to notice is that AutomatonJS supports abbreviated Javascript 1.8 functions.<br /></p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">5.1 </span> Javascript literals</h1><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+</pre></td><td class="de1"><pre class="de1"><span class="co1">// strings</span>
+   let str1 <span class="sy0">=</span> <span class="st0">&quot;I'm a string&quot;</span><span class="sy0">;</span>
+   let str2 <span class="sy0">=</span> <span class="st0">'I<span class="es0">\'</span>m another string'</span><span class="sy0">;</span>
+   let str3 <span class="sy0">=</span> <span class="st0">'I end with a new line and contain a <span class="es0">\u</span>0253 special character<span class="es0">\n</span>'</span><span class="sy0">;</span>
+   let character <span class="sy0">=</span> str3<span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span><span class="sy0">;</span> <span class="co1">// character equals &quot;e&quot; and is also a string</span>
+ 
+<span class="co1">// numbers</span>
+   let i <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span> <span class="co1">// zarro</span>
+   let answer <span class="sy0">=</span> <span class="nu0">14.5</span><span class="sy0">;</span> <span class="co1">// floating point</span>
+   let color  <span class="sy0">=</span> 0xFF<span class="sy0">;</span> <span class="co1">// hexa</span>
+   let speedOfLight  <span class="sy0">=</span> 3e10<span class="sy0">;</span> <span class="co1">// 300000000</span>
+   let notANumber <span class="sy0">=</span> <span class="kw2">NaN</span><span class="sy0">;</span>
+   let inf <span class="sy0">=</span> <span class="kw2">Infinity</span><span class="sy0">;</span>
+   let negInf <span class="sy0">=</span> <span class="sy0">-</span><span class="kw2">Infinity</span><span class="sy0">;</span>
+ 
+<span class="co1">// objects</span>
+   let o <span class="sy0">=</span> <span class="br0">&#123;</span><span class="br0">&#125;</span><span class="sy0">;</span> <span class="co1">// an empty object</span>
+   let idCard <span class="sy0">=</span> <span class="br0">&#123;</span>
+      firstName<span class="sy0">:</span> <span class="st0">&quot;Arthur&quot;</span><span class="sy0">,</span>
+      lastName<span class="sy0">:</span>  <span class="st0">&quot;Dent&quot;</span><span class="sy0">,</span>
+      age<span class="sy0">:</span><span class="nu0">32</span>
+   <span class="br0">&#125;</span><span class="sy0">;</span>
+   
+   idCard.<span class="me1">eyeColors</span> <span class="sy0">=</span> <span class="st0">'blue'</span><span class="sy0">;</span>
+ 
+   let stillAnObject <span class="sy0">=</span> <span class="kw2">null</span><span class="sy0">;</span>
+   
+   alert<span class="br0">&#40;</span><span class="kw1">typeof</span> stillAnObject<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows &quot;object&quot;</span>
+<span class="co1">// arrays</span>
+   let a <span class="sy0">=</span> <span class="br0">&#91;</span><span class="br0">&#93;</span><span class="sy0">;</span> <span class="co1">// empy arrays</span>
+   let primeNumbers <span class="sy0">=</span> <span class="br0">&#91;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">5</span><span class="sy0">,</span><span class="nu0">7</span><span class="sy0">,</span><span class="nu0">11</span><span class="sy0">,</span><span class="nu0">13</span><span class="br0">&#93;</span><span class="sy0">;</span>
+   primeNumbers.<span class="me1">push</span><span class="br0">&#40;</span><span class="nu0">17</span><span class="br0">&#41;</span><span class="sy0">;</span>
+   let secondValue <span class="sy0">=</span> primeNumbers<span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span><span class="sy0">;</span>
+ 
+<span class="co1">// regular expressions</span>
+   let r <span class="sy0">=</span> <span class="co2">/(?:http|ftp)s?:\/\/www\.[a-zA-Z]+[a-zA-Z0-9\.]*\/[\s\S]+/g</span><span class="sy0">;</span>
+ 
+<span class="coMULTI">/* functions */</span>
+   <span class="co1">// classic function</span>
+ 
+      let f <span class="sy0">=</span> <span class="kw1">function</span><span class="br0">&#40;</span>x<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+         <span class="kw1">return</span> <span class="nu0">2</span> <span class="sy0">*</span> x<span class="sy0">;</span>
+      <span class="br0">&#125;</span><span class="sy0">;</span>
+ 
+      alert<span class="br0">&#40;</span>f<span class="br0">&#40;</span><span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// 4</span>
+ 
+   <span class="co1">// abbreviated 1-argument function</span>
+   
+      let square <span class="sy0">=</span> x <span class="sy0">=&gt;</span> x<span class="sy0">*</span>x<span class="sy0">;</span>
+ 
+      alert<span class="br0">&#40;</span>square<span class="br0">&#40;</span><span class="nu0">10</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// 100</span>
+   
+   let quadraticValue <span class="sy0">=</span> <span class="br0">&#40;</span>a<span class="sy0">,</span>b<span class="sy0">,</span>c<span class="sy0">,</span>x<span class="br0">&#41;</span> <span class="sy0">=&gt;</span> a<span class="sy0">*</span>x<span class="sy0">*</span>x <span class="sy0">+</span> b<span class="sy0">*</span>x <span class="sy0">+</span> c<span class="sy0">;</span>
+   alert<span class="br0">&#40;</span>quadraticValue<span class="br0">&#40;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// 69</span>
+   
+   let add1 <span class="sy0">=</span> <span class="kw1">function</span><span class="br0">&#40;</span>x<span class="br0">&#41;</span> x<span class="sy0">+</span><span class="nu0">1</span><span class="sy0">;</span>
+   
+   alert<span class="br0">&#40;</span>add1<span class="br0">&#40;</span><span class="nu0">2</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// 3</span></pre></td></tr></tbody></table></div><p>For more informations about Javascript literals, you can look at <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values+_variables+_and_literals" class="whata-link"> MDN's Values, variables, and literals</a><sup class="whata-footref" id="whata-footref-3"><a href="#whata-footnote-3">[3]</a></sup> or the ECMAScript documentation.<br />For regular expressions, you can refer to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions" class="whata-link">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions</a><sup class="whata-footref" id="whata-footref-4"><a href="#whata-footnote-4">[4]</a></sup>.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">5.2 </span> Set literals</h1><p>AutomatonJS has built-in support for sets and has a dedicated a dedicated literal to represent it.</p><p>A set literal starts with a open curly bracket (<code>{</code>), ends with a close curly bracket (<code>}</code>) and contains one or more values separated with commas.</p><p>We could have represented the empty set by something like <code>{}</code> but it would have been ambiguous with empty Javascript objects. Instead, the <code>emptySet</code> keyword represent an empty set.</p><p>Examples:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="de1"><pre class="de1">let firstPrimeNumbers <span class="sy0">=</span> <span class="br0">&#123;</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">5</span><span class="sy0">,</span><span class="nu0">7</span><span class="br0">&#125;</span><span class="sy0">;</span>
+alert<span class="br0">&#40;</span>firstPrimeNumbers contains <span class="nu0">3</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// true</span>
+ 
+let e <span class="sy0">=</span> emptySet<span class="sy0">;</span>
+alert<span class="br0">&#40;</span>e.<span class="me1">card</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// 0</span>
+ 
+typingEvenEmptySetIsMuchBetter <span class="sy0">:</span> Set<span class="sy0">;</span>
+ 
+IfYouKnowSetOfWhat <span class="sy0">:</span> Set of Integer<span class="sy0">;</span>
+ 
+meals <span class="sy0">:</span> Set of <span class="kw4">String</span> <span class="sy0">=</span> <span class="br0">&#123;</span><span class="st0">&quot;breakfast&quot;</span><span class="sy0">,</span> <span class="st0">&quot;lunch&quot;</span><span class="sy0">,</span> <span class="st0">&quot;dinner&quot;</span><span class="br0">&#125;</span><span class="sy0">;</span>
+ 
+anything <span class="sy0">:</span> Set <span class="sy0">=</span> <span class="br0">&#123;</span><span class="nu0">14</span><span class="sy0">,</span> <span class="nu0">38.5</span><span class="sy0">,</span> <span class="st0">&quot;green&quot;</span><span class="br0">&#125;</span><span class="sy0">;</span>
+ 
+singleton <span class="sy0">=</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="br0">&#125;</span><span class="sy0">;</span>
+ 
+thisIsNotASet <span class="sy0">=</span> <span class="br0">&#123;</span><span class="br0">&#125;</span><span class="sy0">;</span> <span class="co1">// this is an object.</span>
+ 
+<span class="co1">// Typed declarations transform objects and lists into sets</span>
+ThisIsASet <span class="sy0">:</span> Set <span class="sy0">=</span> <span class="br0">&#123;</span><span class="br0">&#125;</span><span class="sy0">;</span>
+AnotherSet <span class="sy0">:</span> Set <span class="sy0">=</span> <span class="br0">&#91;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="br0">&#93;</span><span class="sy0">;</span></pre></td></tr></tbody></table></div></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"><span class="whata-title-number">6 </span> Operators</h1><p>AutomatonJS understands every Javascript operator and adds several operators on sets.</p><p><strong class="whata-paragraph-title">Important Note.</strong>  AutomatonJS changes the signification of the <code> == </code> equality operator. See hereinafter.</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">6.1 </span> JavaScript operators</h1><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">6.1.1 </span> Arithmetic operators    </h1><table class="whata-table"><tr><th> Expression  </th><th> Signification</th></tr><tr><td> <code>a + b</code>    </td><td> The sum of <code>a</code> and <code>b</code></td></tr><tr><td> <code>a - b</code>    </td><td> The difference of <code>a</code> by <code>b</code></td></tr><tr><td> <code>a / b</code>    </td><td> The division of <code>a</code> by <code>b</code></td></tr><tr><td> <code>a * b</code>    </td><td> The multiplication of <code>a</code> and <code>b</code></td></tr><tr><td> <code>a % b</code>    </td><td> <code>a</code> modulo <code>b</code> (the reminder of the integer division of <code>a</code> by <code>b</code>)</td></tr></table></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">6.1.2 </span> Bitwise operators</h1><table class="whata-table"><tr><th> Expression    </th><th> Signification</th></tr><tr><td> <code>a  &amp; b</code>     </td><td> <code>a</code> AND <code>b</code></td></tr><tr><td> <code>a | b</code>     </td><td> <code>a</code> OR  <code>b</code></td></tr><tr><td> <code>a ^ b</code>      </td><td> <code>a</code> XOR <code>b</code></td></tr><tr><td> <code> a  &lt;&lt; n</code>  </td><td> FIXME</td></tr><tr><td> <code> a  &gt;&gt; n</code>  </td><td> FIXME</td></tr><tr><td> <code> a &lt;&lt;&lt; n</code> </td><td> FIXME</td></tr><tr><td> <code> a &gt;&gt;&gt; n</code>  </td><td> FIXME</td></tr></table></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">6.1.3 </span> Assigning counterparts of these operators</h1><p>Let <code><b>op</b></code> be one of the operators hereinbefore. <code>a <b>op</b>= b</code> means <code>a = a <b>op</b> b</code>.</p><p>Example:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+</pre></td><td class="de1"><pre class="de1">a <span class="sy0">:</span> integer <span class="sy0">=</span> <span class="nu0">14</span><span class="sy0">;</span>
+a <span class="sy0">+=</span> <span class="nu0">3</span><span class="sy0">;</span>
+alert<span class="br0">&#40;</span>a<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// shows 17</span></pre></td></tr></tbody></table></div><p>Moreover, if a is a number,</p><ul><li><p> <code>++a</code> increments <code>a</code> by 1 and returns the new value of <code>a</code>;</p></li><li><p> <code>a++</code> increments <code>a</code> by 1 and returns the old value of <code>a</code>.</p></li></ul></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">6.1.4 </span> Comparison operators</h1><table class="whata-table"><tr><th> Expression  </th><th> Signification</th></tr><tr><td> <code>a &lt;  b</code>   </td><td> true iff <code>a</code> greater than and not equal to <code>b</code></td></tr><tr><td> <code>a &lt;= b</code>   </td><td> true iff <code>a</code> greater than or equal to <code>b</code></td></tr><tr><td> <code>a &gt;  b</code>   </td><td> true iff <code>a</code> lower than and not equal to <code>b</code></td></tr><tr><td> <code>a === b</code>  </td><td> <code>true</code>  iff <code>a</code> is exactly the same object than <code>b</code></td></tr><tr><td> <code>a !== b</code>  </td><td> <code>false</code> iff <code>a</code> is exactly the same object than <code>b</code></td></tr></table><p>In AutomatonJS, the meaning of the operators <code> ==</code> and <code> !=</code> has been changed. The meaning of equality operator is discussed hereinafter.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">6.1.5 </span> Boolean operators</h1><table class="whata-table"><tr><th> Expression  </th><th> Signification</th></tr><tr><td> <code>!a</code>     </td><td> if the boolean evaluation of <code>a</code> is <code>true</code>, then <code>false</code>, otherwise <code>true</code>.</td></tr><tr><td> <code> b</code> </td><td> if the boolean evaluation of <code>a</code> is true, then <code>a</code>, otherwise <code>b</code><sup class="whata-footref" id="whata-footref-5"><a href="#whata-footnote-5">[5]</a></sup>. This operator is lazy, that is to say if <code>a</code> evaluates to <code>true</code>, <code>b</code> is not evaluated.</td></tr><tr><td> <code>a &amp;&amp; b</code> </td><td> if the boolean evaluations of <code>a</code> and <code>b</code> are both <code>true</code>, then <code>true</code>, otherwise <code>false</code>.</td></tr></table><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-4"><span class="whata-title-number">6.1.5.1 </span> Which expressions evaluates to <code>true</code> / <code>false</code> ?</h1><table class="whata-table"><tr><th> Expression               </th><th> Boolean evaluation</th></tr><tr><td> <code>false</code>                 </td><td> <code>false</code></td></tr><tr><td> <code>&quot;&quot;</code>                    </td><td> <code>false</code></td></tr><tr><td> <code>0</code>                     </td><td> <code>false</code></td></tr><tr><td> <code>NaN</code>                   </td><td> <code>false</code></td></tr><tr><td> <code>{}</code>                    </td><td> <code>true</code></td></tr><tr><td> Any non empty string      </td><td> <code>true</code></td></tr><tr><td> Any number not equal to 0 </td><td> <code>true</code></td></tr><tr><td> Any set, even empty       </td><td> <code>true</code></td></tr><tr><td> Infinity, -Infinity       </td><td> <code>true</code></td></tr><tr><td> Any other object          </td><td> <code>true</code></td></tr></table></section></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">6.2 </span> Meaning of the equality operators</h1><p>In Javascript, there are to equality operator: <code> ==</code> and <code> ===</code> (and their negative variant, <code> !=</code> and <code> !==</code>).</p><p>Both operators act the same way, except for comparisons between string and numbers. Let <code>a</code> be a string and <code>b</code> a number.</p><ul><li><p> <code> a === b</code> and <code> b === a</code> both evaluate to <code>false</code>, for any <code>a</code> and <code>b</code>.</p></li><li><p> <code> a == b</code> and <code> b == a</code>   evaluate to true if the string representation of <code>b</code> is <code>a</code>.</p></li></ul><p>For the other cases, these operators are equivalent:</p><ul><li><p> if <code>a</code> and <code>b</code> are the same string, <code>a == b</code></p></li><li><p> if <code>a</code> and <code>b</code> are the same number, <code>a == b</code></p></li><li><p> if <code>a</code> and <code>b</code> are the same regular expression, <code>a == b</code>.</p></li><li><p> <code>null  == null</code></p></li><li><p> <code>true  == true</code></p></li><li><p> <code>false == false</code></p></li><li><p> <code>NaN   != NaN</code></p></li><li><p> if <code>a</code> and <code>b</code> <strong>point</strong> to the same object, <code>a == b</code>.</p></li></ul><p>However, if <code>a</code> and <code>b</code> are point to distinct objects, <code>a !== b</code> even if <code>a</code> and <code>b</code> are equivalent. For example:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+</pre></td><td class="de1"><pre class="de1">alert<span class="br0">&#40;</span><span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span> <span class="sy0">===</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// Shows false, because two distinct objects are created.</span></pre></td></tr></tbody></table></div><p>This is an important concern in Javascript, as we need to be able to check the equality between objects, in particular sets. AutomatonJS, as a consequence, changes the meaning of the <code> ==</code> operator, to be able to check equality between to distincts objects.</p><p>In AutomatonJS, we have:<br /></p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+2
+3
+4
+5
+</pre></td><td class="de1"><pre class="de1">alert<span class="br0">&#40;</span><span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span> <span class="sy0">===</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// false, because two distinct objects are created.</span>
+ 
+alert<span class="br0">&#40;</span><span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span> <span class="sy0">==</span> <span class="br0">&#123;</span><span class="nu0">1</span><span class="sy0">,</span><span class="nu0">2</span><span class="sy0">,</span><span class="nu0">3</span><span class="sy0">,</span><span class="nu0">4</span><span class="sy0">,</span><span class="nu0">5</span><span class="br0">&#125;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// true, like one would expect.</span>
+ 
+alert<span class="br0">&#40;</span><span class="kw1">new</span> Objet <span class="sy0">==</span> <span class="kw1">new</span> <span class="kw4">Object</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// true.</span></pre></td></tr></tbody></table></div><p>Whereas <code>new Objet != new Object</code> in pure Javascript.</p><p><strong class="whata-paragraph-title">Note.</strong>  The <code> ===</code> and <code> !==</code> operators remain unchanged.</p></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"><span class="whata-title-number">6.3 </span> Set operators</h1><p>In addition to the modified <code>==</code> and <code>!=</code> operators, AutomatonJS defines new operators. In the following table, <code>A</code> and <code>B</code> refer to two sets, or objects that can be turned into sets like objects or lists. <code>e </code> is any possible value.</p><table class="whata-table"><tr><th> Expression </th><td> =Signification</td></tr><tr><td> union  B         </td><td> The union of A and B</td></tr><tr><td> inter  B         </td><td> The intersection of A and B</td></tr><tr><td> minus  B         </td><td> The difference of A by B</td></tr><tr><td> symDiff B         </td><td> The symetric difference of A and B</td></tr><tr><td> <code>A contains e</code><br /><code>A    has   e</code><br /><code>e belongsTo A</code>  </td><td> <code>true</code> iff <code>e</code> is inside <code>A</code></td></tr></table><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-3"><span class="whata-title-number">6.3.1 </span> Assigning counterparts of <code>union</code>, <code>inter</code> and <code>minus</code></h1><table class="whata-table"><tr><th> Expression     </th><th> Signification</th></tr><tr><td> <code>A union = B</code> </td><td> <div class="whata-div"><ul><li> Assign the union of A and B to A.</li><li> More efficient than <code>A = A union B</code>.</li><li> Strictly equivalent to <code>A.unionInPlace(B);</code>.</li></ul><br /></div></td></tr><tr><td> <code>A inter = B</code> </td><td> <div class="whata-div"><ul><li> Assign the intersection of A and B to A</li><li> More efficient than <code>A = A  inter  B</code>.</li><li> Strictly equivalent to <code>A.interInPlace(B);</code>.</li></ul><br /></div></td></tr><tr><td> <code>A minus = B</code> </td><td> <div class="whata-div"><ul><li> Assign the difference of A by B to A</li><li> More efficient than <code>A = A  minus  B</code>.</li><li> Strictly equivalent to <code>A.minusInPlace(B);</code>.</li></ul><br /></div></td></tr></table><p><strong class="whata-paragraph-title">Warning.</strong>  These operator exist for the sake of consistence with Javascript-native assigning operators. Before using assigning counterparts of set operators, please double check you visually prefer them to there equivalent expression. Triple check that your audience won't be lost with these operators if your code targets a particular audience (e.g. students).</p></section></section></section><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-1"> Conclusion</h1><p>This document tries to remain complete on additions of and differences between AutomatonJS to / and Javascript. This is far from covering all the language. For more information, you might want to read things on Javascript keeping differences covered here in mind.</p><section class="whata-section whata-section-title"><h1 class="whata-h1 whata-real-title-level-2"> Ideas for the future</h1><ul><li><p> comprehensive sets like <code><code class="whata-cdata">{2k+1 | k in N}</code></code> would be awesome.</p></li><li><p> Great ideas can be found here :</p><ul><li><p> <a href="http://koush.com/post/yield-await-v8" class="whata-link">http://koush.com/post/yield-await-v8</a></p></li><li><p> <a href="http://mdn.beonex.com/en/JavaScript/New_in_JavaScript/1.7.html" class="whata-link">http://mdn.beonex.com/en/JavaScript/New_in_JavaScript/1.7.html</a>, in particular :</p><ul><li><p> <code>yeld</code>, to make generators</p></li><li><p> the destructuring assignment</p></li><li><p> array comprehensions (Python-lovers will appreciate)</p></li><li><p> The <code>let</code> statement: <a href="http://mdn.beonex.com/en/JavaScript/Reference/Statements/let.html" class="whata-link">http://mdn.beonex.com/en/JavaScript/Reference/Statements/let.html</a>.</p></li></ul></li></ul></li></ul></section></section><section class="whata-footnotes"><p>Notes :</p><ul><li id="whata-footnote-1" class="whata-footnote"><a class="whata-footnote-link" href="#whata-footref-1">[1]</a><div class="whata-footnote-content"><p>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode</p></div></li><li id="whata-footnote-2" class="whata-footnote"><a class="whata-footnote-link" href="#whata-footref-2">[2]</a><div class="whata-footnote-content"><p>http://www.ecma-international.org/ecma-262/5.1/#sec-7.9</p></div></li><li id="whata-footnote-3" class="whata-footnote"><a class="whata-footnote-link" href="#whata-footref-3">[3]</a><div class="whata-footnote-content"><p>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,_variables,_and_literals</p></div></li><li id="whata-footnote-4" class="whata-footnote"><a class="whata-footnote-link" href="#whata-footref-4">[4]</a><div class="whata-footnote-content"><p>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions</p></div></li><li id="whata-footnote-5" class="whata-footnote"><a class="whata-footnote-link" href="#whata-footref-5">[5]</a><div class="whata-footnote-content"><p>This different in C, where the meaning of the operator is the following: if the boolean evaluation of <code>a</code> is <code>true</code>, then <code>true</code>, otherwise the boolean expression of <code>b</code>.</p></div></li></ul></section>
+   </body>
+</html>
