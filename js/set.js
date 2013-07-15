@@ -31,7 +31,7 @@
 /**
  * @author  Raphaël Jakse
  * @file This is a library for manipulating mathematical sets.
- * @note Any function of this package that taked a Set also accepts any object that can be turned into a set (e.g. Object, Array variables).
+ * @note Any function of this package that takes a Set also accepts any object that can be turned into a set (e.g. Object, Array variables).
  * @version 0.1a
  */
 
@@ -40,9 +40,13 @@
    var _ = pkg.setl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    
    /**
-    * @classDescription class to manipulate sets.
-    * @class Set Set
-    * @param {Array, Set,Object} [l] This optional parameter is an Array, a Set or an Object containing the elements to add to the newly created set.
+    * A class to manipulate sets in Javascript.
+    * 
+    * Note: Any function of this class, this constructor included, that takes a Set as parameter also accepts any object that can be turned into a set (e.g. Object, Array variables). For the sake of readability, this is not mentioned elsewhere.
+    * 
+    * @class Set
+
+    * @param {Set} [l] This optional parameter is an Array, a Set or an Object containing the elements to add to the newly created set.
     * @returns {Object} Returns a new Set object.
     */
    pkg.Set = function(l) {
@@ -93,7 +97,7 @@
        * This method tests the presence of an element in the set. The <has> method is an alias of this method.
        * @method contains
        * @memberof Set
-       * @param {Any type} element The element of which the presence in the set must be tested.
+       * @param {any} element The element of which the presence in the set must be tested.
        * @alias has
        * @alias contains
        * @returns {Boolean} Returns true if the element belongs to the set, false otherwise.
@@ -109,7 +113,7 @@
        * This method tests the presence of an element in the set. It is an alias of the method <contains>.
        * @method has
        * @memberof Set
-       * @param {Any type} element The element of which the presence in the set must be tested.
+       * @param {any} element The element of which the presence in the set must be tested.
        * @alias has
        * @alias contains
        * @returns {Boolean} Returns true if the element belongs to the set, false otherwise.
@@ -122,9 +126,9 @@
        * This method raise an exception if an element does not verifies the constraints to belong to the set.
        * @method checkConstraint
        * @memberof Set
-       * @param {any Type} element The element to check.
+       * @param {any} element The element to check.
        * @exception {Error} Throws an error if the element does not satisfy the constrains.
-       * @returns {any Type} Returns an eventually adapted version of the element (e.g. if the constraint is the element to be a set, if the element was an Array or an Object, it is turned into a Set).
+       * @returns {any} Returns an eventually adapted version of the element (e.g. if the constraint is the element to be a set, if the element was an Array or an Object, it is turned into a Set).
        * @see Set#setTypeConstraint
        */
       checkConstraint: function(element) {
@@ -155,7 +159,7 @@
        * This method adds an element to the set.
        * @method add
        * @memberof Set
-       * @param {any Type} element the element to add to the set.
+       * @param {any} element the element to add to the set.
        * @exception {Error} throws an error if the element does not verify the belonging constraints.
        */
       add: function(element) {
@@ -185,7 +189,7 @@
        * This method removes an element from the set.
        * @method remove
        * @memberof Set
-       * @param {any Type} element The element to remove from the set.
+       * @param {any} element The element to remove from the set.
        */
       remove: function(element) {
          delete this.l[element];
@@ -324,7 +328,7 @@
        * This method returns a new set, which contains elements of the set and element passed in argument.
        * @memberof Set
        * @method plus
-       * @param {Any type} ... The elements to add to the set.
+       * @param {any} ... The elements to add to the set.
        * @returns {Set} Returns the newly formed set.
        * @see Set#minus
        * @see Set#union
@@ -426,7 +430,7 @@
        * @private
        * @memberof Set
        * @param {string} event A string representing what modified the set (add, remove, ...).
-       * @param {Any Type} object An object you want to attach to the event.
+       * @param {any} object An object you want to attach to the event.
        */
       updated: function(event, object) {
          if(!this._blockEvents) {
@@ -483,7 +487,7 @@
        * This method is to set a type constraint on elements that will be added to the set.
        * @method setTypeConstraint
        * @memberof Set
-       * @param {Any type} typeConstraint a string representation of a Javascript basic type, or a constructor of a Javascript class.
+       * @param {any} typeConstraint a string representation of a Javascript basic type, or a constructor of a Javascript class.
        * @note This function should always be called when the set is empty because it doesn't check the constraint on the current elements of the set.
        */
       setTypeConstraint: function(typeConstraint) {
