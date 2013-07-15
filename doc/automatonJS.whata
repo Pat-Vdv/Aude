@@ -707,6 +707,7 @@
 
       [ = Bitwise operators
          |= Expression    |= Signification
+         | [c ~~a]         | NOT [c a]
          | [c a  & b]     | [c a] AND [c b]
          | [c a ~| b]     | [c a] OR  [c b]
          | [c a ^ b]      | [c a] XOR [c b]
