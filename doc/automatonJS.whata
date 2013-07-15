@@ -707,7 +707,7 @@
 
       [ = Bitwise operators
          |= Expression    |= Signification
-         | [c ~~a]         | NOT [c a]
+         | [c ~~a]        | NOT [c a]
          | [c a  & b]     | [c a] AND [c b]
          | [c a ~| b]     | [c a] OR  [c b]
          | [c a ^ b]      | [c a] XOR [c b]
@@ -813,7 +813,7 @@
       | [A  union  B]         | The union of A and B
       | [A  inter  B]         | The intersection of A and B
       | [A  minus  B]         | The difference of A by B
-      | [A symDiff B]         | The symetric difference of A and B
+      | [A symDiff B]         | The symmetric difference of A and B
       | [ [c A contains e]
           [c A    has   e]
           [c e belongsTo A] ] | [c true] iff [c e] is inside [c A]
