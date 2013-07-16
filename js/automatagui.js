@@ -279,6 +279,10 @@
                right:results.offsetWidth+10
             });
             executeWin.__refs = refs;
+            executeWin.addEvent('close', function() {
+               wordDiv.textContent = '';
+               AutomataDesigner.cleanSVG(AutomataDesigner.currentIndex);
+            });
             libD.wm.handleSurface(executeWin, refs.root);
             refs.run.onclick = function() {
                stopExecution();
@@ -781,7 +785,6 @@
             }
 
             if(stepNumber === -1) {
-               wordDiv.textContent = '';
                executionTimeout = 0;
             }
             else {
