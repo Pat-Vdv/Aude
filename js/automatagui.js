@@ -438,6 +438,7 @@
             codeedit.classList.remove('disabled');
             automataedit.classList.add('disabled');
             if(!cm) {
+               
                cm = CodeMirror(codeedit, {lineNumbers:true});
                var codemirrorNode = cm.getWrapperElement();
                listenMouseWheel(function(e, delta) {
@@ -453,7 +454,12 @@
             onResize();
             break;
          case "design":
-            toolbar.className = 'designmode';
+            if(cm && cm.getValue()) {
+               toolbar.className = 'designmode';
+            }
+            else {
+               toolbar.className = 'designmode launch-disabled';
+            }
             codeedit.classList.add('disabled');
             automataedit.classList.remove('disabled');
             automatoncode.classList.add('disabled');
@@ -464,7 +470,12 @@
          case "automatoncode":
             AutomataDesigner.disable();
             automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex);
-            toolbar.className = 'designmode codemode';
+            if(cm && cm.getValue()) {
+               toolbar.className = 'designmode codemode';
+            }
+            else {
+               toolbar.className = 'designmode codemode launch-disabled';
+            }
             codeedit.classList.add('disabled');
             automataedit.classList.remove('disabled');
             automatoncode.classList.remove('disabled');
@@ -994,4 +1005,6 @@
    _("fr", "Create a new automaton", "Créer un nouvel automate");
    _("fr", "Remove current automaton", "Supprimer cet automate");
    _("fr", "There is no automaton to save.", "Il n'y a pas d'automate à enregistrer.");
+   _("fr", "Automaton", "Automate");
+   _("fr", "Action:", "Action :");
 })();

@@ -81,20 +81,23 @@ html,body {
    font-size:small;
 }
 
-#toolbar button:first-child, #toolbar select {
+#toolbar button:first-child, #toolbar select, .algomode #algo-exec {
    border-top-left-radius:4px;
    border-bottom-left-radius:5px;
    border-left:1px solid gray;
    margin-left:0.75ex;
 }
 
-#toolbar button:last-child, #toolbar select, .algomode #saveas, .codemode #execute {
+#toolbar button:last-child, #toolbar select, .algomode #saveas, .codemode #redraw, .launch-disabled #execute {
    border-top-right-radius:4px;
    border-bottom-right-radius:5px;
    border-right:1px solid gray;
    margin-right:0.75ex;
 }
 
+.launch-disabled #algo-exec {
+   display:none !important
+}
 
 #toolbar .right {
    float:right;
