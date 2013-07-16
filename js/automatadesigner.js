@@ -366,7 +366,7 @@
 
                if(nodeMoving = parentHasClass(e.target, 'node')) {
                   if(pkg.svgContainer.onmousemove === nodeBinding) {
-                     var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), '');
+                     var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), '');
                      if(trans === null) {
                         pathEdit.parentNode.removeChild(pathEdit);
                         pkg.svgContainer.onmousemove = null;
@@ -409,7 +409,7 @@
                         }
                      }
                   }
-                  else if(e.shiftKey && !e.ctrlKey) {
+                  else if(e.shiftKey && !(e.ctrlKey || e.metaKey)) {
                      nodeEdit = nodeMoving;
                      pkg.svgContainer.onmousemove = nodeBinding;
                      pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -422,7 +422,7 @@
                      pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y,pt.x, pt.y));
                      pkg.svgNode.appendChild(pathEdit);
                   }
-                  else if(e.ctrlKey && !e.shiftKey) {
+                  else if((e.ctrlKey || e.metaKey) && !e.shiftKey) {
                      // initial state
                      setInitialState(nodeMoving);
                   }
@@ -453,7 +453,7 @@
                   }
                }
                else if(nodeMoving = parentHasClass(e.target, 'edge')) {
-                  if(e.ctrlKey) {
+                  if(e.ctrlKey || e.metaKey) {
                      var tid = nodeMoving.id.split(' ');
 
                      cleanTransitionPos(
@@ -662,7 +662,7 @@
 
       pkg.svgContainer.addEventListener('dblclick', function(e) {
          if(nodeEdit = parentHasClass(e.target, 'node')) {
-            if(e.shiftKey && e.ctrlKey) { // remove node
+            if(e.shiftKey && (e.ctrlKey || e.metaKey)) { // remove node
                if(nodeEdit === initialState) {
                   alert(_("Sorry, but you can't remove the initial state."));
                }
@@ -714,18 +714,18 @@
             }
          }
          else if(nodeEdit = parentHasClass(e.target, 'edge')) {
-            if(e.ctrlKey && e.shiftKey) { // delete transition
+            if((e.ctrlKey || e.metaKey) && e.shiftKey) { // delete transition
                deleteTransition(nodeEdit, null);
             }
             else {
                var text = nodeEdit.querySelector('text');
-               var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible."), text.textContent);
+               var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), text.textContent);
                if(t !== null) {
                   text.textContent = format_transition(t || '\\e');
                }
             }
          }
-         else if(!e.ctrlKey && !e.shiftKey) { // new state
+         else if(!(e.ctrlKey || e.metaKey) && !e.shiftKey) { // new state
             // node creation
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.setAttribute('class', 'node');
@@ -1294,7 +1294,7 @@
    }
 
    _("fr", "New transition: ", "Nouvelle transition :");
-   _("fr", "Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with an antislash is possible.", "Veuillez donner les symboles de cette transition en les séparant par des vigules.\nEn cas de caractères spéciaux, encadrez par des guillemets doubles. La barre oblique permet d'échapper les caractères.");
+   _("fr", "Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible.", "Veuillez donner les symboles de cette transition en les séparant par des vigules.\nEn cas de caractères spéciaux, encadrez par des guillemets doubles. L'antislash permet d'échapper les caractères.");
    _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l'état initial.");
    _("fr", "Which name do you want for the new state ?", "Quel nom voulez-vous donner au nouvel état ?");
    _("fr", "Sorry, but a state is already named like this.", "Désolé, mais un état porte déjà ce nom.");

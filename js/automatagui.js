@@ -233,7 +233,7 @@
        }
 
       window.addEventListener('keydown', function(e) {
-         if(e.ctrlKey) {
+         if(e.ctrlKey || e.metaKey) {
             if(e.keyCode === 83) {
                save.onclick();
                e.preventDefault();
@@ -435,7 +435,7 @@
                cm = CodeMirror(codeedit, {lineNumbers:true});
                var codemirrorNode = cm.getWrapperElement();
                listenMouseWheel(function(e, delta) {
-                  if(e.ctrlKey) {
+                  if(e.ctrlKey || e.metaKey) {
                      var fs = parseFloat(window.getComputedStyle(codemirrorNode, null).fontSize);
                      codemirrorNode.style.fontSize = (fs + 2*delta) + 'px';
                      cm.refresh();
