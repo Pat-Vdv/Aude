@@ -28,6 +28,7 @@
        blockResult       = false,
        waitingFor        = new Set(),
        launchAfterImport = false,
+       resultToLeft      = document.createElement('button'),
        _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
        not;
@@ -57,7 +58,9 @@
    function setAutomatonResult(A) {
       automatonResult = A;
       var svgCode = Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
-      results.innerHTML = svgCode;
+
+      results.innerHTML = '<div id="results-tb"></div>' + svgCode;
+      results.firstChild.appendChild(resultToLeft);
       if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
          notify(_("Program Result"), svgCode, 'normal');
       }
@@ -211,7 +214,6 @@
           exportResult      = document.getElementById('export_result'),
           fileprogram       = document.getElementById('fileprogram'),
           automatonPlus     = document.getElementById('automaton_plus'),
-          resultToLeft      = document.getElementById('automaton_from_result'),
           executeBtn        = document.getElementById('execute'),
           wordDiv           = document.getElementById('word'),
           head              = document.querySelector('head'),
@@ -232,6 +234,10 @@
           EXECUTION_STEP_TIME = 1200;
        }
 
+      resultToLeft.appendChild(libD.jso2dom([
+         ['img', {alt:'', src:'icons/oxygen/16x16/actions/arrow-left.png'}],
+         ['span', _('This automaton into the editor')]
+      ]));
       window.addEventListener('keydown', function(e) {
          if(e.ctrlKey || e.metaKey) {
             if(e.keyCode === 83) {
@@ -458,7 +464,7 @@
          case "automatoncode":
             AutomataDesigner.disable();
             automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex);
-            toolbar.className = 'designmode';
+            toolbar.className = 'designmode codemode';
             codeedit.classList.add('disabled');
             automataedit.classList.remove('disabled');
             automatoncode.classList.remove('disabled');
@@ -919,7 +925,12 @@
       }
       translatedNodes = document.querySelectorAll('[data-translated-title]');
       for(var i=0, len = translatedNodes.length; i < len; ++i) {
-         translatedNodes[i].title = _(translatedNodes[i].title);
+         if(translatedNodes[i].title) {
+            translatedNodes[i].title = _(translatedNodes[i].title);
+         }
+         if(translatedNodes[i].alt) {
+            translatedNodes[i].alt= _(translatedNodes[i].alt);
+         }
       }
    }, false);
    _("fr", "Program Result", "Résultat");
@@ -957,7 +968,7 @@
    _("fr", "Run", "Exécuter");
    _("fr", "Step", "Un pas");
    _("fr", "Delay between steps (ms): ", "Pause entre les étapes (ms) : ");
-   _("fr", "Load the result automaton into the editor", "Charger l'automate résultat dans l'éditeur");
+   _("fr", "This automaton into the editor", "Cet automate dans l'éditeur");
    _("fr", "To create a new state, double-click on the drawing area where you want it to be.", "Pour créer un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous le voulez.");
    _("fr", "To add a new transition, shift-click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour ajouter une nouvelle transition, cliquez sur l'état de départ en appuyant sur Maj puis cliquez sur l'état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");
    _("fr", "To modify the name of a state, double-click on it.", "Pour changer le nom d'un état, double-cliquez sur celui-ci.");
