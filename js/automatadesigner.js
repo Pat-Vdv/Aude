@@ -1136,19 +1136,22 @@
          p = {};
       }
 
+      var alphaMsemiPi    = alpha - Math.PI/2,
+          cosAlphaMsemiPi = Math.cos(alphaMsemiPi),
+          sinAlphaMsemiPi = Math.sin(alphaMsemiPi);
       if(y >= cy) {
          if(x > cx) {
-            p.x = cx - r * Math.cos(alpha - Math.PI/2) + 2 * r * Math.abs(Math.cos(alpha - Math.PI/2));
-            p.y = cy + r * Math.sin(alpha - Math.PI/2) + 2 * r * Math.abs(Math.sin(alpha - Math.PI/2));
+            p.x = cx - r * (cosAlphaMsemiPi - 2 * Math.abs(cosAlphaMsemiPi));
+            p.y = cy + r * (sinAlphaMsemiPi + 2 * Math.abs(sinAlphaMsemiPi));
          }
          else {
-            p.x = cx - r * Math.cos(alpha - Math.PI/2) - 2 * r * Math.abs(Math.cos(alpha - Math.PI/2));
-            p.y = cy + r * Math.sin(alpha - Math.PI/2) + 2 * r * Math.abs(Math.sin(alpha - Math.PI/2));
+            p.x = cx - r * (cosAlphaMsemiPi + 2 * Math.abs(cosAlphaMsemiPi));
+            p.y = cy + r * (sinAlphaMsemiPi + 2 * Math.abs(sinAlphaMsemiPi));
          }
       }
       else {
-         p.x = cx - r * Math.cos(alpha - Math.PI/2);
-         p.y = cy + r * Math.sin(alpha - Math.PI/2);
+         p.x = cx - r * cosAlphaMsemiPi;
+         p.y = cy + r * sinAlphaMsemiPi;
       }
       return p;
    }
@@ -1156,8 +1159,13 @@
    // Given a node representing a state, gives the biggest ellipse of the node in case of a final state.
    // Otherwise, give the only ellipse of the node
    function getBigEllipse(n) {
-      var ellipses = n.querySelectorAll('ellipse');
-      return ellipses[1] || ellipses[0];
+      var ellipse;
+      for(var i=0, c=n.childNodes, len=c.length; i < len; ++i) {
+         if(c[i].cx) {
+            ellipse = c[i];
+         }
+      }
+      return ellipse;
    }
 
    // Position the triangle polygonPoints of a transition correctly on the svg <ellipse /> at point p{x,y}.
@@ -1175,32 +1183,33 @@
          cx = ellipse.cx.baseVal.value;
       }
 
+      var beta    = Math.PI/2 - (Math.atan((cx-p.x)/(cy-p.y)) || 0),
+          top     = pkg.svgNode.createSVGPoint(),
+          bot     = pkg.svgNode.createSVGPoint(),
+          top2    = pkg.svgNode.createSVGPoint(),
+          peak    = pkg.svgNode.createSVGPoint(),
+          cosBeta = 3.5 * (Math.cos(beta) || 1),
+          sinBeta = 3.5 * (Math.sin(beta) || 0);
 
-      var beta   = Math.PI/2 - (Math.atan((cx-p.x)/(cy-p.y)) || 0),
-          haut   = pkg.svgNode.createSVGPoint(),
-          bas    = pkg.svgNode.createSVGPoint(),
-          haut2  = pkg.svgNode.createSVGPoint(),
-          pointe = pkg.svgNode.createSVGPoint();
+      top.y = p.y - cosBeta;
+      top.x = p.x + sinBeta;
 
-      haut.y = p.y - 3.5 * (Math.cos(beta) || 1);
-      haut.x = p.x + 3.5 * (Math.sin(beta) || 0);
+      bot.y = p.y + cosBeta;
+      bot.x = p.x - sinBeta;
 
-      bas.y = p.y + 3.5 * (Math.cos(beta) || 1);
-      bas.x = p.x - 3.5 * (Math.sin(beta) || 0);
+      top2.x = top.x;
+      top2.y = top.y;
 
-      haut2.x = haut.x;
-      haut2.y = haut.y;
+      pointOntoEllipse(ellipse, p.x, p.y, peak, 0, cx, cy);
 
-      pointOntoEllipse(ellipse, p.x, p.y, pointe, 0, cx, cy);
-
-      while(polygonPoints.numberOfItems) {
+      for(var i = polygonPoints.numberOfItems; i ; --i) {
          polygonPoints.removeItem(0);
       }
 
-      polygonPoints.appendItem(haut);
-      polygonPoints.appendItem(pointe);
-      polygonPoints.appendItem(bas);
-      polygonPoints.appendItem(haut2);
+      polygonPoints.appendItem(top);
+      polygonPoints.appendItem(peak);
+      polygonPoints.appendItem(bot);
+      polygonPoints.appendItem(top2);
    }
 
    // Make a transition straighforward.
@@ -1211,13 +1220,17 @@
    //  - stateOrig: the node representing the start state of the transition
    //  - stateDest: the node representing the end state of the transition
    function cleanTransitionPos(pathSegList, polygonPoints, text, stateOrig, stateDest) {
+      var i = pathSegList.numberOfItems;
       if(stateOrig === stateDest) {
-         while(pathSegList.numberOfItems > 3) {
+         for(; i > 3; --i) {
             pathSegList.removeItem(2);
          }
-         while(pathSegList.numberOfItems < 3) {
+
+         while(i < 3) {
             pathSegList.appendItem(path.createSVGPathSegCurvetoCubicAbs(0,0,0,0,0,0));
+            ++i;
          }
+
          var po = pathSegList.getItem(0);
          var pi = pathSegList.getItem(1);
          var p = pathSegList.getItem(2);
@@ -1247,8 +1260,9 @@
          text.setAttribute('y', (pi.y - 5));
       }
       else {
-         while(pathSegList.numberOfItems > 2) {
+         while(i > 2) {
             pathSegList.removeItem(2);
+            --i;
          }
          var p = pathSegList.getItem(pathSegList.numberOfItems-1);
          var po = pathSegList.getItem(0);
