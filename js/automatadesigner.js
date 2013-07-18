@@ -464,13 +464,13 @@
          }
       }
 
-      function transitionStraight(edge, e) {
+      function transitionStraight(edge, noText) {
          var tid = edge.id.split(' ');
 
          cleanTransitionPos(
             edge.querySelector('path'),
             edge.querySelector('polygon'),
-            edge.querySelector('text'),
+            noText ? null : edge.querySelector('text'),
             document.getElementById(tid[0]),
             document.getElementById(tid[1])
          );
@@ -782,52 +782,52 @@
          var nodes, n = nodeMovingData;
          for(var i=0, len = n.t.length; i < len; ++i) {
             nodes = coords.t[i][0][0].id.split(" ");
-            if(coords.t[i].transitionStraight) {
-               transitionStraight(coords.t[i][0][0]);
+            var seg, origSeg,
+                segs     = coords.t[i][0][0].querySelector('path').pathSegList,
+                origSegs = coords.t[i][1].querySelector('path').pathSegList,
+                text     = coords.t[i][0][0].querySelector('text'),
+                textOrig = coords.t[i][1].querySelector('text'),
+                s, leng;
+
+            if(nodes[0] === nodes[1]) {// transition from / to the same state, just moving
+               var coefTextX = 1, coefTextY = 1;
+               for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
+                  seg = segs.getItem(s);
+                  origSeg = origSegs.getItem(s);
+                  if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
+                     seg.x1 = origSeg.x1 + dx;
+                     seg.x2 = origSeg.x2 + dx;
+                     seg.y1 = origSeg.y1 + dy;
+                     seg.y2 = origSeg.y2 + dy;
+                  }
+
+                  seg.x = origSeg.x + dx;
+                  seg.y = origSeg.y + dy;
+               }
+               text.setAttribute('x', parseFloat(textOrig.getAttribute('x')) + (coefTextX*dx));
+               text.setAttribute('y', parseFloat(textOrig.getAttribute('y')) + (coefTextY*dy));
             }
             else {
-               var seg, origSeg,
-                   segs     = coords.t[i][0][0].querySelector('path').pathSegList,
-                   origSegs = coords.t[i][1].querySelector('path').pathSegList,
-                   text     = coords.t[i][0][0].querySelector('text'),
-                   textOrig = coords.t[i][1].querySelector('text'),
-                   s, leng;
+               var origSegStart = origSegs.getItem(0),
+                   origSegEnd = origSegs.getItem(segs.numberOfItems-1),
+                   width  = Math.abs(origSegEnd.x - origSegStart.x),
+                   height = Math.abs(origSegEnd.y - origSegStart.y),
+                   textOrigX = parseFloat(textOrig.getAttribute('x')),
+                   textOrigY = parseFloat(textOrig.getAttribute('y'));
+                   
+               if(coords.t[i][0][1]) { // if the state is the origin
+                  var ech = origSegStart;
+                  origSegStart = origSegEnd;
+                  origSegEnd = ech;
+               }
 
-               if(nodes[0] === nodes[1]) {// transition from / to the same state, just moving
-                  var coefTextX = 1, coefTextY = 1;
-                  for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
-                     seg = segs.getItem(s);
-                     origSeg = origSegs.getItem(s);
-                     if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
-                        seg.x1 = origSeg.x1 + dx;
-                        seg.x2 = origSeg.x2 + dx;
-                        seg.y1 = origSeg.y1 + dy;
-                        seg.y2 = origSeg.y2 + dy;
-                     }
+               text.setAttribute('x', newPos(textOrigX, origSegStart.x, origSegEnd.x, textOrigY, origSegStart.y, origSegEnd.y, width, dx, height, dy));
+               text.setAttribute('y', newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width, dx));
 
-                     seg.x = origSeg.x + dx;
-                     seg.y = origSeg.y + dy;
-                  }
-                  text.setAttribute('x', parseFloat(textOrig.getAttribute('x')) + (coefTextX*dx));
-                  text.setAttribute('y', parseFloat(textOrig.getAttribute('y')) + (coefTextY*dy));
+               if(coords.t[i].transitionStraight) {
+                  transitionStraight(coords.t[i][0][0], true);
                }
                else {
-                  var origSegStart = origSegs.getItem(0),
-                      origSegEnd = origSegs.getItem(segs.numberOfItems-1),
-                      width  = Math.abs(origSegEnd.x - origSegStart.x),
-                      height = Math.abs(origSegEnd.y - origSegStart.y),
-                      textOrigX = parseFloat(textOrig.getAttribute('x')),
-                      textOrigY = parseFloat(textOrig.getAttribute('y'));
-                      
-                  if(coords.t[i][0][1]) { // if the state is the origin
-                     var ech = origSegStart;
-                     origSegStart = origSegEnd;
-                     origSegEnd = ech;
-                  }
-
-                  text.setAttribute('x', newPos(textOrigX, origSegStart.x, origSegEnd.x, textOrigY, origSegStart.y, origSegEnd.y, width, dx, height, dy));
-                  text.setAttribute('y', newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width, dx));
-
                   for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
                      seg = segs.getItem(s);
                      origSeg = origSegs.getItem(s);
@@ -841,18 +841,18 @@
                      seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width, dx);
                   }
                }
+            }
 
-               if(!coords.t[i][0][1]) { // the state is the destination, we move the arrow
-                  var polygonPoints = coords.t[i][0][0].querySelector('polygon').points,
-                      pointsOrig    = coords.t[i][1].querySelector('polygon').points,
-                      pp,po;
+            if(!coords.t[i].transitionStraight && !coords.t[i][0][1]) { // the state is the destination, we move the arrow
+               var polygonPoints = coords.t[i][0][0].querySelector('polygon').points,
+                   pointsOrig    = coords.t[i][1].querySelector('polygon').points,
+                   pp,po;
 
-                  for(s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
-                     pp = polygonPoints.getItem(s);
-                     po = pointsOrig.getItem(s);
-                     pp.x = po.x + dx;
-                     pp.y = po.y + dy;
-                  }
+               for(s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
+                  pp = polygonPoints.getItem(s);
+                  po = pointsOrig.getItem(s);
+                  pp.x = po.x + dx;
+                  pp.y = po.y + dy;
                }
             }
          }
@@ -894,7 +894,7 @@
                }
                else if(nodeMoving = parentHasClass(e.target, 'edge')) {
                   if(e.ctrlKey || e.metaKey) {
-                     transitionStraight(nodeMoving, e);
+                     transitionStraight(nodeMoving);
                   }
                   else if(e.target.nodeName === 'text') {
                      beginMoveTransitionLabel(e.target, e);
@@ -1236,6 +1236,7 @@
          p.x2 = p.x-1;
          p.y2 = p.y-6;
          posTriangleArrow(polygon, ellipse, p, cx+rx/2, cy+ry-y);
+
          text.setAttribute('x', pi.x);
          text.setAttribute('y', (pi.y - 5));
       }
@@ -1255,9 +1256,11 @@
          p.y2 = po.y + (p.y - po.y)*2/3;
          p.x1 = po.x + (p.x - po.x)*1/3;
          p.y1 = po.y + (p.y - po.y)*1/3;
-         text.setAttribute('x', (p.x + po.x) / 2);
-         text.setAttribute('y', (p.y + po.y) / 2 - 5);
          posTriangleArrow(polygon, ellipseD, p);
+         if(text) {
+            text.setAttribute('x', (p.x + po.x) / 2);
+            text.setAttribute('y', (p.y + po.y) / 2 - 5);
+         }
       }
    }
 
