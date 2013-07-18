@@ -134,7 +134,7 @@
 
    // Choose the current automaton
    pkg.setCurrentIndex = function (index) {
-      pkg.cleanSVG(pkg.currentIndex);
+      pkg.cleanSVG(pkg.currentIndex, true);
       pkg.currentIndex = index;
       if(!svgs[index]) {
          pkg.clearSVG(pkg.currentIndex);
@@ -168,18 +168,18 @@
    };
 
    // this function is to be called when the SVG code of an automaton has to be retrieved
-   pkg.cleanSVG = function (index) {
+   pkg.cleanSVG = function (index, dontCleanColors) {
       if(pathEditor && pathEditor.parentNode) {
          pathEditor.parentNode.removeChild(pathEditor);
          pathEditor = null;
       }
-      if(svgs[index]) {
+      if(!dontCleanColors && svgs[index]) {
          var ellipses = svgs[index].querySelectorAll('ellipse'),
              edges    = svgs[index].querySelectorAll('.edge'),
              i, len;
 
          for(i = 0, len = ellipses.length; i < len; ++i) {
-            ellipses[i].setAttribute('fill', 'transparent');
+            ellipses[i].setAttribute('fill', 'white');
          }
 
          for(i = 0, len = edges.length; i < len; ++i) {
@@ -355,6 +355,7 @@
       pkg.svgContainer.addEventListener('mousedown', function(e) {
          if(!e.button) { // left button
             if(nodeMoving = parentHasClass(e.target, 'pathedit-handle')) {
+               // handle path editing
                coords = {
                   x:e.clientX,
                   y:e.clientY
@@ -362,7 +363,7 @@
                pkg.svgContainer.onmousemove = nodeMoving._mousemove;
             }
             else {
-               pkg.cleanSVG(pkg.currentIndex);
+               pkg.cleanSVG(pkg.currentIndex, true);
 
                if(nodeMoving = parentHasClass(e.target, 'node')) {
                   if(pkg.svgContainer.onmousemove === nodeBinding) {

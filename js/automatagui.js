@@ -276,6 +276,7 @@
                ]], refs),
                title:_("Execute the current automaton with a word"),
                top:toolbar.offsetHeight+5,
+               minimizable:false,
                right:results.offsetWidth+10
             });
             executeWin.__refs = refs;
