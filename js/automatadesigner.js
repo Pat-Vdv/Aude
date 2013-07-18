@@ -352,6 +352,34 @@
          pkg.svgNode.viewBox.baseVal.y = coords.viewBoxY - (e.clientY - coords.y)/pkg.svgZoom;
       }
 
+      function isTransitionStraight(edge) {
+         var tid = edge.id.split(' ');
+
+         var path   = edge.querySelector('path').pathSegList,
+             state1 = document.getElementById(tid[0]).querySelector('ellipse'),
+             state2 = document.getElementById(tid[1]).querySelector('ellipse'),
+             cx1    = state1.cx.baseVal.value,
+             cy1    = state1.cy.baseVal.value,
+             cx2    = state2.cx.baseVal.value,
+             cy2    = state2.cy.baseVal.value,
+             m      = (cy2-cy1)/(cx2-cx1),
+             p      = cy1 - m*cx1,
+             errorMargin = 1;
+
+         for(var seg,i=0,len=path.numberOfItems; i < len; ++i) {
+            seg = path.getItem(i);
+            if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
+               if(    Math.abs(m * seg.x1 + p - seg.y1) > errorMargin
+                   || Math.abs(m * seg.x2 + p - seg.y2) > errorMargin) {
+                  return false;
+               }
+            }
+            if(Math.abs(m * seg.x + p - seg.y) > errorMargin) {
+               return false;
+            }
+         }
+         return true;
+      }
       function beginNodeMoving(nodeMoving, e) {
          pkg.svgContainer.style.cursor = "move";
          pkg.svgContainer.onmousemove = nodeMove;
@@ -371,10 +399,10 @@
          }
 
          coords.t = [];
-         nodeMovingData = nodeList[atob(nodeMoving.id)];
-         var n          = nodeMovingData;
+         var n = nodeMovingData = nodeList[atob(nodeMoving.id)];
          for(var i=0, len = n.t.length; i < len; ++i) {
             coords.t[i] = [n.t[i], n.t[i][0].cloneNode(true)];
+            coords.t[i].transitionStraight = isTransitionStraight(n.t[i][0]);
          }
       }
       function beginNewTransition(startState, e) {
@@ -744,78 +772,87 @@
             coords.ellipse[1].setAttribute('cx', coords.cx1 + dx);
             coords.ellipse[1].setAttribute('cy', coords.cy1 + dy);
          }
+
          if(initialState === nodeMoving) {
+            // moving the initial state arrow
             setInitialState(nodeMoving); // FIXME: isn't this inefficient ?
          }
 
+         
          var nodes, n = nodeMovingData;
          for(var i=0, len = n.t.length; i < len; ++i) {
             nodes = coords.t[i][0][0].id.split(" ");
-            var seg, origSeg,
-                segs     = coords.t[i][0][0].querySelector('path').pathSegList,
-                origSegs = coords.t[i][1].querySelector('path').pathSegList,
-                text     = coords.t[i][0][0].querySelector('text'),
-                textOrig = coords.t[i][1].querySelector('text'),
-                s, leng;
-
-            if(nodes[0] === nodes[1]) {// transition from / to the same state, just moving
-               var coefTextX = 1, coefTextY = 1;
-               for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
-                  seg = segs.getItem(s);
-                  origSeg = origSegs.getItem(s);
-                  if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
-                     seg.x1 = origSeg.x1 + dx;
-                     seg.x2 = origSeg.x2 + dx;
-                     seg.y1 = origSeg.y1 + dy;
-                     seg.y2 = origSeg.y2 + dy;
-                  }
-
-                  seg.x = origSeg.x + dx;
-                  seg.y = origSeg.y + dy;
-               }
-               text.setAttribute('x', parseFloat(textOrig.getAttribute('x')) + (coefTextX*dx));
-               text.setAttribute('y', parseFloat(textOrig.getAttribute('y')) + (coefTextY*dy));
-            } else {
-               var origSegStart = origSegs.getItem(0),
-                   origSegEnd = origSegs.getItem(segs.numberOfItems-1),
-                   width  = Math.abs(origSegEnd.x - origSegStart.x),
-                   height = Math.abs(origSegEnd.y - origSegStart.y),
-                   textOrigX = parseFloat(textOrig.getAttribute('x')),
-                   textOrigY = parseFloat(textOrig.getAttribute('y'));
-                   
-               if(coords.t[i][0][1]) { // if the state is the origin
-                  var ech = origSegStart;
-                  origSegStart = origSegEnd;
-                  origSegEnd = ech;
-               }
-
-               text.setAttribute('x', newPos(textOrigX, origSegStart.x, origSegEnd.x, textOrigY, origSegStart.y, origSegEnd.y, width, dx, height, dy));
-               text.setAttribute('y', newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width, dx));
-
-               for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
-                  seg = segs.getItem(s);
-                  origSeg = origSegs.getItem(s);
-                  if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
-                     seg.x1 = newPos(origSeg.x1, origSegStart.x, origSegEnd.x, origSeg.y1, origSegStart.y, origSegEnd.y, width, dx, height, dy);
-                     seg.y1 = newPos(origSeg.y1, origSegStart.y, origSegEnd.y, origSeg.x1, origSegStart.x, origSegEnd.x, height, dy, width, dx);
-                     seg.x2 = newPos(origSeg.x2, origSegStart.x, origSegEnd.x, origSeg.y2, origSegStart.y, origSegEnd.y, width, dx, height, dy);
-                     seg.y2 = newPos(origSeg.y2, origSegStart.y, origSegEnd.y, origSeg.x2, origSegStart.x, origSegEnd.x, height, dy, width, dx);
-                  }
-                  seg.x = newPos(origSeg.x, origSegStart.x, origSegEnd.x, origSeg.y, origSegStart.y, origSegEnd.y, width, dx, height, dy);
-                  seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width, dx);
-               }
+            if(coords.t[i].transitionStraight) {
+               transitionStraight(coords.t[i][0][0]);
             }
+            else {
+               var seg, origSeg,
+                   segs     = coords.t[i][0][0].querySelector('path').pathSegList,
+                   origSegs = coords.t[i][1].querySelector('path').pathSegList,
+                   text     = coords.t[i][0][0].querySelector('text'),
+                   textOrig = coords.t[i][1].querySelector('text'),
+                   s, leng;
 
-            if(!coords.t[i][0][1]) { // the state is the destination, we move the arrow
-               var polygonPoints = coords.t[i][0][0].querySelector('polygon').points,
-                   pointsOrig    = coords.t[i][1].querySelector('polygon').points,
-                   pp,po;
+               if(nodes[0] === nodes[1]) {// transition from / to the same state, just moving
+                  var coefTextX = 1, coefTextY = 1;
+                  for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
+                     seg = segs.getItem(s);
+                     origSeg = origSegs.getItem(s);
+                     if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
+                        seg.x1 = origSeg.x1 + dx;
+                        seg.x2 = origSeg.x2 + dx;
+                        seg.y1 = origSeg.y1 + dy;
+                        seg.y2 = origSeg.y2 + dy;
+                     }
 
-               for(s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
-                  pp = polygonPoints.getItem(s);
-                  po = pointsOrig.getItem(s);
-                  pp.x = po.x + dx;
-                  pp.y = po.y + dy;
+                     seg.x = origSeg.x + dx;
+                     seg.y = origSeg.y + dy;
+                  }
+                  text.setAttribute('x', parseFloat(textOrig.getAttribute('x')) + (coefTextX*dx));
+                  text.setAttribute('y', parseFloat(textOrig.getAttribute('y')) + (coefTextY*dy));
+               }
+               else {
+                  var origSegStart = origSegs.getItem(0),
+                      origSegEnd = origSegs.getItem(segs.numberOfItems-1),
+                      width  = Math.abs(origSegEnd.x - origSegStart.x),
+                      height = Math.abs(origSegEnd.y - origSegStart.y),
+                      textOrigX = parseFloat(textOrig.getAttribute('x')),
+                      textOrigY = parseFloat(textOrig.getAttribute('y'));
+                      
+                  if(coords.t[i][0][1]) { // if the state is the origin
+                     var ech = origSegStart;
+                     origSegStart = origSegEnd;
+                     origSegEnd = ech;
+                  }
+
+                  text.setAttribute('x', newPos(textOrigX, origSegStart.x, origSegEnd.x, textOrigY, origSegStart.y, origSegEnd.y, width, dx, height, dy));
+                  text.setAttribute('y', newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width, dx));
+
+                  for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
+                     seg = segs.getItem(s);
+                     origSeg = origSegs.getItem(s);
+                     if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
+                        seg.x1 = newPos(origSeg.x1, origSegStart.x, origSegEnd.x, origSeg.y1, origSegStart.y, origSegEnd.y, width, dx, height, dy);
+                        seg.y1 = newPos(origSeg.y1, origSegStart.y, origSegEnd.y, origSeg.x1, origSegStart.x, origSegEnd.x, height, dy, width, dx);
+                        seg.x2 = newPos(origSeg.x2, origSegStart.x, origSegEnd.x, origSeg.y2, origSegStart.y, origSegEnd.y, width, dx, height, dy);
+                        seg.y2 = newPos(origSeg.y2, origSegStart.y, origSegEnd.y, origSeg.x2, origSegStart.x, origSegEnd.x, height, dy, width, dx);
+                     }
+                     seg.x = newPos(origSeg.x, origSegStart.x, origSegEnd.x, origSeg.y, origSegStart.y, origSegEnd.y, width, dx, height, dy);
+                     seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width, dx);
+                  }
+               }
+
+               if(!coords.t[i][0][1]) { // the state is the destination, we move the arrow
+                  var polygonPoints = coords.t[i][0][0].querySelector('polygon').points,
+                      pointsOrig    = coords.t[i][1].querySelector('polygon').points,
+                      pp,po;
+
+                  for(s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
+                     pp = polygonPoints.getItem(s);
+                     po = pointsOrig.getItem(s);
+                     pp.x = po.x + dx;
+                     pp.y = po.y + dy;
+                  }
                }
             }
          }
