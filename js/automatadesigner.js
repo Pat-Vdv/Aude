@@ -389,13 +389,13 @@
             ellipse:nodeMoving.querySelectorAll('ellipse'),
             text:nodeMoving.querySelector('text'),
          };
-         coords.cx = parseFloat(coords.ellipse[0].getAttribute('cx'));
-         coords.cy = parseFloat(coords.ellipse[0].getAttribute('cy'));
-         coords.tx = parseFloat(coords.text.getAttribute('x'));
-         coords.ty = parseFloat(coords.text.getAttribute('y'));
+         coords.cx = coords.ellipse[0].cx.baseVal.value;
+         coords.cy = coords.ellipse[0].cy.baseVal.value;
+         coords.tx = coords.text.x.baseVal.getItem(0).value;
+         coords.ty = coords.text.y.baseVal.getItem(0).value;
          if(coords.ellipse[1]) {
-            coords.cx1 = parseFloat(coords.ellipse[1].getAttribute('cx'));
-            coords.cy1 = parseFloat(coords.ellipse[1].getAttribute('cy'));
+            coords.cx1 = coords.ellipse[1].cx.baseVal.value;
+            coords.cy1 = coords.ellipse[1].cy.baseVal.value;
          }
 
          coords.t = [];
@@ -478,7 +478,7 @@
 
       function beginMoveTransitionLabel(text, e) {
          nodeMoving = text;
-         coords = [e.clientX, e.clientY, parseFloat(e.target.getAttribute('x')), parseFloat(e.target.getAttribute('y'))];
+         coords = [e.clientX, e.clientY, e.target.x.baseVal.getItem(0).value, e.target.y.baseVal.getItem(0).value];
          pkg.svgContainer.onmousemove = labelMove;
          pkg.svgContainer.cursor = 'move';
       }
@@ -576,12 +576,12 @@
 
          if(ellipses.length > 1) { // to non accepting state
             nodeMoving.removeChild(ellipses[1]);
-            ry = parseFloat(ellipses[0].getAttribute('ry')) - 4;
+            ry = ellipses[0].ry.baseVal.value - 4;
             ellipse = ellipses[0];
          }
          else {
             ellipse = ellipses[0].cloneNode(false);
-            ry = parseFloat(ellipse.getAttribute('ry')) + 4;
+            ry = ellipse.ry.baseVal.value + 4;
             ellipse.setAttribute('fill', 'none');
             ellipse.setAttribute('rx', ry);
             ellipse.setAttribute('ry', ry);
@@ -804,16 +804,16 @@
                   seg.x = origSeg.x + dx;
                   seg.y = origSeg.y + dy;
                }
-               text.setAttribute('x', parseFloat(textOrig.getAttribute('x')) + (coefTextX*dx));
-               text.setAttribute('y', parseFloat(textOrig.getAttribute('y')) + (coefTextY*dy));
+               text.setAttribute('x', textOrig.x.baseVal.getItem(0).value + (coefTextX*dx));
+               text.setAttribute('y', textOrig.y.baseVal.getItem(0).value + (coefTextY*dy));
             }
             else {
                var origSegStart = origSegs.getItem(0),
                    origSegEnd = origSegs.getItem(segs.numberOfItems-1),
                    width  = Math.abs(origSegEnd.x - origSegStart.x),
                    height = Math.abs(origSegEnd.y - origSegStart.y),
-                   textOrigX = parseFloat(textOrig.getAttribute('x')),
-                   textOrigY = parseFloat(textOrig.getAttribute('y'));
+                   textOrigX = textOrig.x.baseVal.getItem(0).value,
+                   textOrigY = textOrig.y.baseVal.getItem(0).value;
                    
                if(coords.t[i][0][1]) { // if the state is the origin
                   var ech = origSegStart;
@@ -1052,13 +1052,13 @@
          for(attr in attrsx) {
             a = attrsx[attr];
             if(n.hasAttribute(a)) {
-               n.setAttribute(a, parseFloat(n.getAttribute(a)) + tx);
+               n.setAttribute(a, n.getAttribute(a) + tx);
             }
          }
          for(attr in attrsy) {
             a = attrsy[attr];
             if(n.hasAttribute(a)) {
-               n.setAttribute(a, parseFloat(n.getAttribute(a)) + ty);
+               n.setAttribute(a, n.getAttribute(a) + ty);
             }
          }
       }
@@ -1117,14 +1117,14 @@
    function pointOntoEllipse(ellipse, x, y, p, distanceToEllipse, cx, cy) {
 
       if(!cy) {
-         cy = parseFloat(ellipse.getAttribute('cy'));
+         cy = ellipse.cy.baseVal.value;
       }
       if(!cx) {
-         cx = parseFloat(ellipse.getAttribute('cx'));
+         cx = ellipse.cx.baseVal.value;
       }
 
       var alpha = Math.atan((x-cx)/(y-cy)),
-          r     = parseFloat(ellipse.getAttribute('ry')) + (distanceToEllipse || 0);
+          r     = ellipse.ry.baseVal.value + (distanceToEllipse || 0);
 
       if(!p) {
          p = {};
@@ -1162,11 +1162,11 @@
    function posTriangleArrow(polygon, ellipse, p, cx, cy) {
 
       if(!cy) {
-         cy = parseFloat(ellipse.getAttribute('cy'));
+         cy = ellipse.cy.baseVal.value;
       }
 
       if(!cx) {
-         cx = parseFloat(ellipse.getAttribute('cx'));
+         cx = ellipse.cx.baseVal.value;
       }
 
 
@@ -1216,10 +1216,10 @@
          var pi = path.pathSegList.getItem(1);
          var p = path.pathSegList.getItem(2);
          var ellipse = getBigEllipse(stateDest);
-         var cx = parseFloat(ellipse.getAttribute('cx')),
-             cy = parseFloat(ellipse.getAttribute('cy')),
-             ry = parseFloat(ellipse.getAttribute('ry')),
-             rx = parseFloat(ellipse.getAttribute('rx')),
+         var cx = ellipse.cx.baseVal.value,
+             cy = ellipse.cy.baseVal.value,
+             ry = ellipse.ry.baseVal.value,
+             rx = ellipse.rx.baseVal.value,
              y  = Math.sqrt(ry*ry - rx*rx/4);
          po.x = cx - rx/2;
          po.y = cy - y;
@@ -1248,10 +1248,10 @@
          var po = path.pathSegList.getItem(0);
          var ellipseD = getBigEllipse(stateDest);
          var ellipseO = getBigEllipse(stateOrig);
-         var cx = parseFloat(ellipseD.getAttribute('cx')), 
-             cy = parseFloat(ellipseD.getAttribute('cy'));
+         var cx = ellipseD.cx.baseVal.value, 
+             cy = ellipseD.cy.baseVal.value;
          pointOntoEllipse(ellipseO, cx, cy, po);
-         pointOntoEllipse(ellipseD, parseFloat(ellipseO.getAttribute('cx')), parseFloat(ellipseO.getAttribute('cy')), p, 10);
+         pointOntoEllipse(ellipseD, ellipseO.cx.baseVal.value, ellipseO.cy.baseVal.value, p, 10);
          p.x2 = po.x + (p.x - po.x)*2/3;
          p.y2 = po.y + (p.y - po.y)*2/3;
          p.x1 = po.x + (p.x - po.x)*1/3;
