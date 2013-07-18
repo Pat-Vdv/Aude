@@ -319,7 +319,7 @@
          nodeMoving.setAttribute('cx', seg.x);
          nodeMoving.setAttribute('cy', seg.y);
          if(nodeMoving._arrow) {
-            posTriangleArrow(nodeMoving._arrow, nodeMoving._ellipse, seg);
+            posTriangleArrow(nodeMoving._arrow.points, nodeMoving._ellipse, seg);
          }
       }
 
@@ -451,7 +451,7 @@
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('font-family', 'Times Roman,serif');
             text.setAttribute('font-size', '14.00');
-            cleanTransitionPos(pathEdit, polygon, text, nodeEdit, endState);
+            cleanTransitionPos(pathEdit.pathSegList, polygon.points, text, nodeEdit, endState);
             g.appendChild(pathEdit);
             g.appendChild(polygon);
             g.appendChild(text);
@@ -464,13 +464,13 @@
          }
       }
 
-      function transitionStraight(edge, noText) {
+      function transitionStraight(edge) {
          var tid = edge.id.split(' ');
 
          cleanTransitionPos(
-            edge.querySelector('path'),
-            edge.querySelector('polygon'),
-            noText ? null : edge.querySelector('text'),
+            edge.querySelector('path').pathSegList,
+            edge.querySelector('polygon').points,
+            edge.querySelector('text'),
             document.getElementById(tid[0]),
             document.getElementById(tid[1])
          );
@@ -787,6 +787,7 @@
                 origSegs = coords.t[i][1].querySelector('path').pathSegList,
                 text     = coords.t[i][0][0].querySelector('text'),
                 textOrig = coords.t[i][1].querySelector('text'),
+                polygonPoints = coords.t[i][0][0].querySelector('polygon').points,
                 s, leng;
 
             if(nodes[0] === nodes[1]) {// transition from / to the same state, just moving
@@ -825,7 +826,13 @@
                text.setAttribute('y', newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width, dx));
 
                if(coords.t[i].transitionStraight) {
-                  transitionStraight(coords.t[i][0][0], true);
+                  cleanTransitionPos(
+                     segs,
+                     polygonPoints,
+                     null,
+                     document.getElementById(nodes[0]),
+                     document.getElementById(nodes[1])
+                  );
                }
                else {
                   for(s = 0, leng = segs.numberOfItems ; s < leng; ++s) {
@@ -844,8 +851,7 @@
             }
 
             if(!coords.t[i].transitionStraight && !coords.t[i][0][1]) { // the state is the destination, we move the arrow
-               var polygonPoints = coords.t[i][0][0].querySelector('polygon').points,
-                   pointsOrig    = coords.t[i][1].querySelector('polygon').points,
+               var pointsOrig    = coords.t[i][1].querySelector('polygon').points,
                    pp,po;
 
                for(s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
@@ -1154,12 +1160,12 @@
       return ellipses[1] || ellipses[0];
    }
 
-   // Position the triangle <polygon /> of a transition correctly on the svg <ellipse /> at point p{x,y}.
+   // Position the triangle polygonPoints of a transition correctly on the svg <ellipse /> at point p{x,y}.
    // Parameters :
-   //  - polygon : the SVG node representing the triangle
+   //  - polygonPoints : points of the SVG node representing the triangle
    //  - ellipse : the SVG node representing the ellipse
    //  - cx, cy (optional) : the center of the ellipse, if already known
-   function posTriangleArrow(polygon, ellipse, p, cx, cy) {
+   function posTriangleArrow(polygonPoints, ellipse, p, cx, cy) {
 
       if(!cy) {
          cy = ellipse.cy.baseVal.value;
@@ -1187,34 +1193,34 @@
 
       pointOntoEllipse(ellipse, p.x, p.y, pointe, 0, cx, cy);
 
-      while(polygon.points.numberOfItems) {
-         polygon.points.removeItem(0);
+      while(polygonPoints.numberOfItems) {
+         polygonPoints.removeItem(0);
       }
 
-      polygon.points.appendItem(haut);
-      polygon.points.appendItem(pointe);
-      polygon.points.appendItem(bas);
-      polygon.points.appendItem(haut2);
+      polygonPoints.appendItem(haut);
+      polygonPoints.appendItem(pointe);
+      polygonPoints.appendItem(bas);
+      polygonPoints.appendItem(haut2);
    }
 
    // Make a transition straighforward.
    // Parameters:
    //  - path: the <path /> node of the transition
-   //  - polygon: the triangle node of the transition
+   //  - polygonPoints: points of the triangle node of the transition
    //  - text: the <text /> label node of the transition
    //  - stateOrig: the node representing the start state of the transition
    //  - stateDest: the node representing the end state of the transition
-   function cleanTransitionPos(path, polygon, text, stateOrig, stateDest) {
+   function cleanTransitionPos(pathSegList, polygonPoints, text, stateOrig, stateDest) {
       if(stateOrig === stateDest) {
-         while(path.pathSegList.numberOfItems > 3) {
-            path.pathSegList.removeItem(2);
+         while(pathSegList.numberOfItems > 3) {
+            pathSegList.removeItem(2);
          }
-         while(path.pathSegList.numberOfItems < 3) {
-            path.pathSegList.appendItem(path.createSVGPathSegCurvetoCubicAbs(0,0,0,0,0,0));
+         while(pathSegList.numberOfItems < 3) {
+            pathSegList.appendItem(path.createSVGPathSegCurvetoCubicAbs(0,0,0,0,0,0));
          }
-         var po = path.pathSegList.getItem(0);
-         var pi = path.pathSegList.getItem(1);
-         var p = path.pathSegList.getItem(2);
+         var po = pathSegList.getItem(0);
+         var pi = pathSegList.getItem(1);
+         var p = pathSegList.getItem(2);
          var ellipse = getBigEllipse(stateDest);
          var cx = ellipse.cx.baseVal.value,
              cy = ellipse.cy.baseVal.value,
@@ -1235,17 +1241,17 @@
          p.y1 = pi.y;
          p.x2 = p.x-1;
          p.y2 = p.y-6;
-         posTriangleArrow(polygon, ellipse, p, cx+rx/2, cy+ry-y);
+         posTriangleArrow(polygonPoints, ellipse, p, cx+rx/2, cy+ry-y);
 
          text.setAttribute('x', pi.x);
          text.setAttribute('y', (pi.y - 5));
       }
       else {
-         while(path.pathSegList.numberOfItems > 2) {
-            path.pathSegList.removeItem(2);
+         while(pathSegList.numberOfItems > 2) {
+            pathSegList.removeItem(2);
          }
-         var p = path.pathSegList.getItem(path.pathSegList.numberOfItems-1);
-         var po = path.pathSegList.getItem(0);
+         var p = pathSegList.getItem(pathSegList.numberOfItems-1);
+         var po = pathSegList.getItem(0);
          var ellipseD = getBigEllipse(stateDest);
          var ellipseO = getBigEllipse(stateOrig);
          var cx = ellipseD.cx.baseVal.value, 
@@ -1256,7 +1262,7 @@
          p.y2 = po.y + (p.y - po.y)*2/3;
          p.x1 = po.x + (p.x - po.x)*1/3;
          p.y1 = po.y + (p.y - po.y)*1/3;
-         posTriangleArrow(polygon, ellipseD, p);
+         posTriangleArrow(polygonPoints, ellipseD, p);
          if(text) {
             text.setAttribute('x', (p.x + po.x) / 2);
             text.setAttribute('y', (p.y + po.y) / 2 - 5);
