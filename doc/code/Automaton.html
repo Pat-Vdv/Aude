@@ -1,0 +1,5459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Automaton</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Class: Automaton</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+    Automaton
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+<dt>
+    <h4 class="name" id="Automaton"><span class="type-signature"></span>new Automaton<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        A class to manipulate automata in Javascript.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line50">line 50</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="acceptedWord"><span class="type-signature">&lt;static> </span>acceptedWord<span class="signature">(The)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method runs a word from the initial state and checks if this word is accepted by the automaton. It takes care to restore current states and last taken transitions after the run.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>The</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">list of symbols to run</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line783">line 783</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#runSymbol</li>
+        
+            <li>Automaton#runWord</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        Throws an error if epsilon is given as a symbol.
+        </div>
+    </dt>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+</dl>
+
+
+        
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addAlphabet"><span class="type-signature">&lt;static> </span>addAlphabet<span class="signature">(alphabet)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method adds a set of symbols to the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>alphabet</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set of symbol to add to the current alphabet.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line471">line 471</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setAlphabet</li>
+        
+            <li>Automaton#removeAlphabet</li>
+        
+            <li>Automaton#addSymbol</li>
+        
+            <li>Automaton#hasSymbol</li>
+        
+            <li>Automaton#removeSymbol</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addCurrentState"><span class="type-signature">&lt;static> </span>addCurrentState<span class="signature">(state)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method make states of the automaton current.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to add to the set of current states.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line601">line 601</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentState</li>
+        
+            <li>Automaton#setCurrentStates</li>
+        
+            <li>Automaton#addCurrentStates</li>
+        
+            <li>Automaton#removeCurrentState</li>
+        
+            <li>Automaton#removeCurrentStates</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addCurrentStates"><span class="type-signature">&lt;static> </span>addCurrentStates<span class="signature">(states)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method add a set of states to the set of current states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>states</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set of states to add to the set of current states.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line636">line 636</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentState</li>
+        
+            <li>Automaton#setCurrentStates</li>
+        
+            <li>Automaton#addCurrentState</li>
+        
+            <li>Automaton#removeCurrentState</li>
+        
+            <li>Automaton#removeCurrentStates</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addFinalState"><span class="type-signature">&lt;static> </span>addFinalState<span class="signature">(state)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method adds a final (accepting) state to the automaton. If the state is already there, makes it final.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to add, can be of any type.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addState"><span class="type-signature">&lt;static> </span>addState<span class="signature">(state, <span class="optional">final</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method adds a state to the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The state to add, can be of any type.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>final</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">If given and true, the state will be a final (accepting) state.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>addFinalState</li>
+        
+            <li>addAcceptingState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addSymbol"><span class="type-signature">&lt;static> </span>addSymbol<span class="signature">(symbol)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method adds a symbol to the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>symbol</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The symbol to add</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line501">line 501</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#removeSymbol</li>
+        
+            <li>Automaton#hasSymbol</li>
+        
+            <li>Automaton#addAlphabet</li>
+        
+            <li>Automaton#setAlphabet</li>
+        
+            <li>Automaton#removeAlphabet</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="addTransition"><span class="type-signature">&lt;static> </span>addTransition<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method adds a transition to the automaton. It can takes one or three arguments: a Transition object, or a state, a symbol and a state. This method automatically adds states and symbols which have not yet been added to the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line319">line 319</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#removeTransition</li>
+        
+            <li>Automaton#hasTransition</li>
+        
+            <li>Automaton#getTransitions</li>
+        
+            <li>Automaton#getTransitionsTable</li>
+        
+            <li><a href="Transition.html">Transition</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>  A = new Automaton();
+  A.setInitialState(1);
+  A.addFinalState(2);
+  A.addTransition(1, 'a', 2);
+  var t = new Transition(1, epsilon, 2);
+  A.addTransition(t);</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="currentStatesAddAccessiblesByEpsilon"><span class="type-signature">&lt;static> </span>currentStatesAddAccessiblesByEpsilon<span class="signature">(<span class="optional">transitionsTable</span>, <span class="optional">visited</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This methods looks at current states and transitions of the Automaton to add all states accessible with epsilon to the current states.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>transitionsTable</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The table of transition, as given by the getTransitionsTable() method</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>visited</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">States that were already visited by the function.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line679">line 679</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getAcceptingStates"><span class="type-signature">&lt;static> </span>getAcceptingStates<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method is an alias of the getFinalStates method.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line200">line 200</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#getFinalStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of final states of the automaton.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getAlphabet"><span class="type-signature">&lt;static> </span>getAlphabet<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of symbols of the Automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line402">line 402</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addSymbol</li>
+        
+            <li>Automaton#removeSymbol</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns the alphabet of the automaton.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getCurrentStates"><span class="type-signature">&lt;static> </span>getCurrentStates<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of current states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line668">line 668</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentState</li>
+        
+            <li>Automaton#setCurrentStates</li>
+        
+            <li>Automaton#addCurrentState</li>
+        
+            <li>Automaton#addCurrentStates</li>
+        
+            <li>Automaton#removeCurrentState</li>
+        
+            <li>Automaton#removeCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of current states of the automaton.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getFinalStates"><span class="type-signature">&lt;static> </span>getFinalStates<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of final (accepting) states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line189">line 189</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setFinalStates</li>
+        
+            <li>Automaton#setFinalState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of final states of the automaton.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getInitialState"><span class="type-signature">&lt;static> </span>getInitialState<span class="signature">()</span><span class="type-signature"> &rarr; {any}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the initial state of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line252">line 252</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setInitialState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The initial state of the automaton.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">any</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getLastTakenTransitions"><span class="type-signature">&lt;static> </span>getLastTakenTransitions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of transitions that were taken while running on the last symbol. See the runSymbol method for more information.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line802">line 802</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#runSymbol</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of last taken transitions
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getNonAcceptingStates"><span class="type-signature">&lt;static> </span>getNonAcceptingStates<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method is an alias of the getNonAcceptingStates method.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line152">line 152</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#getNonAcceptingStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of non final states
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getNonFinalStates"><span class="type-signature">&lt;static> </span>getNonFinalStates<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of non final (accepting) states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line141">line 141</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of non final states
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getStates"><span class="type-signature">&lt;static> </span>getStates<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line162">line 162</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The set of non final states
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getTransitions"><span class="type-signature">&lt;static> </span>getTransitions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Set.html">Set</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the set of transitions of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line387">line 387</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addTransition</li>
+        
+            <li>Automaton#removeTransition</li>
+        
+            <li>Automaton#hasTransition</li>
+        
+            <li>Automaton#getTransitionsTable</li>
+        
+            <li><a href="Transition.html">Transition</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns the set of transitions of the Automaton.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getTransitionsTable"><span class="type-signature">&lt;static> </span>getTransitionsTable<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns the transition table of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line428">line 428</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addTransition</li>
+        
+            <li>Automaton#removeTransition</li>
+        
+            <li>Automaton#hasTransition</li>
+        
+            <li><a href="Transition.html">Transition</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns a bi-dimensional array representing transitions by symbol by state.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>  var table = A.getTransitionsTable();
+  for(var startState in table) {
+     for(var symbol in table[startState]) {
+         // table[startState][symbol] is defined for each couple (startState, symbol) of the automaton and is a set.
+         table[startState][symbol].forReach(function(endState) {
+            console.log(startState, symbol, endState); // logs all the automaton's transition
+         });
+     }
+  }</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="hasState"><span class="type-signature">&lt;static> </span>hasState<span class="signature">(state)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method checks if the automaton has the state given in parameter.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to check</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line275">line 275</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns true if the states is in the automaton, false otherwise.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="hasSymbol"><span class="type-signature">&lt;static> </span>hasSymbol<span class="signature">(symbol)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method tests whether a symbol belongs to the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>symbol</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The symbol to test</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line519">line 519</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addAlphabet</li>
+        
+            <li>Automaton#setAlphabet</li>
+        
+            <li>Automaton#removeAlphabet</li>
+        
+            <li>Automaton#addSymbol</li>
+        
+            <li>Automaton#removeSymbol</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns true if the Automaton has the symbol, false otherwise.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="hasTransition"><span class="type-signature">&lt;static> </span>hasTransition<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method checks if a transition exists in the automaton. It can takes one or three arguments: a Transition object, or a state, a symbol and a state.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line366">line 366</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addTransition</li>
+        
+            <li>Automaton#removeTransition</li>
+        
+            <li>Automaton#hasTransition</li>
+        
+            <li>Automaton#getTransitions</li>
+        
+            <li>Automaton#getTransitionsTable</li>
+        
+            <li><a href="Transition.html">Transition</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns true if the transition exists, false otherwise
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isAcceptingState"><span class="type-signature">&lt;static> </span>isAcceptingState<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method is an alias of the isFinalState method.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line297">line 297</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#isFinalState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns true if the states is in the automaton, false otherwise.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isFinalState"><span class="type-signature">&lt;static> </span>isFinalState<span class="signature">(state)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method checks if the state given in parameter is a final state of this automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to check</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line286">line 286</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns true if the states is in the automaton, false otherwise.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeAlphabet"><span class="type-signature">&lt;static> </span>removeAlphabet<span class="signature">(alphabet)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method removes a set of symbols from the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>alphabet</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set of symbol to remove from the current alphabet.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line486">line 486</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addAlphabet</li>
+        
+            <li>Automaton#setAlphabet</li>
+        
+            <li>Automaton#addSymbol</li>
+        
+            <li>Automaton#hasSymbol</li>
+        
+            <li>Automaton#removeSymbol</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeCurrentState"><span class="type-signature">&lt;static> </span>removeCurrentState<span class="signature">(state)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method remove a state from the set of current states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to remove from the set of current states.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line620">line 620</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentState</li>
+        
+            <li>Automaton#setCurrentStates</li>
+        
+            <li>Automaton#addCurrentState</li>
+        
+            <li>Automaton#addCurrentStates</li>
+        
+            <li>Automaton#removeCurrentStates</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeCurrentStates"><span class="type-signature">&lt;static> </span>removeCurrentStates<span class="signature">(states)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method add a set of states to the set of current states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>states</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set of states to add to the set of current states.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line652">line 652</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentState</li>
+        
+            <li>Automaton#setCurrentStates</li>
+        
+            <li>Automaton#addCurrentState</li>
+        
+            <li>Automaton#addCurrentStates</li>
+        
+            <li>Automaton#removeCurrentState</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeState"><span class="type-signature">&lt;static> </span>removeState<span class="signature">(the)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method removes a state from the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>the</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">state to remove</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line263">line 263</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>addState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeSymbol"><span class="type-signature">&lt;static> </span>removeSymbol<span class="signature">(symbol)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method removes a symbol from the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>symbol</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The symbol to remove</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line534">line 534</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addAlphabet</li>
+        
+            <li>Automaton#setAlphabet</li>
+        
+            <li>Automaton#removeAlphabet</li>
+        
+            <li>Automaton#addSymbol</li>
+        
+            <li>Automaton#hasSymbol</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="removeTransition"><span class="type-signature">&lt;static> </span>removeTransition<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This function removes a transition to the automaton. It can takes one or three arguments: a Transition object, or a state, a symbol and a state. Don't forget to remove states or symbol that should also be removed, if necessary; this method does not do that automatically.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line344">line 344</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addTransition</li>
+        
+            <li>Automaton#hasTransition</li>
+        
+            <li>Automaton#getTransitions</li>
+        
+            <li>Automaton#getTransitionsTable</li>
+        
+            <li><a href="Transition.html">Transition</a></li>
+        
+            <li>Automaton#removeSymbol</li>
+        
+            <li>Automaton#removeState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="runSymbol"><span class="type-signature">&lt;static> </span>runSymbol<span class="signature">(symbol, <span class="optional">transitionsTable</span>, <span class="optional">dontEraseTakenTransitions</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This methods looks at current states and transitions of the Automaton to replace current states by all states accessible with the given symbol.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>symbol</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The symbol to "eat"</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>transitionsTable</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The table of transition, as given by the getTransitionsTable() method</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>dontEraseTakenTransitions</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">dontEraseTakenTransitions If true, don't reinitialize the set of last taken transitions, just append newly taken transition to it.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line722">line 722</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#runWord</li>
+        
+            <li>Automaton#acceptedWord</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        
+            <li>Automaton#getLastTakenTransitions</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        Throws an error if epsilon is given as the symbol.
+        </div>
+    </dt>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+</dl>
+
+
+        
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="runWord"><span class="type-signature">&lt;static> </span>runWord<span class="signature">(The)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method runs each symbol of the list of symbol given. See the description of the runSymbol for more information. Don't forget to set the current state to the initial state if you need it.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>The</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">list of symbols to run</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line767">line 767</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#runSymbol</li>
+        
+            <li>Automaton#acceptedWord</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        Throws an error if epsilon is given as a symbol.
+        </div>
+    </dt>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+</dl>
+
+
+        
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setAcceptingState"><span class="type-signature">&lt;static> </span>setAcceptingState<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method is an alias of the addFinalStateState method.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line121">line 121</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addFinalState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setAcceptingStates"><span class="type-signature">&lt;static> </span>setAcceptingStates<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method is an alias of the setFinalStates method.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line226">line 226</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setFinalStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setAlphabet"><span class="type-signature">&lt;static> </span>setAlphabet<span class="signature">(alphabet)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method sets the set of symbols of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>alphabet</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set of symbol to use.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line456">line 456</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#addAlphabet</li>
+        
+            <li>Automaton#removeAlphabet</li>
+        
+            <li>Automaton#addSymbol</li>
+        
+            <li>Automaton#hasSymbol</li>
+        
+            <li>Automaton#removeSymbol</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setCurrentState"><span class="type-signature">&lt;static> </span>setCurrentState<span class="signature">(state)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method sets the current state of the automaton
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to make current</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line561">line 561</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentStates</li>
+        
+            <li>Automaton#addCurrentState</li>
+        
+            <li>Automaton#addCurrentStates</li>
+        
+            <li>Automaton#removeCurrentState</li>
+        
+            <li>Automaton#removeCurrentStates</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setCurrentStates"><span class="type-signature">&lt;static> </span>setCurrentStates<span class="signature">(states)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method sets the current states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>states</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set of states to make current</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line581">line 581</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setCurrentState</li>
+        
+            <li>Automaton#addCurrentState</li>
+        
+            <li>Automaton#addCurrentStates</li>
+        
+            <li>Automaton#removeCurrentState</li>
+        
+            <li>Automaton#removeCurrentStates</li>
+        
+            <li>Automaton#getCurrentStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setFinalStates"><span class="type-signature">&lt;static> </span>setFinalStates<span class="signature">(states)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method sets the set of final (accepting) states of the automaton. Every other state is set to non final.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>states</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The new set of final states of the automaton.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line211">line 211</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#getAcceptingStates</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setInitialState"><span class="type-signature">&lt;static> </span>setInitialState<span class="signature">(state)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method sets the initial state of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The new initial state of the automaton.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line237">line 237</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#getInitialState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setNonAcceptingState"><span class="type-signature">&lt;static> </span>setNonAcceptingState<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method is an alias of the setNonFinalState method.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line131">line 131</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Automaton#setNonFinalState</li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setNonFinalState"><span class="type-signature">&lt;static> </span>setNonFinalState<span class="signature">(state)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method removes a state from the set of final states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The state to add, can be of any type.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line111">line 111</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setStates"><span class="type-signature">&lt;static> </span>setStates<span class="signature">(states)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method sets the set of states of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>states</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Set.html">Set</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The set new set of states of the automaton.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line172">line 172</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="toString"><span class="type-signature">&lt;static> </span>toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        This method returns a string representation of the automaton.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="automata.js.html">automata.js</a>, <a href="automata.js.html#line538">line 538</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns the string representation of the set.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">string</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Automaton.html">Automaton</a></li><li><a href="Set.html">Set</a></li><li><a href="Transition.html">Transition</a></li></ul><h3>Global</h3><ul><li><a href="global.html#automaton_code">automaton_code</a></li><li><a href="global.html#epsilon">epsilon</a></li><li><a href="global.html#format_transition">format_transition</a></li><li><a href="global.html#parse_transition">parse_transition</a></li><li><a href="global.html#read_automaton">read_automaton</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Jul 18 2013 09:39:04 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

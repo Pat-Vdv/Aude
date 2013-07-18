@@ -1,4 +1,31 @@
-/*jslint browser: true, ass: true, continue: true, es5: false, forin: true, todo: true, vars: true, white: true, indent: 3 */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: automata.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: automata.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/*jslint browser: true, ass: true, continue: true, es5: false, forin: true, todo: true, vars: true, white: true, indent: 3 */
 /*jshint noarg:true, noempty:true, eqeqeq:true, boss:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
 
 /*
@@ -1008,14 +1035,14 @@
    pkg.read_automaton = function (code) {
       var lastIndex;
       function getNextValue(s, j, len) {
-         while(j < len && !s[j].trim() || s[j] === ',') {
+         while(j &lt; len && !s[j].trim() || s[j] === ',') {
             ++j;
          }
 
          var j0 = j;
          if(s[j] === '"' || s[j] === "'") {
             var end = s[j++];
-            while(j < len && s[j] !== end) {
+            while(j &lt; len && s[j] !== end) {
                if(s[j] === '\\') {
                   ++j;
                }
@@ -1028,8 +1055,8 @@
             var set = new Set();
             ++j;
             var closed = false;
-            while(j < len) {
-               while(j < len && !s[j].trim() || s[j] === ',') {
+            while(j &lt; len) {
+               while(j &lt; len && !s[j].trim() || s[j] === ',') {
                   ++j;
                }
 
@@ -1050,8 +1077,8 @@
             var tuple = new Tuple();
             ++j;
             var closed = false;
-            while(j < len) {
-               while(j < len && !s[j].trim() || s[j] === ',') {
+            while(j &lt; len) {
+               while(j &lt; len && !s[j].trim() || s[j] === ',') {
                   ++j;
                }
 
@@ -1069,7 +1096,7 @@
             return tuple;
          }
          else {
-            while(j < len && s[j].trim() && ',})]'.indexOf(s[j]) === -1) {
+            while(j &lt; len && s[j].trim() && ',})]'.indexOf(s[j]) === -1) {
                ++j;
             }
             lastIndex = j;
@@ -1082,16 +1109,16 @@
       var i=1, len = c.length;
       a.setInitialState(getNextValue(c[0], 0, c[0].length));
 
-      for(i=1; i < len && c[i].trim(); ++i) {
+      for(i=1; i &lt; len && c[i].trim(); ++i) {
          a.addState(getNextValue(c[i], 0, c[i].length));
       }
 
-      for(++i; i < len && c[i].trim(); ++i) {
+      for(++i; i &lt; len && c[i].trim(); ++i) {
          a.addFinalState(getNextValue(c[i], 0, c[i].length));
       }
 
       var startState, endState, symbol, j, leng;
-      for(++i; i < len && c[i].trim(); ++i) {
+      for(++i; i &lt; len && c[i].trim(); ++i) {
          lastIndex = 0;
          leng = c[i].length;
          startState = getNextValue(c[i], lastIndex, leng);
@@ -1176,7 +1203,7 @@
       var symbols = [];
       var symbol, i = 0, len = text.length;
 
-      while(i < len) {
+      while(i &lt; len) {
          if(text[i] === ',') {
             if(symbol = text.substr(0,i).trim()) {
                symbols.push(symbol.trim());
@@ -1188,7 +1215,7 @@
          }
          else if(text[i] === '"' || text[i] === "'") {
             var end = text[i++];
-            while(i < len && text[i] !== end) {
+            while(i &lt; len && text[i] !== end) {
                if(text[i] === '\\') {
                   ++i;
                }
@@ -1242,4 +1269,26 @@
    _("fr", "Automaton.runSymbol(): epsilon is forbidden.", "Automaton.runSymbol(): epsilon est interdit.");
    _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
 
-})(this, this);
+})(this, this);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Automaton.html">Automaton</a></li><li><a href="Set.html">Set</a></li><li><a href="Transition.html">Transition</a></li></ul><h3>Global</h3><ul><li><a href="global.html#automaton_code">automaton_code</a></li><li><a href="global.html#epsilon">epsilon</a></li><li><a href="global.html#format_transition">format_transition</a></li><li><a href="global.html#parse_transition">parse_transition</a></li><li><a href="global.html#read_automaton">read_automaton</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu Jul 18 2013 09:39:03 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
