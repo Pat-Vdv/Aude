@@ -352,286 +352,260 @@
          pkg.svgNode.viewBox.baseVal.y = coords.viewBoxY - (e.clientY - coords.y)/pkg.svgZoom;
       }
 
-      pkg.svgContainer.addEventListener('mousedown', function(e) {
-         if(!e.button) { // left button
-            if(nodeMoving = parentHasClass(e.target, 'pathedit-handle')) {
-               // handle path editing
-               coords = {
-                  x:e.clientX,
-                  y:e.clientY
-               };
-               pkg.svgContainer.onmousemove = nodeMoving._mousemove;
-            }
-            else {
-               pkg.cleanSVG(pkg.currentIndex, true);
+      function beginNodeMoving(nodeMoving, e) {
+         pkg.svgContainer.style.cursor = "move";
+         pkg.svgContainer.onmousemove = nodeMove;
+         coords = {
+            x:e.clientX,
+            y:e.clientY,
+            ellipse:nodeMoving.querySelectorAll('ellipse'),
+            text:nodeMoving.querySelector('text'),
+         };
+         coords.cx = parseFloat(coords.ellipse[0].getAttribute('cx'));
+         coords.cy = parseFloat(coords.ellipse[0].getAttribute('cy'));
+         coords.tx = parseFloat(coords.text.getAttribute('x'));
+         coords.ty = parseFloat(coords.text.getAttribute('y'));
+         if(coords.ellipse[1]) {
+            coords.cx1 = parseFloat(coords.ellipse[1].getAttribute('cx'));
+            coords.cy1 = parseFloat(coords.ellipse[1].getAttribute('cy'));
+         }
 
-               if(nodeMoving = parentHasClass(e.target, 'node')) {
-                  if(pkg.svgContainer.onmousemove === nodeBinding) {
-                     var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), '');
-                     if(trans === null) {
-                        pathEdit.parentNode.removeChild(pathEdit);
-                        pkg.svgContainer.onmousemove = null;
-                     }
-                     else {
-                        var id = nodeEdit.id + ' ' + nodeMoving.id;
-                        if(document.getElementById(id)) {
-                           // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
-                           alert(_('Sorry, there is already a transition between these states in this way.'));
-                           pkg.svgNode.removeChild(pathEdit);
-                           pkg.svgContainer.onmousemove = null;
-                           return;
-                        }
-                        var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                        g.id = id;
-                        g.setAttribute('class', 'edge');
-                        var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-                        title.textContent = atob(nodeEdit.id) + '->' + atob(nodeMoving.id);
-                        g.appendChild(title);
+         coords.t = [];
+         nodeMovingData = nodeList[atob(nodeMoving.id)];
+         var n          = nodeMovingData;
+         for(var i=0, len = n.t.length; i < len; ++i) {
+            coords.t[i] = [n.t[i], n.t[i][0].cloneNode(true)];
+         }
+      }
+      function beginNewTransition(startState, e) {
+         nodeEdit = startState;
+         pkg.svgContainer.onmousemove = nodeBinding;
+         pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+         pathEdit.setAttribute('fill', 'none');
+         pathEdit.setAttribute('stroke', 'black');
 
-                        var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+         var ellipse = getBigEllipse(startState);
+         var pt = svgcursorPoint(e), p = pointOntoEllipse(ellipse, pt.x, pt.y);
+         pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegMovetoAbs(p.x, p.y));
+         pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y,pt.x, pt.y));
+         pkg.svgNode.appendChild(pathEdit);
+      }
 
-                        polygon.setAttribute('fill', 'black');
-                        polygon.setAttribute('stroke', 'black');
-
-                        var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        text.textContent = format_transition(trans || "\\e");
-                        text.setAttribute('text-anchor', 'middle');
-                        text.setAttribute('font-family', 'Times Roman,serif');
-                        text.setAttribute('font-size', '14.00');
-                        cleanTransitionPos(pathEdit, polygon, text, nodeEdit, nodeMoving);
-                        g.appendChild(pathEdit);
-                        g.appendChild(polygon);
-                        g.appendChild(text);
-                        pkg.svgNode.querySelector('g').appendChild(g);
-                        pkg.svgContainer.onmousemove = null;
-                        nodeList[atob(nodeMoving.id)].t.push([g, false]); // false : state is not origin
-                        if(nodeEdit !== nodeMoving) {
-                           nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
-                        }
-                     }
-                  }
-                  else if(e.shiftKey && !(e.ctrlKey || e.metaKey)) {
-                     nodeEdit = nodeMoving;
-                     pkg.svgContainer.onmousemove = nodeBinding;
-                     pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                     pathEdit.setAttribute('fill', 'none');
-                     pathEdit.setAttribute('stroke', 'black');
-
-                     var ellipse = getBigEllipse(nodeMoving);
-                     var pt = svgcursorPoint(e), p = pointOntoEllipse(ellipse, pt.x, pt.y);
-                     pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegMovetoAbs(p.x, p.y));
-                     pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y,pt.x, pt.y));
-                     pkg.svgNode.appendChild(pathEdit);
-                  }
-                  else if((e.ctrlKey || e.metaKey) && !e.shiftKey) {
-                     // initial state
-                     setInitialState(nodeMoving);
-                  }
-                  else {
-                     pkg.svgContainer.style.cursor = "move";
-                     pkg.svgContainer.onmousemove = nodeMove;
-                     coords = {
-                        x:e.clientX,
-                        y:e.clientY,
-                        ellipse:nodeMoving.querySelectorAll('ellipse'),
-                        text:nodeMoving.querySelector('text'),
-                     };
-                     coords.cx = parseFloat(coords.ellipse[0].getAttribute('cx'));
-                     coords.cy = parseFloat(coords.ellipse[0].getAttribute('cy'));
-                     coords.tx = parseFloat(coords.text.getAttribute('x'));
-                     coords.ty = parseFloat(coords.text.getAttribute('y'));
-                     if(coords.ellipse[1]) {
-                        coords.cx1 = parseFloat(coords.ellipse[1].getAttribute('cx'));
-                        coords.cy1 = parseFloat(coords.ellipse[1].getAttribute('cy'));
-                     }
-
-                     coords.t = [];
-                     nodeMovingData = nodeList[atob(nodeMoving.id)];
-                     var n          = nodeMovingData;
-                     for(var i=0, len = n.t.length; i < len; ++i) {
-                        coords.t[i] = [n.t[i], n.t[i][0].cloneNode(true)];
-                     }
-                  }
-               }
-               else if(nodeMoving = parentHasClass(e.target, 'edge')) {
-                  if(e.ctrlKey || e.metaKey) {
-                     var tid = nodeMoving.id.split(' ');
-
-                     cleanTransitionPos(
-                        nodeMoving.querySelector('path'),
-                        nodeMoving.querySelector('polygon'),
-                        nodeMoving.querySelector('text'),
-                        document.getElementById(tid[0]),
-                        document.getElementById(tid[1])
-                     );
-                  }
-                  else if(e.target.nodeName === 'text') {
-                     nodeMoving = e.target;
-                     coords = [e.clientX, e.clientY, parseFloat(e.target.getAttribute('x')), parseFloat(e.target.getAttribute('y'))];
-                     pkg.svgContainer.onmousemove = labelMove;
-                     pkg.svgContainer.cursor = 'move';
-                  }
-                  else if(!e.shiftKey) {
-                     var p = nodeMoving.querySelector('path'), segs = p.pathSegList;
-                     var tid = nodeMoving.id.split(' ');
-
-                     if(!pathEditor)
-                        pathEditor = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-                     pathEditor.id = 'path-editor';
-                     while(pathEditor.firstChild) {
-                        pathEditor.removeChild(pathEditor.firstChild);
-                     }
-                     var handle, seg;
-                     for(var i=0, len = segs.numberOfItems; i < len; ++i) {
-                        seg = segs.getItem(i);
-                        if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
-                           if(seg.x1 !== segs.getItem(i-1).x || seg.y1 !== segs.getItem(i-1).y) {
-                              handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                              handle.setAttribute('class', 'pathedit-handle');
-                              handle.setAttribute('r', 3);
-                              handle.setAttribute('fill', '#F50');
-                              handle.setAttribute('stroke', 'black');
-                              handle._mousemove = pathEditControlMove;
-                              handle.setAttribute('cx', seg.x1);
-                              handle.setAttribute('cy', seg.y1);
-                              handle._seg = [seg, 'x1', 'y1'];
-                              pathEditor.appendChild(handle);
-                           }
-                           if(seg.x2 !== seg.x || seg.y2 !== seg.y) {
-                              handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                              handle.setAttribute('class', 'pathedit-handle');
-                              handle.setAttribute('r', 3);
-                              handle.setAttribute('fill', '#F50');
-                              handle.setAttribute('stroke', 'black');
-                              handle._mousemove = pathEditControlMove;
-                              handle.setAttribute('cx', seg.x2);
-                              handle.setAttribute('cy', seg.y2);
-                              handle._seg = [seg, 'x2', 'y2'];
-                              pathEditor.appendChild(handle);
-                           }
-                        }
-
-                        handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                        handle.setAttribute('class', 'pathedit-handle');
-                        handle.setAttribute('cx', seg.x);
-                        handle.setAttribute('cy', seg.y);
-                        handle.setAttribute('r', 3);
-                        if(i === len-1) {
-                           handle._mousemove = pathEditEllipseMove;
-                           handle._ellipse   = getBigEllipse(document.getElementById(tid[1]));
-                           handle._arrow     = nodeMoving.querySelector('polygon');
-                        }
-                        else if(!i) {
-                           handle._mousemove = pathEditEllipseMove;
-                           handle._ellipse   = getBigEllipse(document.getElementById(tid[0]));
-                        }
-                        else {
-                           handle._mousemove = pathEditSolidMove;
-                        }
-
-                        handle._seg = [segs, i, p.cloneNode(false).pathSegList];
-
-                        handle.setAttribute('fill', '#4AF');
-                        handle.setAttribute('stroke', 'black');
-                        pathEditor.appendChild(handle);
-                     }
-                     // TODO: handle parabola
-                     pkg.svgNode.appendChild(pathEditor);
-                  }
-               }
-               else if(!pkg.svgContainer.onmousemove) {
-                  coords = {x:e.clientX, y:e.clientY, viewBoxX:pkg.svgNode.viewBox.baseVal.x, viewBoxY:pkg.svgNode.viewBox.baseVal.y};
-                  pkg.svgContainer.onmousemove = viewBoxMove;
-               }
-            }
+      function endNewTransition(endState, e) {
+         var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), '');
+         if(trans === null) {
+            pathEdit.parentNode.removeChild(pathEdit);
+            pkg.svgContainer.onmousemove = null;
          }
          else {
-            if(pathEditor) {
-               pkg.svgNode.removeChild(pathEditor);
-               pathEditor = null;
+            var id = nodeEdit.id + ' ' + endState.id;
+            if(document.getElementById(id)) {
+               // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
+               alert(_('Sorry, there is already a transition between these states in this way.'));
+               pkg.svgNode.removeChild(pathEdit);
+               pkg.svgContainer.onmousemove = null;
+               return;
             }
+            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.id = id;
+            g.setAttribute('class', 'edge');
+            var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+            title.textContent = atob(nodeEdit.id) + '->' + atob(endState.id);
+            g.appendChild(title);
+
+            var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+
+            polygon.setAttribute('fill', 'black');
+            polygon.setAttribute('stroke', 'black');
+
+            var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.textContent = format_transition(trans || "\\e");
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-family', 'Times Roman,serif');
+            text.setAttribute('font-size', '14.00');
+            cleanTransitionPos(pathEdit, polygon, text, nodeEdit, endState);
+            g.appendChild(pathEdit);
+            g.appendChild(polygon);
+            g.appendChild(text);
+            pkg.svgNode.querySelector('g').appendChild(g);
+            pkg.svgContainer.onmousemove = null;
+            nodeList[atob(endState.id)].t.push([g, false]); // false : state is not origin
+            if(nodeEdit !== endState) {
+               nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
+            }
+         }
+      }
+
+      function transitionStraight(edge, e) {
+         var tid = edge.id.split(' ');
+
+         cleanTransitionPos(
+            edge.querySelector('path'),
+            edge.querySelector('polygon'),
+            edge.querySelector('text'),
+            document.getElementById(tid[0]),
+            document.getElementById(tid[1])
+         );
+      }
+
+      function beginMoveTransitionLabel(text, e) {
+         nodeMoving = text;
+         coords = [e.clientX, e.clientY, parseFloat(e.target.getAttribute('x')), parseFloat(e.target.getAttribute('y'))];
+         pkg.svgContainer.onmousemove = labelMove;
+         pkg.svgContainer.cursor = 'move';
+      }
+
+      function beginNewTransitionEdit(nodeMoving, e) {
+         var p = nodeMoving.querySelector('path'), segs = p.pathSegList;
+         var tid = nodeMoving.id.split(' ');
+
+         if(!pathEditor)
+            pathEditor = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+         pathEditor.id = 'path-editor';
+         while(pathEditor.firstChild) {
+            pathEditor.removeChild(pathEditor.firstChild);
+         }
+         var handle, seg;
+         for(var i=0, len = segs.numberOfItems; i < len; ++i) {
+            seg = segs.getItem(i);
+            if(seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
+               if(seg.x1 !== segs.getItem(i-1).x || seg.y1 !== segs.getItem(i-1).y) {
+                  handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                  handle.setAttribute('class', 'pathedit-handle');
+                  handle.setAttribute('r', 3);
+                  handle.setAttribute('fill', '#F50');
+                  handle.setAttribute('stroke', 'black');
+                  handle._mousemove = pathEditControlMove;
+                  handle.setAttribute('cx', seg.x1);
+                  handle.setAttribute('cy', seg.y1);
+                  handle._seg = [seg, 'x1', 'y1'];
+                  pathEditor.appendChild(handle);
+               }
+               if(seg.x2 !== seg.x || seg.y2 !== seg.y) {
+                  handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                  handle.setAttribute('class', 'pathedit-handle');
+                  handle.setAttribute('r', 3);
+                  handle.setAttribute('fill', '#F50');
+                  handle.setAttribute('stroke', 'black');
+                  handle._mousemove = pathEditControlMove;
+                  handle.setAttribute('cx', seg.x2);
+                  handle.setAttribute('cy', seg.y2);
+                  handle._seg = [seg, 'x2', 'y2'];
+                  pathEditor.appendChild(handle);
+               }
+            }
+
+            handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            handle.setAttribute('class', 'pathedit-handle');
+            handle.setAttribute('cx', seg.x);
+            handle.setAttribute('cy', seg.y);
+            handle.setAttribute('r', 3);
+            if(i === len-1) {
+               handle._mousemove = pathEditEllipseMove;
+               handle._ellipse   = getBigEllipse(document.getElementById(tid[1]));
+               handle._arrow     = nodeMoving.querySelector('polygon');
+            }
+            else if(!i) {
+               handle._mousemove = pathEditEllipseMove;
+               handle._ellipse   = getBigEllipse(document.getElementById(tid[0]));
+            }
+            else {
+               handle._mousemove = pathEditSolidMove;
+            }
+
+            handle._seg = [segs, i, p.cloneNode(false).pathSegList];
+
+            handle.setAttribute('fill', '#4AF');
+            handle.setAttribute('stroke', 'black');
+            pathEditor.appendChild(handle);
+         }
+         // TODO: handle parabola
+         pkg.svgNode.appendChild(pathEditor);
+      }
+      
+      function endNewTransitionEdit() {
+         if(pathEditor) {
+            pkg.svgNode.removeChild(pathEditor);
+            pathEditor = null;
+         }
+      }
+
+      function beginViewBoxMove(e) {
+         coords = {x:e.clientX, y:e.clientY, viewBoxX:pkg.svgNode.viewBox.baseVal.x, viewBoxY:pkg.svgNode.viewBox.baseVal.y};
+         pkg.svgContainer.onmousemove = viewBoxMove;
+      }
+
+      function toggleAccepting(nodeMoving, e) {
+         var ellipses = nodeMoving.querySelectorAll('ellipse'),
+             tl       = nodeList[atob(nodeMoving.id)].t,
+             ellipse,
+             ry,
+             path,
+             tid,
+             np,
+             p;
+
+         if(ellipses.length > 1) { // to non accepting state
+            nodeMoving.removeChild(ellipses[1]);
+            ry = parseFloat(ellipses[0].getAttribute('ry')) - 4;
+            ellipse = ellipses[0];
+         }
+         else {
+            ellipse = ellipses[0].cloneNode(false);
+            ry = parseFloat(ellipse.getAttribute('ry')) + 4;
+            ellipse.setAttribute('fill', 'none');
+            ellipse.setAttribute('rx', ry);
+            ellipse.setAttribute('ry', ry);
+            nodeMoving.insertBefore(ellipse, ellipses[0].nextSibling);
+         }
+         if(initialState === nodeMoving) {
+            // we translate the initial state arrow
+            path = initialStateArrow.querySelector('path');
+            p = path.pathSegList.getItem(path.pathSegList.numberOfItems-1);
+            np = pointOntoEllipse(ellipse, p.x, p.y, null, 10);
+            translate(initialStateArrow.querySelector('polygon'), np.x - p.x, np.y-p.y);
+            translate(path, np.x - p.x, np.y-p.y);
+         }
+
+         for(var t in tl) {
+            tid = tl[t][0].id.split(" ");
+            if(tl[t][1] || tid[1] === tid[0]) { // state n is the origin of the transition t
+               // we get the first point of the transition
+               p = tl[t][0].querySelector('path').pathSegList.getItem(0);
+            }
+            else {
+               // we get the last point of the transition
+               p = tl[t][0].querySelector('polygon').points.getItem(1);
+            }
+            np = pointOntoEllipse(ellipse, p.x, p.y);
             
-            if(e.button === 1) {
-               // moving viewBox
-               coords = {x:e.clientX, y:e.clientY, viewBoxX:pkg.svgNode.viewBox.baseVal.x, viewBoxY:pkg.svgNode.viewBox.baseVal.y};
-               pkg.svgContainer.onmousemove = viewBoxMove;
+            if(tl[t][1] && tid[0] !== tid[1]) {
+               p.x = np.x;
+               p.y = np.y;
             }
-            else if(e.button === 2) {
-               if(nodeMoving = parentHasClass(e.target, 'node')) {
-
-                  var ellipses = nodeMoving.querySelectorAll('ellipse'),
-                      tl       = nodeList[atob(nodeMoving.id)].t,
-                      ellipse,
-                      ry,
-                      path,
-                      tid,
-                      np,
-                      p;
-
-                  if(ellipses.length > 1) { // to non accepting state
-                     nodeMoving.removeChild(ellipses[1]);
-                     ry = parseFloat(ellipses[0].getAttribute('ry')) - 4;
-                     ellipse = ellipses[0];
-                  }
-                  else {
-                     ellipse = ellipses[0].cloneNode(false);
-                     ry = parseFloat(ellipse.getAttribute('ry')) + 4;
-                     ellipse.setAttribute('fill', 'none');
-                     ellipse.setAttribute('rx', ry);
-                     ellipse.setAttribute('ry', ry);
-                     nodeMoving.insertBefore(ellipse, ellipses[0].nextSibling);
-                  }
-                  if(initialState === nodeMoving) {
-                     // we translate the initial state arrow
-                     path = initialStateArrow.querySelector('path');
-                     p = path.pathSegList.getItem(path.pathSegList.numberOfItems-1);
-                     np = pointOntoEllipse(ellipse, p.x, p.y, null, 10);
-                     translate(initialStateArrow.querySelector('polygon'), np.x - p.x, np.y-p.y);
-                     translate(path, np.x - p.x, np.y-p.y);
-                  }
-
-                  for(var t in tl) {
-                     tid = tl[t][0].id.split(" ");
-                     if(tl[t][1] || tid[1] === tid[0]) { // state n is the origin of the transition t
-                        // we get the first point of the transition
-                        p = tl[t][0].querySelector('path').pathSegList.getItem(0);
-                     }
-                     else {
-                        // we get the last point of the transition
-                        p = tl[t][0].querySelector('polygon').points.getItem(1);
-                     }
-                     np = pointOntoEllipse(ellipse, p.x, p.y);
-                     
-                     if(tl[t][1] && tid[0] !== tid[1]) {
-                        p.x = np.x;
-                        p.y = np.y;
-                     }
-                     else {
-                        var segs = tl[t][0].querySelector('path').pathSegList;
-                        if(tid[0] === tid[1]) { // FIXME: crappy but kinda works.
-                           translate(tl[t][0].querySelector('polygon'), np.x-p.x, np.y-p.y);
-                           translate(tl[t][0].querySelector('path'), np.x-p.x, np.y-p.y);
-                           p = segs.getItem(segs.numberOfItems-1);
-                           pointOntoEllipse(ellipse, p.x, p.y, np, 10);
-                           translate(tl[t][0].querySelector('polygon'), np.x-p.x, np.y-p.y);
-                           p.x = np.x;
-                           p.y = np.y;
-                        }
-                        else {
-                           var s = segs.getItem(segs.numberOfItems-1);
-                           s.x += np.x-p.x;
-                           s.y += np.y-p.y;
-                           translate(tl[t][0].querySelector('polygon'), np.x-p.x, np.y-p.y);
-                           p.x = np.x;
-                           p.y = np.y;
-                        }
-                     }
-                  }
+            else {
+               var segs = tl[t][0].querySelector('path').pathSegList;
+               if(tid[0] === tid[1]) { // FIXME: crappy but kinda works.
+                  translate(tl[t][0].querySelector('polygon'), np.x-p.x, np.y-p.y);
+                  translate(tl[t][0].querySelector('path'), np.x-p.x, np.y-p.y);
+                  p = segs.getItem(segs.numberOfItems-1);
+                  pointOntoEllipse(ellipse, p.x, p.y, np, 10);
+                  translate(tl[t][0].querySelector('polygon'), np.x-p.x, np.y-p.y);
+                  p.x = np.x;
+                  p.y = np.y;
+               }
+               else {
+                  var s = segs.getItem(segs.numberOfItems-1);
+                  s.x += np.x-p.x;
+                  s.y += np.y-p.y;
+                  translate(tl[t][0].querySelector('polygon'), np.x-p.x, np.y-p.y);
+                  p.x = np.x;
+                  p.y = np.y;
                }
             }
          }
-      }, false);
+      }
 
       // move event when two nodes must be bound (the transition is following the cursor)
       function nodeBinding(e) {
@@ -661,111 +635,103 @@
          tNode.parentNode.removeChild(tNode);
       }
 
-      pkg.svgContainer.addEventListener('dblclick', function(e) {
-         if(nodeEdit = parentHasClass(e.target, 'node')) {
-            if(e.shiftKey && (e.ctrlKey || e.metaKey)) { // remove node
-               if(nodeEdit === initialState) {
-                  alert(_("Sorry, but you can't remove the initial state."));
-               }
-               else {
-                  var tid = atob(nodeEdit.id);
-                  var n = nodeList[tid];
-                  for(var i in n.t) {
-                     deleteTransition(n.t[i][0], tid);
-                  }
-                  delete nodeList[tid];
-                  nodeEdit.parentNode.removeChild(nodeEdit);
-               }
-            }
-            else if(!e.button) { // rename node
-               var text = nodeEdit.querySelector('text');
-               var t = prompt(_("Which name do you want for the new state ?"), text.textContent);
-               if(t) {
-                  var tb = btoa(t);
-                  var existingNode;
-                  if(existingNode = pkg.svgNode.getElementById(tb)) {
-                     if(nodeEdit !== existingNode) {
-                        alert(_("Sorry, but a state is already named like this."));
-                     }
-                  }
-                  else {
-                     var oldid = atob(nodeEdit.id),
-                         n = nodeList[oldid];
-                     for(var i=0, len = n.t.length; i < len; ++i) {
-                        var tid = n.t[i][0].id.split(' ');
-                        if(tid[0] === tid[1]) {
-                           n.t[i][0].id = tb + ' ' + tb;
-                           n.t[i][0].querySelector('title').textContent = t + '->' + t;
-                        }
-                        else if(n.t[i][1]) {// if node is origin
-                           n.t[i][0].id = tb + ' ' + tid[1];
-                           n.t[i][0].querySelector('title').textContent = t + '->' + atob(tid[1]);
-                        }
-                        else {
-                           n.t[i][0].id = tid[0] + ' ' + tb;
-                           n.t[i][0].querySelector('title').textContent = atob(tid[0]) + '->' + t;
-                        }
-                     }
-                     nodeList[t] = nodeList[oldid];
-                     delete nodeList[oldid];
-                     nodeEdit.querySelector('title').textContent = text.textContent = t;
-                     nodeEdit.setAttribute('id', tb);
-                  }
-               }
-            }
+      function removeNode(node) {
+         if(node === initialState) {
+            alert(_("Sorry, but you can't remove the initial state."));
          }
-         else if(nodeEdit = parentHasClass(e.target, 'edge')) {
-            if((e.ctrlKey || e.metaKey) && e.shiftKey) { // delete transition
-               deleteTransition(nodeEdit, null);
+         else {
+            var tid = atob(node.id);
+            var n = nodeList[tid];
+            for(var i in n.t) {
+               deleteTransition(n.t[i][0], tid);
+            }
+            delete nodeList[tid];
+            node.parentNode.removeChild(node);
+         }
+      }
+
+      function editNodeName(node) {
+         var text = node.querySelector('text');
+         var t = prompt(_("Which name do you want for the new state ?"), text.textContent);
+         if(t) {
+            var tb = btoa(t);
+            var existingNode;
+            if(existingNode = pkg.svgNode.getElementById(tb)) {
+               if(node !== existingNode) {
+                  alert(_("Sorry, but a state is already named like this."));
+               }
             }
             else {
-               var text = nodeEdit.querySelector('text');
-               var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), text.textContent);
-               if(t !== null) {
-                  text.textContent = format_transition(t || '\\e');
+               var oldid = atob(node.id),
+                   n = nodeList[oldid];
+               for(var i=0, len = n.t.length; i < len; ++i) {
+                  var tid = n.t[i][0].id.split(' ');
+                  if(tid[0] === tid[1]) {
+                     n.t[i][0].id = tb + ' ' + tb;
+                     n.t[i][0].querySelector('title').textContent = t + '->' + t;
+                  }
+                  else if(n.t[i][1]) {// if node is origin
+                     n.t[i][0].id = tb + ' ' + tid[1];
+                     n.t[i][0].querySelector('title').textContent = t + '->' + atob(tid[1]);
+                  }
+                  else {
+                     n.t[i][0].id = tid[0] + ' ' + tb;
+                     n.t[i][0].querySelector('title').textContent = atob(tid[0]) + '->' + t;
+                  }
                }
+               nodeList[t] = nodeList[oldid];
+               delete nodeList[oldid];
+               node.querySelector('title').textContent = text.textContent = t;
+               node.setAttribute('id', tb);
             }
          }
-         else if(!(e.ctrlKey || e.metaKey) && !e.shiftKey) { // new state
-            // node creation
-            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('class', 'node');
-            var id = 0;
-            while(id in nodeList) {
-               ++id;
-            }
-            g.id = btoa(id);
-            var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-            title.textContent = id;
-            var ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+      }
 
-            var pt = svgcursorPoint(e);
-            var ry = 18.3848;
-            var cy = pt.y;
-            ellipse.setAttribute('fill', 'transparent');
-            ellipse.setAttribute('stroke', 'black');
-            ellipse.setAttribute('rx', 17.8879);
-            ellipse.setAttribute('ry', ry);
-            ellipse.setAttribute('cx', pt.x);
-            ellipse.setAttribute('cy', cy);
-            var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.textContent = id;
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('font-family', 'Times Roman, serif');
-            text.setAttribute('font-size', '14.00');
-            text.setAttribute('x', pt.x);
-            text.setAttribute('y', cy+4);
-            g.appendChild(title);
-            g.appendChild(ellipse);
-            g.appendChild(text);
-            pkg.svgNode.querySelector('g').appendChild(g);
-            if(!initialState) {
-               setInitialState(g);
-            }
-            nodeList[id] = {t:[]};
+      function editTransitionSymbols(edge) {
+         var text = edge.querySelector('text');
+         var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), text.textContent);
+         if(t !== null) {
+            text.textContent = format_transition(t || '\\e');
          }
+      }
 
-      }, false);
+      function createNode(e) {
+         var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+         g.setAttribute('class', 'node');
+         var id = 0;
+         while(id in nodeList) {
+            ++id;
+         }
+         g.id = btoa(id);
+         var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+         title.textContent = id;
+         var ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+
+         var pt = svgcursorPoint(e);
+         var ry = 18.3848;
+         var cy = pt.y;
+         ellipse.setAttribute('fill', 'transparent');
+         ellipse.setAttribute('stroke', 'black');
+         ellipse.setAttribute('rx', 17.8879);
+         ellipse.setAttribute('ry', ry);
+         ellipse.setAttribute('cx', pt.x);
+         ellipse.setAttribute('cy', cy);
+         var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+         text.textContent = id;
+         text.setAttribute('text-anchor', 'middle');
+         text.setAttribute('font-family', 'Times Roman, serif');
+         text.setAttribute('font-size', '14.00');
+         text.setAttribute('x', pt.x);
+         text.setAttribute('y', cy+4);
+         g.appendChild(title);
+         g.appendChild(ellipse);
+         g.appendChild(text);
+         pkg.svgNode.querySelector('g').appendChild(g);
+         if(!initialState) {
+            setInitialState(g);
+         }
+         nodeList[id] = {t:[]};
+      }
 
       // event when a node is moved
       function nodeMove(e) {
@@ -855,6 +821,99 @@
          }
       }
 
+      // event when a transition label is moved
+      function labelMove(e) {
+         nodeMoving.setAttribute('x', (e.clientX - coords[0])/pkg.svgZoom + coords[2]);
+         nodeMoving.setAttribute('y', (e.clientY - coords[1])/pkg.svgZoom + coords[3]);
+      }
+
+      pkg.svgContainer.addEventListener('mousedown', function(e) {
+         if(!e.button) { // left button
+            if(nodeMoving = parentHasClass(e.target, 'pathedit-handle')) {
+               // handle path editing
+               coords = {
+                  x:e.clientX,
+                  y:e.clientY
+               };
+               pkg.svgContainer.onmousemove = nodeMoving._mousemove;
+            }
+            else {
+               pkg.cleanSVG(pkg.currentIndex, true);
+
+               if(nodeMoving = parentHasClass(e.target, 'node')) {
+                  if(pkg.svgContainer.onmousemove === nodeBinding) {
+                     endNewTransition(nodeMoving, e);
+                  }
+                  else if(e.shiftKey && !(e.ctrlKey || e.metaKey)) {
+                     beginNewTransition(nodeMoving, e);
+                  }
+                  else if((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                     // initial state
+                     setInitialState(nodeMoving);
+                  }
+                  else {
+                     beginNodeMoving(nodeMoving, e);
+                  }
+               }
+               else if(nodeMoving = parentHasClass(e.target, 'edge')) {
+                  if(e.ctrlKey || e.metaKey) {
+                     transitionStraight(nodeMoving, e);
+                  }
+                  else if(e.target.nodeName === 'text') {
+                     beginMoveTransitionLabel(e.target, e);
+                  }
+                  else if(!e.shiftKey) {
+                     beginNewTransitionEdit(nodeMoving, e);
+                  }
+               }
+               else if(!pkg.svgContainer.onmousemove) {
+                  beginViewBoxMove(e);
+               }
+            }
+         }
+         else {
+            endNewTransitionEdit();
+
+            if(e.button === 1) {
+               beginViewBoxMove(e);
+            }
+            else if(e.button === 2) {
+               if(nodeMoving = parentHasClass(e.target, 'node')) {
+                  toggleAccepting(nodeMoving, e);
+               }
+            }
+         }
+      }, false);
+
+      pkg.svgContainer.addEventListener('mouseup', function() {
+         if(pkg.svgContainer.onmousemove !== nodeBinding) {
+            pkg.svgContainer.style.cursor = "";
+            pkg.svgContainer.onmousemove = null;
+         }
+      }, false);
+
+      pkg.svgContainer.addEventListener('dblclick', function(e) {
+         if(nodeEdit = parentHasClass(e.target, 'node')) {
+            if(e.shiftKey && (e.ctrlKey || e.metaKey)) {
+               removeNode(nodeEdit);
+            }
+            else if(!e.button) { // rename node
+               editNodeName(nodeEdit);
+            }
+         }
+         else if(nodeEdit = parentHasClass(e.target, 'edge')) {
+            if((e.ctrlKey || e.metaKey) && e.shiftKey) { // delete transition
+               deleteTransition(nodeEdit, null);
+            }
+            else {
+               editTransitionSymbols(nodeEdit);
+            }
+         }
+         else if(!(e.ctrlKey || e.metaKey) && !e.shiftKey) {
+            createNode(e);
+         }
+      }, false);
+
       window.addEventListener('keydown', function (e) {
          if(e.keyCode === 27) {
             if(pkg.svgContainer.onmousemove === nodeBinding) {
@@ -880,19 +939,6 @@
          pkg.svgNode.viewBox.baseVal.x = pt.x - (pt.x - pkg.svgNode.viewBox.baseVal.x)*oldZoom/pkg.svgZoom;
          pkg.svgNode.viewBox.baseVal.y = pt.y - (pt.y - pkg.svgNode.viewBox.baseVal.y)*oldZoom/pkg.svgZoom;
       });
-
-      // event when a transition label is moved
-      function labelMove(e) {
-         nodeMoving.setAttribute('x', (e.clientX - coords[0])/pkg.svgZoom + coords[2]);
-         nodeMoving.setAttribute('y', (e.clientY - coords[1])/pkg.svgZoom + coords[3]);
-      }
-
-      pkg.svgContainer.addEventListener('mouseup', function() {
-         if(pkg.svgContainer.onmousemove !== nodeBinding) {
-            pkg.svgContainer.style.cursor = "";
-            pkg.svgContainer.onmousemove = null;
-         }
-      }, false);
 
       pkg.svgContainer.ondragstart = pkg.svgContainer.onselectstart = pkg.svgContainer.oncontextmenu = function(e) {
          e.preventDefault();
