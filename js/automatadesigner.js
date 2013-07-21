@@ -64,7 +64,6 @@
          }
          else {
             pkg.svgContainer.textContent = '';
-            console.log(svg.cloneNode(true));
             pkg.svgContainer.appendChild(svg.cloneNode(true));
          }
 
@@ -1058,13 +1057,13 @@
          for(attr in attrsx) {
             a = attrsx[attr];
             if(n.hasAttribute(a)) {
-               n.setAttribute(a, n.getAttribute(a) + tx);
+               n.setAttribute(a, parseFloat(n.getAttribute(a)) + tx);
             }
          }
          for(attr in attrsy) {
             a = attrsy[attr];
             if(n.hasAttribute(a)) {
-               n.setAttribute(a, n.getAttribute(a) + ty);
+               n.setAttribute(a, parseFloat(n.getAttribute(a)) + ty);
             }
          }
       }
