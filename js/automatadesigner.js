@@ -450,7 +450,7 @@
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('font-family', 'Times Roman,serif');
             text.setAttribute('font-size', '14.00');
-            cleanTransitionPos(pathEdit.pathSegList, polygon.points, text, nodeEdit, endState);
+            cleanTransitionPos(pathEdit, polygon.points, text, nodeEdit, endState);
             g.appendChild(pathEdit);
             g.appendChild(polygon);
             g.appendChild(text);
@@ -467,7 +467,7 @@
          var tid = edge.id.split(' ');
 
          cleanTransitionPos(
-            edge.querySelector('path').pathSegList,
+            edge.querySelector('path'),
             edge.querySelector('polygon').points,
             edge.querySelector('text'),
             document.getElementById(tid[0]),
@@ -782,7 +782,8 @@
          for(var i=0, len = n.t.length; i < len; ++i) {
             nodes = coords.t[i][0][0].id.split(" ");
             var seg, origSeg,
-                segs     = coords.t[i][0][0].querySelector('path').pathSegList,
+                path     = coords.t[i][0][0].querySelector('path'),
+                segs     = path.pathSegList,
                 origSegs = coords.t[i][1].querySelector('path').pathSegList,
                 text     = coords.t[i][0][0].querySelector('text'),
                 textOrig = coords.t[i][1].querySelector('text'),
@@ -826,7 +827,7 @@
 
                if(coords.t[i].transitionStraight) {
                   cleanTransitionPos(
-                     segs,
+                     path,
                      polygonPoints,
                      null,
                      document.getElementById(nodes[0]),
@@ -1218,8 +1219,9 @@
    //  - text: the <text /> label node of the transition
    //  - stateOrig: the node representing the start state of the transition
    //  - stateDest: the node representing the end state of the transition
-   function cleanTransitionPos(pathSegList, polygonPoints, text, stateOrig, stateDest) {
-      var i = pathSegList.numberOfItems;
+   function cleanTransitionPos(path, polygonPoints, text, stateOrig, stateDest) {
+      var pathSegList = path.pathSegList,
+          i = pathSegList.numberOfItems;
       if(stateOrig === stateDest) {
          for(; i > 3; --i) {
             pathSegList.removeItem(2);
