@@ -850,7 +850,7 @@
                }
             }
 
-            if(!coords.t[i].transitionStraight && !coords.t[i][0][1]) { // the state is the destination, we move the arrow
+            if(nodes[0] === nodes[1] || !coords.t[i].transitionStraight && !coords.t[i][0][1]) { // the state is the destination, we move the arrow
                var pointsOrig    = coords.t[i][1].querySelector('polygon').points,
                    pp,po;
 
