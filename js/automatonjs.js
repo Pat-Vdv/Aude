@@ -884,10 +884,10 @@
                      tmp += defaultValue ? ('AutomatonJS.as(false,' + defaultValue + ')') : 'false';
                      break;
                   case "automaton":
-                     tmp += defaultValue ? '(AutomatonJS.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
+                     tmp += defaultValue ? 'AutomatonJS.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
                      break;
                   case "function":
-                     tmp += defaultValue ? '(AutomatonJS.as(function(){},' + defaultValue + ')' : 'function(){}';
+                     tmp += defaultValue ? 'AutomatonJS.as(function(){},' + defaultValue + ')' : 'function(){}';
                      break;
                   case "set":
                      if(defaultValue) {
