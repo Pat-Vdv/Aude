@@ -178,7 +178,7 @@
              i, len;
 
          for(i = 0, len = ellipses.length; i < len; ++i) {
-            ellipses[i].setAttribute('fill', 'white');
+            ellipses[i].setAttribute('fill', 'transparent');
          }
 
          for(i = 0, len = edges.length; i < len; ++i) {
