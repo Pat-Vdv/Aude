@@ -345,6 +345,7 @@
 
       // move the visible area
       function viewBoxMove(e, that) {
+         blockNewState = true;
          if(that) {
             var c = that;
          }
@@ -425,20 +426,21 @@
       }
 
       function endNewTransition(endState, e) {
+         var id = nodeEdit.id + ' ' + endState.id;
+         if(document.getElementById(id)) {
+            // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
+            alert(_('Sorry, there is already a transition between these states in this way.'));
+            pkg.svgNode.removeChild(pathEdit);
+            pkg.svgContainer.onmousemove = null;
+            return;
+         }
+
          var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), '');
          if(trans === null) {
             pathEdit.parentNode.removeChild(pathEdit);
             pkg.svgContainer.onmousemove = null;
          }
          else {
-            var id = nodeEdit.id + ' ' + endState.id;
-            if(document.getElementById(id)) {
-               // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
-               alert(_('Sorry, there is already a transition between these states in this way.'));
-               pkg.svgNode.removeChild(pathEdit);
-               pkg.svgContainer.onmousemove = null;
-               return;
-            }
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.id = id;
             g.setAttribute('class', 'edge');
@@ -685,7 +687,7 @@
 
       function editNodeName(node) {
          var text = node.querySelector('text');
-         var t = prompt(_("Which name do you want for the new state ?"), text.textContent);
+         var t = prompt(_("Which name do you want for the state ?"), text.textContent);
          if(t) {
             var tb = btoa(t);
             var existingNode;
@@ -876,9 +878,12 @@
          nodeMoving.setAttribute('y', (e.clientY - coords[1])/pkg.svgZoom + coords[3]);
       }
 
+      var blockNewState;
+
       pkg.svgContainer.addEventListener('mousedown', function(e) {
+         blockNewState = true;
          if(!e.button) { // left button
-            if(nodeMoving = parentHasClass(e.target, 'pathedit-handle')) {
+            if(nodeMoving = parentWithClass(e.target, 'pathedit-handle')) {
                // handle path editing
                coords = {
                   x:e.clientX,
@@ -889,33 +894,36 @@
             else {
                pkg.cleanSVG(pkg.currentIndex, true);
 
-               if(nodeMoving = parentHasClass(e.target, 'node')) {
+               if(nodeMoving = parentWithClass(e.target, 'node')) {
                   if(pkg.svgContainer.onmousemove === nodeBinding) {
                      endNewTransition(nodeMoving, e);
                   }
-                  else if(e.shiftKey && !(e.ctrlKey || e.metaKey)) {
-                     beginNewTransition(nodeMoving, e);
-                  }
                   else if((e.ctrlKey || e.metaKey) && !e.shiftKey) {
-                     // initial state
-                     setInitialState(nodeMoving);
+                     removeNode(nodeMoving);
+                  }
+                  else if(e.shiftKey) {
+                     beginNewTransition(nodeMoving, e);
                   }
                   else {
                      beginNodeMoving(nodeMoving, e);
                   }
                }
-               else if(nodeMoving = parentHasClass(e.target, 'edge')) {
-                  if(e.ctrlKey || e.metaKey) {
+               else if(nodeMoving = parentWithClass(e.target, 'edge')) {
+                  if(e.shiftKey) {
                      transitionStraight(nodeMoving);
+                  }
+                  else if(e.ctrlKey || e.metaKey) {
+                     deleteTransition(nodeMoving, null);
                   }
                   else if(e.target.nodeName === 'text') {
                      beginMoveTransitionLabel(e.target, e);
                   }
-                  else if(!e.shiftKey) {
+                  else {
                      beginNewTransitionEdit(nodeMoving, e);
                   }
                }
                else if(!pkg.svgContainer.onmousemove) {
+                  blockNewState = false;
                   beginViewBoxMove(e);
                }
             }
@@ -927,39 +935,45 @@
                beginViewBoxMove(e);
             }
             else if(e.button === 2) {
-               if(nodeMoving = parentHasClass(e.target, 'node')) {
-                  toggleAccepting(nodeMoving, e);
+               if(nodeMoving = parentWithClass(e.target, 'node')) {
+                  if(!e.shiftKey) {
+                     if((e.ctrlKey || e.metaKey)) {
+                        setInitialState(nodeMoving);
+                     }
+                     else {
+                        toggleAccepting(nodeMoving, e);
+                     }
+                  }
                }
             }
          }
       }, false);
 
-      pkg.svgContainer.addEventListener('mouseup', function() {
-         if(pkg.svgContainer.onmousemove !== nodeBinding) {
+      pkg.svgContainer.addEventListener('mouseup', function(e) {
+         if(pkg.svgContainer.onmousemove === nodeBinding) {
+            if((nodeMoving = parentWithClass(e.target, 'node')) && nodeMoving !== nodeEdit) {
+               endNewTransition(nodeMoving, e);
+            }
+         }
+         else {
             pkg.svgContainer.style.cursor = "";
             pkg.svgContainer.onmousemove = null;
+            if(!(e.button || blockNewState || e.ctrlKey || e.metaKey || e.shiftKey)) {
+               createNode(e);
+            }
          }
       }, false);
 
       pkg.svgContainer.addEventListener('dblclick', function(e) {
-         if(nodeEdit = parentHasClass(e.target, 'node')) {
-            if(e.shiftKey && (e.ctrlKey || e.metaKey)) {
-               removeNode(nodeEdit);
-            }
-            else if(!e.button) { // rename node
+         if(nodeEdit = parentWithClass(e.target, 'node')) {
+            if(!(e.button || e.shiftKey || e.ctrlKey || e.metaKey)) {
                editNodeName(nodeEdit);
             }
          }
-         else if(nodeEdit = parentHasClass(e.target, 'edge')) {
-            if((e.ctrlKey || e.metaKey) && e.shiftKey) { // delete transition
-               deleteTransition(nodeEdit, null);
-            }
-            else {
+         else if(nodeEdit = parentWithClass(e.target, 'edge')) {
+            if(!(e.ctrlKey || e.metaKey || e.shiftKey)) { // delete transition
                editTransitionSymbols(nodeEdit);
             }
-         }
-         else if(!(e.ctrlKey || e.metaKey) && !e.shiftKey) {
-            createNode(e);
          }
       }, false);
 
@@ -1148,7 +1162,7 @@
    }
 
    // checks if the node or one of its parent has class c. Specific to the AutomatonDesigner.
-   function parentHasClass(node, c) {
+   function parentWithClass(node, c) {
       do {
          if(node.getAttribute('class') === c) {
             return node;
@@ -1182,7 +1196,7 @@
          p = {};
       }
 
-      var alphaMsemiPi    = alpha - Math.PI/2,
+      var alphaMsemiPi    = alpha - Math.PI/2 || 0,
           cosAlphaMsemiPi = Math.cos(alphaMsemiPi),
           sinAlphaMsemiPi = Math.sin(alphaMsemiPi);
       if(y >= cy) {
@@ -1199,6 +1213,7 @@
          p.x = cx - r * cosAlphaMsemiPi;
          p.y = cy + r * sinAlphaMsemiPi;
       }
+
       return p;
    }
 
@@ -1448,10 +1463,11 @@
    }
 
    _("fr", "New transition: ", "Nouvelle transition :");
-   _("fr", "Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible.", "Veuillez donner les symboles de cette transition en les séparant par des vigules.\nEn cas de caractères spéciaux, encadrez par des guillemets doubles. L'antislash permet d'échapper les caractères.");
-   _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l'état initial.");
-   _("fr", "Which name do you want for the new state ?", "Quel nom voulez-vous donner au nouvel état ?");
+   _("fr", "Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible.", "Veuillez donner les symboles de cette transition en les séparant par des vigules.\nEn cas de caractères spéciaux, encadrez par des guillemets doubles. L’antislash permet d'échapper les caractères.");
+   _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l’état initial.");
+   _("fr", "Which name do you want for the state ?", "Quel nom voulez-vous donner à l’état ?");
    _("fr", "Sorry, but a state is already named like this.", "Désolé, mais un état porte déjà ce nom.");
+   _("fr", "Sorry, there is already a transition between these states in this way.", "Désolé, il y a déjà une transition dans ce sens entre ces états.");
 
    
 })(window.AutomataDesigner = {}, window.AutomataDesignerGlue || (window.AutomataDesignerGlue = {}), this);
