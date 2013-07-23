@@ -5,13 +5,27 @@
 var listenMouseWheel;
 
 (function() {
+   "use strict";
    var scrollFunctions = [];
+   function hasParent(ele, parent) {
+      do {
+         if(ele === parent) {
+            return true;
+         }
+         ele = ele.parentNode;
+      }
+      while(ele);
+      return false;
+   }
+
    function handleWheel(e) { 
       var delta = (e.wheelDelta ? e.wheelDelta/120 : (e.detail ? -e.detail/3 : 0));
 
       if(delta) {
          for(var i in scrollFunctions) {
-            scrollFunctions[i](e, delta);
+            if(!scrollFunctions[i][1] || hasParent(e.target, scrollFunctions[i][1])) {
+               scrollFunctions[i][0](e, delta);
+            }
          }
       }
    }
@@ -23,7 +37,7 @@ var listenMouseWheel;
    else
       window.addEventListener('DOMMouseScroll', handleWheel, false);
       
-   listenMouseWheel = function(f) {
-      scrollFunctions.push(f);
+   listenMouseWheel = function(f, target) {
+      scrollFunctions.push([f, target]);
    }
 })();

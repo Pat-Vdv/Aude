@@ -981,7 +981,7 @@
          pkg.setViewBoxSize();
          pkg.svgNode.viewBox.baseVal.x = pt.x - (pt.x - pkg.svgNode.viewBox.baseVal.x)*oldZoom/pkg.svgZoom;
          pkg.svgNode.viewBox.baseVal.y = pt.y - (pt.y - pkg.svgNode.viewBox.baseVal.y)*oldZoom/pkg.svgZoom;
-      });
+      }, pkg.svgContainer);
 
       pkg.svgContainer.ondragstart = pkg.svgContainer.onselectstart = pkg.svgContainer.oncontextmenu = function(e) {
          e.preventDefault();
