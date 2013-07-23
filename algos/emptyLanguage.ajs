@@ -21,11 +21,11 @@ function emptyLanguage(A) {
     return false;
   }
   
-  A     : Automaton(0);
+
   table : List = A.getTransitionsTable();
   
   visitedStates : Set of State;
   return visit(A.getInitialState());
 }
 
-run(emptyLanguage, getAutomaton(currentAutomaton));
+run(emptyLanguage, get_automaton(currentAutomaton));

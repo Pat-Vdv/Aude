@@ -40,4 +40,4 @@ function determinize(A) {
   return DetA;
 }
 
-return run(determinize, get_automaton(currentAutomaton));
+run(determinize, get_automaton(currentAutomaton));

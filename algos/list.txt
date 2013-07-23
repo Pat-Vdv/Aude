@@ -1,0 +1,5 @@
+determinisation.ajs?v=1  / Determinize
+minimisation.ajs?v=1     / Minimize
+epsElim.ajs?v=1          / ε-eliminate
+emptyLanguage.ajs?v=1    / Test empty language
+infiniteLanguage.ajs?v=1 / Test infinite language

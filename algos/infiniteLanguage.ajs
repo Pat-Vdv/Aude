@@ -1,8 +1,8 @@
 include epsElim;
 
 function infiniteLanguage(A) {
-  A : Automaton = epsElim(get_automaton(0));
-  
+  A : Automaton = epsElim(A);
+
   accessibleFinalStates : Set of State;
   visitedStates         : Set of State;
   table                 : Table = A.getTransitionsTable();
