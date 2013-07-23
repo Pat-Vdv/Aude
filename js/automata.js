@@ -1046,8 +1046,9 @@
             }
             return set;
          }
-         else if(s[j] === "(") {
-            var tuple = new Tuple();
+         else if(s[j] === "(" || s[j] === '[') {
+            var end = s[j] === '(' ? ')' : ']';
+            var tuple = [];
             ++j;
             var closed = false;
             while(j < len) {
@@ -1055,12 +1056,12 @@
                   ++j;
                }
 
-               if(s[j] === ')') {
+               if(s[j] === end) {
                   closed = true;
                   break;
                }
 
-               tuple.addItem(getNextValue(s, j, len));
+               tuple.push(getNextValue(s, j, len));
                lastIndex = j+1;
             }
             if(!closed) {
@@ -1139,26 +1140,17 @@
       r += "\n";
       for(i in T) {
          r += (
-                  (
-                        (T[i].symbol) instanceof Set
-                     || (T[i].startState) instanceof Tuple
-                  )
+                  (T[i].symbol) instanceof Set
                   ? T[i].startState.toString()
                   : JSON.stringify(T[i].startState.toString())
               ) +
               ' ' + (
-                  (
-                        (T[i].symbol) instanceof Set
-                     || (T[i].symbol) instanceof Tuple
-                  )
+                  (T[i].symbol) instanceof Set
                   ? T[i].symbol.toString()
                   : JSON.stringify(T[i].symbol.toString())
               ) +
               ' ' + (
-                  (
-                        (T[i].endState) instanceof Set
-                     || (T[i].endState) instanceof Tuple
-                  )
+                  (T[i].endState) instanceof Set
                   ? T[i].endState
                   : T[i].endState.toString()
               ) + '\n';
