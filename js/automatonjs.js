@@ -392,7 +392,6 @@
             }
          }
          else {
-            console.log(i, lastSignificantType);
             if(lastSignificantType & (number | variable | closeParen | closeBracket)) {
                lastSignificantType = type = operator;
                if(s[i] === '=') {
@@ -544,19 +543,38 @@
       }
       if(symbol === '{') {
          deb = i;
-         var pres = '';
-         if(!options.noset) {
+         var pres = '', obj = false, oneVal = true;
+         if(!options.noset_obj) {
             do {
-               pres += (pres ? ',':'') + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
+               if(pres) {
+                  pres += ',';
+                  oneVal = false;
+               }
+               pres += getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
                symbol = getSymbol();
                if(type === whitespace) {
                   pres += symbol;
                   symbol = getSymbol();
                }
+               if(symbol === ':') {
+                  obj = true;
+                  pres += symbol + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables});
+                  symbol = getSymbol();
+                  if(type === whitespace) {
+                     pres += symbol;
+                     symbol = getSymbol();
+                  }
+               }
+
             } while(symbol === ',');
          }
-         if(!options.noset && symbol === '}' && !s.substring(deb-1, i).match(/^\{[\s]*\}$/)) {
-            res += 'to_set([' + pres + '])';
+         if(!options.noset_obj && symbol === '}' && !s.substring(deb-1, i).match(/^\{[\s]*\}$/)) {
+            if(obj || (options.noValue && oneVal)) {
+               res += '{' + pres + '}';
+            }
+            else {
+               res += 'to_set([' + pres + '])';
+            }
          }
          else {
             i = deb;
@@ -618,11 +636,11 @@
                   i = deb;
                   return '';
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables), noset:true}));
+               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables), noset_obj:true}));
             }
             i = d;
             lastSignificantType = type = instruction;
-            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset:true}));
+            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset_obj:true}));
 
          }
          else if(value) {
@@ -632,14 +650,14 @@
          else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol, constraintedVariables))) {
             return res + tmp;
          }
-         return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getExpression({inForeach:(symbol === 'while' || symbol === 'for' || symbol === 'switch') ? false : inForeach,constraintedVariables:copy(constraintedVariables),noset:true});
+         return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getExpression({inForeach:(symbol === 'while' || symbol === 'for' || symbol === 'switch') ? false : inForeach,constraintedVariables:copy(constraintedVariables),noValue:true});
       }
       else if(symbol === 'do') {
          if(value) {
             i = deb;
             return '';
          }
-         res += symbol + getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset:true});
+         res += symbol + getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noValue:true});
          var symbol2 = getSymbol();
          var d = i;
          if(type === whitespace) {
@@ -657,7 +675,7 @@
             i = deb;
             return '';
          }
-         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)});
+         return res + symbol + getExpression({inForeach:inForeach,noValue:true,constraintedVariables:copy(constraintedVariables)});
       }
       else if(symbol === 'emptySet') {
          res += 'new Set(';
@@ -1103,7 +1121,7 @@
             i = deb;
             return '';
          }
-         var foreachBody = getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables)}), bf = '', ef = '';
+         var foreachBody = getExpression({inForeach:inForeach,noValue:true,constraintedVariables:copy(constraintedVariables)}), bf = '', ef = '';
          if(foreachBody.trim()[0] !== '{') {
             bf = '{';
             ef = '}';
@@ -1165,7 +1183,7 @@
             return 'for';
          }
 
-         var foreachBody = getExpression({inForeach:!IterationsSupported,constraintedVariables:copy(constraintedVariables)});
+         var foreachBody = getExpression({inForeach:!IterationsSupported,noValue:true,constraintedVariables:copy(constraintedVariables)});
          if(IterationsSupported) {
             return 'for' + beforeParenthesis + '(' + declarationSymbol + expr1 + ' of ' + expr2 + ')'+ foreachBody;
          }
