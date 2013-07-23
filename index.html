@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
    <head>
       <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,user-scalable=no" />
       <title>Automata</title>
       <script>
          var js18Supported = false;
@@ -22,10 +23,12 @@
       <link rel="stylesheet" href="style/automatagui.css" />
       <script src="js/automaton2dot.js"></script>
       <script src="js/lib/fileSaver.js"></script>
+      <script src="js/lib/hammer.js"></script>
+      <script src="js/touch2click.js"></script>
    </head>
    <body>
    <div id="toolbar" class="designmode">
-      <label><span data-translated-content="true" class="text">Mode:</span> <select id="switchmode">
+      <label><span data-translated-content="true" class="text">Mode:</span><select id="switchmode">
          <option value="design" data-translated-content="true">Automaton</option>
          <option value="program" data-translated-content="true">Program</option>
          <option value="automatoncode" data-translated-content="true">Automaton code</option>
@@ -39,10 +42,10 @@
          <button class="designmode-specific" id="export" data-translated-title="true" title="Export"><img src="icons/oxygen/16x16/actions/document-export.png" alt="Export" data-translated-title="true" /></button>
          </span>
       </span>
-      <span class="sep text"> </span>
+      <span class="sep text">&nbsp;</span>
       <label>
          <span data-translated-content="true" class="text algomode-specific">Automaton</span><span class="text" data-translated-content="true"> n°</span>
-         <select id="n_automaton"></select>
+        ><select id="n_automaton"></select>
       </label>
       <span class="designmode-specific">
          <button id="automaton_plus" title="Create a new automaton" data-translated-title="true"><img alt="+" src="icons/oxygen/16x16/actions/list-add.png" /></button>
@@ -54,6 +57,10 @@
          <span class="sep text" data-translated-content="true">Action:</span>
          <span>
             <button id="execute" class="designmode-specific" data-translated-content="true">Run a word</button>
+         </span>
+         <span>
+            ><select id="predef-algos" class="designmode-specific"></select>
+            <button id="algorun" class="designmode-specific" title="Run" data-translated-title="true"><img alt="Run" data-translated-title="true" src="icons/oxygen/16x16/actions/system-run.png" /></button>
             <button id="algo-exec" data-translated-content="true">Execute Program</button>
          </span>
       </span>

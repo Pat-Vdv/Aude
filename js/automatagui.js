@@ -103,46 +103,51 @@
       setTextResult(errorTitle + "\n" + errorText, true);
    }
 
+   
+   function launchUserProgram(userProgram) {
+      blockResult = false;
+      window.currentAutomaton = AutomataDesigner.currentIndex;
+      var res;
+      try {
+         res = userProgram(window.reallyRun);
+      }
+      catch(e) {
+         if(e instanceof Error && 'stack' in e) {
+            var stack = e.stack.split("\n");
+            for(var i in stack) {
+               if(stack[i].match(location.href)) {
+                  var details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
+                  if(details) {
+                     handleError(e.message, parseInt(details[1]) - offsetError, e.stack, details[2]);
+                  }
+                  else {
+                     handleError(e.message, e.lineNumber- offsetError, e.stack);
+                  }
+                  return;
+               }
+            }
+            handleError(e.message || e, e.lineNumber);
+         }
+         else {
+            handleError(e.message || e, e.ineNumber);
+         }
+         return;
+      }
+      if(blockResult) {
+         blockResult = false;
+      }
+      else {
+         setResult(res);
+      }
+   }
+
    function execProgram(code) {
       if(code) {
          window.loadProgram(code);
       }
 
       if(window.userProgram && waitingFor.isEmpty()) {
-         blockResult = false;
-         window.currentAutomaton = AutomataDesigner.currentIndex;
-         var res;
-         try {
-            res = userProgram(window.reallyRun);
-         }
-         catch(e) {
-            if(e instanceof Error && 'stack' in e) {
-               var stack = e.stack.split("\n");
-               for(var i in stack) {
-                  if(stack[i].match(location.href)) {
-                     var details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
-                     if(details) {
-                        handleError(e.message, parseInt(details[1]) - offsetError, e.stack, details[2]);
-                     }
-                     else {
-                        handleError(e.message, e.lineNumber- offsetError, e.stack);
-                     }
-                     return;
-                  }
-               }
-               handleError(e.message || e, e.lineNumber);
-            }
-            else {
-               handleError(e.message || e, e.ineNumber);
-            }
-            return;
-         }
-         if(blockResult) {
-            blockResult = false;
-         }
-         else {
-            setResult(res);
-         }
+         launchUserProgram(userProgram);
       }
       else {
          launchAfterImport = true;
@@ -216,6 +221,7 @@
           automatonPlus     = document.getElementById('automaton_plus'),
           executeBtn        = document.getElementById('execute'),
           wordDiv           = document.getElementById('word'),
+          curAlgo           = document.getElementById('predef-algos'),
           head              = document.querySelector('head'),
           exportFN          = '',
           executionTimeout  = 0,
@@ -543,13 +549,22 @@
          }
       };
 
-      window.run = function(){};
+      window.run = function(f) {
+         if(loadPredefAlgoAfterImport === 3) {
+            predefAlgoFunctions[curAlgo.value] = f;
+         }
+      };
+
       window.reallyRun = function() {
          blockResult = true;
          setResult(arguments[0].apply(window, [].slice.call(arguments, 1)));
       };
 
       window.get_automaton = function(i) {
+         if(isNaN(i)) {
+            return;
+         }
+
          var acode;
          if(automataNumber <= i ||  !(acode = AutomataDesigner.getAutomatonCode(i))) {
             throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn't exist."), JSON.stringify(i))));
@@ -841,6 +856,63 @@
          handleImports(includes, "user's program");
       };
 
+      var algocode, predefAlgoFunctions = [], loadPredefAlgoAfterImport = 0;
+
+      function loadPredefAlgo(includeName, code) {
+         var includes = [];
+         algocode = code;
+         loadPredefAlgoAfterImport = 2; // waiting for dependencies of the algo
+         handleImports(includes, includeName);
+         if(waitingFor.isEmpty()) {
+            loadPredefAlgoAfterImport = 0;
+            launchPredefAlgo(true, includeName);
+         }
+      }
+
+      function launchPredefAlgo(loadCode, includeName) {
+         if(!includeName) {
+            includeName = curAlgo.value;
+         }
+
+         if(loadCode === true) {
+            var id      = 'predef-algo-' + includeName,
+                script  = document.getElementById(id);
+
+            if(script) {
+               head.removeChild(script);
+            }
+            var script = document.createElement('script');
+            if(js18Supported) {
+               script.type = 'text/javascript;version=1.8';
+            }
+            
+            script.textContent = 'window.run(function(run){"use strict";\n' + algocode + '\n});';
+            script.id = id;
+            algocode = null;
+            loadPredefAlgoAfterImport = 3;
+            curAlgo.value = includeName;
+            predefAlgoFunctions[curAlgo.value] = true;
+            enableAutoHandlingError = includeName;
+            head.appendChild(script);
+            enableAutoHandlingError = false;
+            loadPredefAlgoAfterImport = 2;
+            return;
+         }
+
+         if(predefAlgoFunctions[curAlgo.value]) {
+            if(typeof predefAlgoFunctions[curAlgo.value] === 'function') {
+               launchUserProgram(predefAlgoFunctions[curAlgo.value]);
+            }
+         }
+         else {
+            loadPredefAlgoAfterImport = 1; //waiting for the algo to come
+            AutomatonGlue.getScript(curAlgo.value, '?');
+         }
+      }
+
+      document.getElementById('algorun').onclick = launchPredefAlgo;
+
+
       window.gotScript = function(includeName, code) {
          waitingFor.remove(includeName);
 
@@ -856,14 +928,31 @@
          if(js18Supported) {
             script.type = 'text/javascript;version=1.8';
          }
-         script.textContent = AutomatonJS.toPureJS(code, includes);
-         enableAutoHandlingError = "module " + includeName;
-         head.appendChild(script);
-         enableAutoHandlingError = false;
-         handleImports(includes, "module " + includeName);
-         if(launchAfterImport && waitingFor.isEmpty() && window.userProgram) {
-            launchAfterImport = false;
-            execProgram();
+         code = AutomatonJS.toPureJS(code, includes);
+
+         if(loadPredefAlgoAfterImport === 1) {
+            loadPredefAlgoAfterImport = 2;
+            loadPredefAlgo(includeName, code);
+            handleImports(includes, "module " + includeName);
+         }
+         else {
+            handleImports(includes, "module " + includeName);
+            script.textContent = code;
+            window.currentAutomaton = NaN;
+            enableAutoHandlingError = "module " + includeName;
+            head.appendChild(script);
+            enableAutoHandlingError = false;
+         }
+
+         if(waitingFor.isEmpty()) {
+            if(launchAfterImport && window.userProgram) {
+               launchAfterImport = false;
+               execProgram();
+            }
+            else if(loadPredefAlgoAfterImport === 2) {
+               loadPredefAlgoAfterImport = 0;
+               launchPredefAlgo();
+            }
          }
       };
 
@@ -931,8 +1020,33 @@
          }
       };
 
+      var xhr = new XMLHttpRequest();
+      //workaround chromium issue #45702
+      xhr.open('get', 'algos/list.txt' + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), false);
+      xhr.onreadystatechange = function() {
+         if(xhr.readyState === 4) {
+            if(!xhr.status || xhr.status === 200) {
+               console.log(xhr.status, xhr.responseText);
+               var line,fname, descr, algos = xhr.responseText.split("\n");
+               for(var i=0; i < algos.length;++i) {
+                  line = algos[i].split("/");
+                  fname = line[0].trim();
+                  descr = line[1].trim();
+                  line = document.createElement('option');
+                  line.value = fname;
+                  line.textContent = _(descr);
+                  curAlgo.appendChild(line);
+               }
+            }
+            else {
+               notify(_("Getting list of predefined algorithms"), libD.format(_("Unable to get the list of predefined algorithms. Status:%s"), xhr.status));
+            }
+         }
+      };
+      xhr.overrideMimeType('text/plain');
+      xhr.send();
+
       switchmode.onchange();
-      onResize();
       
       var translatedNodes = document.querySelectorAll('[data-translated-content]');
       for(var i=0, len = translatedNodes.length; i < len; ++i) {
@@ -947,6 +1061,9 @@
             translatedNodes[i].alt= _(translatedNodes[i].alt);
          }
       }
+
+      onResize();
+
    }, false);
    _("fr", "Program Result", "Résultat");
    _("fr", '\nStack trace: \n', "\nPile de l\'erreur : \n");
@@ -1011,4 +1128,10 @@
    _("fr", "There is no automaton to save.", "Il n'y a pas d'automate à enregistrer.");
    _("fr", "Automaton", "Automate");
    _("fr", "Action:", "Action :");
+   _("fr", "Determinize", "Déterminiser");
+   _("fr", "ε-eliminate", "ε-éliminer");
+   _("fr", "Minimize", "Minimiser");
+   _("fr", "Test empty language", "Tester language vide");
+   _("fr", "Test infinite language", "Tester language infini");
+   
 })();

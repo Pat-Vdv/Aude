@@ -69,7 +69,9 @@ html,body {
    vertical-align:middle;
    display:inline-block;
    margin:0;
+   padding:0 3px;
 }
+
 #toolbar span {
    vertical-align:middle
 }
@@ -81,14 +83,14 @@ html,body {
    font-size:small;
 }
 
-#toolbar button:first-child, #toolbar select, .algomode #algo-exec {
+#toolbar button:first-child, #toolbar select:first-child, .algomode #algo-exec {
    border-top-left-radius:4px;
    border-bottom-left-radius:5px;
    border-left:1px solid gray;
    margin-left:0.75ex;
 }
 
-#toolbar button:last-child, #toolbar select, .algomode #saveas, .codemode #redraw, .launch-disabled #execute {
+#toolbar button:last-child, #toolbar select:last-child, .algomode #saveas, .codemode #redraw, .launch-disabled #algorun {
    border-top-right-radius:4px;
    border-bottom-right-radius:5px;
    border-right:1px solid gray;
@@ -230,7 +232,30 @@ html,body {
    opacity:1;
 }
 
+select {
+   display:inline-block;
+}
 
+
+/*.selectlabel {
+    position: relative;
+    display: inline-block;
+}
+
+.selectlabel:after {
+    content: '';
+    width: 1rem;
+    height: 1.27rem;
+    position: absolute;
+    display: inline-block;
+    border-top-right-radius:3px;
+    border-bottom-right-radius:3px;
+    top: 1px;
+    right: 6px;
+    background:pink;
+    pointer-events: none;
+
+}*/
 
 .libD_notify-area {
    max-width:none !important
