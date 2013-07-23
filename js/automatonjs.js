@@ -85,6 +85,25 @@
    }
    catch(e){}
 
+   try { // eval to allow parsing of the file even in browsers not supporting yield.
+      eval('\
+         Object.defineProperty(Object.prototype, "iterator", {\
+            enumerable:false,\
+            writable: true,\
+            configurable:true,\
+            value: function() {\
+               for(var i in this) {\
+                  if(this.hasOwnProperty(i)) {\
+                     yield this[i];\
+                  }\
+               }\
+               return;\
+            }\
+         });\
+      ');
+   }
+   catch(e){}
+
    // checks "real" equality between v1 and v2
    pkg.AutomatonJS.eq = function(v1, v2) {
       return v1 == v2 || (
