@@ -192,37 +192,31 @@
       }
    };
 
-   pkg.enabled = true; // if the editor is currently enabled
-
-   // enable the editor (default : the editor is enabled)
-   pkg.enable = function () {
-      pkg.enabled = true;
-      pkg.redraw();
-   };
-
-   // disable the editor. IMPORTANT: If the editor gets hidden, disable it or things will break
-   pkg.disable = function () {
-      pkg.enabled = false;
-   };
-
    // pkg.redraw the editor. IMPORTANT: call this whenever you mess around with the svg container.
-   pkg.redraw = function () {
-      if(pkg.svgNode) {
-         var centerX = pkg.svgNode.viewBox.baseVal.x + pkg.svgNode.viewBox.baseVal.width/2;
-         var centerY = pkg.svgNode.viewBox.baseVal.y + pkg.svgNode.viewBox.baseVal.height/2;
-         pkg.setViewBoxSize();
-         pkg.svgNode.viewBox.baseVal.x = centerX - pkg.svgNode.viewBox.baseVal.width/2;
-         pkg.svgNode.viewBox.baseVal.y = centerY - pkg.svgNode.viewBox.baseVal.height/2;
+   pkg.redraw = function (that) {
+      if(!that) {
+         that = pkg;
+      }
+
+      if(that.svgNode) {
+         var centerX = that.svgNode.viewBox.baseVal.x + that.svgNode.viewBox.baseVal.width/2;
+         var centerY = that.svgNode.viewBox.baseVal.y + that.svgNode.viewBox.baseVal.height/2;
+         pkg.setViewBoxSize(that);
+         that.svgNode.viewBox.baseVal.x = centerX - that.svgNode.viewBox.baseVal.width/2;
+         that.svgNode.viewBox.baseVal.y = centerY - that.svgNode.viewBox.baseVal.height/2;
       }
    };
 
 
    // reset the viewBox size (uses the size of the svg container and the zoom level to do it)
-   pkg.setViewBoxSize = function () {
-      var w = pkg.svgContainer.offsetWidth;
-      if(w) {
-         pkg.svgNode.viewBox.baseVal.width  = (pkg.svgNode.width.baseVal.value  = pkg.svgContainer.offsetWidth) / pkg.svgZoom;
-         pkg.svgNode.viewBox.baseVal.height = (pkg.svgNode.height.baseVal.value = pkg.svgContainer.offsetHeight) / pkg.svgZoom;
+   pkg.setViewBoxSize = function (that) {
+      if(!that) {
+         that = pkg;
+      }
+
+      if(!that.svgContainer || that.svgContainer.offsetWidth) {
+         that.svgNode.viewBox.baseVal.width  = (that.svgNode.width.baseVal.value  = that.svgContainer.offsetWidth) / that.svgZoom;
+         that.svgNode.viewBox.baseVal.height = (that.svgNode.height.baseVal.value = that.svgContainer.offsetHeight) / that.svgZoom;
       }
    };
 
@@ -296,11 +290,15 @@
       window.addEventListener('resize', pkg.redraw, false);
 
       // get the right coordinates of the cursor of the <svg> node
-      function svgcursorPoint(evt){ // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
-         var pt = pkg.svgNode.createSVGPoint();
+      function svgcursorPoint(evt, that) { // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
+         if(!that) {
+            that = pkg;
+         }
+
+         var pt = that.svgNode.createSVGPoint();
          pt.x = evt.clientX;
          pt.y = evt.clientY;
-         var a = pkg.svgNode.getScreenCTM();
+         var a = that.svgNode.getScreenCTM();
          if(!a) {
             throw('coordinates unavailable');
          }
@@ -346,9 +344,17 @@
       }
 
       // move the visible area
-      function viewBoxMove(e) {
-         pkg.svgNode.viewBox.baseVal.x = coords.viewBoxX - (e.clientX - coords.x)/pkg.svgZoom;
-         pkg.svgNode.viewBox.baseVal.y = coords.viewBoxY - (e.clientY - coords.y)/pkg.svgZoom;
+      function viewBoxMove(e, that) {
+         if(that) {
+            var c = that;
+         }
+         else {
+            var c = coords;
+            that = pkg;
+         }
+
+         that.svgNode.viewBox.baseVal.x = c.viewBoxX - (e.clientX - c.x)/that.svgZoom;
+         that.svgNode.viewBox.baseVal.y = c.viewBoxY - (e.clientY - c.y)/that.svgZoom;
       }
 
       function isTransitionStraight(edge) {
@@ -966,22 +972,62 @@
          }
       }, false);
 
-      listenMouseWheel(function(e, delta) {
-         if(!pkg.enabled) {
-            return;
+      (pkg.userZoom = function (that) {
+         if(!that.redraw) {
+            that.redraw = function() {
+               pkg.redraw(that);
+            };
          }
 
-         var pt = svgcursorPoint(e);
-         var oldZoom = pkg.svgZoom;
-         pkg.svgZoom = Math.round((pkg.svgZoom + delta * 0.1)*10)/10;
-         if(!pkg.svgZoom) {
-            pkg.svgZoom = 0.1;
-            return;
+         listenMouseWheel(function(e, delta) {
+            if(!that.svgNode) {
+               return;
+            }
+
+            var pt = svgcursorPoint(e, that);
+            var oldZoom = that.svgZoom;
+            that.svgZoom = Math.round((that.svgZoom + delta * 0.1)*10)/10;
+            if(!that.svgZoom) {
+               that.svgZoom = 0.1;
+               return;
+            }
+            pkg.setViewBoxSize(that);
+            that.svgNode.viewBox.baseVal.x = pt.x - (pt.x - that.svgNode.viewBox.baseVal.x)*oldZoom/that.svgZoom;
+            that.svgNode.viewBox.baseVal.y = pt.y - (pt.y - that.svgNode.viewBox.baseVal.y)*oldZoom/that.svgZoom;
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+         }, that.svgContainer);
+      })(pkg);
+
+      pkg.userMove = function(that) {
+         if(!that.redraw) {
+            that.redraw = function() {
+               pkg.redraw(that);
+            };
          }
-         pkg.setViewBoxSize();
-         pkg.svgNode.viewBox.baseVal.x = pt.x - (pt.x - pkg.svgNode.viewBox.baseVal.x)*oldZoom/pkg.svgZoom;
-         pkg.svgNode.viewBox.baseVal.y = pt.y - (pt.y - pkg.svgNode.viewBox.baseVal.y)*oldZoom/pkg.svgZoom;
-      }, pkg.svgContainer);
+
+         function mouseDown(e) {
+            if(that.svgNode) {
+               that.viewBoxX = that.svgNode.viewBox.baseVal.x;
+               that.viewBoxY = that.svgNode.viewBox.baseVal.y;
+               that.x = e.clientX;
+               that.y = e.clientY;
+               window.addEventListener('mousemove', mouseMove, false);
+               window.addEventListener('mouseup', mouseUp, false);
+            }
+         }
+
+         function mouseMove(e) {
+            viewBoxMove(e, that);
+         }
+         
+         function mouseUp() {
+            window.removeEventListener('mousemove', mouseMove, false);
+            window.removeEventListener('mouseup', mouseUp, false);
+         }
+         that.svgContainer.addEventListener('mousedown', mouseDown, false);
+      };
 
       pkg.svgContainer.ondragstart = pkg.svgContainer.onselectstart = pkg.svgContainer.oncontextmenu = function(e) {
          e.preventDefault();

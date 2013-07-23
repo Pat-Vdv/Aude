@@ -29,8 +29,10 @@
        waitingFor        = new Set(),
        launchAfterImport = false,
        resultToLeft      = document.createElement('button'),
+       zoom              = {svgZoom:1},
        _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
+       results,
        not;
 
    function notify (title, content, type) {
@@ -83,6 +85,15 @@
          else {
             setTextResult(res);
          }
+      }
+      var svg = results.querySelector('svg');
+      if(svg) {
+         zoom.svgNode = svg;
+         results.style.overflow = 'hidden';
+      }
+      else {
+         zoom.svgNode = null;
+         results.style.overflow = '';
       }
    }
 
@@ -199,11 +210,9 @@
       }
 
       AutomataDesigner.load();
-   
       var splitter          = document.getElementById('splitter'),
           toolbar           = document.getElementById('toolbar'),
           content           = document.getElementById('content'),
-          results           = document.getElementById('results'),
           codeedit          = document.getElementById('codeedit'),
           automataedit      = document.getElementById('automataedit'),
           leftedit          = document.getElementById('leftedit'),
@@ -239,6 +248,11 @@
        if(isNaN(EXECUTION_STEP_TIME)) {
           EXECUTION_STEP_TIME = 1200;
        }
+
+      results = zoom.svgContainer = document.getElementById('results');
+
+      AutomataDesigner.userZoom(zoom);
+      AutomataDesigner.userMove(zoom);
 
       resultToLeft.appendChild(libD.jso2dom([
          ['img', {alt:'', src:'icons/oxygen/16x16/actions/arrow-left.png'}],
@@ -416,6 +430,7 @@
          leftPane.style.right = ((width - e.clientX)*100 / width) + '%';
          results.style.left =  ((e.clientX + sw)*100/width) + '%';
          AutomataDesigner.redraw();
+         zoom.redraw();
       }
 
       splitter.onmousedown = function(e) {
@@ -430,6 +445,7 @@
          results.style.left =  ((splitter.offsetLeft + sw)*100/width) + '%';
          content.style.top  = toolbar.offsetHeight + 'px';
          AutomataDesigner.redraw();
+         zoom.redraw();
       }
 
       window.addEventListener('resize', onResize, false);
@@ -445,7 +461,6 @@
          switch(this.value) {
          case "program":
             toolbar.className = 'algomode';
-            AutomataDesigner.disable();
             codeedit.classList.remove('disabled');
             automataedit.classList.add('disabled');
             if(!cm) {
@@ -458,6 +473,7 @@
                      codemirrorNode.style.fontSize = (fs + 2*delta) + 'px';
                      cm.refresh();
                      e.preventDefault();
+                     e.stopPropagation();
                      return false;
                   }
                });
@@ -475,11 +491,9 @@
             automataedit.classList.remove('disabled');
             automatoncode.classList.add('disabled');
             AutomataDesigner.svgContainer.classList.remove('disabled');
-            AutomataDesigner.enable();
             onResize();
             break;
          case "automatoncode":
-            AutomataDesigner.disable();
             automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex);
             if(cm && cm.getValue()) {
                toolbar.className = 'designmode codemode';
@@ -1026,7 +1040,6 @@
       xhr.onreadystatechange = function() {
          if(xhr.readyState === 4) {
             if(!xhr.status || xhr.status === 200) {
-               console.log(xhr.status, xhr.responseText);
                var line,fname, descr, algos = xhr.responseText.split("\n");
                for(var i=0; i < algos.length;++i) {
                   line = algos[i].split("/");

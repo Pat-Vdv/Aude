@@ -161,7 +161,7 @@ html,body {
    display:none !important;
 }
 
-#svg-container, #toolbar {
+#svg-container, #toolbar, #results svg {
    -moz-user-select:none;
    -webkit-user-select:none;
    -ms-user-select: none;
