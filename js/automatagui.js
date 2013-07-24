@@ -252,7 +252,6 @@
       results = zoom.svgContainer = document.getElementById('results');
 
       AutomataDesigner.userZoom(zoom);
-      AutomataDesigner.userMove(zoom);
 
       resultToLeft.appendChild(libD.jso2dom([
          ['img', {alt:'', src:'icons/oxygen/16x16/actions/arrow-left.png'}],

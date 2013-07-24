@@ -387,6 +387,7 @@
          return true;
       }
       function beginNodeMoving(nodeMoving, e) {
+         pkg.stopMove = true;
          pkg.svgContainer.style.cursor = "move";
          pkg.svgContainer.onmousemove = nodeMove;
          coords = {
@@ -925,7 +926,7 @@
                }
                else if(!pkg.svgContainer.onmousemove) {
                   blockNewState = false;
-                  beginViewBoxMove(e);
+//                   beginViewBoxMove(e);
                }
             }
          }
@@ -994,55 +995,74 @@
             };
          }
 
+         function newZoom(zoom, x, y) {
+            if(!(that.svgZoom = zoom)) {
+               that.svgZoom = 0.1;
+               return;
+            }
+            pkg.setViewBoxSize(that);
+            if(!isNaN(x)) {
+               that.svgNode.viewBox.baseVal.x = x - (x - that.svgNode.viewBox.baseVal.x)*oldZoom/that.svgZoom;
+               that.svgNode.viewBox.baseVal.y = y - (y - that.svgNode.viewBox.baseVal.y)*oldZoom/that.svgZoom;
+            }
+         }
+
+         var oldZoom, initialZoom, lastDeltaX, lastDeltaY;
+
          listenMouseWheel(function(e, delta) {
             if(!that.svgNode) {
                return;
             }
 
             var pt = svgcursorPoint(e, that);
-            var oldZoom = that.svgZoom;
-            that.svgZoom = Math.round((that.svgZoom + delta * 0.1)*10)/10;
-            if(!that.svgZoom) {
-               that.svgZoom = 0.1;
-               return;
-            }
-            pkg.setViewBoxSize(that);
-            that.svgNode.viewBox.baseVal.x = pt.x - (pt.x - that.svgNode.viewBox.baseVal.x)*oldZoom/that.svgZoom;
-            that.svgNode.viewBox.baseVal.y = pt.y - (pt.y - that.svgNode.viewBox.baseVal.y)*oldZoom/that.svgZoom;
+            oldZoom = that.svgZoom;
+            newZoom(Math.round((that.svgZoom + delta * 0.1)*10)/10, pt.x, pt.y);
+
             e.preventDefault();
             e.stopPropagation();
             return false;
          }, that.svgContainer);
-      })(pkg);
 
-      pkg.userMove = function(that) {
-         if(!that.redraw) {
-            that.redraw = function() {
-               pkg.redraw(that);
-            };
-         }
-
-         function mouseDown(e) {
-            if(that.svgNode) {
-               that.viewBoxX = that.svgNode.viewBox.baseVal.x;
-               that.viewBoxY = that.svgNode.viewBox.baseVal.y;
-               that.x = e.clientX;
-               that.y = e.clientY;
-               window.addEventListener('mousemove', mouseMove, false);
-               window.addEventListener('mouseup', mouseUp, false);
+         function drag(e) {
+            if(lastDeltaX || lastDeltaY) {
+               that.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / pkg.svgZoom;
+               that.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / pkg.svgZoom;
             }
+            lastDeltaX = e.gesture.deltaX;
+            lastDeltaY = e.gesture.deltaY;
          }
 
-         function mouseMove(e) {
-            viewBoxMove(e, that);
+         if(window.Hammer) {
+            window.Hammer(that.svgContainer).on("touch", function(e) {
+               initialZoom = that.svgZoom;
+               lastDeltaX = 0;
+               lastDeltaY = 0;
+            });
+            window.Hammer(that.svgContainer).on("pinch", function(e) {
+               if(that === pkg) {
+                  blockNewState = true;
+               }
+               that.stopMove = true;
+
+               oldZoom = that.svgZoom;
+               var nz = initialZoom * e.gesture.scale;
+               if(nz !== that.svgZoom) {
+                  var pt = svgcursorPoint({clientX:e.gesture.center.pageX, clientY:e.gesture.center.pageY}, that);
+                  newZoom(nz, pt.x, pt.y);
+               }
+               drag(e);
+            });
+            window.Hammer(that.svgContainer).on("drag", function(e) {
+               if(!that.stopMove) {
+                  blockNewState = true;
+                  drag(e);
+               }
+            });
+            window.Hammer(that.svgContainer).on("release", function(e) {
+               that.stopMove = false;
+            });
          }
-         
-         function mouseUp() {
-            window.removeEventListener('mousemove', mouseMove, false);
-            window.removeEventListener('mouseup', mouseUp, false);
-         }
-         that.svgContainer.addEventListener('mousedown', mouseDown, false);
-      };
+      })(pkg);
 
       pkg.svgContainer.ondragstart = pkg.svgContainer.onselectstart = pkg.svgContainer.oncontextmenu = function(e) {
          e.preventDefault();
