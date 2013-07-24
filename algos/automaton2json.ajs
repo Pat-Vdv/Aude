@@ -7,7 +7,7 @@ function jsonCode(A) {
       states      = A.getStates(),
       transitions = A.getTransitions(),
       q_init      = A.getInitialState(),
-      result      = '{\n\tstates: [' + toString(q_init),
+      result      = '{\n\t"states": [' + toString(q_init),
       began = false;
 
   
@@ -17,7 +17,7 @@ function jsonCode(A) {
     }
   }
 
-  result += '],\n\tfinalStates: [';
+  result += '],\n\t"finalStates": [';
   foreach(state in finalStates) {
     if(began) {
       result += ',';
@@ -28,7 +28,7 @@ function jsonCode(A) {
     result += toString(state);
   }
 
-  result += '],\n\ttransitions:[';
+  result += '],\n\t"transitions":[';
   began = false;
 
   foreach(transition in transitions) {
