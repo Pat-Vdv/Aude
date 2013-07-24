@@ -487,6 +487,7 @@
       }
 
       function beginMoveTransitionLabel(text, e) {
+         pkg.stopMove = true;
          nodeMoving = text;
          coords = [e.clientX, e.clientY, e.target.x.baseVal.getItem(0).value, e.target.y.baseVal.getItem(0).value];
          pkg.svgContainer.onmousemove = labelMove;
@@ -900,6 +901,7 @@
                   x:e.clientX,
                   y:e.clientY
                };
+               pkg.stopMove = true;
                pkg.svgContainer.onmousemove = nodeMoving._mousemove;
             }
             else {
@@ -910,6 +912,7 @@
                      endNewTransition(nodeMoving, e);
                   }
                   else if((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                     pkg.stopMove = true;
                      removeNode(nodeMoving);
                   }
                   else if(e.shiftKey) {
