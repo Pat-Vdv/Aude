@@ -90,6 +90,9 @@
       if(svg) {
          zoom.svgNode = svg;
          results.style.overflow = 'hidden';
+         if(zoom.redraw) {
+            zoom.redraw();
+         }
       }
       else {
          zoom.svgNode = null;
