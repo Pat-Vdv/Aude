@@ -361,6 +361,13 @@
          }
          else if(s[i] === '!') {
             ++i;
+            var deb = i,
+                symbol = getSymbol().toLowerCase();
+            if(symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has') {
+               return '!' + symbol;
+            }
+            i = deb;
+            lastSignificantType = type = operator;
             if(s[i] === '=') {
                ++i;
                if(s[i] === '=') {
@@ -913,6 +920,7 @@
                      tmp += defaultValue ? ('AutomatonJS.as([],' + defaultValue + ')') : '[]';
                      break;
                   case "state":
+                     constraintedVariables.type.remove(varName);
                   case "string":
                      tmp += defaultValue ? ('AutomatonJS.as("",' + defaultValue + ')') : '""';
                      break;
@@ -1025,6 +1033,7 @@
             return res + white;
          }
          else {
+            var not = '';
             if(symbol === 'U') {
                symbol = 'union';
             }
@@ -1036,6 +1045,14 @@
             }
             else {
                symbol = symbol.toLowerCase();
+               if(symbol && symbol[0] === '!') {
+                  not = '!';
+                  symbol = symbol.substr(1);
+                  if(symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'has') {
+                     i = deb;
+                     return res;
+                  }
+               }
             }
             if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has' || symbol === 'symdiff') {
                if(symbol === 'symdiff') {
@@ -1064,15 +1081,15 @@
                }
                else if(symbol === 'contains' || symbol === 'subset_of' || symbol === 'has' || symbol === 'sym_diff') {
                   i = deb2;
-                  return ' ' + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+                  return ' ' + not + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else if(symbol === 'elementof' || symbol === 'belongsto') {
                   i = deb2;
-                  return 'contains(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ','  + (white === ' ' ? '' : white) + res + ')';
+                  return not + 'contains(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ','  + (white === ' ' ? '' : white) + res + ')';
                }
                else {
                   i = deb2;
-                  return white + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+                  return white + not + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
             }
             i = deb;
