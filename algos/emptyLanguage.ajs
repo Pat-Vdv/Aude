@@ -1,30 +1,34 @@
+include determinisation;
+
 function emptyLanguage(A) {
   // If the automaton doesn't recognizes any word, return false. Otherwize, return true. 
   
+  A             : Automaton = determinize(A);
+  visitedStates : Set of State;
+
   function visit(state) {
     if(visitedStates contains state) {
-      return false;
+      return true;
     }
   
     if(A.isAcceptingState(state)) {
-      return true;
+      return false;
     }
   
     visitedStates.add(state);
     for(var symbol in table[state]) { // for each symbol
       foreach(destinationState in table[state][symbol]) {
-        if(visit(destinationState)) {
-          return true;
+        if(!visit(destinationState)) {
+          return false;
         }
       }
     }
-    return false;
+    return true;
   }
   
 
   table : List = A.getTransitionsTable();
   
-  visitedStates : Set of State;
   return visit(A.getInitialState());
 }
 
