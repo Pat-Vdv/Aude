@@ -19,11 +19,10 @@ function minimize(A) {
   copyPartition : Set of Set;
   do {
     oldCard = partition.card();
-    console.log(partition);
     copyPartition = partition.copy();
     l  : List;
-    q1 : Set;
-    q2 : Set;
+    q1 : State;
+    q2 : State;
   
     foreach(couple in copyPartition) {
       l  = couple.getList();
@@ -75,7 +74,7 @@ function minimize(A) {
   newStates : List;
   oldStates : List;
   while(remainingStates.card()) {
-    l = remainingStates.getList();
+    let l = remainingStates.getList();
     newStates[s] = new Set();
     newStates[s].add(l[0]);
     oldStates[l[0]] = s;
