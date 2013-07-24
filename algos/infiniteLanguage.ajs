@@ -1,56 +1,52 @@
 include epsElim;
 
 function infiniteLanguage(A) {
-  A : Automaton = epsElim(A);
-
-  accessibleFinalStates : Set of State;
-  visitedStates         : Set of State;
-  table                 : Table = A.getTransitionsTable();
+  A     : Automaton = epsElim(A);
+  table : Table = A.getTransitionsTable();
   
-  function populateAccessibleFinalStates(state) {
-    if(visitedStates contains state) {
-      return;
-    }
-  
-    visitedStates.add(state);
-  
-    if(A.isFinalState(state)) {
-      accessibleFinalStates.add(state);
-    }
-  
-    for(var symbol in table[state]) {
-      foreach(destState in table[state][symbol]) {
-        populateAccessibleFinalStates(destState);
-      }
-    }
-  }
-  
-  function onCycle(finalState, visited, curState) {
+  function onCycle(consideredState, visited, curState) {
     if(visited contains curState) {
       return false;
     }
-  
+    
     visited.add(curState);
-  
+    
     for(var symbol in table[curState]) {
       foreach(state in table[curState][symbol]) {
-        if(state == finalState || onCycle(finalState, visited.copy(), state)) {
+        if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
+          return true;
+        }
+      }	
+    }
+    return false;
+  }
+    
+  function visit(state, visited, cycle) {
+    if(visited contains state) {
+      return false;
+    }
+
+    if(!cycle) {
+      cycle = onCycle(state, emptySet(State), state);
+    }
+    
+    if(cycle && A.isFinalState(state)) {
+      return true;
+    }
+    
+    visited.add(state);
+    
+    foreach(destStates in table[state]) {
+      foreach(destState in destStates) {
+        if(visit(destState, visited.copy(), cycle)) {
           return true;
         }
       }
     }
     return false;
   }
-  
-  populateAccessibleFinalStates(A.getInitialState()); // we populate the set of accessible final states
-  
-  foreach(finalState in accessibleFinalStates) {
-    if(onCycle(finalState, emptySet(State), finalState)) {
-      return true;
-    }
-  }
-  
-  return false;
+    
+  return visit(A.getInitialState(), emptySet(State), false);
 }
 
 run(infiniteLanguage, get_automaton(currentAutomaton));
