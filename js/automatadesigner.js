@@ -345,7 +345,7 @@
 
       // move the visible area
       function viewBoxMove(e, that) {
-         blockNewState = false;
+         blockNewState = true;
          if(that) {
             var c = that;
          }
