@@ -31,8 +31,7 @@
        nodeLists          = [], // array containing all the automata's "nodeList"s
        initialStateArrows = [], // array containing all the automata's initial state's arrow
        initialStates      = [], // array containing all the automata's initial state's node
-       svgs               = [], // will contain all currently opened automata
-       blockButtons;
+       svgs               = []; // will contain all currently opened automata
 
    var _ = pkg.AutomataDesignerl10n = that.libD && that.libD.l10n ? that.libD.l10n() : function(s){return s;};
 
@@ -414,6 +413,7 @@
          }
       }
       function beginNewTransition(startState, e) {
+         pkg.stopMove = true;
          nodeEdit = startState;
          pkg.svgContainer.onmousemove = nodeBinding;
          pathEdit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -428,6 +428,7 @@
       }
 
       function endNewTransition(endState, e) {
+         pkg.stopMove = true;
          var id = nodeEdit.id + ' ' + endState.id;
          if(document.getElementById(id)) {
             // Désolé, une fèche existe déjà entre ces deux états dans ce sens.
@@ -773,7 +774,6 @@
 
       // event when a node is moved
       function nodeMove(e) {
-         blockButtons = true;
          if(pkg.stopMoveNode) {
             return;
          }
@@ -961,7 +961,6 @@
       }, false);
 
       pkg.svgContainer.addEventListener('mouseup', function(e) {
-         blockButtons = true;
          blockClick = false;
          if(pkg.svgContainer.onmousemove === nodeBinding) {
             if(!blockNewState && (nodeMoving = parentWithClass(e.target, 'node'))) {
