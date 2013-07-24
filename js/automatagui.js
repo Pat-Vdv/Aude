@@ -566,8 +566,9 @@
       };
 
       window.run = function(f) {
-         if(loadPredefAlgoAfterImport === 3) {
-            predefAlgoFunctions[curAlgo.value] = f;
+         if(loadPredefAlgoAfterImport === true) {
+            loadPredefAlgoAfterImport = null;
+            (predefAlgoFunctions[curAlgo.value] = f)(window.reallyRun);
          }
       };
 
@@ -872,56 +873,36 @@
          handleImports(includes, "user's program");
       };
 
-      var algocode, predefAlgoFunctions = [], loadPredefAlgoAfterImport = 0;
+      var nextLoadIsPrefefAlgo, predefAlgoFunctions = [], loadPredefAlgoAfterImport = null;
 
-      function loadPredefAlgo(includeName, code) {
-         var includes = [];
-         algocode = code;
-         loadPredefAlgoAfterImport = 2; // waiting for dependencies of the algo
-         handleImports(includes, includeName);
-         if(waitingFor.isEmpty()) {
-            loadPredefAlgoAfterImport = 0;
-            launchPredefAlgo(true, includeName);
-         }
-      }
-
-      function launchPredefAlgo(loadCode, includeName) {
-         if(!includeName) {
-            includeName = curAlgo.value;
-         }
-
-         if(loadCode === true) {
-            var id      = 'predef-algo-' + includeName,
-                script  = document.getElementById(id);
-
-            if(script) {
-               head.removeChild(script);
-            }
-            var script = document.createElement('script');
-            if(js18Supported) {
-               script.type = 'text/javascript;version=1.8';
-            }
-            
-            script.textContent = 'window.run(function(run){"use strict";\n' + algocode + '\n});';
-            script.id = id;
-            algocode = null;
-            loadPredefAlgoAfterImport = 3;
-            curAlgo.value = includeName;
-            predefAlgoFunctions[curAlgo.value] = true;
-            enableAutoHandlingError = includeName;
-            head.appendChild(script);
-            enableAutoHandlingError = false;
-            loadPredefAlgoAfterImport = 2;
-            return;
-         }
-
+      function launchPredefAlgo() {
          if(predefAlgoFunctions[curAlgo.value]) {
-            if(typeof predefAlgoFunctions[curAlgo.value] === 'function') {
+            window.currentAutomaton = AutomataDesigner.currentIndex;
+            if(typeof predefAlgoFunctions[curAlgo.value] === 'string') {
+               var id      = 'predef-algo-' + curAlgo.value,
+                   script  = document.getElementById(id);
+
+               if(script) {
+                  head.removeChild(script);
+               }
+               var script = document.createElement('script');
+               if(js18Supported) {
+                  script.type = 'text/javascript;version=1.8';
+               }
+               script.textContent = 'window.run(function(run){"use strict";\n' + predefAlgoFunctions[curAlgo.value] + '\n});';
+               predefAlgoFunctions[curAlgo.value] = null;
+               script.id = id;
+               loadPredefAlgoAfterImport = true;
+               enableAutoHandlingError = curAlgo.value;
+               head.appendChild(script);
+               enableAutoHandlingError = false;
+            }
+            else {
                launchUserProgram(predefAlgoFunctions[curAlgo.value]);
             }
          }
          else {
-            loadPredefAlgoAfterImport = 1; //waiting for the algo to come
+            nextLoadIsPrefefAlgo = true;
             AutomatonGlue.getScript(curAlgo.value, '?');
          }
       }
@@ -932,27 +913,29 @@
       window.gotScript = function(includeName, code) {
          waitingFor.remove(includeName);
 
-         var id      = 'useralgo-include-' + includeName,
-             script  = document.getElementById(id),
-             includes = [];
-
-         if(script) {
-            head.removeChild(script);
-         }
-         script = document.createElement('script');
-         script.id = id;
-         if(js18Supported) {
-            script.type = 'text/javascript;version=1.8';
-         }
+         var includes = [];
          code = AutomatonJS.toPureJS(code, includes);
 
-         if(loadPredefAlgoAfterImport === 1) {
-            loadPredefAlgoAfterImport = 2;
-            loadPredefAlgo(includeName, code);
-            handleImports(includes, "module " + includeName);
+         if(nextLoadIsPrefefAlgo) {
+            predefAlgoFunctions[includeName] = code;
+            loadPredefAlgoAfterImport = 1;
+            nextLoadIsPrefefAlgo = false;
          }
          else {
-            handleImports(includes, "module " + includeName);
+            var id      = 'useralgo-include-' + includeName,
+                script  = document.getElementById(id);
+
+            if(script) {
+               head.removeChild(script);
+            }
+
+            script = document.createElement('script');
+            script.id = id;
+
+            if(js18Supported) {
+               script.type = 'text/javascript;version=1.8';
+            }
+
             script.textContent = code;
             window.currentAutomaton = NaN;
             enableAutoHandlingError = "module " + includeName;
@@ -960,19 +943,26 @@
             enableAutoHandlingError = false;
          }
 
+         handleImports(includes, "module " + includeName);
+         console.log(includeName, waitingFor.isEmpty());
          if(waitingFor.isEmpty()) {
-            if(launchAfterImport && window.userProgram) {
-               launchAfterImport = false;
-               execProgram();
-            }
-            else if(loadPredefAlgoAfterImport === 2) {
-               loadPredefAlgoAfterImport = 0;
-               launchPredefAlgo();
-            }
+            setTimeout(function() {
+               if(launchAfterImport && window.userProgram) {
+                  launchAfterImport = false;
+                  execProgram();
+               }
+               else if(loadPredefAlgoAfterImport) {
+                  launchPredefAlgo();
+               }
+            }, 0);
          }
       };
 
       function getScript(includeName, includer) {
+         if(waitingFor.contains(includeName)) {
+            return;
+         }
+
          if(includeName[0] === "'") {
             includeName = includeName.replace(/"/g, '\\"');
             includeName = includeName.substr(1, includeName.length-1);
@@ -1146,7 +1136,9 @@
    _("fr", "Determinize", "Déterminiser");
    _("fr", "ε-eliminate", "ε-éliminer");
    _("fr", "Minimize", "Minimiser");
+   _("fr", "Determinize & Minimize", "Déterminiser & Minimiser");
    _("fr", "Test empty language", "Tester language vide");
    _("fr", "Test infinite language", "Tester language infini");
-   
+   _("fr", "JSON representation", "Représentation JSON");
+
 })();
