@@ -1,6 +1,7 @@
 include epsElim;
 
 function determinize(A) {
+  console.dir(A);
   A = epsElim(A);
   DetA : Automaton;
   Alphabet : Set = A.getAlphabet();

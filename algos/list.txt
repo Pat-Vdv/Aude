@@ -1,5 +1,7 @@
 determinisation.ajs?v=1  / Determinize
+mini_deter.ajs?v=1       / Determinize & Minimize
 minimisation.ajs?v=1     / Minimize
 epsElim.ajs?v=1          / ε-eliminate
 emptyLanguage.ajs?v=1    / Test empty language
 infiniteLanguage.ajs?v=1 / Test infinite language
+automaton2json.ajs?v=1   / JSON representation

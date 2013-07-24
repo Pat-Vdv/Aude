@@ -1,0 +1,3 @@
+include determinisation;
+include minimisation;
+run(minimize, get_automaton(currentAutomaton), true);

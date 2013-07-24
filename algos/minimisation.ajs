@@ -1,7 +1,5 @@
-include determinisation;
-
-function minimize(A) {
-  A : Automaton = determinize(A);
+function minimize(A, shouldDeterminize) {
+  A : Automaton = shouldDeterminize ? determinize(A) : A;
   MinA : Automaton;
   table : List = A.getTransitionsTable();
   
