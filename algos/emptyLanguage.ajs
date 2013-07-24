@@ -1,7 +1,7 @@
 include determinisation;
 
 function emptyLanguage(A) {
-  // If the automaton doesn't recognizes any word, return false. Otherwize, return true. 
+  // If the automaton doesn't recognize any word, return true. Otherwize, return false. 
   
   A             : Automaton = determinize(A);
   visitedStates : Set of State;
