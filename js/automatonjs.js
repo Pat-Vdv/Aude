@@ -617,10 +617,6 @@
          var pres = toPureJS({')':true}, inForeach);
          res += '(' + pres + getSymbol(); // ')'
       }
-      else if(symbol === '?') {
-         var pres = getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
-         res += '?' + pres + getSymbol(); // ':'
-      }
       else if(symbol === ';') {
          if(value) {
             --i;
@@ -822,7 +818,7 @@
          }
          else if(symbol === '?') {
             var pres = getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
-            res += '?' + pres + getSymbol(); // ':'
+            res += white + '?' + pres + getSymbol() /* ':' */ + getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
          }
          else if(symbol === '=>'  && (oldType & (variable | closeParen))) {
             ++i;
