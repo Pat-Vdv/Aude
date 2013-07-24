@@ -1,0 +1,47 @@
+function jsonCode(A) {
+  function toString(e) {
+    return JSON.stringify(e.toString());
+  }
+
+  let finalStates = A.getFinalStates(),
+      states      = A.getStates(),
+      transitions = A.getTransitions(),
+      q_init      = A.getInitialState(),
+      result      = '{\n\tstates: [' + toString(q_init),
+      began = false;
+
+  
+  foreach(state in states) {
+    if(state != q_init && finalStates !contains state) {
+      result += ',' + toString(state);
+    }
+  }
+
+  result += '],\n\tfinalStates: [';
+  foreach(state in finalStates) {
+    if(began) {
+      result += ',';
+    }
+    else {
+      began = true;
+    }
+    result += toString(state);
+  }
+
+  result += '],\n\ttransitions:[';
+  began = false;
+
+  foreach(transition in transitions) {
+    if(began) {
+      result += ',';
+    }
+    else {
+      began = true;
+    }
+    
+    result += '\n\t\t[' + toString(transition.startState) + ',' + toString(transition.symbol) + ',' + toString(transition.endState) + ']';
+  }
+  return result + '\n\t]\n}';
+}
+
+run(jsonCode, get_automaton(currentAutomaton));
