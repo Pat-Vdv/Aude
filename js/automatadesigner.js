@@ -31,7 +31,8 @@
        nodeLists          = [], // array containing all the automata's "nodeList"s
        initialStateArrows = [], // array containing all the automata's initial state's arrow
        initialStates      = [], // array containing all the automata's initial state's node
-       svgs               = []; // will contain all currently opened automata
+       svgs               = [], // will contain all currently opened automata
+       blockButtons;
 
    var _ = pkg.AutomataDesignerl10n = that.libD && that.libD.l10n ? that.libD.l10n() : function(s){return s;};
 
@@ -772,6 +773,10 @@
 
       // event when a node is moved
       function nodeMove(e) {
+         blockButtons = true;
+         if(pkg.stopMoveNode) {
+            return;
+         }
          var dy = (e.clientY - coords.y)/pkg.svgZoom, dx = (e.clientX - coords.x)/pkg.svgZoom;
          coords.text.setAttribute('x', coords.tx + dx);
          coords.text.setAttribute('y', coords.ty + dy);
@@ -880,10 +885,14 @@
          nodeMoving.setAttribute('y', (e.clientY - coords[1])/pkg.svgZoom + coords[3]);
       }
 
-      var blockNewState;
+      var blockNewState, blockClick;
 
       pkg.svgContainer.addEventListener('mousedown', function(e) {
          blockNewState = true;
+         if(blockClick) {
+            return;
+         }
+         blockClick = true;
          if(!e.button) { // left button
             if(nodeMoving = parentWithClass(e.target, 'pathedit-handle')) {
                // handle path editing
@@ -952,6 +961,8 @@
       }, false);
 
       pkg.svgContainer.addEventListener('mouseup', function(e) {
+         blockButtons = true;
+         blockClick = false;
          if(pkg.svgContainer.onmousemove === nodeBinding) {
             if(!blockNewState && (nodeMoving = parentWithClass(e.target, 'node'))) {
                endNewTransition(nodeMoving, e);
@@ -1043,6 +1054,7 @@
                   blockNewState = true;
                }
                that.stopMove = true;
+               that.stopMoveNode = true;
 
                oldZoom = that.svgZoom;
                var nz = initialZoom * e.gesture.scale;
@@ -1060,6 +1072,7 @@
             });
             window.Hammer(that.svgContainer).on("release", function(e) {
                that.stopMove = false;
+               that.stopMoveNode = false;
             });
          }
       })(pkg);
