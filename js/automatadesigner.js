@@ -345,7 +345,7 @@
 
       // move the visible area
       function viewBoxMove(e, that) {
-         blockNewState = true;
+         blockNewState = false;
          if(that) {
             var c = that;
          }
@@ -644,6 +644,7 @@
 
       // move event when two nodes must be bound (the transition is following the cursor)
       function nodeBinding(e) {
+         blockNewState = false;
          var pt = svgcursorPoint(e);
          var p = pathEdit.pathSegList.getItem(1);
          var po = pathEdit.pathSegList.getItem(0);
@@ -951,7 +952,7 @@
 
       pkg.svgContainer.addEventListener('mouseup', function(e) {
          if(pkg.svgContainer.onmousemove === nodeBinding) {
-            if((nodeMoving = parentWithClass(e.target, 'node')) && nodeMoving !== nodeEdit) {
+            if(!blockNewState && (nodeMoving = parentWithClass(e.target, 'node'))) {
                endNewTransition(nodeMoving, e);
             }
          }
