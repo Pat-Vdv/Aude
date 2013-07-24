@@ -1025,8 +1025,8 @@
 
          function drag(e) {
             if(lastDeltaX || lastDeltaY) {
-               that.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / pkg.svgZoom;
-               that.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / pkg.svgZoom;
+               that.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / that.svgZoom;
+               that.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / that.svgZoom;
             }
             lastDeltaX = e.gesture.deltaX;
             lastDeltaY = e.gesture.deltaY;
