@@ -1,9 +1,9 @@
-include determinisation;
+include epsElim;
 
 function emptyLanguage(A) {
   // If the automaton doesn't recognize any word, return true. Otherwize, return false. 
   
-  A             : Automaton = determinize(A);
+  A             : Automaton = epsElim(A);
   visitedStates : Set of State;
 
   function visit(state) {
