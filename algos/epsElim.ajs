@@ -10,25 +10,25 @@ function epsElim(A) {
     if(alreadySeenStates.contains(q1))
       return false;
   
-    if(A.hasTransition(new Transition(q1, a, q2))) {
+    if(A.hasTransition(q1, a, q2)) {
       return true;
     }
-    else if(q1 in Transitions) {
+    else {
       alreadySeenStates.add(q1);
-      if(a !== epsilon && A.hasTransition(q1, a, q1)) {
-        if(canReach(q1, epsilon, q2, alreadySeenStates minus q1))
-          return true;
-      }
-      if(a in Transitions[q1]) {
-        foreach(state in Transitions[q1][a]) {
-          if(canReach(state, a, q2, alreadySeenStates))
+      if(a != epsilon) {
+        if(A.hasTransition(q1, a, q1)) {
+          if(canReach(q1, epsilon, q2, alreadySeenStates minus q1))
             return true;
         }
-      }
-      if(a !== epsilon && epsilon in Transitions[q1]) {
-        foreach(state in Transitions[q1][epsilon]) {
-          if(canReach(state, a, q2, alreadySeenStates))
+        foreach(state in Transitions[q1][a]) {
+          if(canReach(state, epsilon, q2, alreadySeenStates))
             return true;
+        }
+        if(Transitions[q1][epsilon]) {
+          foreach(state in Transitions[q1][epsilon]) {
+            if(canReach(state, a, q2, alreadySeenStates))
+              return true;
+          }
         }
       }
     }
@@ -40,9 +40,11 @@ function epsElim(A) {
       foreach(a in A.getAlphabet()) {
         if(canReach(q1, a, q2, new Set)) {
           ElimA.addTransition(q1, a, q2);
-          if(a === epsilon && A.isFinalState(q2))
-            ElimA.setFinalState(q1);
         }
+      }
+
+      if(q1 != q2 && A.isFinalState(q2) && canReach(q1, epsilon, q2, new Set)) {
+        ElimA.setFinalState(q1);
       }
     }
   }
