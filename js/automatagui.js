@@ -1122,7 +1122,7 @@
    _("fr", "To remove a transition, Ctrl+click on its arrow.", "Pour supprimer une transition, cliquez sur sa flèche en maintenant Ctrl enfoncé.");
    _("fr", "To set a non-accepting state as accepting (and conversely), right-click on it.", "Pour rendre un état non-accepteur accepteur (et inversement), cliquez droit sur celui-ci.");
    _("fr", "To set a state as the initial state, Ctrl+right-click on it.", "Pour faire d'un état l'état initial, cliquez dessus avec le bouton droit en appuyant sur la touche Ctrl.");
-   _("fr", "To make a transition straight, Shift+click on its arrow or its label.", "Pour rendre une transition droite, cliquez sur sa flèche ou son étiquette avec la touche Ctrl enfoncée.");
+   _("fr", "To make a transition straight, Shift+click on its arrow or its label.", "Pour rendre une transition droite, cliquez sur sa flèche ou son étiquette avec la touche Shift enfoncée.");
    _("fr", "New state", "Nouvel état");
    _("fr", "New transition", "Nouvelle transition");
    _("fr", "Modify state's name", "Modifier le nom d'un état");
