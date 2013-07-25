@@ -144,10 +144,7 @@
          if(typeof value !== typeof variable && value.constructor !== variable.constructor) {
             throw new Error(_("Assignation Error: types of the value and the variable don't match."));
          }
-         if(integerCheck && value % 1 !== 0) {
-            return Math.floor(value);
-         }
-         return value;
+         return integerCheck ? (value > 0 ? Math.floor(value) : Math.ceil(value)) : value;
       }
       if(value !== variable) {
          throw new Error(_("Assignation Error: types of the value and the variable don't match."));
