@@ -28,7 +28,7 @@ function jsonCode(A) {
     result += toString(state);
   }
 
-  result += '],\n\t"transitions":[';
+  result += '],\n\t"transitions": [';
   began = false;
 
   foreach(transition in transitions) {
