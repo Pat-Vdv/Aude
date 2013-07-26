@@ -34,7 +34,7 @@
 
 (function(pkg, that) {
    "use strict";
-   var _ = pkg.AutomatonJS10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
+   var _ = pkg.AutomataJS10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    if(!pkg.AutomataJS) {
       pkg.AutomataJS = {};
    }
