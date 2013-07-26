@@ -1,6 +1,6 @@
-determinisation.ajs?v=1  / Determinize
+determinization.ajs?v=1  / Determinize
 mini_deter.ajs?v=1       / Determinize & Minimize
-minimisation.ajs?v=1     / Minimize
+minimization.ajs?v=1     / Minimize
 epsElim.ajs?v=1          / ε-eliminate
 emptyLanguage.ajs?v=1    / Test empty language
 infiniteLanguage.ajs?v=1 / Test infinite language
