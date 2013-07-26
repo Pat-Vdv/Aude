@@ -1,11 +1,11 @@
 [set
    author   = Raphaël Jakse (raphael dot jakse at gmail dot com)
-   title    = "AutomatonJS — Programming Language for automata"
+   title    = "AutomataJS — Programming Language for automata"
    css      = whata.css \ geshi.css \ notes.css
 ]
 
 [ =. Introduction
-   AutomatonJS is a dedicated language. Its goal is easing the task of writing algorithms working on automata in a pedagogic and intuitive way. Of course, intuition is a rather personal element and two different persons can have different feelings on what they find intuitive or not, so trying to design an intuitive language that will please everybody might be a waste of time. Therefore, instead of just being intuitive, defining more precise directions to follow when designing the language should be a good start.
+   AutomataJS is a dedicated language. Its goal is easing the task of writing algorithms working on automata in a pedagogic and intuitive way. Of course, intuition is a rather personal element and two different persons can have different feelings on what they find intuitive or not, so trying to design an intuitive language that will please everybody might be a waste of time. Therefore, instead of just being intuitive, defining more precise directions to follow when designing the language should be a good start.
 
    So far, these directions were considered:
     # Do not reinvent everything. Instead, try to aggregate wonderful ideas to conceive a wonderful language. This has several advantage:
@@ -14,7 +14,7 @@
     # Close to the mathematics. Scientific students and scientists are in the target of the language and math is (should be, at least!) a familiar language through these people. Mathematical language is precise, clear and concise and algorithms on automaton are often described with mathematical notation.
     # Be explicit. No weird symbols, no weird idioms. Unfortunately, mathematical symbols can be difficult to handle while programming. However, ASCII art to represent them is not desirable. The code should be readable for newcomers and gessing sense of expressions of the language should be easy and reliable. [c <<<|_|>>>] and [c <<< /\>>>] for the union and the intersection operators can be hard to understand. "union" and "inter" are more likely to be understood at the first glance.
 
-   In "do not reinvent everything", we have "do not reinvent a new language". More precisely, AutomatonJS is not really a new language: choice to base AutomatonJS on a already existant language was made, with these advantages in mind:
+   In "do not reinvent everything", we have "do not reinvent a new language". More precisely, AutomataJS is not really a new language: choice to base AutomataJS on a already existant language was made, with these advantages in mind:
     - Real dedicated languages, by design, are limited. They have features their authors thought of and as time flies, successful dedicated languages tend to be generalist. Lets have a full-featured language which already has its community and its ecosystem.
     - Less work for more. An already existent language already has well-tried tools like interpreters, (JIT-)compilers, debuggers, editors, etc. and these tools have been made powerful by years.
     - If the community of the base language is already large, people will find documentation and help more easily and less people will have to learn a new language.
@@ -28,11 +28,11 @@
 
    Based of these points, a language comes rapidly in mind: Javascript. Javascript is the only one language to run in browser natively and present browsers competitions imply constant enhancement of the language and the tools running it (engines, interpreters, JIT compilers, debuggers), their speed included. Its C-like syntax is also a great point.
 
-   In fact, pure Javascript in its ECMAScript 6 version (still to be released) is very close to what seems to be needed to play with automata comfortably. What is still to add to the language is an Automaton class, a decent set handling and a better type handling: that's what is AutomatonJS for. Learning AutomatonJS is learning pure Javascript plus the few additions of AutomatonJS to Javascript. The base language of AutomatonJS is Javascript in its [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode | strict mode]][footnote https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode].
+   In fact, pure Javascript in its ECMAScript 6 version (still to be released) is very close to what seems to be needed to play with automata comfortably. What is still to add to the language is an Automaton class, a decent set handling and a better type handling: that's what is AutomataJS for. Learning AutomataJS is learning pure Javascript plus the few additions of AutomataJS to Javascript. The base language of AutomataJS is Javascript in its [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode | strict mode]][footnote https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode].
 
    Given that, the goal is to stay very close to Javascript and to add just what we need. However, except Firefox, browsers of nowadays still don't support ECMAScript 6. Unfortunately, unlike ECMAScript 6, older versions of ECMAScript are really lacking things. As a result, work has been done to support some ECMAScript 6 points even in non-ecmascript 6 browsers.
 
-   In this documentation, differences between what is done when coding in pure Javascript and what should be done in AutomatonJS instead will be highlighted. This includes usage of some ECMAScript 6 subtleties. This documentation is not there to learn how to program. It is here to present the most important features of Javascript that should be known to program in AutomatonJS and to cover additions of AutomatonJS to Javascript and best practices to follow when programming in AutomatonJS.
+   In this documentation, differences between what is done when coding in pure Javascript and what should be done in AutomataJS instead will be highlighted. This includes usage of some ECMAScript 6 subtleties. This documentation is not there to learn how to program. It is here to present the most important features of Javascript that should be known to program in AutomataJS and to cover additions of AutomataJS to Javascript and best practices to follow when programming in AutomataJS.
 
    Let's go.
 ]
@@ -76,7 +76,7 @@
       // i and d are undefined in browser supporting let declarations
    >>>]
 
-   Although the semicolon can be optional, I strongly advise you to always write it unless you really know what you are doing. This is particularly true in AutomatonJS, which sometimes rely on semicolons to make the difference between a set literal and a block of instructions.
+   Although the semicolon can be optional, I strongly advise you to always write it unless you really know what you are doing. This is particularly true in AutomataJS, which sometimes rely on semicolons to make the difference between a set literal and a block of instructions.
 ]
 
 [ = Declaring variables
@@ -86,7 +86,7 @@
          var v = "Hello world!";
       >>>]
 
-      While this is possible is AutomatonJS, this is not advised. The [c let] keyword is preferred.
+      While this is possible is AutomataJS, this is not advised. The [c let] keyword is preferred.
    ]
    [ = The [c let] statement
       [code=javascript <<<
@@ -165,7 +165,7 @@
    ]
    
    [ = Typed declaration
-      This is a AutomatonJS specific way of defining variables and is the recommended way of doing things as it forces the developer not to change the type of variables.
+      This is a AutomataJS specific way of defining variables and is the recommended way of doing things as it forces the developer not to change the type of variables.
       
       The syntax is the following :
       
@@ -203,7 +203,7 @@
          >>>]
       ]
 
-      Typed declarations define variable in the block, not in the function, when let is natively supported by the browser. They behave exactly like the AutomatonJS [c let] keyword.
+      Typed declarations define variable in the block, not in the function, when let is natively supported by the browser. They behave exactly like the AutomataJS [c let] keyword.
 
       [ = Current limitations
          The limitations are the same as for [c let] : the scope of definition is wrong in browsers which don't support the [c let] keyword natively.
@@ -239,7 +239,7 @@
 [ = Control flow statements
    Control flow statements let you structure your programs. They allow the execution or the repetition of a set of instructions under certain conditions and change the order of execution of the code in a logical way.
 
-   In AutomatonJS, like in Javascript, conditions are surrounded by parenthesis and instructions can be grouped with curly brackets.
+   In AutomataJS, like in Javascript, conditions are surrounded by parenthesis and instructions can be grouped with curly brackets.
    Like in C, curly brackets can be omitted when a block of instructions is reduced to one instruction.
 
    [ = The [c if] / [c else] statement
@@ -319,7 +319,7 @@
       ]
       
       [ = The [c foreach] statement
-         This is an AutomatonJS-specific structure. It let you iterate over sets and lists in a natural way.
+         This is an AutomataJS-specific structure. It let you iterate over sets and lists in a natural way.
 
          [code=javascript <<<
             res : String;
@@ -418,7 +418,7 @@
             >>>]
             
             [ = Note
-               As comprehensive sets are still not supported by AutomatonJS, [c {1,...,10}] is not a real set literal. As a result, you cannot write things like:
+               As comprehensive sets are still not supported by AutomataJS, [c {1,...,10}] is not a real set literal. As a result, you cannot write things like:
                [code <<<
                   s : Set = {1,...,10}; // this should be possible in the future, but is still a syntax error for the moment.
                >>>]
@@ -471,7 +471,7 @@
       ]
 
       [ = The [c for...of] statement
-         The [c for...of] statement is a more complicated yet more flexible way to do what [c foreach] does. It is an ECMAScript 6 structure handled by AutomatonJS when browsers do not handle it themselves.
+         The [c for...of] statement is a more complicated yet more flexible way to do what [c foreach] does. It is an ECMAScript 6 structure handled by AutomataJS when browsers do not handle it themselves.
          The real difference between foreach and [c for...of] if that the iteration variable must be explicitly declared :
          [code=javascript <<<
             res : String;
@@ -585,10 +585,10 @@
 ]
 
 [ = Literals
-   In AutomatonJS, literals are the same as Javascript, plus sets.
+   In AutomataJS, literals are the same as Javascript, plus sets.
    Briefly, we have numbers, strings, objects, arrays, regular expressions and functions.
 
-   An important thing to notice is that AutomatonJS supports abbreviated Javascript 1.8 functions.
+   An important thing to notice is that AutomataJS supports abbreviated Javascript 1.8 functions.
    [ = Javascript literals
       [code=javascript <<<
          // strings
@@ -655,7 +655,7 @@
    ]
 
    [ = Set literals
-      AutomatonJS has built-in support for sets and has a dedicated a dedicated literal to represent it.
+      AutomataJS has built-in support for sets and has a dedicated a dedicated literal to represent it.
 
       A set literal starts with a open curly bracket ([c {]), ends with a close curly bracket ([c }]) and contains one or more values separated with commas.
 
@@ -690,9 +690,9 @@
 ]
 
 [ = Operators
-   AutomatonJS understands every Javascript operator and adds several operators on sets.
+   AutomataJS understands every Javascript operator and adds several operators on sets.
    
-   [p Important Note. | AutomatonJS changes the signification of the [c > == ] equality operator. See hereinafter.]
+   [p Important Note. | AutomataJS changes the signification of the [c > == ] equality operator. See hereinafter.]
 
    [ = JavaScript operators
 
@@ -742,7 +742,7 @@
          | [c a === b]  | [c true]  iff [c a] is exactly the same object than [c b]
          | [c a !== b]  | [c false] iff [c a] is exactly the same object than [c b]
 
-         In AutomatonJS, the meaning of the operators [c > ==] and [c > !=] has been changed. The meaning of equality operator is discussed hereinafter.
+         In AutomataJS, the meaning of the operators [c > ==] and [c > !=] has been changed. The meaning of equality operator is discussed hereinafter.
       ]
       
       [ = Boolean operators
@@ -790,9 +790,9 @@
           alert({1,2,3,4,5} === {1,2,3,4,5}); // Shows false, because two distinct objects are created.
        >>>]
 
-       This is an important concern in Javascript, as we need to be able to check the equality between objects, in particular sets. AutomatonJS, as a consequence, changes the meaning of the [c > ==] operator, to be able to check equality between to distincts objects.
+       This is an important concern in Javascript, as we need to be able to check the equality between objects, in particular sets. AutomataJS, as a consequence, changes the meaning of the [c > ==] operator, to be able to check equality between to distincts objects.
 
-       In AutomatonJS, we have:
+       In AutomataJS, we have:
        [code=javascript <<<
           alert({1,2,3,4,5} === {1,2,3,4,5}); // false, because two distinct objects are created.
 
@@ -807,7 +807,7 @@
    ]
 
    [ = Set operators
-      In addition to the modified [c ==] and [c !=] operators, AutomatonJS defines new operators. In the following table, [c A] and [c B] refer to two sets, or objects that can be turned into sets like objects or lists. [c e ] is any possible value.
+      In addition to the modified [c ==] and [c !=] operators, AutomataJS defines new operators. In the following table, [c A] and [c B] refer to two sets, or objects that can be turned into sets like objects or lists. [c e ] is any possible value.
       
       |= Expression | =Signification
       | [A  union  B]         | The union of A and B
@@ -843,7 +843,7 @@
 ]
 
 [ =. Conclusion
-   This document tries to remain complete on additions of and differences between AutomatonJS to / and Javascript. This is far from covering all the language. For more information, you might want to read things on Javascript keeping differences covered here in mind.
+   This document tries to remain complete on additions of and differences between AutomataJS to / and Javascript. This is far from covering all the language. For more information, you might want to read things on Javascript keeping differences covered here in mind.
 
    [ =. Ideas for the future
    - comprehensive sets like [c <<<{2k+1 | k in N}>>>] would be awesome.

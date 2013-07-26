@@ -1,6 +1,6 @@
 // TODO actually recognize syntax of TypeScript constructs
 
-CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
+CodeMirror.defineMode("automataJS", function(config, parserConfig) {
   var indentUnit = config.indentUnit;
   var statementIndent = parserConfig.statementIndent;
   var jsonMode = parserConfig.json;
@@ -483,7 +483,7 @@ CodeMirror.defineMode("automatonjs", function(config, parserConfig) {
 
 CodeMirror.defineMIME("text/javascript", "javascript");
 CodeMirror.defineMIME("text/ecmascript", "javascript");
-CodeMirror.defineMIME("text/x-automatonjs", "javascript");
+CodeMirror.defineMIME("text/x-automatajs", "javascript");
 CodeMirror.defineMIME("application/javascript", "javascript");
 CodeMirror.defineMIME("application/ecmascript", "javascript");
 CodeMirror.defineMIME("application/json", {name: "javascript", json: true});

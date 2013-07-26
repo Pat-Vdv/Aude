@@ -1,0 +1,1547 @@
+\documentclass{article}
+\usepackage{fontspec}
+\usepackage{soul}
+\usepackage{hyperref}
+\usepackage{ulem}
+\usepackage{moreverb}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{alltt}
+\usepackage{xunicode}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{wrapfig}
+\usepackage{fancyvrb}
+\usepackage{verbatimbox}
+\usepackage{amsfonts}
+\let\subsubsubsection\paragraph
+\let\subsubsubsubsection\subparagraph
+\lstset{breaklines=true, breakatwhitespace=true, captionpos=b, tabsize=3, showtabs=false, numbers=left, frame=single, firstnumber=1}
+\usepackage[english]{babel}\author{Raphaël Jakse (raphael dot jakse at gmail dot com)}\title{AutomatonJS — Programming Language for automata}
+\begin{document}
+\maketitle
+\tableofcontents
+\begin{sloppypar}
+\DefineShortVerb{\!}
+\SaveVerb{v1}!a + b!
+\SaveVerb{v2}!a!
+\SaveVerb{v3}!b!
+\SaveVerb{v4}!a - b!
+\SaveVerb{v5}!a!
+\SaveVerb{v6}!b!
+\SaveVerb{v7}!a / b!
+\SaveVerb{v8}!a!
+\SaveVerb{v9}!b!
+\SaveVerb{v10}!a * b!
+\SaveVerb{v11}!a!
+\SaveVerb{v12}!b!
+\SaveVerb{v13}!a % b!
+\SaveVerb{v14}!a!
+\SaveVerb{v15}!b!
+\SaveVerb{v16}!a!
+\SaveVerb{v17}!b!
+\SaveVerb{v18}!~a!
+\SaveVerb{v19}!a!
+\SaveVerb{v20}!a  & b!
+\SaveVerb{v21}!a!
+\SaveVerb{v22}!b!
+\SaveVerb{v23}!a | b!
+\SaveVerb{v24}!a!
+\SaveVerb{v25}!b!
+\SaveVerb{v26}!a ^ b!
+\SaveVerb{v27}!a!
+\SaveVerb{v28}!b!
+\SaveVerb{v29}! a  << n!
+\SaveVerb{v30}!a!
+\SaveVerb{v31}!n!
+\SaveVerb{v32}! a  >> n!
+\SaveVerb{v33}!a!
+\SaveVerb{v34}!n!
+\SaveVerb{v35}! a >>> n!
+\SaveVerb{v36}!a!
+\SaveVerb{v37}!n!
+\SaveVerb{v38}!a <  b!
+\SaveVerb{v39}!a!
+\SaveVerb{v40}!b!
+\SaveVerb{v41}!a <= b!
+\SaveVerb{v42}!a!
+\SaveVerb{v43}!b!
+\SaveVerb{v44}!a >  b!
+\SaveVerb{v45}!a!
+\SaveVerb{v46}!b!
+\SaveVerb{v47}!a === b!
+\SaveVerb{v48}!true!
+\SaveVerb{v49}!a!
+\SaveVerb{v50}!b!
+\UndefineShortVerb{\!}
+\DefineShortVerb{\"}
+\SaveVerb{v51}"a !== b"
+\UndefineShortVerb{\"}
+\DefineShortVerb{\!}
+\SaveVerb{v52}!false!
+\SaveVerb{v53}!a!
+\SaveVerb{v54}!b!
+\UndefineShortVerb{\!}
+\DefineShortVerb{\"}
+\SaveVerb{v55}"!a"
+\UndefineShortVerb{\"}
+\DefineShortVerb{\!}
+\SaveVerb{v56}!a!
+\SaveVerb{v57}!true!
+\SaveVerb{v58}!false!
+\SaveVerb{v59}!true!
+\SaveVerb{v60}! b!
+\SaveVerb{v61}!a!
+\SaveVerb{v62}!a!
+\SaveVerb{v63}!b!
+\SaveVerb{v64}!a!
+\SaveVerb{v65}!true!
+\SaveVerb{v66}!true!
+\SaveVerb{v67}!b!
+\SaveVerb{v68}!a!
+\SaveVerb{v69}!true!
+\SaveVerb{v70}!b!
+\SaveVerb{v71}!a && b!
+\SaveVerb{v72}!a!
+\SaveVerb{v73}!b!
+\SaveVerb{v74}!true!
+\SaveVerb{v75}!true!
+\SaveVerb{v76}!false!
+\SaveVerb{v77}!false!
+\SaveVerb{v78}!false!
+\SaveVerb{v79}!""!
+\SaveVerb{v80}!false!
+\SaveVerb{v81}!0!
+\SaveVerb{v82}!false!
+\SaveVerb{v83}!NaN!
+\SaveVerb{v84}!false!
+\SaveVerb{v85}!{}!
+\SaveVerb{v86}!true!
+\SaveVerb{v87}!true!
+\SaveVerb{v88}!true!
+\SaveVerb{v89}!true!
+\SaveVerb{v90}!true!
+\SaveVerb{v91}!true!
+\SaveVerb{v92}!A contains e!
+\SaveVerb{v93}!A    has   e!
+\SaveVerb{v94}!e belongsTo A!
+\SaveVerb{v95}!true!
+\SaveVerb{v96}!e!
+\SaveVerb{v97}!A!
+\SaveVerb{v98}!A union = B!
+\SaveVerb{v99}!A = A union B!
+\SaveVerb{v100}!A.unionInPlace(B);!
+\SaveVerb{v101}!A inter = B!
+\SaveVerb{v102}!A = A  inter  B!
+\SaveVerb{v103}!A.interInPlace(B);!
+\SaveVerb{v104}!A minus = B!
+\SaveVerb{v105}!A = A  minus  B!
+\SaveVerb{v106}!A.minusInPlace(B);!
+\UndefineShortVerb{\!}
+
+
+
+
+\section*{ Introduction}
+
+
+\paragraph{}
+AutomatonJS is a dedicated language. Its goal is easing the task of writing algorithms working on automata in a pedagogic and intuitive way. Of course, intuition is a rather personal element and two different persons can have different feelings on what they find intuitive or not, so trying to design an intuitive language that will please everybody might be a waste of time. Therefore, instead of just being intuitive, defining more precise directions to follow when designing the language should be a good start.
+
+   
+\paragraph{}
+So far, these directions were considered:
+    
+\begin{enumerate}
+	\item{ Do not reinvent everything. Instead, try to aggregate wonderful ideas to conceive a wonderful language. This has several advantage:
+\begin{enumerate}
+	\item{ With a good probability, what exists was already deeply though by other people we can probably trust, so the idea is well-tried, ready for usage. By using other people ideas when they exist give them credit on their work and save your time for completely new, unexplored ideas.}
+	\item{ If a way of doing things is already spread, people don't have to learn something new. While learning new things is great, be forced to learn a new programming language to do a specific task can make people give up the usage of the tool.}
+\end{enumerate}
+}
+	\item{ Close to the mathematics. Scientific students and scientists are in the target of the language and math is (should be, at least!) a familiar language through these people. Mathematical language is precise, clear and concise and algorithms on automaton are often described with mathematical notation.}
+	\item{ Be explicit. No weird symbols, no weird idioms. Unfortunately, mathematical symbols can be difficult to handle while programming. However, ASCII art to represent them is not desirable. The code should be readable for newcomers and gessing sense of expressions of the language should be easy and reliable. \lstinline!|_|! and \lstinline! /\! for the union and the intersection operators can be hard to understand. "union" and "inter" are more likely to be understood at the first glance.}
+\end{enumerate}
+
+\paragraph{}
+In "do not reinvent everything", we have "do not reinvent a new language". More precisely, AutomatonJS is not really a new language: choice to base AutomatonJS on a already existant language was made, with these advantages in mind:
+    
+\begin{itemize}
+	\item{ Real dedicated languages, by design, are limited. They have features their authors thought of and as time flies, successful dedicated languages tend to be generalist. Lets have a full-featured language which already has its community and its ecosystem.}
+	\item{ Less work for more. An already existent language already has well-tried tools like interpreters, (JIT-)compilers, debuggers, editors, etc. and these tools have been made powerful by years.}
+	\item{ If the community of the base language is already large, people will find documentation and help more easily and less people will have to learn a new language.}
+\end{itemize}
+
+\paragraph{}
+The choice of the base language was taken with these points in mind:
+    
+\begin{itemize}
+	\item{ relatively familiar syntax (close to C's) for most people}
+	\item{ Great community}
+	\item{ Great tools}
+	\item{ Web-compatible, that is to say, easy to run in a browser.}
+	\item{ Strong type handling, which is better for both pedagogic and debugging concerns.}
+\end{itemize}
+
+\paragraph{}
+Based of these points, a language comes rapidly in mind: Javascript. Javascript is the only one language to run in browser natively and present browsers competitions imply constant enhancement of the language and the tools running it (engines, interpreters, JIT compilers, debuggers), their speed included. Its C-like syntax is also a great point.
+
+   
+\paragraph{}
+In fact, pure Javascript in its ECMAScript 6 version (still to be released) is very close to what seems to be needed to play with automata comfortably. What is still to add to the language is an Automaton class, a decent set handling and a better type handling: that's what is AutomatonJS for. Learning AutomatonJS is learning pure Javascript plus the few additions of AutomatonJS to Javascript. The base language of AutomatonJS is Javascript in its \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode}{strict mode}\footnote{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions\_and\_function\_scope/Strict\_mode}.
+
+   
+\paragraph{}
+Given that, the goal is to stay very close to Javascript and to add just what we need. However, except Firefox, browsers of nowadays still don't support ECMAScript 6. Unfortunately, unlike ECMAScript 6, older versions of ECMAScript are really lacking things. As a result, work has been done to support some ECMAScript 6 points even in non-ecmascript 6 browsers.
+
+   
+\paragraph{}
+In this documentation, differences between what is done when coding in pure Javascript and what should be done in AutomatonJS instead will be highlighted. This includes usage of some ECMAScript 6 subtleties. This documentation is not there to learn how to program. It is here to present the most important features of Javascript that should be known to program in AutomatonJS and to cover additions of AutomatonJS to Javascript and best practices to follow when programming in AutomatonJS.
+
+   
+\paragraph{}
+Let's go.
+
+
+
+\newpage
+
+
+
+\section{ Statements in Javascript}
+
+
+\paragraph{}
+Statements, in Javascript, are instructions or expression ended by a semicolon, or control flow statements (which don't end with a semicolon). Empty statements are also allowed, so e.g. writing a semicolon right after an \lstinline!if! statement is valid.
+   
+   
+\paragraph{}
+The semicolon is often optional, so a end of line can replace entirely a semicolon. To see when the semicolon can be omitted, you can look at the \href{http://www.ecma-international.org/ecma-262/5.1/#sec-7.9}{Section 7.9 of the ECMAScript 5.1 language specification}\footnote{http://www.ecma-international.org/ecma-262/5.1/\#sec-7.9}.
+
+   
+\paragraph{}
+Statements can be grouped at any time with curly brackets. Thus, this is valid :
+   \lstset{language={}}
+{\begin{lstlisting}
+hello();
+
+{
+   action(1);
+   action(2);
+   action(3);
+}
+
+hello(2);
+\end{lstlisting}
+}
+
+
+   
+\paragraph{}
+Curly brackets introducing a new scope, in browsers that support the \lstinline!let! keyword natively, these two following codes are equivalent:
+
+   \lstset{language={}}
+{\begin{lstlisting}
+let(i=2, d="hello") {
+   console.log(d);
+   ++i;
+}
+// i and d are undefined everywhere
+\end{lstlisting}
+}
+
+
+   \lstset{language={}}
+{\begin{lstlisting}
+{
+   let i=2, d="hello";
+   console.log(d);
+   ++i;
+}
+// i and d are undefined in browser supporting let declarations
+\end{lstlisting}
+}
+
+
+   
+\paragraph{}
+Although the semicolon can be optional, I strongly advise you to always write it unless you really know what you are doing. This is particularly true in AutomatonJS, which sometimes rely on semicolons to make the difference between a set literal and a block of instructions.
+
+
+
+
+\section{ Declaring variables}
+
+
+
+\subsection{ The var statement}
+
+
+\paragraph{}
+In Javascript, declaring variables is done with the \lstinline!var! keyword :
+      \lstset{language={}}
+{\begin{lstlisting}
+var v = "Hello world!";
+\end{lstlisting}
+}
+
+
+      
+\paragraph{}
+While this is possible is AutomatonJS, this is not advised. The \lstinline!let! keyword is preferred.
+   
+   
+
+\subsection{ The let statement}
+
+\lstset{language={}}
+{\begin{lstlisting}
+let v = "Hello world!";
+\end{lstlisting}
+}
+
+
+      
+\paragraph{}
+The \lstinline!let! keyword, when natively supported by the browser, acts differently than \lstinline!var!. The \lstinline!var! keyword define the variable at the function level :
+      
+      \lstset{language={}}
+{\begin{lstlisting}
+let enstein = "a scientist";
+if(enstein) {
+   var firstName = "albert"
+}
+else {
+   var firstName = "roger";
+}
+alert(firstName); // shows "albert".
+\end{lstlisting}
+}
+
+ 
+      
+\paragraph{}
+On the contrary, \lstinline!let! works at block-level:
+      \lstset{language={}}
+{\begin{lstlisting}
+let enstein = "a scientist";
+if(enstein) {
+   let firstName = "albert";
+}
+else {
+   let firstName = "roger";
+}
+alert(firstName); // ERROR, firstName is not defined.
+\end{lstlisting}
+}
+
+
+      
+
+\subsubsection{ Current limitation}
+
+
+\paragraph{}
+In browsers that not support \lstinline!let! natively, \lstinline!let! acts like \lstinline!var!. That is to say, the previous code shows "albert" instead of issuing an error. As of Jully 2013, Firefox is the only browser to show the right behavior.
+      
+   
+   
+   
+
+\subsection{ The let expression}
+
+
+\paragraph{}
+The \lstinline!let! expression allows you to declare a variable inside a block.
+      \lstset{language={}}
+{\begin{lstlisting}
+let f = 5;
+
+let (i=2, d=3) {
+   alert(i * d * f); // shows 30
+   d = 0;
+   f = 9;
+   alert(d); // shows 0;
+}
+// f is still defined and is equal to 9
+// but i and d are not.
+\end{lstlisting}
+}
+
+
+      
+
+\subsubsection{ Current limitation}
+
+
+\paragraph{}
+In browsers that don't support the let expression natively, you cannot define things inside the \lstinline!let! expression and have it defined outside when going out the let block :
+         \lstset{language={}}
+{\begin{lstlisting}
+let f = 5;
+
+let (i=2, d=3) {
+  var g = 2;
+}
+
+alert(g); // g is not defined in Chromium, but is equal to 2 in Firefox.
+\end{lstlisting}
+}
+
+
+         
+\paragraph{}
+Anyway, don't use the \lstinline!var! keyword. Use \lstinline!let! and don't define variable inside a block to have it define outside. Instead, write:
+
+         \lstset{language={}}
+{\begin{lstlisting}
+let f = 5;
+let g; // that where g should be defined anyway
+let (i=2, d=3) {
+  g = 2;
+}
+
+alert(g); // this shows 2 everywhere.
+\end{lstlisting}
+}
+
+      
+   
+   
+   
+
+\subsection{ Typed declaration}
+
+
+\paragraph{}
+This is a AutomatonJS specific way of defining variables and is the recommended way of doing things as it forces the developer not to change the type of variables.
+      
+      
+\paragraph{}
+The syntax is the following :
+      
+      \lstset{language={}}
+{\begin{lstlisting}
+variable_name : Type;
+variable_name : Type = initial_value;
+variable_name : Set of Type;
+\end{lstlisting}
+}
+
+      
+      
+\paragraph{}
+Where Type is one of these case-insensitive keywords (keyword inside the same item list are equivalent):
+       
+\begin{itemize}
+	\item{ String}
+	\item{ Integer or int}
+	\item{ Number or float}
+	\item{ Boolean or bool}
+	\item{ Set}
+	\item{ Automaton}
+	\item{ Object (native Javascript Object)}
+	\item{ List, Table, Array}
+	\item{ Function}
+\end{itemize}
+
+\paragraph{}
+Additionally, Type can be any defined Javascript class. In this case, Type is case-sensitive.
+
+      
+
+\subsubsection{ Examples :}
+
+\lstset{language={}}
+{\begin{lstlisting}
+i : Integer;        // i is an integer initialized to 0;
+j : Integer = 2;    // j is an integer initialized to 2;
+d : Number;         // d is a number initialized to 0;
+l : List;           // l is a Javascript native Array.
+s : String;         // s is an empty string
+A : Automaton;      // A is an Automaton
+B : Set;            // B is a set which can contain anything
+C : Set of Integer; // C is a Set restricted to integers.
+D : Set of Set;     // D is a Set of Set            
+\end{lstlisting}
+}
+
+      
+
+      
+\paragraph{}
+Typed declarations define variable in the block, not in the function, when let is natively supported by the browser. They behave exactly like the AutomatonJS \lstinline!let! keyword.
+
+      
+
+\subsubsection{ Current limitations}
+
+
+\paragraph{}
+The limitations are the same as for \lstinline!let! : the scope of definition is wrong in browsers which don't support the \lstinline!let! keyword natively.
+
+         
+\paragraph{}
+Moreover, constraint on sets of sets can't be fully writen with a typed declaration:
+         \lstset{language={}}
+{\begin{lstlisting}
+s : Set of Set of Integer; // this won't work
+\end{lstlisting}
+}
+
+      
+   
+
+   
+
+\subsection{ The const statement}
+
+
+\paragraph{}
+The \lstinline!const! statement lets you define constants. It does exactly the same as the \lstinline!let! keyword, but forbids the modification of the defined variable.
+      
+      \lstset{language={}}
+{\begin{lstlisting}
+const bestYear = 1993;
+
+bestYear = 1992; // TypeError: s is read-only
+\end{lstlisting}
+}
+
+      
+      
+
+\subsubsection{ Current limitations}
+
+
+\paragraph{}
+\lstinline!const! defines constants at function level, like \lstinline!var!, where it should define them at block level, like \lstinline!let!:
+         \lstset{language={}}
+{\begin{lstlisting}
+if(true) {
+  const g = 2;
+}
+return g; // returns 2 instead of raising an error about g being undefined.
+\end{lstlisting}
+}
+
+      
+   
+
+
+
+
+\section{ Control flow statements}
+
+
+\paragraph{}
+Control flow statements let you structure your programs. They allow the execution or the repetition of a set of instructions under certain conditions and change the order of execution of the code in a logical way.
+
+   
+\paragraph{}
+In AutomatonJS, like in Javascript, conditions are surrounded by parenthesis and instructions can be grouped with curly brackets.
+   Like in C, curly brackets can be omitted when a block of instructions is reduced to one instruction.
+
+   
+
+\subsection{ The if / else statement}
+
+
+\paragraph{}
+The \lstinline!if! statement look like the following:
+      \lstset{language={}}
+{\begin{lstlisting}
+if(condition) {
+   // instructions to execute if condition is verified
+}
+\end{lstlisting}
+}
+
+      With the \lstinline!else! part:
+      \lstset{language={}}
+{\begin{lstlisting}
+if(condition) {
+   // instructions to execute  if condition is verified
+}
+else {
+   // instructions to execute  if condition is not verified
+}
+\end{lstlisting}
+}
+
+
+      
+\paragraph{}
+There is no \lstinline!elseif! keyword. However, Javascript's syntax let you write things like:
+      \lstset{language={}}
+{\begin{lstlisting}
+if(whereToStudy === ujf) {
+   res = "right decision";
+}
+else if(holidays) {
+   res = "rest a little";
+}
+else if(student) {
+   res = "stages are great";
+}
+else {
+   res = "unhandled case";
+}
+\end{lstlisting}
+}
+
+   
+   
+   
+
+\subsection{ Loop statements}
+
+
+
+\subsubsection{ The while statement}
+
+
+\paragraph{}
+The \lstinline!while! statement looks like the following:
+         \lstset{language={}}
+{\begin{lstlisting}
+while(condition) {
+   // instuctions to execute while condition is true
+}
+\end{lstlisting}
+}
+
+      
+      
+      
+
+\subsubsection{ The do...while statement}
+
+
+\paragraph{}
+The \lstinline!do...while! statement looks like the following:
+         \lstset{language={}}
+{\begin{lstlisting}
+do {
+   // instructions executed one time, an then re-executed until condition is false
+}
+while(condition); // notice the semicolon here
+\end{lstlisting}
+}
+
+      
+      
+      
+
+\subsubsection{ The for statement}
+
+
+\paragraph{}
+The \lstinline!for! statement looks like this:
+         \lstset{language={}}
+{\begin{lstlisting}
+for(initialisation ; condition ; iterationStatement) {
+   // instruction to be executed while condition is true
+   // iterationStatement after each iteration
+   // initialisation is executed before entering the loop.
+   // the scope of the initialisation is that of the body of the loop
+}
+\end{lstlisting}
+}
+
+         
+         
+\paragraph{}
+Example:
+         \lstset{language={}}
+{\begin{lstlisting}
+let res = "";
+for(let line="I won't write crappy code anymore", i=0, count=100; i < count; ++i) {
+   res += line + "\n";
+}
+// here: line, i and count are not defined
+return res;
+\end{lstlisting}
+}
+
+      
+      
+      
+
+\subsubsection{ The foreach statement}
+
+
+\paragraph{}
+This is an AutomatonJS-specific structure. It let you iterate over sets and lists in a natural way.
+
+         \lstset{language={}}
+{\begin{lstlisting}
+res : String;
+foreach(e in [2,4,6,8,10]) {
+   res += e.toString() + ' ';
+}
+// here, e is undefined
+alert(res); // shows "2 4 6 8 10 "
+\end{lstlisting}
+}
+
+         
+         \lstset{language={}}
+{\begin{lstlisting}
+res : String = "H-Ways to greet somebody in English : ";
+foreach(e in {"hey", "hello", "hi"}) {
+   res += e + ' ';
+}
+return res; // "H-Ways to greet somebody in English : hey hi hello "
+\end{lstlisting}
+}
+
+
+         
+
+\subsubsubsection{ Warning: do not modify the element of iteration\\}
+\paragraph{}
+Do not do that, it will break things or result in unexpected behaviors:
+            \lstset{language={}}
+{\begin{lstlisting}
+s : Set of Set = { [1,2] , [1, 4], [6, 5] };
+foreach(e in s) {
+   e.push(3);
+}
+return [s.toString(), s contains [1,2,3]];
+\end{lstlisting}
+}
+
+
+            
+\paragraph{}
+This code returns a couple : the string representation of the set and a boolean indicating whether \lstinline! [1,2,3] ! belongs to the set.
+            
+            
+\paragraph{}
+\lstinline! [1,2,3] ! is present in the string representation of the set (and is indeed present in the set), but cannot be found.
+
+            \lstset{language={}}
+{\begin{lstlisting}
+s : Set of Set = { [1,2] , [1, 4], [6, 5] };
+foreach(e in s) {
+   e = [e[0], 0];
+}
+return [s.toString(), s contains [1,0]];
+\end{lstlisting}
+}
+
+
+            
+\paragraph{}
+Here, the set remains unchanged, as e was a {\itshape reference} to the successive elements of s and the assignation operator scratches this references instead of modifying the actual element of the set. This is also true for simple elements as numbers, strings, regular expressions, ... modifying them by an assignation breaks the reference and do not affect the parent.
+
+            
+\paragraph{}
+This works:
+            \lstset{language={}}
+{\begin{lstlisting}
+s : Set of Set = { {1,2} , {1, 4}, {6, 5} };
+foreach(e in s) {
+   e.add("hello");
+}
+return [s.toString(), s contains {1, 2, "hello"}];
+\end{lstlisting}
+}
+
+
+            
+\paragraph{}
+Because sets inside sets tell their parents about their modifications. But be very careful with this, as habits of modifying the element of iteration can rapidly be taken, even when this hurts.
+
+            
+\paragraph{}
+Please, don't modify the set or the list you are iterating on during the loop, this results in undefined behaviors, as in many languages:
+
+            \lstset{language={}}
+{\begin{lstlisting}
+s : List =  [1,2,3,4,5];
+r : Set;
+
+foreach(e in l) {
+  l.push(e+10);
+  r.add(e);
+} // infinite loop
+return r;
+\end{lstlisting}
+}
+
+            
+\paragraph{}
+Why should this loop be infinite...
+
+            \lstset{language={}}
+{\begin{lstlisting}
+s : Set =  {1,2,3,4,5};
+r : Set;
+
+foreach(e in s) {
+  s.add(e+10);
+  r.add(e);
+}
+return r; // returns {1,2,3,4,5}
+\end{lstlisting}
+}
+
+            
+\paragraph{}
+...whereas this one should end ?
+         
+         
+         
+
+\subsubsubsection{ A mathematical way of writing some for loops\\}
+\paragraph{}
+You can use \lstinline!foreach! to write some \lstinline!for! loops with a syntax closer to mathematics :
+            
+            \lstset{language={}}
+{\begin{lstlisting}
+for(let i=1; i <= 10; ++i) {
+   console.log(i);
+}
+\end{lstlisting}
+}
+
+
+            
+\paragraph{}
+is exactly equivalent to, and is the generated code for:
+
+            \lstset{language={}}
+{\begin{lstlisting}
+foreach(i in {1,...,10}) {
+   console.log(i);
+}
+\end{lstlisting}
+}
+
+            
+            
+
+\subsubsubsubsection{ Note\\}
+\paragraph{}
+As comprehensive sets are still not supported by AutomatonJS, \lstinline!{1,...,10}! is not a real set literal. As a result, you cannot write things like:
+               \lstset{language={}}
+{\begin{lstlisting}
+s : Set = {1,...,10}; // this should be possible in the future, but is still a syntax error for the moment.
+\end{lstlisting}
+}
+
+               You can only write \lstinline!{a,...,b}! sets in \lstinline!foreach! loops, with \lstinline!a! and \lstinline!b! being any number or integer variables.
+            
+         
+         
+         
+
+\subsubsubsection{ Note\\}
+\paragraph{}
+If you prefer using \lstinline!of! instead of \lstinline!in!, is  the \lstinline!foreach! construct it's up to you.
+         
+         
+         
+
+\subsubsubsection{ Current limitation\\}
+\paragraph{}
+Breaking to a specified label doesn't work in browser not natively supporting the \lstinline!for...of! structure. simple \lstinline!break! will however work as expected.
+         
+      
+      
+      
+
+\subsubsection{ The for...in statement}
+
+
+\paragraph{}
+The \lstinline!for...in! statement is a Javascript construction to iterate over indexes of lists or enumerable properties of objects.
+         \lstset{language={}}
+{\begin{lstlisting}
+res : String;
+l   : List =  [2,4,6,8,10];
+
+for(let i in l) {
+   res += i + ': ' + l[i] + '\n';
+}
+return res;
+/* returns :
+   "0: 2
+    1: 4
+    2: 6
+    3: 8
+    4: 10"
+*/
+\end{lstlisting}
+}
+
+         
+
+\subsubsubsection{ Note\\}
+\begin{itemize}
+	\item{ \lstinline!for...in! has not much sense on sets, as their elements have no indexes. Use \lstinline!foreach! or \lstinline!for...of! instead.}
+	\item{                if you need the index corresponding to the last iteration, declare the iteration variable before the loop :
+               
+               \lstset{language={}}
+{\begin{lstlisting}
+l   : List =  [2,4,6,8,10];
+i   : Integer;
+for(i in l) {
+   // do something here
+}
+return i; // returns 4
+\end{lstlisting}
+}
+
+            }
+\end{itemize}
+
+      
+
+      
+
+\subsubsection{ The for...of statement}
+
+
+\paragraph{}
+The \lstinline!for...of! statement is a more complicated yet more flexible way to do what \lstinline!foreach! does. It is an ECMAScript 6 structure handled by AutomatonJS when browsers do not handle it themselves.
+         The real difference between foreach and \lstinline!for...of! if that the iteration variable must be explicitly declared :
+         \lstset{language={}}
+{\begin{lstlisting}
+res : String;
+
+for(let i of [2,4,6,8]) {
+   res += i + ' ';
+}
+return res;
+\end{lstlisting}
+}
+
+
+         
+\paragraph{}
+If you need to know what was the last iterated element in the loop, \lstinline!foreach! does not really help you. On the contrary, \lstinline!for...of!, while probably less intuitive, let you do this in an elegant way:
+
+         \lstset{language={}}
+{\begin{lstlisting}
+res : String;
+
+i : integer;
+for(i of [2,4,6,8]) {
+   res += i + ' ';
+}
+return i; // returns 8
+\end{lstlisting}
+}
+
+
+         
+\paragraph{}
+If you want to stay compatible with pure ECMAScript, use \lstinline!for..of! instead of \lstinline!foreach!.
+
+         
+
+\subsubsubsection{ Current limitation\\}
+\paragraph{}
+Breaking to a specified label doesn't work in browser not natively supporting the \lstinline!for...of! structure. simple \lstinline!break! will however work as expected.
+         
+
+      
+   
+   
+
+\subsection{ The break statement}
+
+
+\paragraph{}
+\lstinline!break! lets you immediately get out of a loop even if the condition is true / if there are still instructions to execute:
+      
+      \lstset{language={}}
+{\begin{lstlisting}
+res : String;
+foreach(i in [1,2,3,4,5]) {
+   if(i === 3) {
+      break;
+   }
+}
+alert('done'); // shows 'done'
+return res; // returns "1 2 "
+\end{lstlisting}
+}
+
+   
+   
+   
+
+\subsection{ The continue statement}
+
+
+\paragraph{}
+\lstinline!continue! lets you jump to the next iteration, or get out of the current loop if no iterations remain, without executing the rest of the current iteration's instructions:
+
+      \lstset{language={}}
+{\begin{lstlisting}
+res : String;
+foreach(i in [1,2,3,4,5]) {
+   if(i === 3) {
+      continue;
+   }
+   res += i + ' ';
+}
+return res; // returns "1 2 4 5 ", note the missing 3.
+\end{lstlisting}
+}
+
+   
+   
+   
+
+\subsection{ The return statement}
+
+
+\paragraph{}
+\lstinline!return! lets you leave the current function, or program, leaving a value at the same time. You can return everywhere in your program or your function, even in a loop.
+      
+      \lstset{language={}}
+{\begin{lstlisting}
+function hello() {
+   while(true) {
+      return "world";
+   }
+}
+
+return "hello " + hello() + '.'; // returns "hello world."
+\end{lstlisting}
+}
+
+   
+
+
+
+
+\section{ function statements}
+
+
+\paragraph{}
+Functions are fundamental to write and structure good non trivial programs. In Javascript, you can define functions at anytime (e.g. functions can be nested and can be defined in loops or if-else statements). They can take arguments and can call themselves.
+   
+   
+\paragraph{}
+Here is an implementation of the factorial:
+   \lstset{language={}}
+{\begin{lstlisting}
+function fact(n) {
+  if(n < 2) {
+    return 1;
+  }
+  return n * fact(n-1);
+}
+
+return fact(6); // calling fact with 6. returns 720.
+\end{lstlisting}
+}
+
+
+   
+\paragraph{}
+If a function takes more than one arguments, they are separated with commas.
+
+   \lstset{language={}}
+{\begin{lstlisting}
+function sameParity(a,b) {
+  return a % 2 === b % 2;
+}
+
+return sameParity(6, 2); // returns true.
+\end{lstlisting}
+}
+
+
+   
+\paragraph{}
+Functions have access to the variable of the scope in which they were defined:
+   
+   \lstset{language={}}
+{\begin{lstlisting}
+women : Set = {"Marie Curie", "Sophie Germain", "Rita Levi"};
+function isAWoman(p) {
+  return women contains p;
+}
+
+return isAWoman("Marie Curie"); // returns true.
+\end{lstlisting}
+}
+
+
+
+
+
+\section{ Literals}
+
+
+\paragraph{}
+In AutomatonJS, literals are the same as Javascript, plus sets.
+   Briefly, we have numbers, strings, objects, arrays, regular expressions and functions.
+
+   
+\paragraph{}
+An important thing to notice is that AutomatonJS supports abbreviated Javascript 1.8 functions.
+   
+
+\subsection{ Javascript literals}
+
+\lstset{language={}}
+{\begin{lstlisting}
+// strings
+   let str1 = "I'm a string";
+   let str2 = 'I\'m another string';
+   let str3 = 'I end with a new line and contain a \u0253 special character\n';
+   let character = str3[2]; // character equals "e" and is also a string
+
+// numbers
+   let i = 0; // zarro
+   let answer = 14.5; // floating point
+   let color  = 0xFF; // hexa
+   let speedOfLight  = 3e10; // 300000000
+   let notANumber = NaN;
+   let inf = Infinity;
+   let negInf = -Infinity;
+
+// objects
+   let o = {}; // an empty object
+   let idCard = {
+      firstName: "Arthur",
+      lastName:  "Dent",
+      age:32
+   };
+   
+   idCard.eyeColors = 'blue';
+
+   let stillAnObject = null;
+   
+   alert(typeof stillAnObject); // shows "object"
+// arrays
+   let a = []; // empy arrays
+   let primeNumbers = [2,3,5,7,11,13];
+   primeNumbers.push(17);
+   let secondValue = primeNumbers[2];
+
+// regular expressions
+   let r = /(?:http|ftp)s?:\/\/www\.[a-zA-Z]+[a-zA-Z0-9\.]*\/[\s\S]+/g;
+
+/* functions */
+   // classic function
+
+      let f = function(x) {
+         return 2 * x;
+      };
+
+      alert(f(2)); // 4
+
+   // abbreviated 1-argument function
+   
+      let square = x => x*x;
+
+      alert(square(10)); // 100
+   
+   let quadraticValue = (a,b,c,x) => a*x*x + b*x + c;
+   alert(quadraticValue(2,3,4,5)); // 69
+   
+   let add1 = function(x) x+1;
+   
+   alert(add1(2)); // 3
+\end{lstlisting}
+}
+
+      
+\paragraph{}
+For more information about Javascript literals, you can look at \href{MDN's%20Values+%20variables+%20and%20literals}{MDN's Values, variables, and literals}\footnote{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,\_variables,\_and\_literals} or the ECMAScript documentation.
+      For regular expressions, you can refer to \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular\_Expressions}{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular\_Expressions}\footnote{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular\_Expressions}.
+   
+
+   
+
+\subsection{ Set literals}
+
+
+\paragraph{}
+AutomatonJS has built-in support for sets and has a dedicated a dedicated literal to represent it.
+
+      
+\paragraph{}
+A set literal starts with a open curly bracket (\lstinline!{!), ends with a close curly bracket (\lstinline!}!) and contains one or more values separated with commas.
+
+      
+\paragraph{}
+We could have represented the empty set by something like \lstinline!{}! but it would have been ambiguous with empty Javascript objects. Instead, the \lstinline!emptySet! keyword represent an empty set.
+
+      
+\paragraph{}
+Examples:
+
+      \lstset{language={}}
+{\begin{lstlisting}
+let firstPrimeNumbers = {2,3,5,7};
+alert(firstPrimeNumbers contains 3); // true
+
+let e = emptySet;
+alert(e.card()); // 0
+
+typingEvenEmptySetIsMuchBetter : Set;
+
+IfYouKnowSetOfWhat : Set of Integer;
+
+meals : Set of String = {"breakfast", "lunch", "dinner"};
+
+anything : Set = {14, 38.5, "green"};
+
+singleton = {1};
+
+thisIsNotASet = {}; // this is an object.
+
+// Typed declarations transform objects and lists into sets
+ThisIsASet : Set = {};
+AnotherSet : Set = [1,2,3,4];
+\end{lstlisting}
+}
+
+   
+
+
+
+
+\section{ Operators}
+
+
+\paragraph{}
+AutomatonJS understands every Javascript operator and adds several operators on sets.
+   
+   \paragraph{Important Note. } AutomatonJS changes the signification of the \lstinline! == ! equality operator. See hereinafter.
+
+   
+
+\subsection{ JavaScript operators}
+
+
+
+\subsubsection{ Arithmetic operators    }
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression  } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v1}     &  The sum of \UseVerb{v2} and \UseVerb{v3}\tabularnewline
+\hline
+ \UseVerb{v4}     &  The difference of \UseVerb{v5} by \UseVerb{v6}\tabularnewline
+\hline
+ \UseVerb{v7}     &  The division of \UseVerb{v8} by \UseVerb{v9}\tabularnewline
+\hline
+ \UseVerb{v10}     &  The multiplication of \UseVerb{v11} and \UseVerb{v12}\tabularnewline
+\hline
+ \UseVerb{v13}     &  \UseVerb{v14} modulo \UseVerb{v15} (the reminder of the integer division of \UseVerb{v16} by \UseVerb{v17})\tabularnewline
+\hline
+\end{tabularx}
+      
+
+      
+
+\subsubsection{ Bitwise operators}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression    } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v18}         &  NOT \UseVerb{v19}\tabularnewline
+\hline
+ \UseVerb{v20}      &  \UseVerb{v21} AND \UseVerb{v22}\tabularnewline
+\hline
+ \UseVerb{v23}      &  \UseVerb{v24} OR  \UseVerb{v25}\tabularnewline
+\hline
+ \UseVerb{v26}       &  \UseVerb{v27} XOR \UseVerb{v28}\tabularnewline
+\hline
+ \UseVerb{v29}   &  Left shift. Shifts \UseVerb{v30} in binary representation \UseVerb{v31} (< 32) bits to the left, shifting in zeros from the right.\tabularnewline
+\hline
+ \UseVerb{v32}   &  Right shift. Shifts \UseVerb{v33} in binary representation \UseVerb{v34} (< 32) bits to the left, shifting in zeros from the right.\tabularnewline
+\hline
+ \UseVerb{v35}   &  Shifts \UseVerb{v36} in binary representation \UseVerb{v37} (< 32) bits to the right, discarding bits shifted off, and shifting in zeros from the left.\tabularnewline
+\hline
+\end{tabularx}
+
+         
+\paragraph{}
+For more information about bitwise operators, you might want to read the Bitwise Operators page of MDN where the last three lines of this table come from: (\href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise\_Operators}{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise\_Operators}).
+      
+
+      
+
+\subsubsection{ Assigning counterparts of these operators}
+
+
+\paragraph{}
+Let \lstinline!op! be one of the operators hereinbefore. \lstinline!a op= b! means \lstinline!a = a op b!.
+
+         
+\paragraph{}
+Example:
+
+            \lstset{language={}}
+{\begin{lstlisting}
+a : integer = 14;
+a += 3;
+alert(a); // shows 17
+\end{lstlisting}
+}
+
+
+         
+\paragraph{}
+Moreover, if a is a number,
+         
+\begin{itemize}
+	\item{ \lstinline!++a! increments \lstinline!a! by 1 and returns the new value of \lstinline!a!;}
+	\item{ \lstinline!a++! increments \lstinline!a! by 1 and returns the old value of \lstinline!a!.}
+\end{itemize}
+
+
+      
+
+\subsubsection{ Comparison operators}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression  } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v38}    &  true iff \UseVerb{v39} greater than and not equal to \UseVerb{v40}\tabularnewline
+\hline
+ \UseVerb{v41}    &  true iff \UseVerb{v42} greater than or equal to \UseVerb{v43}\tabularnewline
+\hline
+ \UseVerb{v44}    &  true iff \UseVerb{v45} lower than and not equal to \UseVerb{v46}\tabularnewline
+\hline
+ \UseVerb{v47}   &  \UseVerb{v48}  iff \UseVerb{v49} is exactly the same object than \UseVerb{v50}\tabularnewline
+\hline
+ \UseVerb{v51}   &  \UseVerb{v52} iff \UseVerb{v53} is exactly the same object than \UseVerb{v54}\tabularnewline
+\hline
+\end{tabularx}
+
+         
+\paragraph{}
+In AutomatonJS, the meaning of the operators \lstinline! ==! and \lstinline" !=" has been changed. The meaning of equality operator is discussed hereinafter.
+      
+      
+      
+
+\subsubsection{ Boolean operators}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression  } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v55}      &  if the boolean evaluation of \UseVerb{v56} is \UseVerb{v57}, then \UseVerb{v58}, otherwise \UseVerb{v59}.\tabularnewline
+\hline
+ \UseVerb{v60}  &  if the boolean evaluation of \UseVerb{v61} is true, then \UseVerb{v62}, otherwise \UseVerb{v63}\footnote{This different in C, where the meaning of the operator is the following: if the boolean evaluation of \UseVerb{v64} is \UseVerb{v65}, then \UseVerb{v66}, otherwise the boolean expression of \UseVerb{v67}.}. This operator is lazy, that is to say if \UseVerb{v68} evaluates to \UseVerb{v69}, \UseVerb{v70} is not evaluated.\tabularnewline
+\hline
+ \UseVerb{v71}  &  if the boolean evaluations of \UseVerb{v72} and \UseVerb{v73} are both \UseVerb{v74}, then \UseVerb{v75}, otherwise \UseVerb{v76}.\tabularnewline
+\hline
+\end{tabularx}
+         
+         
+
+\subsubsubsection{ Which expressions evaluates to true / false ?\\}\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression               } & {\bfseries  Boolean evaluation}\tabularnewline
+\hline
+ \UseVerb{v77}                  &  \UseVerb{v78}\tabularnewline
+\hline
+ \UseVerb{v79}                     &  \UseVerb{v80}\tabularnewline
+\hline
+ \UseVerb{v81}                      &  \UseVerb{v82}\tabularnewline
+\hline
+ \UseVerb{v83}                    &  \UseVerb{v84}\tabularnewline
+\hline
+ \UseVerb{v85}                     &  \UseVerb{v86}\tabularnewline
+\hline
+ Any non empty string       &  \UseVerb{v87}\tabularnewline
+\hline
+ Any number not equal to 0  &  \UseVerb{v88}\tabularnewline
+\hline
+ Any set, even empty        &  \UseVerb{v89}\tabularnewline
+\hline
+ Infinity, -Infinity        &  \UseVerb{v90}\tabularnewline
+\hline
+ Any other object           &  \UseVerb{v91}\tabularnewline
+\hline
+\end{tabularx}
+         
+      
+   
+
+   
+
+\subsection{ Meaning of the equality operators}
+
+
+\paragraph{}
+In Javascript, there are to equality operator: \lstinline! ==! and \lstinline! ===! (and their negative variant, \lstinline" !=" and \lstinline" !==").
+
+      
+\paragraph{}
+Both operators act the same way, except for comparisons between string and numbers. Let \lstinline!a! be a string and \lstinline!b! a number.
+       
+\begin{itemize}
+	\item{ \lstinline! a === b! and \lstinline! b === a! both evaluate to \lstinline!false!, for any \lstinline!a! and \lstinline!b!.}
+	\item{ \lstinline! a == b! and \lstinline! b == a!   evaluate to true if the string representation of \lstinline!b! is \lstinline!a!.}
+\end{itemize}
+
+\paragraph{}
+For the other cases, these operators are equivalent:
+       
+\begin{itemize}
+	\item{ if \lstinline!a! and \lstinline!b! are the same string, \lstinline!a == b!}
+	\item{ if \lstinline!a! and \lstinline!b! are the same number, \lstinline!a == b!}
+	\item{ if \lstinline!a! and \lstinline!b! are the same regular expression, \lstinline!a == b!.}
+	\item{ \lstinline!null  == null!}
+	\item{ \lstinline!true  == true!}
+	\item{ \lstinline!false == false!}
+	\item{ \lstinline"NaN   != NaN"}
+	\item{ if \lstinline!a! and \lstinline!b! {\bfseries point} to the same object, \lstinline!a == b!.}
+\end{itemize}
+
+\paragraph{}
+However, if \lstinline!a! and \lstinline!b! are point to distinct objects, \lstinline"a !== b" even if \lstinline!a! and \lstinline!b! are equivalent. For example:
+       \lstset{language={}}
+{\begin{lstlisting}
+alert({1,2,3,4,5} === {1,2,3,4,5}); // Shows false, because two distinct objects are created.
+\end{lstlisting}
+}
+
+
+       
+\paragraph{}
+This is an important concern in Javascript, as we need to be able to check the equality between objects, in particular sets. AutomatonJS, as a consequence, changes the meaning of the \lstinline! ==! operator, to be able to check equality between to distincts objects.
+
+       
+\paragraph{}
+In AutomatonJS, we have:
+       \lstset{language={}}
+{\begin{lstlisting}
+alert({1,2,3,4,5} === {1,2,3,4,5}); // false, because two distinct objects are created.
+
+alert({1,2,3,4,5} == {1,2,3,4,5}); // true, like one would expect.
+
+alert(new Objet == new Object); // true.
+\end{lstlisting}
+}
+
+
+       
+\paragraph{}
+Whereas \lstinline"new Objet != new Object" in pure Javascript.
+
+       \paragraph{Note. } The \lstinline! ===! and \lstinline" !==" operators remain unchanged.
+   
+
+   
+
+\subsection{ Set operators}
+
+
+\paragraph{}
+In addition to the modified \lstinline!==! and \lstinline"!=" operators, AutomatonJS defines new operators. In the following table, \lstinline!A! and \lstinline!B! refer to two sets, or objects that can be turned into sets like objects or lists. \lstinline!e ! is any possible value.
+      
+      \noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression } &  =Signification\tabularnewline
+\hline
+  union  B          &  The union of A and B\tabularnewline
+\hline
+  inter  B          &  The intersection of A and B\tabularnewline
+\hline
+  minus  B          &  The difference of A by B\tabularnewline
+\hline
+ symDiff B          &  The symmetric difference of A and B\tabularnewline
+\hline
+ \UseVerb{v92}
+          \UseVerb{v93}
+          \UseVerb{v94}   &  \UseVerb{v95} iff \UseVerb{v96} is inside \UseVerb{v97}\tabularnewline
+\hline
+\end{tabularx}
+
+      
+
+\subsubsection{ Assigning counterparts of union, inter and minus}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression     } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v98}  &                                 
+\begin{itemize}
+	\item{ Assign the union of A and B to A.}
+	\item{ More efficient than \UseVerb{v99}.}
+	\item{ Strictly equivalent to \UseVerb{v100}.}
+\end{itemize}
+\tabularnewline
+\hline
+ \UseVerb{v101}  &                                 
+\begin{itemize}
+	\item{ Assign the intersection of A and B to A}
+	\item{ More efficient than \UseVerb{v102}.}
+	\item{ Strictly equivalent to \UseVerb{v103}.}
+\end{itemize}
+\tabularnewline
+\hline
+ \UseVerb{v104}  &                                 
+\begin{itemize}
+	\item{ Assign the difference of A by B to A}
+	\item{ More efficient than \UseVerb{v105}.}
+	\item{ Strictly equivalent to \UseVerb{v106}.}
+\end{itemize}
+\tabularnewline
+\hline
+\end{tabularx}
+
+         \paragraph{Warning. } These operator exist for the sake of consistence with Javascript-native assigning operators. Before using assigning counterparts of set operators, please double check you visually prefer them to there equivalent expression. Triple check that your audience won't be lost with these operators if your code targets a particular audience (e.g. students).
+      
+   
+
+
+
+
+\section*{ Conclusion}
+
+
+\paragraph{}
+This document tries to remain complete on additions of and differences between AutomatonJS to / and Javascript. This is far from covering all the language. For more information, you might want to read things on Javascript keeping differences covered here in mind.
+
+   
+
+\subsection*{ Ideas for the future}
+
+
+\begin{itemize}
+	\item{ comprehensive sets like \lstinline!{2k+1 | k in N}! would be awesome.}
+	\item{ Great ideas can be found here :
+\begin{itemize}
+	\item{ \href{http://koush.com/post/yield-await-v8}{http://koush.com/post/yield-await-v8}}
+	\item{ \href{http://mdn.beonex.com/en/JavaScript/New\_in\_JavaScript/1.7.html}{http://mdn.beonex.com/en/JavaScript/New\_in\_JavaScript/1.7.html}, in particular :
+\begin{itemize}
+	\item{ \lstinline!yeld!, to make generators}
+	\item{ the destructuring assignment}
+	\item{ array comprehensions (Python-lovers will appreciate)}
+	\item{ The \lstinline!let! statement: \href{http://mdn.beonex.com/en/JavaScript/Reference/Statements/let.html}{http://mdn.beonex.com/en/JavaScript/Reference/Statements/let.html}.}
+\end{itemize}
+}
+\end{itemize}
+}
+\end{itemize}
+
+\end{sloppypar}
+\end{document}

@@ -57,9 +57,13 @@
       }
    }
 
+   function automaton2svg(A) {
+      return Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
+   }
+
    function setAutomatonResult(A) {
       automatonResult = A;
-      var svgCode = Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
+      var svgCode = automaton2svg(A);
 
       results.innerHTML = '<div id="results-tb"></div>' + svgCode;
       results.firstChild.appendChild(resultToLeft);
@@ -204,12 +208,12 @@
 
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
       if(window.js18Supported) {
-         libD.jsLoad('js/automatonjs.js', automatonJSLoaded, "application/javascript;version=1.8");
+         libD.jsLoad('js/automataJS.js', automatonJSLoaded, "application/javascript;version=1.8");
          libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
       }
       else {
          // workaround chromium issue #45702
-         libD.jsLoad('js/automatonjs.js' + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), automatonJSLoaded);
+         libD.jsLoad('js/automataJS.js' + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), automatonJSLoaded);
       }
 
       AutomataDesigner.load();
@@ -223,6 +227,7 @@
           automatoncodeedit = document.getElementById('automatoncodeedit'),
           leftPane          = document.getElementById('left-pane'),
           fileautomaton     = document.getElementById('fileautomaton'),
+          filequiz          = document.getElementById('filequiz'),
           drawToolbar       = document.getElementById('draw-toolbar'),
           open              = document.getElementById('open'),
           save              = document.getElementById('save'),
@@ -234,6 +239,8 @@
           executeBtn        = document.getElementById('execute'),
           wordDiv           = document.getElementById('word'),
           curAlgo           = document.getElementById('predef-algos'),
+          quiz              = document.getElementById('quiz'),
+          divQuiz           = document.getElementById('div-quiz'),
           head              = document.querySelector('head'),
           exportFN          = '',
           executionTimeout  = 0,
@@ -617,8 +624,100 @@
          programFileName = fileprogram.value;
       }
 
-      fileprogram.onchange = openProgram;
+      function openQuiz() {
+         freader.onload = function() {
+            try {
+               startQuiz(JSON.parse(freader.result));
+            }
+            catch(e) {
+               notify(_("Loading the quiz failed"), _(libD.format("The quiz seems to be malformed: %s", e.message)));
+            }
+         };
+         freader.readAsText(filequiz.files[0], 'utf-8');
+      }
+
+      fileprogram.onchange   = openProgram;
       fileautomaton.onchange = openAutomaton;
+      filequiz.onchange      = openQuiz;
+
+      function startQuiz(quiz) {
+         if(!(quiz.questions && quiz.questions instanceof Array)) {
+            throw new Error(_("The quiz doesn't have its list of question."));
+         }
+         quiz.currentQuestion = -1;
+         
+         divQuiz.textContent = '';
+         var refs = {};
+         divQuiz.classList.add('enabled');
+         divQuiz.appendChild(libD.jso2dom([
+            ['h1#quiz-title', quiz.title ? _(libD.format("Quiz: %s", textFormat(quiz.title))) : 'Quiz'],
+            ['h2#quiz-author', textFormat(quiz.author || '')],
+            ['div#quiz-descr', textFormat(quiz.description || '')],
+            ['a#close-quiz', {"#":'closeQuiz'}, _("Close the Quiz")],
+            ['div#quiz-content', {"#":"content"}, ["button", {'#':"startQuiz"}, _("Start the Quiz")]]
+         ], refs));
+         quiz.refs = refs;
+         refs.closeQuiz.onclick = closeQuiz;
+         refs.startQuiz.onclick = function() {
+            nextQuizQuestion(quiz);
+            return false;
+         };
+      }
+
+      function closeQuiz() {
+         divQuiz.textContent = '';
+         divQuiz.className.classList.remove('enabled');
+      }
+
+      function nextQuizQuestion(quiz) {
+         ++quiz.currentQuestion;
+         if(quiz.currentQuestion >= quiz.questions.length) {
+            quiz.refs.content.textContent = _("The Quiz is finished!");
+            return;
+         }
+         var qid = quiz.questions[quiz.currentQuestion].id || (quiz.currentQuestion + 1);
+         if(!(quiz.questions[quiz.currentQuestion].possibilities)) {
+            throw new Error(libD.format(_("Question %d has no answers."), qid));
+         }
+         var refs = {};
+         quiz.refs.content.textContent = '';
+         quiz.refs.content.appendChild(
+               libD.jso2dom([
+                  ["div#quiz-question",
+                     libD.format(
+                        _("Question %s: %s"),
+                        qid,
+                        quiz.questions[quiz.currentQuestion].instruction
+                     )
+                  ],
+                  ["ul#quiz-answers", {"#":"answers"}]
+               ], refs)
+         );
+         var possibilities = quiz.questions[quiz.currentQuestion].possibilities,
+             anwserRefs    = {};
+         for(var i in possibilities) {
+            refs.answers.appendChild(libD.jso2dom(["li", ["label",
+               ["input", {type:"checkbox", "#":i}], [
+                  ["#", (possibilities[i].id || (i+1)) + '. '],
+                  ["span", {"#": i + 'content'}]
+               ]
+            ]]));
+            if(possibilities[i].automaton) {
+               refs.answers[i + 'content'].innerHTML = automaton2svg(automatonFromObj(possibilities[i].automaton));
+            }
+            else if(possibilities[i].html) {
+               refs.answers[i + 'content'].innerHTML = possibilities[i].html;
+            }
+            else if(possibilities[i].text) {
+               refs.answers[i + 'content'].appendChild(libD.jso2dom(textFormat(possibilities[i].text)));
+            }
+         }
+      };
+
+      quiz.onclick = function() {
+         filequiz.click();
+      };
+
       open.onclick = function() {
          if(switchmode.value === "program") {
             fileprogram.click();
@@ -866,7 +965,7 @@
          if(js18Supported) {
             script.type = 'text/javascript;version=1.8';
          }
-         script.textContent = 'function userProgram(run) {"use strict";\n' + AutomatonJS.toPureJS(code, includes) + '\n}';
+         script.textContent = 'function userProgram(run) {"use strict";\n' + AutomataJS.toPureJS(code, includes) + '\n}';
          enableAutoHandlingError = "user's program";
          head.appendChild(script);
          enableAutoHandlingError = false;
@@ -914,7 +1013,7 @@
          waitingFor.remove(includeName);
 
          var includes = [];
-         code = AutomatonJS.toPureJS(code, includes);
+         code = AutomataJS.toPureJS(code, includes);
 
          if(nextLoadIsPrefefAlgo) {
             predefAlgoFunctions[includeName] = code;
@@ -1140,5 +1239,8 @@
    _("fr", "Test empty language", "Tester language vide");
    _("fr", "Test infinite language", "Tester language infini");
    _("fr", "JSON representation", "Représentation JSON");
+   _("fr", "Load a Quiz", "Charger un Quiz");
+   _("fr", "Loading the quiz failed", "Erreur lors du chargement du Quiz");
+   _("fr", "The quiz seems to be malformed: %s", "Le quiz semble mal formé : %s");
 
 })();

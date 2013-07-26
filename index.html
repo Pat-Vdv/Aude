@@ -16,11 +16,11 @@
       <script src="js/automatadesigner.js"></script>
       <script src="js/automata.js"></script>
       <script src="js/set.js"></script>
-      <script src="js/automatagui.js"></script>
+      <script src="js/gui.js"></script>
       <script src="js/lib/codemirror/lib/codemirror.js"></script>
       <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" />
-      <script src="js/codemirror-automatonjs/automatonjs.js"></script>
-      <link rel="stylesheet" href="style/automatagui.css" />
+      <script src="js/codemirror-automataJS/automataJS.js"></script>
+      <link rel="stylesheet" href="style/gui.css" />
       <script src="js/automaton2dot.js"></script>
       <script src="js/lib/fileSaver.js"></script>
       <script src="js/lib/hammer.min.js"></script>
@@ -35,6 +35,7 @@
       </select></label>
       <input type="file" id="fileautomaton" style="display:none" />
       <input type="file" id="fileprogram" style="display:none" />
+      <input type="file" id="filequiz" style="display:none" />
       <span>
          <button id="open" data-translated-title="true" title="Open"><img src="icons/oxygen/16x16/actions/document-open.png" alt="Open" data-translated-title="true" /></button>
          <button id="save" data-translated-title="true" title="Save"><img src="icons/oxygen/16x16/actions/document-save.png" alt="Save" data-translated-title="true" /></button>
@@ -64,8 +65,9 @@
             <button id="algo-exec" data-translated-content="true">Execute Program</button>
          </span>
       </span>
+      <button id="quiz" style="display:none" data-translated-content="true" >Load a Quiz</button>
       <div class="right">
-      <button id="export_result" data-translated-content="true">Export result</button>
+         <button id="export_result" data-translated-content="true">Export result</button>
       </div>
       <div class="designmode-specific disabled codemode-disabled" id="draw-toolbar">
          <span>
@@ -93,6 +95,7 @@
                <textarea id="automatoncodeedit"></textarea>
             </div>
             <div id="word"></div>
+            <div id="div-quiz"></div>
          </div>
          <div id="splitter"></div>
          <div id="results"></div>
