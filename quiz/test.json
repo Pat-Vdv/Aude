@@ -1,0 +1,65 @@
+{
+   "title":  "Tentative de Quiz",
+   "author": "Raphaël Jakse",
+   "date":   "25 juillet 2013",
+   "description": [
+      "Ce quiz est là pour tester l'interface. ",
+      "Un peu de LaTex ? ",
+         "$ \\pi = 3.14 $ ",
+         "$$\\begin{cases}",
+         "  a & = & 1 \\\\",
+         "  b & = & 2   ",
+         "\\end{cases} $$",
+      " Si vous voulez bien commencer..."
+   ],
+   "questions": [
+      {
+         "type":"mcq",
+         "instruction":"Quelle(s) est (sont) la (les) bonne(s) réponse(s) ?",
+         "answers":["c", "e"],
+         "possibilities": [
+            {
+               "id":"a",
+               "text":"0"
+            },
+            {
+               "id":"b",
+               "text":"1"
+            },
+            {
+               "id":"c",
+               "text":"42"
+            },
+            {
+               "id":"d",
+               "text":"100"
+            },
+            {
+               "id":"e",
+               "text":"$\\displaystyle\\sum_3^9 k $"
+            }
+         ]
+      },
+      {
+         "type":"word",
+         "instruction":"Soit $\\Sigma=\\{h,e,i,l,o,y\\}$. Trouvez un automate qui reconnaît les mots suivants: 'hey', 'hello', 'hi'.",
+         "words":["hey", "hello", "hi"]
+      },
+      {
+         "type":"automatonEquiv",
+         "instructionHTML":"Soit $\\Sigma=\\{a,b\\}$. Écrivez un automate qui reconnait tous les mots qui ont un nombre de <i>a</i> multiple de trois, et seulement eux.",
+         "automaton": {
+            "states": ["0","1","2"],
+            "finalStates": ["0"],
+            "transitions": [
+               ["0","a","1"],
+               ["1","a","2"],
+               ["2","a","0"],
+               ["0","b","0"],
+               ["1","b","1"],
+               ["2","b","2"]
+            ]
+         }
+      }
+   ]
+}

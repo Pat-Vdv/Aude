@@ -25,6 +25,21 @@
       <script src="js/lib/fileSaver.js"></script>
       <script src="js/lib/hammer.min.js"></script>
       <script src="js/touch2click.js"></script>
+      <script src="js/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script>
+         MathJax.Hub.Config({
+            tex2jax: {
+               inlineMath : [],
+               displayMath : [],
+               ignoreClass: "tex2jax_ignore",
+               processClass: "tex2jax_process",
+               inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+               displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+               preferredFont: "STIX",
+               processEnvironments: false
+            }
+         });
+      </script>
    </head>
    <body>
    <div id="toolbar" class="designmode">
@@ -65,8 +80,8 @@
             <button id="algo-exec" data-translated-content="true">Execute Program</button>
          </span>
       </span>
-      <button id="quiz" style="display:none" data-translated-content="true" >Load a Quiz</button>
       <div class="right">
+         <button id="quiz" data-translated-content="true" >Load a Quiz</button>
          <button id="export_result" data-translated-content="true">Export result</button>
       </div>
       <div class="designmode-specific disabled codemode-disabled" id="draw-toolbar">

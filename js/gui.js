@@ -19,7 +19,7 @@
 /*jslint browser: true, ass: true, continue: true, es5: false, forin: true, todo: true, vars: true, white: true, indent: 3 */
 /*jshint noarg:true, noempty:true, eqeqeq:true, boss:true, bitwise:false, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
 
-// NEEDS : automatadesigner.js, automata.js, saveAs, automaton2dot.js
+// NEEDS : automatadesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
 
 (function() {
    "use strict";
@@ -42,6 +42,15 @@
       not.setTitle(title);
       not.setDescription(content);
       not.setType(type);
+   }
+
+   function textFormat(text, node, html) {
+      if(!node) {
+         node = document.createElement('span');
+      }
+      node[html ? 'innerHTML' : 'textContent'] = text instanceof Array ? text.join("") : text;
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,node]);
+      return node;
    }
 
    function setTextResult(t, dontNotify) {
@@ -615,6 +624,22 @@
          freader.readAsText(fileautomaton.files[0], 'utf-8');
          automatonFileName = fileautomaton.value;
       }
+      
+      
+      function automatonFromObj(o) {
+         var A = new Automaton();
+         A.setInitialState(o.states[0]);
+         for(var i = 1; i < o.states.length; ++i) {
+            A.addState(o.states[i]);
+         }
+         for(var i = 0; i < o.finalStates.length; ++i) {
+            A.addFinalState(o.states[i]);
+         }
+         for(var i = 0; i < o.transitions.length; ++i) {
+            A.addTransition(o.transition[i][0], o.transition[i][1], o.transition[i][2]);
+         }
+         return A;
+      }
 
       function openProgram() {
          freader.onload = function() {
@@ -630,7 +655,8 @@
                startQuiz(JSON.parse(freader.result));
             }
             catch(e) {
-               notify(_("Loading the quiz failed"), _(libD.format("The quiz seems to be malformed: %s", e.message)));
+               console.log(e.message);
+               notify(_("Loading the quiz failed"), (libD.format(_("The quiz seems to be malformed: {0}"), e.message, "error")));
             }
          };
          freader.readAsText(filequiz.files[0], 'utf-8');
@@ -641,77 +667,138 @@
       filequiz.onchange      = openQuiz;
 
       function startQuiz(quiz) {
+         AutomataDesigner.svgContainer.style.display='none';
          if(!(quiz.questions && quiz.questions instanceof Array)) {
             throw new Error(_("The quiz doesn't have its list of question."));
          }
          quiz.currentQuestion = -1;
-         
+         divQuiz.classList.add('intro');
+         divQuiz.classList.remove('started');
          divQuiz.textContent = '';
          var refs = {};
          divQuiz.classList.add('enabled');
          divQuiz.appendChild(libD.jso2dom([
-            ['h1#quiz-title', quiz.title ? _(libD.format("Quiz: %s", textFormat(quiz.title))) : 'Quiz'],
-            ['h2#quiz-author', textFormat(quiz.author || '')],
-            ['div#quiz-descr', textFormat(quiz.description || '')],
-            ['a#close-quiz', {"#":'closeQuiz'}, _("Close the Quiz")],
-            ['div#quiz-content', {"#":"content"}, ["button", {'#':"startQuiz"}, _("Start the Quiz")]]
+            ['h1#quiz-title', [
+               ["#", quiz.title ? _("Quiz: ") : _('Quiz')],
+               ["span", {'#':"quizTitleContent"}, ]
+            ]],
+            ['h2#quiz-author', {"#":'author'}],
+            ['div#quiz-descr', {"#":"descr"}],
+            ['a#close-quiz', {"#":'closeQuiz', "href":"#"}, _("Close the Quiz")],
+            ['div#quiz-content', {"#":"content"},
+               ["div.button-container",
+                  ["button", {'#':"startQuiz"}, _("Start the Quiz")]
+               ]
+            ]
          ], refs));
+         textFormat(quiz.title || '', refs.quizTitleContent);
+         textFormat((quiz.author || '') + (quiz.date ? ' - ' + quiz.date : ''), refs.author);
+         textFormat(quiz.description || '', refs.descr);
+         
          quiz.refs = refs;
          refs.closeQuiz.onclick = closeQuiz;
          refs.startQuiz.onclick = function() {
-            nextQuizQuestion(quiz);
+            try {
+               nextQuizQuestion(quiz);
+            }
+            catch(e) {
+               notify(_("Error in the Quiz"), libD.format(_("There is an error in the Quiz: {0}"), e.message), "error");
+            }
             return false;
          };
       }
 
       function closeQuiz() {
+         AutomataDesigner.svgContainer.style.display = '';
+         AutomataDesigner.svgContainer.style.top     = '';
          divQuiz.textContent = '';
          divQuiz.className.classList.remove('enabled');
       }
 
       function nextQuizQuestion(quiz) {
+         divQuiz.classList.remove('intro');
+         divQuiz.classList.add('started');
+         AutomataDesigner.svgContainer.display = 'none';
          ++quiz.currentQuestion;
          if(quiz.currentQuestion >= quiz.questions.length) {
             quiz.refs.content.textContent = _("The Quiz is finished!");
             return;
          }
-         var qid = quiz.questions[quiz.currentQuestion].id || (quiz.currentQuestion + 1);
-         if(!(quiz.questions[quiz.currentQuestion].possibilities)) {
-            throw new Error(libD.format(_("Question %d has no answers."), qid));
-         }
-         var refs = {};
+         var q = quiz.questions[quiz.currentQuestion],
+             qid = q.id || (quiz.currentQuestion + 1),
+             refs = {};
+ 
          quiz.refs.content.textContent = '';
          quiz.refs.content.appendChild(
                libD.jso2dom([
-                  ["div#quiz-question",
-                     libD.format(
-                        _("Question %s: %s"),
-                        qid,
-                        quiz.questions[quiz.currentQuestion].instruction
-                     )
-                  ],
-                  ["ul#quiz-answers", {"#":"answers"}]
+                  ["div#quiz-question", [
+                     ["span.quiz-question-id",libD.format(
+                        _("Question {0}: "),
+                        qid)],
+                     ['span', {'#':'questionContent'}]
+                  ]],
+                  ["div#quiz-answers", {"#":"answers"}],
+                  ["div.button-container",
+                     ["button", {"#": "ok"}, _("Next question")]
+                  ]
                ], refs)
          );
-         var possibilities = quiz.questions[quiz.currentQuestion].possibilities,
-             anwserRefs    = {};
-         for(var i in possibilities) {
-            refs.answers.appendChild(libD.jso2dom(["li", ["label",
-               ["input", {type:"checkbox", "#":i}], [
-                  ["#", (possibilities[i].id || (i+1)) + '. '],
-                  ["span", {"#": i + 'content'}]
-               ]
-            ]]));
-            if(possibilities[i].automaton) {
-               refs.answers[i + 'content'].innerHTML = automaton2svg(automatonFromObj(possibilities[i].automaton));
-            }
-            else if(possibilities[i].html) {
-               refs.answers[i + 'content'].innerHTML = possibilities[i].html;
-            }
-            else if(possibilities[i].text) {
-               refs.answers[i + 'content'].appendChild(libD.jso2dom(textFormat(possibilities[i].text)));
-            }
+         if(q.instructionHTML) {
+            textFormat(q.instructionHTML, refs.questionContent, true);
          }
+         else {
+            textFormat(q.instruction, refs.questionContent);
+         }
+         switch(q.type) {
+            case "mcq":
+               var possibilities = q.possibilities,
+                   anwserRefs    = {};
+               if(!(q.possibilities)) {
+                  throw new Error(libD.format(_("Question {0} has no answers."), qid));
+               }
+               refs.answers.appendChild(document.createElement('ul'));
+               for(var i in possibilities) {
+                  refs.answers.firstChild.appendChild(libD.jso2dom(["li", ["label", [
+                     ["input", {"type":"checkbox", "#":"answer-" + i}],
+                     ["span.quiz-answer-id", (possibilities[i].id || (i+1)) + '. '],
+                     ["span", {"#": i + 'content'}]
+                  ]]], refs));
+                  if(possibilities[i].automaton) {
+                     refs[i + 'content'].innerHTML = automaton2svg(automatonFromObj(possibilities[i].automaton));
+                  }
+                  else if(possibilities[i].html) {
+                     refs[i + 'content'].innerHTML = possibilities[i].html;
+                  }
+                  else if(possibilities[i].text) {
+                     textFormat(possibilities[i].text, refs[i + 'content']);
+                  }
+                  else if(possibilities[i].html) {
+                     textFormat(possibilities[i].html, refs[i + 'content'], true);
+                  }
+               }
+               break;
+            case "word":
+               refs.answers.innerHTML = '<p>' +  _("You can draw the automaton bellow.") + '</p>';
+               setTimeout(function() {
+                  AutomataDesigner.svgContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
+                  AutomataDesigner.svgContainer.style.display = '';
+               }, 0);
+               break;
+            case "automatonEquiv":
+               if(!window.automataAreEquivalent) {
+                  getScript('equivalence');
+               }
+               break;
+            case "program":
+               
+               break;
+            case "algo":
+               
+               break;
+            default:
+               notify(_("Question type not known"), libD.format(_('Type of question {0} is not known. Known types are: <ul><li>"mcq" for multiple choices question),</li><li>"word" (to draw an automaton which recognizes a given list of words).')),"error");
+         }
+         refs.ok.onclick = quiz.refs.startQuiz.onclick;
       };
 
       quiz.onclick = function() {
@@ -1043,7 +1130,6 @@
          }
 
          handleImports(includes, "module " + includeName);
-         console.log(includeName, waitingFor.isEmpty());
          if(waitingFor.isEmpty()) {
             setTimeout(function() {
                if(launchAfterImport && window.userProgram) {
@@ -1143,7 +1229,7 @@
                }
             }
             else {
-               notify(_("Getting list of predefined algorithms"), libD.format(_("Unable to get the list of predefined algorithms. Status:%s"), xhr.status));
+               notify(_("Getting list of predefined algorithms"), libD.format(_("Unable to get the list of predefined algorithms. Status:{0}"), xhr.status));
             }
          }
       };
@@ -1241,6 +1327,17 @@
    _("fr", "JSON representation", "Représentation JSON");
    _("fr", "Load a Quiz", "Charger un Quiz");
    _("fr", "Loading the quiz failed", "Erreur lors du chargement du Quiz");
-   _("fr", "The quiz seems to be malformed: %s", "Le quiz semble mal formé : %s");
-
+   _("fr", "The quiz seems to be malformed: {0}", "Le quiz semble mal formé : {0}");
+   _("fr", "Start the Quiz", "Démarrer le quiz");
+   _("fr", "Close the Quiz", "Fermer le quiz");
+   _("fr", "Quiz: ", "Quiz : ");
+   _("fr", "Quiz", "Quiz");
+   _("fr", "Question {0}: ", "Question {0} : ");
+   _("fr", "Next question", "Question suivante");
+   _("fr", "The Quiz is finished!", "Le quiz est fini !");
+   _("fr", "Error in the Quiz", "Erreur dans le quiz");
+   _("fr", "There is an error in the Quiz: {0}", "Il y a une erreur dans le quiz : {0}");
+   _("fr", "Question {0} has no answers.", "La question {0} n’a pas de réponse.");
+   _("fr", "You can draw the automaton bellow.", "Vous pouvez dessiner l'automate ci-dessous.");
+   _("fr", "Test equivalence of 2 automata", "Tester l'équiv. entre 2 automates");
 })();
