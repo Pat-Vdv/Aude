@@ -1291,7 +1291,7 @@
    _("fr", "Step", "Un pas");
    _("fr", "Delay between steps (ms): ", "Pause entre les étapes (ms) : ");
    _("fr", "This automaton into the editor", "Cet automate dans l'éditeur");
-   _("fr", "To create a new state, click on the drawing area where you want it to be.", "Pour créer un nouvel état, cliquez sur la surface de dessin à l'endroit où vous le voulez.");
+   _("fr", "To create a new state, double-click on the drawing area where you want it to be.", "Pour créer un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous le voulez.");
    _("fr", "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour ajouter une nouvelle transition, cliquez sur l'état de départ en appuyant sur Maj puis cliquez sur l'état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");
    _("fr", "To modify the name of a state, double-click on it.", "Pour changer le nom d'un état, double-cliquez sur celui-ci.");
    _("fr", "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour modifier les symboles d'une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");

@@ -973,9 +973,6 @@
          else {
             pkg.svgContainer.style.cursor = "";
             pkg.svgContainer.onmousemove = null;
-            if(!(e.button || blockNewState || e.ctrlKey || e.metaKey || e.shiftKey)) {
-               createNode(e);
-            }
          }
       }, false);
 
@@ -989,6 +986,9 @@
             if(!(e.ctrlKey || e.metaKey || e.shiftKey)) { // delete transition
                editTransitionSymbols(nodeEdit);
             }
+         }
+         else if(!(e.button || blockNewState || e.ctrlKey || e.metaKey || e.shiftKey)) {
+            createNode(e);
          }
       }, false);
 
