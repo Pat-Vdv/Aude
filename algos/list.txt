@@ -4,4 +4,5 @@ minimisation.ajs?v=1     / Minimize
 epsElim.ajs?v=1          / ε-eliminate
 emptyLanguage.ajs?v=1    / Test empty language
 infiniteLanguage.ajs?v=1 / Test infinite language
+equivalence.ajs?v=1      / Test equivalence of 2 automata
 automaton2json.ajs?v=1   / JSON representation
