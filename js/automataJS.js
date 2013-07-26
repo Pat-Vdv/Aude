@@ -1078,11 +1078,11 @@
                }
                else if(symbol === 'elementof' || symbol === 'belongsto') {
                   i = deb2;
-                  return not + 'contains(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ','  + (white === ' ' ? '' : white) + res + ')';
+                  return ' ' + not + 'contains(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ','  + (white === ' ' ? '' : white) + res + ')';
                }
                else {
                   i = deb2;
-                  return white + not + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+                  return (white || ' ') + not + symbol + '(' + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
             }
             i = deb;
