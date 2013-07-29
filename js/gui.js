@@ -667,7 +667,7 @@
       filequiz.onchange      = openQuiz;
 
       function startQuiz(quiz) {
-         AutomataDesigner.svgContainer.style.display='none';
+         AutomataDesigner.svgContainer.style.display = 'none';
          if(!(quiz.questions && quiz.questions instanceof Array)) {
             throw new Error(_("The quiz doesn't have its list of question."));
          }
@@ -718,7 +718,7 @@
       function nextQuizQuestion(quiz) {
          divQuiz.classList.remove('intro');
          divQuiz.classList.add('started');
-         AutomataDesigner.svgContainer.display = 'none';
+         AutomataDesigner.svgContainer.style.display = 'none';
          ++quiz.currentQuestion;
          if(quiz.currentQuestion >= quiz.questions.length) {
             quiz.refs.content.textContent = _("The Quiz is finished!");
@@ -788,6 +788,10 @@
                if(!window.automataAreEquivalent) {
                   getScript('equivalence');
                }
+               setTimeout(function() {
+                  AutomataDesigner.svgContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
+                  AutomataDesigner.svgContainer.style.display = '';
+               }, 0);
                break;
             case "program":
                
