@@ -403,7 +403,8 @@
          else if(i < len && s[i] === '*') {
             do {
                ++i;
-            } while(i+1 < len && (s[i] !== '*' || s[i+1] !== '/'));
+            } while(i+1 < len && !(s[i] === '*' && s[i+1] === '/'));
+            i+=2;
             type = whitespace;
             deb = i;
             var lst = lastSignificantType;
@@ -413,6 +414,7 @@
                lastSignificantType = lst;
                type = whitespace;
             }
+            alert(s[i]);
          }
          else {
             if(lastSignificantType & (number | variable | closeParen | closeBracket)) {
