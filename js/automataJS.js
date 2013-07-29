@@ -414,8 +414,7 @@
                lastSignificantType = lst;
                type = whitespace;
             }
-            alert(s[i]);
-         }
+        }
          else {
             if(lastSignificantType & (number | variable | closeParen | closeBracket)) {
                lastSignificantType = type = operator;
