@@ -1,0 +1,412 @@
+function Automata_OR(A1, A2) {
+  orA : Automaton;
+
+  finalStates : Set of List;
+  
+  foreach(state in A1.getStates()) {
+    orA.addState([1, state]);
+    if(A1.isFinalState(state)) {
+      finalStates.add([1, state]);
+    }
+  }
+
+  foreach(state in A2.getStates()) {
+    orA.addState([2, state]);
+    if(A2.isFinalState(state)) {
+      finalStates.add([2, state]);
+    }
+  }
+
+  orA.setInitialState("I");
+  orA.addFinalState("F");
+  foreach(f in finalStates) {
+    orA.addTransition(f, epsilon, "F");
+  }
+
+  foreach(t in A1.getTransitions()) {
+    orA.addTransition([1, t.startState], t.symbol, [1, t.endState]);
+  }
+  foreach(t in A2.getTransitions()) {
+    orA.addTransition([2, t.startState], t.symbol, [2, t.endState]);
+  }
+
+  orA.addTransition("I", epsilon, [1, A1.getInitialState()]);
+  orA.addTransition("I", epsilon, [2, A2.getInitialState()]);
+  return orA;
+}
+
+function Automata_STAR(A) {
+  starA       : Automaton;
+  finalStates : Set of List;
+
+  foreach(state in A.getStates()) {
+    starA.addState([0, state]);
+    if(A.isFinalState(state)) {
+      finalStates.add([0, state]);
+    }
+
+    let init = [0, A.getInitialState()];
+    starA.setInitialState("I");
+    starA.addFinalState("F");
+
+    foreach(f in finalStates) {
+      starA.addTransition(f, epsilon, "F");
+      starA.addTransition(f, epsilon, init);
+    }
+
+    foreach(t in A.getTransitions()) {
+      starA.addTransition([0, t.startState], t.symbol, [0, t.endState]);
+    }
+    starA.addTransition("I", epsilon, "F");
+    starA.addTransition("I", epsilon, init);
+  }
+  return starA;
+}
+
+function Automata_CAT(A1, A2) {
+  console.log(A1.toString(), A2.toString());
+  catA : Automaton;
+
+  finalStates : Set of List;
+  
+  foreach(state in A1.getStates()) {
+    catA.addState([1, state]);
+    if(A1.isFinalState(state)) {
+      finalStates.add([1, state]);
+    }
+  }
+
+  foreach(state in A2.getStates()) {
+    if(A2.isFinalState(state)) {
+      catA.addFinalState([2, state]);
+    }
+    else {
+      catA.addState([2, state]);
+    }
+  }
+  
+  foreach(f in finalStates) {
+    catA.addTransition(f, epsilon, [2, A2.getInitialState()]);
+  }
+
+  catA.setInitialState([1, A1.getInitialState()]);
+  foreach(t in A1.getTransitions()) {
+    catA.addTransition([1, t.startState], t.symbol, [1, t.endState]);
+  }
+  foreach(t in A2.getTransitions()) {
+    catA.addTransition([2, t.startState], t.symbol, [2, t.endState]);
+  }
+  return catA;
+}
+
+/**
+   Regular expressions : Grammar (based on Yliès Falcone's lesson)
+
+   regex:
+      ø
+      Symbol
+      regex + regex
+      regex · regex
+      regex *
+      ( regex )
+
+      
+   Note: Spaces are ignored; "·" can be writen "." or can be ignored.
+
+   Symbol:
+      (letter)
+      (LETTER)
+      (figure)
+      ε
+
+   Regular Expressions : Semantic
+
+      Operator precedence:
+          *
+          ·
+          +
+          
+**/
+
+
+function regexToAutomaton(regex) {
+  if(regex === undefined) {
+     regex = prompt("Enter the regular expression you want to get an automaton of.");
+     if(regex === null) {
+        return;
+     }
+  }
+
+  i             : Integer = 0;
+  length        : Integer = regex.length;
+  a             : Integer = 'a'.charCodeAt(0);
+  z             : Integer = 'z'.charCodeAt(0);
+  A             : Integer = 'A'.charCodeAt(0);
+  Z             : Integer = 'Z'.charCodeAt(0);
+  zero          : Integer = '0'.charCodeAt(0);
+  nine          : Integer = '9'.charCodeAt(0);
+  isSymbol      : Boolean = false;
+  
+
+  function error() {
+    throw new Error("There is a syntax error in your regular expression on character " + i);
+  }
+  
+  function get_lex() {
+     if(i >= length) {
+        isSymbol = false;
+        return '';
+     }
+
+     switch(regex[i]) {
+        case '\\':
+           ++i;
+           isSymbol = false;
+           if(get_lex() === 'e') {
+              ++i;
+              return epsilon;
+           }
+           error();
+        case '(':
+        case ')':
+        case '+':
+        case '-':
+        case '*':
+        case '·':
+        case '.':
+           isSymbol = false;
+           return regex[i++];
+        case epsilon:
+           isSymbol = true;
+           return regex[i++];
+        default:
+           isSymbol = true;
+           var code = regex.charCodeAt(i);
+           if(
+                 (code >= a    && code <= z   )
+              || (code >= A    && code <= Z   )
+              || (code >= zero && code <= nine)
+           ) {
+              return regex[i++];
+           }
+     }
+     error();
+  }
+
+  function unary(exp, operator) {
+     return {
+        type:'unary',
+        o:operator,
+        e:exp
+     };
+  }
+  
+  function binary(e1, operator, e2) {
+     if(operator === '+') {
+        return {
+           type:'binary',
+           o:'+',
+           e1:e1,
+           e2:e2
+        };
+     }
+     else if(operator === '.') {
+        if(e1.type === 'binary' && e1.o === '+' && !e1.paren) {
+           if(e2.type === 'binary' && e2.o === '+' && !e2.paren) {
+            /*
+                   ·                   +
+                /    \                / \
+               +      +              a   +
+              / \    / \      =>        / \
+             a   b  c   d              ·   d
+                                      / \
+                                     b   c    */
+
+              return {
+                 type:'binary',
+                 o:'+',
+                 e1: e1.e1, // a
+                 e2: {
+                    type:'binary',
+                    o:'+',
+                    e1: {
+                       type:'binary',
+                       o:'.',
+                       e1:e1.e2, // b
+                       e2:e2.e1  // c
+                    },
+                    e2: e2.e2 // d
+                 }
+              };
+           }
+           else {
+            /*
+                   ·                    +
+                /    \                /   \
+               +    (not +)          a     ·
+              / \             =>        /    \
+             a   b                     b   (not +) */
+              
+              return {
+                 type:'binary',
+                 o:'+',
+                 e1: e1.e1, // a
+                 e2: {
+                    type:'binary',
+                    o:'.',
+                    e1:e1.e2, // b
+                    e2:e2
+                 }
+              };
+           }
+        }
+        else {
+           if(e2.type === 'binary' && e2.o === '+' && !e2.paren) {
+            /*
+                      ·                    +
+                    /   \                 / \
+               (not +)   +      =>       ·   d
+                        / \             / \
+                       c   d      (not +)  c    */
+
+              return {
+                 type:'binary',
+                 o:'+',
+                 e1: {
+                    type:'binary',
+                    o:'.',
+                    e1:e1,
+                    e2:e2.e1
+                 },
+                 e2: e2.e2
+              };
+           }
+           else {
+            /*
+                       ·
+                      / \          =>  (unchanged)
+                (not +) (not +)                     */
+          
+              return {
+                 type:'binary',
+                 o:'.',
+                 e1:e1,
+                 e2:e2
+              };
+           }
+        }
+     }
+     else {
+        error(); // should never happen
+     }
+  }
+
+  function paren(e) {
+     e.paren = true;
+     return e;
+  }
+
+  function symbol2expr(l) {
+    console.log({
+        type:'symbol',
+        s:l
+     });
+     return {
+        type:'symbol',
+        s:l
+     };
+  }
+
+  function voidexpr() {
+     return {
+        type:'void'
+     };
+  }
+
+  function get_regex(l, closing) {
+     let e1;
+
+     if(!l) {
+        l = get_lex();
+     }
+     if(l === '(') {
+        e1 = paren(get_regex('', true));
+        if(!i || regex[i-1] !== ')') {
+           error();
+        }
+     }
+     else if(isSymbol) {
+        e1 = symbol2expr(l);
+     }
+     else if(!l) {
+        return voidexpr();
+     }
+     else {
+        error(); // should never happen
+     }
+
+     let l2 = get_lex();
+     if(isSymbol) {
+        return binary(e1, '.', get_regex(l2, closing));
+     }
+     else {
+        switch(l2) {
+           case '':
+              return e1;
+           case '·':
+              l2 = '.';
+           case '+':
+           case '.':
+              return binary(e1, l2, get_regex('', closing));
+           case '*':
+              return unary(e1, '*');
+           case '(':
+              return binary(e1, '.', get_regex('(', closing));
+           case ')':
+              if(closing) {
+                 return e1;
+              }
+              error();
+        }
+     }
+  }
+  
+  function to_automaton(tree) {
+     let R;
+     switch(tree.type) {
+        case 'unary':
+           if(tree.o === '*') {
+              return Automata_STAR(to_automaton(tree.e));
+           }
+           else {
+              error(); // should never ever happen
+           }
+        case 'binary':
+           if(tree.o === '+') {
+              return Automata_OR(to_automaton(tree.e1), to_automaton(tree.e2));
+           }
+           else if(tree.o === '.') {
+              return Automata_CAT(to_automaton(tree.e1), to_automaton(tree.e2));
+           }
+           else {
+              error(); // should never ever happen
+           }
+        case 'symbol':
+           R = new Automaton();
+           R.setInitialState('0');
+           R.setFinalState('1');
+           R.addTransition('0', tree.s, '1');
+           return R;
+        case 'void':
+           R = new Automaton();
+           R.setInitialState('0');
+           return R;
+        default:
+           error(); // should never ever happen
+     }
+  }
+  
+  return to_automaton(get_regex());
+}
+
+run(regexToAutomaton);

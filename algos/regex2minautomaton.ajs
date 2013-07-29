@@ -1,0 +1,9 @@
+include determinization;
+include minimization;
+include regex2automaton;
+
+run(
+   function(A) {
+      return minimize(determinize(regexToAutomaton()));
+   }
+);
