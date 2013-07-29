@@ -248,6 +248,7 @@
             }
             ++i;
          }
+         lastSignificantType = type = string;
          return s.substring(d,++i);
       }
       else if(!(s[i].trim())) {
@@ -808,7 +809,7 @@
          }
 
          if(type === dot) {
-            var symbol2 = getSymbol();
+               var symbol2 = getSymbol();
             if(type !== variable) {// Syntax error ?
                return res + white + symbol2;
             }
