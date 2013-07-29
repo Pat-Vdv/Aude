@@ -880,20 +880,11 @@
                   var typeOfVar = symbol;
                   symbol = getSymbol();
                   if(type === whitespace) {
-                     if(symbol !== ' ') {
-                        white = symbol;
-                     }
+                     white = symbol === ' ' ? '' : symbol;
                      symbol = getSymbol();
                   }
                   else {
                      white = '';
-                  }
-
-                  if(type === whitespace) {
-                     if(symbol !== ' ') {
-                        white = symbol;
-                     }
-                     symbol = getSymbol();
                   }
 
                   if(symbol === '=') {
