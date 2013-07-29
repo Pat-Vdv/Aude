@@ -1173,7 +1173,7 @@
       }
 
       window.getScriptFailed = function(includeName, includer, reason) {
-         handleError(libD.format(_("Error: import failed: '{0}' (in '{1}').")), reason, includer);
+         handleError(libD.format(_("Error: import failed: '{0}' (in '{1}')."), reason, includer), '(?)');
       };
 
       window.AutomatonGlue = {
