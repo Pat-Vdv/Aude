@@ -1,10 +1,30 @@
 include determinization;
 include minimization;
+include completion;
+include automaton2json;
 
 function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
-  
-  A1    = minimize(determinize(A1));
-  A2    = minimize(determinize(A2));
+  if(!symetryAlreadyDone) {
+    A1    = minimize(determinize(A1));
+    A2    = minimize(determinize(A2));
+
+    // Comparing minimized automata is not sufficient, they also have to be completed with the same alphabet.
+    // otherwize, these automaton are considered not equivalent (for example):
+    //
+    //      b
+    //    +----> (1)
+    //   /                and    (0)
+    //  (0)----> (2)
+    //       a
+
+    A1.addAlphabet(A2.getAlphabet());
+    A2.addAlphabet(A1.getAlphabet());
+
+    A1 = complete(A1);
+    A2 = complete(A2);
+  }
+
+
   let trans1 = A1.getTransitionsTable(),
       trans2 = A2.getTransitionsTable();
 
