@@ -2,7 +2,7 @@
 /*jshint noarg:true, noempty:true, eqeqeq:true, boss:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
 
 /*
-   Copyright (c) 1998, Raphaël Jakse (Université Joseph Fourier)
+   Copyright (c) 2013, Raphaël Jakse (Université Joseph Fourier)
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,8 @@
  * @note Any function of this package that takes a Set also accepts any object that can be turned into a set (e.g. Object, Array variables).
  * @version 0.1a
  */
+
+// TODO: support objects which contain circular references inside sets (stringifization problem)
 
 (function(pkg, that) {
    "use strict";
@@ -82,14 +84,9 @@
             res += ',';
          }
 
-         if(l[i] instanceof Array) {
-            res += listToString(l[i]);
-         }
-         else {
-            res += l[i].toString();
-         }
+         res += pkg.Set.prototype.elementToString(l[i]);
       }
-      return '[' + res + ']';
+      return '(' + res + ')';
    }
 
    pkg.Set.prototype = {
@@ -410,12 +407,7 @@
             if(res) {
                res += ',';
             }
-            if(l[i] instanceof Array) {
-               res += listToString(l[i]);
-            }
-            else {
-               res += l[i].toString();
-            }
+            res += this.elementToString(l[i]);
          }
          return '{' + res + '}';
       },
@@ -541,6 +533,24 @@
             return false;
          }
          return true;
+      },
+
+      elementToString : function(e) {
+         if(e instanceof Array) {
+            return listToString(e);
+         }
+         else if(typeof e === 'string') {
+            if(/["'\\{\[\]}\(\)\s]/.test(e)) {
+               e = JSON.stringify(e);
+            }
+            return e.toString();
+         }
+         else if(e instanceof Set) {
+            return e.toString();
+         }
+         else {
+            return JSON.stringify(e);
+         }
       }
    };
 

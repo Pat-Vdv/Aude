@@ -1022,7 +1022,7 @@
                ++j;
             }
             lastIndex = j+1;
-            return JSON.parse(s.substring(j0,j+1));
+            return JSON.parse(end === "'" ?  '"' + s.substring(j0+1,j).replace(/"/g, '\\"') + '"': s.substring(j0,j+1));
          }
          else if(s[j] === "{") {
             var set = new Set();
@@ -1036,6 +1036,7 @@
                if(s[j] === '}') {
                   lastIndex = j+1;
                   closed = true;
+                  j = lastIndex;
                   break;
                }
                set.add(getNextValue(s, j, len));
@@ -1057,12 +1058,14 @@
                }
 
                if(s[j] === end) {
+                  lastIndex = j+1;
+                  j = lastIndex;
                   closed = true;
                   break;
                }
 
                tuple.push(getNextValue(s, j, len));
-               lastIndex = j+1;
+               j = lastIndex;
             }
             if(!closed) {
                throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
@@ -1115,11 +1118,23 @@
     * @returns {String} The string representation of the Automaton. The empty string is returned if the Automaton is not correct, e.g. no initial state is set.
     */
    pkg.automaton_code = function (a) {
+      function toString(o) {
+         if(o instanceof Array) {
+            return '(' + o.toString() + ')';
+         }
+         else if(o instanceof Set) {
+            return o.toString();
+         }
+         else {
+            return JSON.stringify(o);
+         }
+      }
+
       var q_init = a.getInitialState();
       if(q_init === undefined || q_init === null) {
          return "";
       }
-      var r = q_init.toString() + "\n";
+      var r = toString(q_init) + "\n";
       var F = a.getFinalStates();
       var Fl = F.getList();
       var Q = a.getStates().getSortedList();
@@ -1128,13 +1143,13 @@
 
       for(i in Q) {
          if(Q[i] !== q_init && !F.contains(Q[i])) {
-            r += Q[i].toString() + "\n";
+            r += toString(Q[i]) + "\n";
          }
       }
       r += "\n";
 
       for(i in Fl) {
-         r += (Fl[i] || "null").toString() + "\n";
+         r += toString((Fl[i])) + "\n";
       }
 
       r += "\n";
@@ -1142,17 +1157,17 @@
          r += (
                   (T[i].symbol) instanceof Set
                   ? T[i].startState.toString()
-                  : JSON.stringify(T[i].startState.toString())
+                  : toString(T[i].startState)
               ) +
               ' ' + (
                   (T[i].symbol) instanceof Set
                   ? T[i].symbol.toString()
-                  : JSON.stringify(T[i].symbol.toString())
+                  : toString(T[i].symbol)
               ) +
               ' ' + (
                   (T[i].endState) instanceof Set
-                  ? T[i].endState
-                  : T[i].endState.toString()
+                  ? T[i].endState.toString()
+                  : toString(T[i].endState)
               ) + '\n';
       }
       return r + '\n';

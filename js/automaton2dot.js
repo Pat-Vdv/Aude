@@ -33,11 +33,12 @@
 (function(pkg) {
    "use strict";
 
+   function toString(q) {
+      return Set.prototype.elementToString(q);
+   }
+
    function dotState(q) {
-      if(q === null || q === undefined) {
-         throw new Error("State is empty");
-      }
-      var s = q.toString();
+      var s = toString(q);
       return JSON.stringify(s).replace(/&/g, '&amp;') + "[id=\"" + btoa(s) + "\"]";
    }
 
@@ -118,12 +119,12 @@
       if(initialState === null || initialState === undefined) {
          throw new Error("Initial state is not set.");
       }
-      res += cat("\t_begin -> ", JSON.stringify(initialState.toString().replace(/&/g, '&amp;')), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
+      res += cat("\t_begin -> ", JSON.stringify(toString(initialState).replace(/&/g, '&amp;')), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
 
       for (var startState in table) {
          var trans = table[startState];
          for(var endState in trans) {
-            res += cat("\t", JSON.stringify(startState.toString()).replace(/&/g, '&amp;'), " -> ", JSON.stringify(endState.toString()).replace(/&/g, '&amp;'), " [label = ");
+            res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, '&amp;'), " -> ", JSON.stringify(toString(endState)).replace(/&/g, '&amp;'), " [label = ");
 
             var symbols = table[startState][endState].getSortedList(),
                 comma   = "",
@@ -131,7 +132,7 @@
                 tmp     = "";
 
             for(var symbol_index in symbols) {
-               s = symbols[symbol_index].toString();
+               s = toString(symbols[symbol_index]);
                if(s.match(/[\s,"]/)) {
                   s = JSON.stringify(s);
                }
@@ -141,7 +142,7 @@
                   comma = ",";
                }
             }
-            res += JSON.stringify(tmp).replace(/&/g, '&amp;') + catln(", id=\"", btoa(startState.toString()), " ", btoa(endState.toString()), "\"]");
+            res += JSON.stringify(tmp).replace(/&/g, '&amp;') + catln(", id=\"", btoa(toString(startState)), " ", btoa(toString(endState)), "\"]");
          }
       }
 
