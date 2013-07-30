@@ -142,7 +142,7 @@
          if(e instanceof Error && 'stack' in e) {
             var stack = e.stack.split("\n");
             for(var i in stack) {
-               if(stack[i].match(location.href)) {
+               if(stack[i].match(location.href + ':')) {
                   var details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
                   if(details) {
                      handleError(e.message, parseInt(details[1]) - offsetError, e.stack, details[2]);
@@ -1344,4 +1344,7 @@
    _("fr", "Question {0} has no answers.", "La question {0} n’a pas de réponse.");
    _("fr", "You can draw the automaton bellow.", "Vous pouvez dessiner l'automate ci-dessous.");
    _("fr", "Test equivalence of 2 automata", "Tester l'équiv. entre 2 automates");
+   _("fr", "Reg. Exp. → automaton", "Exp. Reg. → automate");
+   _("fr", "Reg. Exp. → minimized automaton", "Exp. Reg. → automate minimisé");
+   _("fr", "Complete", "Compléter");
 })();
