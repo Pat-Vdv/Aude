@@ -1,7 +1,6 @@
 include determinization;
 include minimization;
 include completion;
-include automaton2json;
 
 function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
   if(!symetryAlreadyDone) {
