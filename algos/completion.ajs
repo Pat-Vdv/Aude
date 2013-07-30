@@ -1,0 +1,32 @@
+function complete(A) {
+   compA : Automaton;
+   trans : Table = A.getTransitionsTable();
+
+   compA.setInitialState(A.getInitialState());
+
+   let well = 'W';
+   while(A.hasState(well)) {
+      well += 'W';
+   }
+
+   foreach(state in A.getStates()) {
+      foreach(symbol in A.getAlphabet()) {
+         if(trans[state][symbol].isEmpty()) {
+            compA.addState(well);
+            compA.addTransition(state, symbol, well);
+         }
+      }
+   }
+
+   foreach(state in A.getFinalStates()) {
+      compA.setFinalState(state);
+   }
+
+   foreach(t in A.getTransitions()) {
+      compA.addTransition(t);
+   }
+
+   return compA;
+}
+
+run(complete, get_automaton(currentAutomaton));
