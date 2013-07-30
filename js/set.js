@@ -396,8 +396,8 @@
       /**
        * This method returns a string representation of the set.
        * @method toString
+       * ATTENTION: This method is not stabilized yet. The string representation of the set is still to be defined.
        * @memberof Set
-       * @note ATTENTION: This method is not stabilized yet. The string representation of the set is still to be defined.
        * @returns {string} Returns the string representation of the set.
        */
       toString: function() {
@@ -540,7 +540,7 @@
             return listToString(e);
          }
          else if(typeof e === 'string') {
-            if(/["'\\{\[\]}\(\)\s]/.test(e)) {
+            if(!e.length || /["'\\{\[\]}\(\)\s]/.test(e)) {
                e = JSON.stringify(e);
             }
             return e.toString();
