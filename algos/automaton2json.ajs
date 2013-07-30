@@ -1,4 +1,4 @@
-function jsonCode(A) {
+function automaton2json(A) {
   function toString(e) {
     return JSON.stringify(e.toString());
   }
@@ -44,4 +44,4 @@ function jsonCode(A) {
   return result + '\n\t]\n}';
 }
 
-run(jsonCode, get_automaton(currentAutomaton));
+run(automaton2json, get_automaton(currentAutomaton));
