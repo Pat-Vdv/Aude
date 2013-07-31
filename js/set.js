@@ -545,7 +545,7 @@
             }
             return e.toString();
          }
-         else if(e instanceof Set) {
+         else if(e instanceof Set || (that.Transition && e instanceof that.Transition) || (that.Automata) && e instanceof that.Automata) {
             return e.toString();
          }
          else {

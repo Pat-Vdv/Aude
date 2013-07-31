@@ -47,16 +47,20 @@
     * @class
     * @alias Automaton
     */
-   pkg.Automaton = function () {
-      this.states = new Set();
-      this.trans = new Set();
+   pkg.Automaton = function (A) {
+      if(A && !(A instanceof Automaton)) {
+         throw new Error(_("Automaton constructor takes an Automaton in argument, or nothing."));
+      }
+
+      this.states = A ? A.states.copy() : new Set();
+      this.trans =  A ? A.trans.copy() : new Set();
       this.trans.setTypeConstraint(pkg.Transition);
-      this.finalStates = new Set();
-      this.Sigma = new Set();
-      this.currentStates = new Set();
-      this.lastTakenTransitions = new Set();
+      this.finalStates = A ? A.finalStates.copy() : new Set();
+      this.Sigma = A ? A.Sigma.copy() : new Set();
+      this.currentStates = A ? A.currentStates.copy() : new Set();
+      this.lastTakenTransitions = A ? A.lastTakenTransitions.copy() : new Set();
       this.lastTakenTransitions.setTypeConstraint(pkg.Transition);
-      this.q_init = null;
+      this.q_init = A ? A.q_init : null;
    };
 
    pkg.Automaton.prototype = {
@@ -175,7 +179,7 @@
             this.states = dontCopy ? to_set(states) : new Set(states);
          }
          else {
-            throw(new Error(_('Automaton.setStates(): The given argument is not a set')));
+            throw(new Error(_('Automaton.setStates(): The given argument is not a set.')));
          }
       },
 
@@ -215,7 +219,7 @@
             this.finalStates = dontCopy ? to_set(states) : new Set(states);
          }
          else {
-            throw(new Error(_('Automaton.setFinalStates(): The given argument is not a set')));
+            throw(new Error(_('Automaton.setFinalStates(): The given argument is not a set.')));
          }
       },
 
@@ -545,7 +549,7 @@
        * @returns {string} Returns the string representation of the set.
        */
       toString: function() {
-         return "Automaton(" + this.states.toString() + ", " + this.Sigma.toString() + ", " + this.q_init.toString() + ", " + this.trans.toString() + "," + this.finalStates.toString() + ")";
+         return "Automaton(" + Set.prototype.elementToString(this.states) + ", " + Set.prototype.elementToString(this.Sigma) + ", " + Set.prototype.elementToString(this.q_init) + ", " + Set.prototype.elementToString(this.trans) + "," + Set.prototype.elementToString(this.finalStates) + ")";
       },
 
       /**
@@ -803,6 +807,10 @@
       */
       getLastTakenTransitions: function() {
          return this.lastTakenTransitions;
+      },
+
+      copy: function() {
+         return new Automaton(this);
       }
    };
 
@@ -1172,9 +1180,10 @@
    pkg.epsilon = 'ε';
 
 
-   _("fr", "Automaton.setStates(): The given argument is not a set", "Automaton.setStates() : L'argument donné n'est pas un ensemble");
-   _("fr", "Automaton.setFinalStates(): The given argument is not a set", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble");
+   _("fr", "Automaton.setStates(): The given argument is not a set.", "Automaton.setStates() : L'argument donné n'est pas un ensemble.");
+   _("fr", "Automaton.setFinalStates(): The given argument is not a set.", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble.");
    _("fr", "Automaton.runSymbol(): epsilon is forbidden.", "Automaton.runSymbol(): epsilon est interdit.");
    _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
+   _("fr", "Automaton constructor takes an Automaton in argument, or nothing.", "Le constructeur Automaton prend un Automaton en paramètre, ou rien.");
 
 })(this, this);
