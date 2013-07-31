@@ -168,10 +168,11 @@
        * @method
        * @memberof Automaton
        * @param {Set} states The set new set of states of the automaton.
+       * @param {Boolean} dontCopy If you don't want the function to copy the given set of state, set this to true; the set will be used directly.
        */
-      setStates: function(states) {
+      setStates: function(states, dontCopy) {
          if(states instanceof Set || states instanceof Array) {
-            this.states = to_set(states);
+            this.states = dontCopy ? to_set(states) : new Set(states);
          }
          else {
             throw(new Error(_('Automaton.setStates(): The given argument is not a set')));
@@ -206,11 +207,12 @@
        * @method
        * @memberof Automaton
        * @param {Set} states The new set of final states of the automaton.
+       * @param {Boolean} dontCopy If you don't want the function to copy the given set of state, set this to true; the set will be used directly.
        * @see Automaton#getAcceptingStates
        */
-      setFinalStates: function(states) {
+      setFinalStates: function(states, dontCopy) {
          if(states instanceof Set || states instanceof Array) {
-            this.finalStates = to_set(states);
+            this.finalStates = dontCopy ? to_set(states) : new Set(states);
          }
          else {
             throw(new Error(_('Automaton.setFinalStates(): The given argument is not a set')));
@@ -818,7 +820,7 @@
 
    pkg.Transition.prototype = {
       toString: function() {
-         return "Transition(" + JSON.stringify(this.startState) + ", " + JSON.stringify(this.symbol) + ", " + JSON.stringify(this.endState) + ")";
+         return "Transition(" + Set.prototype.elementToString(this.startState) + ", " + Set.prototype.elementToString(this.symbol) + ", " + Set.prototype.elementToString(this.endState) + ")";
       }
    };
 
@@ -1006,105 +1008,31 @@
     * @returns {Automaton} Returns the corresponding automaton.
     */
    pkg.read_automaton = function (code) {
-      var lastIndex;
-      function getNextValue(s, j, len) {
-         while(j < len && !s[j].trim() || s[j] === ',') {
-            ++j;
-         }
-
-         var j0 = j;
-         if(s[j] === '"' || s[j] === "'") {
-            var end = s[j++];
-            while(j < len && s[j] !== end) {
-               if(s[j] === '\\') {
-                  ++j;
-               }
-               ++j;
-            }
-            lastIndex = j+1;
-            return JSON.parse(end === "'" ?  '"' + s.substring(j0+1,j).replace(/"/g, '\\"') + '"': s.substring(j0,j+1));
-         }
-         else if(s[j] === "{") {
-            var set = new Set();
-            ++j;
-            var closed = false;
-            while(j < len) {
-               while(j < len && !s[j].trim() || s[j] === ',') {
-                  ++j;
-               }
-
-               if(s[j] === '}') {
-                  lastIndex = j+1;
-                  closed = true;
-                  j = lastIndex;
-                  break;
-               }
-               set.add(getNextValue(s, j, len));
-               j = lastIndex;
-            }
-            if(!closed) {
-               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
-            }
-            return set;
-         }
-         else if(s[j] === "(" || s[j] === '[') {
-            var end = s[j] === '(' ? ')' : ']';
-            var tuple = [];
-            ++j;
-            var closed = false;
-            while(j < len) {
-               while(j < len && !s[j].trim() || s[j] === ',') {
-                  ++j;
-               }
-
-               if(s[j] === end) {
-                  lastIndex = j+1;
-                  j = lastIndex;
-                  closed = true;
-                  break;
-               }
-
-               tuple.push(getNextValue(s, j, len));
-               j = lastIndex;
-            }
-            if(!closed) {
-               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
-            }
-            return tuple;
-         }
-         else {
-            while(j < len && s[j].trim() && ',})]'.indexOf(s[j]) === -1) {
-               ++j;
-            }
-            lastIndex = j;
-            return s.substring(j0,j).trim();
-         }
-      }
+      var getNextValue = Set.prototype.getNextValue;
 
       var c = code.split("\n");
       var a = new pkg.Automaton();
       var i=1, len = c.length;
-      a.setInitialState(getNextValue(c[0], 0, c[0].length));
+      a.setInitialState(getNextValue(c[0], 0, c[0].length).value);
 
       for(i=1; i < len && c[i].trim(); ++i) {
-         a.addState(getNextValue(c[i], 0, c[i].length));
+         a.addState(getNextValue(c[i], 0, c[i].length).value);
       }
 
       for(++i; i < len && c[i].trim(); ++i) {
-         a.addFinalState(getNextValue(c[i], 0, c[i].length));
+         a.addFinalState(getNextValue(c[i], 0, c[i].length).value);
       }
 
-      var startState, endState, symbol, j, leng;
+      var startState, endState, symbol, j, leng, nextValue;
       for(++i; i < len && c[i].trim(); ++i) {
-         lastIndex = 0;
          leng = c[i].length;
-         startState = getNextValue(c[i], lastIndex, leng);
-         symbol = getNextValue(c[i], lastIndex, leng);
+         startState = (nextValue = getNextValue(c[i], 0, leng)).value;
+         symbol = (nextValue = getNextValue(c[i], nextValue.lastIndex, leng)).value;
          if(symbol === '\\e') {
             symbol = pkg.epsilon;
          }
-         j = lastIndex;
-         endState = getNextValue(c[i], lastIndex, leng);
+         j = nextValue.lastIndex;
+         endState = getNextValue(c[i], j, leng).value;
 
          a.addTransition(startState, symbol, endState);
       }

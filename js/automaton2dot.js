@@ -121,28 +121,34 @@
       }
       res += cat("\t_begin -> ", JSON.stringify(toString(initialState).replace(/&/g, '&amp;')), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
 
-      for (var startState in table) {
-         var trans = table[startState];
-         for(var endState in trans) {
-            res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, '&amp;'), " -> ", JSON.stringify(toString(endState)).replace(/&/g, '&amp;'), " [label = ");
+      var states = A.getStates().getList(), startState, endState, trans;
+      for (var sS in states) {
+         startState = states[sS];
+         if(table[startState]) {
+            trans = table[startState];
+            for(var eS in states) {
+               if(trans[endState = states[eS]]) {
+                  res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, '&amp;'), " -> ", JSON.stringify(toString(endState)).replace(/&/g, '&amp;'), " [label = ");
 
-            var symbols = table[startState][endState].getSortedList(),
-                comma   = "",
-                s       = "",
-                tmp     = "";
+                  var symbols = table[startState][endState].getSortedList(),
+                      comma   = "",
+                      s       = "",
+                      tmp     = "";
 
-            for(var symbol_index in symbols) {
-               s = toString(symbols[symbol_index]);
-               if(s.match(/[\s,"]/)) {
-                  s = JSON.stringify(s);
-               }
+                  for(var symbol_index in symbols) {
+                     s = toString(symbols[symbol_index]);
+                     if(s.match(/[\s,"]/)) {
+                        s = JSON.stringify(s);
+                     }
 
-               tmp += cat(comma, s);
-               if(!comma.length) {
-                  comma = ",";
+                     tmp += cat(comma, s);
+                     if(!comma.length) {
+                        comma = ",";
+                     }
+                  }
+                  res += JSON.stringify(tmp).replace(/&/g, '&amp;') + catln(", id=\"", btoa(toString(startState)), " ", btoa(toString(endState)), "\"]");
                }
             }
-            res += JSON.stringify(tmp).replace(/&/g, '&amp;') + catln(", id=\"", btoa(toString(startState)), " ", btoa(toString(endState)), "\"]");
          }
       }
 

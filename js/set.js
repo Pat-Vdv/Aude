@@ -540,7 +540,7 @@
             return listToString(e);
          }
          else if(typeof e === 'string') {
-            if(!e.length || /["'\\{\[\]}\(\)\s]/.test(e)) {
+            if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e)) {
                e = JSON.stringify(e);
             }
             return e.toString();
@@ -551,6 +551,109 @@
          else {
             return JSON.stringify(e);
          }
+      },
+
+      getNextValue: function(s, j, len) {
+         if(len === undefined) {
+            len = s.length;
+         }
+
+         var lastIndex;
+         while(j < len && !s[j].trim() || s[j] === ',') {
+            ++j;
+         }
+
+         var j0 = j;
+         if(s[j] === '"' || s[j] === "'") {
+            var end = s[j++];
+            while(j < len && s[j] !== end) {
+               if(s[j] === '\\') {
+                  ++j;
+               }
+               ++j;
+            }
+            lastIndex = j+1;
+            return {
+               value:JSON.parse(end === "'" ?  '"' + s.substring(j0+1,j).replace(/"/g, '\\"') + '"': s.substring(j0,j+1)),
+               lastIndex:lastIndex
+            };
+         }
+         else if(s[j] === "{") {
+            var set = new Set();
+            ++j;
+            var closed = false;
+            while(j < len) {
+               while(j < len && !s[j].trim() || s[j] === ',') {
+                  ++j;
+               }
+
+               if(s[j] === '}') {
+                  lastIndex = j+1;
+                  closed = true;
+                  j = lastIndex;
+                  break;
+               }
+               var nextValue = Set.prototype.getNextValue(s, j, len);
+               set.add(nextValue.value);
+               j = nextValue.lastIndex;
+            }
+            if(!closed) {
+               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
+            }
+            return {
+               value:set,
+               lastIndex:lastIndex
+            };
+         }
+         else if(s[j] === "(" || s[j] === '[') {
+            var end = s[j] === '(' ? ')' : ']';
+            var tuple = [];
+            ++j;
+            var closed = false;
+            while(j < len) {
+               while(j < len && !s[j].trim() || s[j] === ',') {
+                  ++j;
+               }
+
+               if(s[j] === end) {
+                  lastIndex = j+1;
+                  j = lastIndex;
+                  closed = true;
+                  break;
+               }
+
+               var nextValue = Set.prototype.getNextValue(s, j, len);
+               tuple.push(nextValue.value);
+               j = nextValue.lastIndex;
+            }
+            if(!closed) {
+               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
+            }
+            return {
+               value:tuple,
+               lastIndex:lastIndex
+            };
+         }
+         else {
+            while(j < len && s[j].trim() && ',})]'.indexOf(s[j]) === -1) {
+               ++j;
+            }
+            lastIndex = j;
+            return {
+               value:s.substring(j0,j).trim(),
+               lastIndex:lastIndex
+            };
+         }
+      },
+ 
+      getValue: function(s) {
+         s = s.trim();
+         var len = s.length,
+             nextValue = Set.prototype.getNextValue(s, 0, len);
+         if(nextValue.lastIndex === len) {
+            return nextValue.value;
+         }
+         throw new Error('Malformed value');
       }
    };
 

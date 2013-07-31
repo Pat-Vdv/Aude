@@ -223,7 +223,11 @@
    // Retrieve the code of the automaton #index, svg code included.
    // if the <svg> representation is not desired (e.g. you need a cleaner visual representation of the automaton),
    // set withoutSVG to true
-   pkg.getAutomatonCode = function (index, withoutSVG) {
+   pkg.getAutomatonCode = function (index, withoutSVG, getStringValue) {
+      if(!getStringValue) {
+         getStringValue = function(s){return JSON.stringify(s);};
+      }
+
       pkg.cleanSVG(pkg.currentIndex);
       if(!initialStates[index]) {
          return ''; // automata without initial states are not supported
@@ -243,16 +247,16 @@
          }
       }
 
-      var code = atob(initialStates[index].id) + '\n';
+      var code = getStringValue(atob(initialStates[index].id)) + '\n';
 
       for(i=0, len = states.length; i < len; ++i) {
-         code += states[i] + '\n';
+         code += getStringValue(states[i]) + '\n';
       }
 
       code += '\n';
 
       for(i=0, len = finalStates.length; i < len; ++i) {
-         code += finalStates[i] + '\n';
+         code += getStringValue(finalStates[i]) + '\n';
       }
 
       code += '\n';
@@ -268,11 +272,53 @@
 
             var symbols = parse_transition(text);
             for(var s in symbols) {
-               code +=  JSON.stringify(f) + ' ' + symbols[s] + ' ' + JSON.stringify(t) + '\n';
+               code +=  getStringValue(f) + ' ' + symbols[s] + ' ' + getStringValue(t) + '\n';
             }
          }
       }
       return code + (withoutSVG ? '':'\n<representation type="image/svg+xml">\n' + pkg.outerHTML(svgs[index]).trim() + '\n</representation>\n');
+   };
+
+   pkg.getAutomaton = function (index, getValue) {
+      var A = new Automaton();
+      pkg.cleanSVG(pkg.currentIndex);
+      if(!initialStates[index]) {
+         return ''; // automata without initial states are not supported
+      }
+
+      if(!getValue) {
+         getValue = function(s) {return s;};
+      }
+
+      var nodes = svgs[index].querySelectorAll('.node'), i, len;
+
+      for(i=0, len = nodes.length; i < len; ++i) {
+         if(nodes[i].querySelectorAll('ellipse').length > 1) {
+            A.addFinalState(getValue(atob(nodes[i].id)));
+         }
+         else if(nodes[i] !== initialState) {
+            A.addState(getValue(atob(nodes[i].id)));
+         }
+      }
+
+      A.setInitialState(getValue(atob(initialStates[index].id)));
+
+      var tid,f,t,text,trans = svgs[index].querySelectorAll('.edge');
+
+      for(i=0, len = trans.length; i < len; ++i) {
+         if(trans[i] !== initialStateArrows[index]) {
+            tid  = trans[i].id.split(' ');
+            text = trans[i].querySelector('text').textContent;
+            f = atob(tid[0]);
+            t = atob(tid[1]);
+
+            var symbols = parse_transition(text);
+            for(var s in symbols) {
+               A.addTransition(getValue(f), getValue(symbols[s]), getValue(t));
+            }
+         }
+      }
+      return A;
    };
 
    pkg.getSVG = function(index) {
