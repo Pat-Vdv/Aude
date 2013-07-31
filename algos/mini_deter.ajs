@@ -1,3 +1,0 @@
-include determinization;
-include minimization;
-run(minimize, get_automaton(currentAutomaton), true);
