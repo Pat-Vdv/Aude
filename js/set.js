@@ -55,7 +55,7 @@
       this.l = {};
       this.listeners = [];
       if(l) {
-         if(l instanceof Set) {// l is a set
+         if(l instanceof pkg.Set) {// l is a set
             this.setTypeConstraint(l.typeConstraint);
             l = l.getList();
          }
@@ -401,6 +401,9 @@
        * @returns {string} Returns the string representation of the set.
        */
       toString: function() {
+         if(this.isEmpty()) {
+            return 'Set({})';
+         }
          var res = '';
          var l = this.getSortedList();
          for(var i in l) {
@@ -536,20 +539,37 @@
       },
 
       elementToString : function(e) {
-         if(e instanceof Array) {
-            return listToString(e);
+         if(isNaN(e)) {
+            return 'NaN';
          }
-         else if(typeof e === 'string') {
-            if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e)) {
-               e = JSON.stringify(e);
-            }
-            return e.toString();
-         }
-         else if(e instanceof Set || (that.Transition && e instanceof that.Transition) || (that.Automata) && e instanceof that.Automata) {
-            return e.toString();
-         }
-         else {
-            return JSON.stringify(e);
+         switch(e) {
+            case undefined:
+               return 'undefined';
+            case null:
+               return 'null';
+            case -Infinity:
+               return '-Infinity';
+            case Infinity:
+               return 'Infinity';
+            default:
+               if(e instanceof Array) {
+                  return listToString(e);
+               }
+               else if(typeof e === 'string') {
+                  if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e) == e) {
+                     e = JSON.stringify(e);
+                  }
+                  return e.toString();
+               }
+               else if(e instanceof Date) {
+                  return 'Date("' + e.toString() + '")';
+               }
+               else if(typeof e === "object" && e.serializeElement) {
+                  return e.serializeElement();
+               }
+               else {
+                  return JSON.stringify(e);
+               }
          }
       },
 
@@ -598,7 +618,7 @@
                j = nextValue.lastIndex;
             }
             if(!closed) {
-               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
+               throw(new Error("Value is malformed."));
             }
             return {
                value:set,
@@ -627,7 +647,7 @@
                j = nextValue.lastIndex;
             }
             if(!closed) {
-               throw(new Error(format(_("read_automaton: Line {0} is malformed."), i+1)));
+               throw(new Error(_("Value is malformed.")));
             }
             return {
                value:tuple,
@@ -635,13 +655,87 @@
             };
          }
          else {
-            while(j < len && s[j].trim() && ',})]'.indexOf(s[j]) === -1) {
+            while(j < len && s[j].trim() && '(,})]'.indexOf(s[j]) === -1) {
                ++j;
             }
-            lastIndex = j;
+            var valName = s.substring(j0,j).trim();
+            if(s[j] === '(') {
+               if(/^[a-zA-Z]+$/.test(valName)) {
+                  if(typeof that[valName] !== 'function') {
+                     throw new Error(_("Constructor name in value refers to unkown class."));
+                  }
+                  var nextValue, values = [];
+                  ++j;
+                  while(j < len && s[j] !== ')') {
+                     nextValue = Set.prototype.getNextValue(s,j,len);
+                     j = nextValue.lastIndex;
+                     values.push(nextValue.value);
+                  }
+               }
+               if(valName === 'Date') {
+                  return {
+                     value : new Date(values[0] || null),
+                     lastIndex:j+1
+                  }
+               }
+               var f = function(){};
+               f.prototype = that[valName].prototype;
+               var v = new f;
+               that[valName].apply(v, values);
+               return {
+                  value:v,
+                  lastIndex:j+1
+               };
+            }
+            switch(valName) {
+               case 'true':
+                  return {
+                     value:true,
+                     lastIndex:j
+                  };
+               case 'false':
+                  return {
+                     value:false,
+                     lastIndex:j
+                  };
+               case 'null':
+                  return {
+                     value:null,
+                     lastIndex:j
+                  };
+               case 'undefined':
+                  return {
+                     value:undefined,
+                     lastIndex:j
+                  };
+               case 'NaN':
+                  return {
+                     value:NaN,
+                     lastIndex:j
+                  };
+               case 'Infinity':
+               case '+Infinity':
+                  return {
+                     value:Infinity,
+                     lastIndex:j
+                  };
+               case '-Infinity':
+                  return {
+                     value:-infinity,
+                     lastIndex:j
+                  };
+               default:
+                  var d = parseFloat(valName);
+                  if(d == valName) {
+                     return {
+                        value:d,
+                        lastIndex:j
+                     };
+                  }
+            }
             return {
                value:s.substring(j0,j).trim(),
-               lastIndex:lastIndex
+               lastIndex:j
             };
          }
       },
@@ -653,10 +747,11 @@
          if(nextValue.lastIndex === len) {
             return nextValue.value;
          }
-         throw new Error('Malformed value');
+         throw new Error('Value is malformed');
       }
    };
 
+   pkg.Set.prototype.serializeElement = pkg.Set.prototype.toString;
    pkg.new_set = function (l) {
       return new pkg.Set(l);
    };
@@ -666,7 +761,7 @@
          return l;
       }
       else {
-         return pkg.new_set(l);
+         return new pkg.Set(l);
       }
    };
 
@@ -770,4 +865,6 @@
    };
 
    _("fr", "pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.", "pkg.Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
+   _("fr", "Value is malformed.", "La valeur est malformée.");
+   _("fr", "Constructor name in value refers to unkown class.", "Le nom de constructeur dans la valeur fait référence à une classe inconnue.");
 })(this, this);

@@ -31,7 +31,7 @@
 /**
  * @file This is a class to manipulate automata in Javascript
  * @author Raphaël Jakse
- * @requires set.js
+ * @requires Set.js
  * 
  */
 
@@ -47,20 +47,29 @@
     * @class
     * @alias Automaton
     */
-   pkg.Automaton = function (A) {
-      if(A && !(A instanceof Automaton)) {
-         throw new Error(_("Automaton constructor takes an Automaton in argument, or nothing."));
+   pkg.Automaton = function (states, Sigma, q_init, trans, finalStates) {
+      if(states) {
+         if(state instanceof pkg.Automaton) {
+            pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.q_init, trans.copy(), finalStates.copy());
+            this.currentStates = A.currentStates.copy();
+            this.lastTakenTransitions = A.lastTakenTransitions.copy();
+         }
+         else if(!(states instanceof Array) && !(states instanceof Set)) {
+            throw new Error(_("Automaton constructor takes an Automaton in argument, or nothing."));
+         }
       }
 
-      this.states = A ? A.states.copy() : new Set();
-      this.trans =  A ? A.trans.copy() : new Set();
+      this.states = new Set(states);
+      this.trans =  new Set(Sigma);
       this.trans.setTypeConstraint(pkg.Transition);
-      this.finalStates = A ? A.finalStates.copy() : new Set();
-      this.Sigma = A ? A.Sigma.copy() : new Set();
-      this.currentStates = A ? A.currentStates.copy() : new Set();
-      this.lastTakenTransitions = A ? A.lastTakenTransitions.copy() : new Set();
+      this.finalStates = new Set(finalStates);
+      if(!this.currentStates) {
+         this.currentStates = new Set();
+         this.lastTakenTransitions = new Set();
+      }
       this.lastTakenTransitions.setTypeConstraint(pkg.Transition);
-      this.q_init = A ? A.q_init : null;
+      this.Sigma = new Set(Sigma);
+      this.q_init = q_init;
    };
 
    pkg.Automaton.prototype = {
@@ -107,7 +116,7 @@
       },
 
       /**
-       * This method removes a state from the set of final states of the automaton.
+       * This method removes a state from the Set of final states of the automaton.
        * @method
        * @memberof Automaton
        * @param {any} state The state to add, can be of any type.
@@ -137,10 +146,10 @@
       },
 
       /**
-       * This method returns the set of non final (accepting) states of the automaton.
+       * This method returns the Set of non final (accepting) states of the automaton.
        * @method
        * @memberof Automaton
-       * @returns {Set} The set of non final states
+       * @returns {Set} The Set of non final states
        */
       getNonFinalStates: function() {
          return minus(a.getStates() - a.getFinalStates());
@@ -150,7 +159,7 @@
        * This method is an alias of the getNonAcceptingStates method.
        * @method
        * @memberof Automaton
-       * @returns {Set} The set of non final states
+       * @returns {Set} The Set of non final states
        * @see Automaton#getNonAcceptingStates
        */
       getNonAcceptingStates: function() {
@@ -158,36 +167,36 @@
       },
 
       /**
-       * This method returns the set of states of the automaton.
+       * This method returns the Set of states of the automaton.
        * @method
        * @memberof Automaton
-       * @returns {Set} The set of non final states
+       * @returns {Set} The Set of non final states
        */
       getStates: function() {
          return this.states;
       },
 
       /**
-       * This method sets the set of states of the automaton.
+       * This method sets the Set of states of the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} states The set new set of states of the automaton.
-       * @param {Boolean} dontCopy If you don't want the function to copy the given set of state, set this to true; the set will be used directly.
+       * @param {Set} states The Set new Set of states of the automaton.
+       * @param {Boolean} dontCopy If you don't want the function to copy the given Set of state, Set this to true; the Set will be used directly.
        */
       setStates: function(states, dontCopy) {
          if(states instanceof Set || states instanceof Array) {
             this.states = dontCopy ? to_set(states) : new Set(states);
          }
          else {
-            throw(new Error(_('Automaton.setStates(): The given argument is not a set.')));
+            throw(new Error(_('Automaton.setStates(): The given argument is not a Set.')));
          }
       },
 
       /**
-       * This method returns the set of final (accepting) states of the automaton.
+       * This method returns the Set of final (accepting) states of the automaton.
        * @method
        * @memberof Automaton
-       * @returns {Set} The set of final states of the automaton.
+       * @returns {Set} The Set of final states of the automaton.
        * @see Automaton#setFinalStates
        * @see Automaton#setFinalState
        */
@@ -199,7 +208,7 @@
        * This method is an alias of the getFinalStates method.
        * @method
        * @memberof Automaton
-       * @returns {Set} The set of final states of the automaton.
+       * @returns {Set} The Set of final states of the automaton.
        * @see Automaton#getFinalStates
        */
       getAcceptingStates: function() {
@@ -207,11 +216,11 @@
       },
 
       /**
-       * This method sets the set of final (accepting) states of the automaton. Every other state is set to non final.
+       * This method sets the Set of final (accepting) states of the automaton. Every other state is Set to non final.
        * @method
        * @memberof Automaton
-       * @param {Set} states The new set of final states of the automaton.
-       * @param {Boolean} dontCopy If you don't want the function to copy the given set of state, set this to true; the set will be used directly.
+       * @param {Set} states The new Set of final states of the automaton.
+       * @param {Boolean} dontCopy If you don't want the function to copy the given Set of state, Set this to true; the Set will be used directly.
        * @see Automaton#getAcceptingStates
        */
       setFinalStates: function(states, dontCopy) {
@@ -219,7 +228,7 @@
             this.finalStates = dontCopy ? to_set(states) : new Set(states);
          }
          else {
-            throw(new Error(_('Automaton.setFinalStates(): The given argument is not a set.')));
+            throw(new Error(_('Automaton.setFinalStates(): The given argument is not a Set.')));
          }
       },
 
@@ -378,12 +387,12 @@
       },
 
       /**
-       * This method returns the set of transitions of the automaton.
+       * This method returns the Set of transitions of the automaton.
        * 
        * @method
        * @memberof Automaton
        * 
-       * @returns {Set} Returns the set of transitions of the Automaton.
+       * @returns {Set} Returns the Set of transitions of the Automaton.
        * @see Automaton#addTransition
        * @see Automaton#removeTransition
        * @see Automaton#hasTransition
@@ -395,7 +404,7 @@
       },
 
       /**
-       * This method returns the set of symbols of the Automaton.
+       * This method returns the Set of symbols of the Automaton.
        * 
        * @method
        * @memberof Automaton
@@ -420,7 +429,7 @@
        *   var table = A.getTransitionsTable();
        *   for(var startState in table) {
        *      for(var symbol in table[startState]) {
-       *          // table[startState][symbol] is defined for each couple (startState, symbol) of the automaton and is a set.
+       *          // table[startState][symbol] is defined for each couple (startState, symbol) of the automaton and is a Set.
        *          table[startState][symbol].forReach(function(endState) {
        *             console.log(startState, symbol, endState); // logs all the automaton's transition
        *          });
@@ -449,10 +458,10 @@
       },
 
       /**
-       * This method sets the set of symbols of the automaton.
+       * This method sets the Set of symbols of the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} alphabet The set of symbol to use.
+       * @param {Set} alphabet The Set of symbol to use.
        * @see Automaton#addAlphabet
        * @see Automaton#removeAlphabet
        * @see Automaton#addSymbol
@@ -464,10 +473,10 @@
       },
 
       /**
-       * This method adds a set of symbols to the automaton.
+       * This method adds a Set of symbols to the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} alphabet The set of symbol to add to the current alphabet.
+       * @param {Set} alphabet The Set of symbol to add to the current alphabet.
        * @see Automaton#setAlphabet
        * @see Automaton#removeAlphabet
        * @see Automaton#addSymbol
@@ -479,10 +488,10 @@
       },
  
       /**
-       * This method removes a set of symbols from the automaton.
+       * This method removes a Set of symbols from the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} alphabet The set of symbol to remove from the current alphabet.
+       * @param {Set} alphabet The Set of symbol to remove from the current alphabet.
        * @see Automaton#addAlphabet
        * @see Automaton#setAlphabet
        * @see Automaton#addSymbol
@@ -546,7 +555,7 @@
        * @method toString
        * @memberof Automaton
        * @note ATTENTION: This method is not stabilized yet. The string representation of the Automaton is still to be defined.
-       * @returns {string} Returns the string representation of the set.
+       * @returns {string} Returns the string representation of the Set.
        */
       toString: function() {
          return "Automaton(" + Set.prototype.elementToString(this.states) + ", " + Set.prototype.elementToString(this.Sigma) + ", " + Set.prototype.elementToString(this.q_init) + ", " + Set.prototype.elementToString(this.trans) + "," + Set.prototype.elementToString(this.finalStates) + ")";
@@ -576,7 +585,7 @@
        * This method sets the current states of the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} states The set of states to make current
+       * @param {Set} states The Set of states to make current
        * @see Automaton#setCurrentState
        * @see Automaton#addCurrentState
        * @see Automaton#addCurrentStates
@@ -596,7 +605,7 @@
        * This method make states of the automaton current.
        * @method
        * @memberof Automaton
-       * @param {any} state The state to add to the set of current states.
+       * @param {any} state The state to add to the Set of current states.
        * @see Automaton#setCurrentState
        * @see Automaton#setCurrentStates
        * @see Automaton#addCurrentStates
@@ -612,10 +621,10 @@
       },
 
       /**
-       * This method remove a state from the set of current states of the automaton.
+       * This method remove a state from the Set of current states of the automaton.
        * @method
        * @memberof Automaton
-       * @param {any} state The state to remove from the set of current states.
+       * @param {any} state The state to remove from the Set of current states.
        * @see Automaton#setCurrentState
        * @see Automaton#setCurrentStates
        * @see Automaton#addCurrentState
@@ -628,10 +637,10 @@
       },
 
       /**
-       * This method add a set of states to the set of current states of the automaton.
+       * This method add a Set of states to the Set of current states of the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} states The set of states to add to the set of current states.
+       * @param {Set} states The Set of states to add to the Set of current states.
        * @see Automaton#setCurrentState
        * @see Automaton#setCurrentStates
        * @see Automaton#addCurrentState
@@ -644,10 +653,10 @@
       },
 
       /**
-       * This method add a set of states to the set of current states of the automaton.
+       * This method add a Set of states to the Set of current states of the automaton.
        * @method
        * @memberof Automaton
-       * @param {Set} states The set of states to add to the set of current states.
+       * @param {Set} states The Set of states to add to the Set of current states.
        * @see Automaton#setCurrentState
        * @see Automaton#setCurrentStates
        * @see Automaton#addCurrentState
@@ -660,10 +669,10 @@
       },
 
       /**
-       * This method returns the set of current states of the automaton.
+       * This method returns the Set of current states of the automaton.
        * @method
        * @memberof Automaton
-       * @return {Set} The set of current states of the automaton.
+       * @return {Set} The Set of current states of the automaton.
        * @see Automaton#setCurrentState
        * @see Automaton#setCurrentStates
        * @see Automaton#addCurrentState
@@ -719,7 +728,7 @@
        * @throws {Error} Throws an error if epsilon is given as the symbol.
        * @param {any} symbol The symbol to "eat"
        * @param {Array} [transitionsTable] The table of transition, as given by the getTransitionsTable() method
-       * @param {boolean} [dontEraseTakenTransitions] dontEraseTakenTransitions If true, don't reinitialize the set of last taken transitions, just append newly taken transition to it.
+       * @param {boolean} [dontEraseTakenTransitions] dontEraseTakenTransitions If true, don't reinitialize the Set of last taken transitions, just append newly taken transition to it.
        * @see Automaton#runWord
        * @see Automaton#acceptedWord
        * @see Automaton#getCurrentStates
@@ -761,7 +770,7 @@
       },
 
       /**
-       * This method runs each symbol of the list of symbol given. See the description of the runSymbol for more information. Don't forget to set the current state to the initial state if you need it.
+       * This method runs each symbol of the list of symbol given. See the description of the runSymbol for more information. Don't forget to Set the current state to the initial state if you need it.
        * @method
        * @memberof Automaton
        * @throws {Error} Throws an error if epsilon is given as a symbol.
@@ -798,10 +807,10 @@
       },
  
       /**
-       * This method returns the set of transitions that were taken while running on the last symbol. See the runSymbol method for more information.
+       * This method returns the Set of transitions that were taken while running on the last symbol. See the runSymbol method for more information.
        * @method
        * @memberof Automaton
-       * @returns {Set} The set of last taken transitions
+       * @returns {Set} The Set of last taken transitions
        * @see Automaton#runSymbol
        * @see Automaton#getCurrentStates
       */
@@ -813,6 +822,8 @@
          return new Automaton(this);
       }
    };
+
+   pkg.Automaton.prototype.serializeElement = pkg.Automaton.prototype.toString;
 
    /**
     * A class to manipulate transitions of automata in Javascript.
@@ -831,6 +842,8 @@
          return "Transition(" + Set.prototype.elementToString(this.startState) + ", " + Set.prototype.elementToString(this.symbol) + ", " + Set.prototype.elementToString(this.endState) + ")";
       }
    };
+
+   pkg.Transition.prototype.serializeElement = pkg.Transition.prototype;
 
    pkg.new_automaton = function () {
       return new pkg.Automaton();
@@ -1021,37 +1034,42 @@
       var c = code.split("\n");
       var a = new pkg.Automaton();
       var i=1, len = c.length;
-      a.setInitialState(getNextValue(c[0], 0, c[0].length).value);
+      try {
+         a.setInitialState(getNextValue(c[0], 0, c[0].length).value);
 
-      for(i=1; i < len && c[i].trim(); ++i) {
-         a.addState(getNextValue(c[i], 0, c[i].length).value);
-      }
-
-      for(++i; i < len && c[i].trim(); ++i) {
-         a.addFinalState(getNextValue(c[i], 0, c[i].length).value);
-      }
-
-      var startState, endState, symbol, j, leng, nextValue;
-      for(++i; i < len && c[i].trim(); ++i) {
-         leng = c[i].length;
-         startState = (nextValue = getNextValue(c[i], 0, leng)).value;
-         symbol = (nextValue = getNextValue(c[i], nextValue.lastIndex, leng)).value;
-         if(symbol === '\\e') {
-            symbol = pkg.epsilon;
+         for(i=1; i < len && c[i].trim(); ++i) {
+            a.addState(getNextValue(c[i], 0, c[i].length).value);
          }
-         j = nextValue.lastIndex;
-         endState = getNextValue(c[i], j, leng).value;
 
-         a.addTransition(startState, symbol, endState);
+         for(++i; i < len && c[i].trim(); ++i) {
+            a.addFinalState(getNextValue(c[i], 0, c[i].length).value);
+         }
+
+         var startState, endState, symbol, j, leng, nextValue;
+         for(++i; i < len && c[i].trim(); ++i) {
+            leng = c[i].length;
+            startState = (nextValue = getNextValue(c[i], 0, leng)).value;
+            symbol = (nextValue = getNextValue(c[i], nextValue.lastIndex, leng)).value;
+            if(symbol === '\\e') {
+               symbol = pkg.epsilon;
+            }
+            j = nextValue.lastIndex;
+            endState = getNextValue(c[i], j, leng).value;
+
+            a.addTransition(startState, symbol, endState);
+         }
+         return a;
       }
-      return a;
+      catch(e) {
+         throw new Error(format(_("read_automaton: Line {0} is malformed."), i+1));
+      }
    };
 
    /**
     * Returns the textual representation of an automaton
     * @alias automaton_code
     * @param {Automaton} a The automaton to get the textual representation of.
-    * @returns {String} The string representation of the Automaton. The empty string is returned if the Automaton is not correct, e.g. no initial state is set.
+    * @returns {String} The string representation of the Automaton. The empty string is returned if the Automaton is not correct, e.g. no initial state is Set.
     */
    pkg.automaton_code = function (a) {
       function toString(o) {
@@ -1180,8 +1198,8 @@
    pkg.epsilon = 'ε';
 
 
-   _("fr", "Automaton.setStates(): The given argument is not a set.", "Automaton.setStates() : L'argument donné n'est pas un ensemble.");
-   _("fr", "Automaton.setFinalStates(): The given argument is not a set.", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble.");
+   _("fr", "Automaton.setStates(): The given argument is not a Set.", "Automaton.setStates() : L'argument donné n'est pas un ensemble.");
+   _("fr", "Automaton.setFinalStates(): The given argument is not a Set.", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble.");
    _("fr", "Automaton.runSymbol(): epsilon is forbidden.", "Automaton.runSymbol(): epsilon est interdit.");
    _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
    _("fr", "Automaton constructor takes an Automaton in argument, or nothing.", "Le constructeur Automaton prend un Automaton en paramètre, ou rien.");

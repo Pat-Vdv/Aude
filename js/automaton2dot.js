@@ -71,7 +71,7 @@
           NonAcceptingStates = minus(A.getStates(), AcceptingStates).getList(),
           q;
 
-      if(initialState === null || initialState === undefined) {
+      if(!A.hasState(initialState)) {
          throw new Error("Automaton has no initial state.");
       }
 
@@ -115,7 +115,7 @@
          }
          table[t.startState][t.endState].add(t.symbol);
       }
-      if(initialState === null || initialState === undefined) {
+      if(!A.hasState(initialState)) {
          throw new Error("Initial state is not set.");
       }
       res += cat("\t_begin -> ", JSON.stringify(toString(initialState).replace(/&/g, '&amp;')), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
