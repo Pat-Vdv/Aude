@@ -539,7 +539,7 @@
       },
 
       elementToString : function(e) {
-         if(isNaN(e)) {
+         if(typeof e === 'number ' && isNaN(e)) {
             return 'NaN';
          }
          switch(e) {
