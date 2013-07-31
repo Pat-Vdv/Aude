@@ -67,14 +67,13 @@
       }
 
       var initialState       = A.getInitialState(),
-          NonAcceptingStates = A.getStates(),
           AcceptingStates    = A.getFinalStates().getList(),
+          NonAcceptingStates = minus(A.getStates(), AcceptingStates).getList(),
           q;
 
       if(initialState === null || initialState === undefined) {
          throw new Error("Automaton has no initial state.");
       }
-      NonAcceptingStates = NonAcceptingStates.minusInPlace(AcceptingStates).getList();
 
       var res = catln("digraph ", JSON.stringify(title), " {\n\trankdir=LR\n\t_begin [style = invis];");
 
