@@ -43,4 +43,29 @@ function determinize(A, complete) {
   return DetA;
 }
 
-run(determinize, get_automaton(currentAutomaton));
+function isDeterminized(A) {
+   t        : Table = A.getTransitionsTable();
+   Alphabet : Set = A.getAlphabet();
+
+   for(let state in t) {
+      // epsilon transition:
+      if(t[state][epsilon] && !t[state][epsilon].isEmpty()) {
+         return false;
+      }
+
+      foreach(symbol in Alphabet) {
+         if(t[state][symbol].card() > 1) {
+            return false;
+         }
+      }
+   }
+   return true;
+}
+
+run(function() {
+   let A = get_automaton(currentAutomaton);
+   if(isDeterminized(A)) {
+      return A;
+   }
+   return determinize(A);
+});
