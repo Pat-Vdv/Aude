@@ -1,0 +1,42 @@
+include determinization;
+include completion;
+
+function product(A1, A2, deter) {
+  if(deter === false) {
+    A1 = A1.copy();
+    A2 = A2.copy();
+  }
+  else {
+    A1 = isDeterminized(A1) ? A1.copy() : determinize(A1, false);
+    A2 = isDeterminized(A2) ? A2.copy() : determinize(A2, false);
+  }
+
+  prodA : Automaton;
+  Ta    : Table = A1.getTransitionsTable();
+  Tb    : Table = A2.getTransitionsTable();
+
+  prodA.setStates(cross(A1.getStates(), A2.getStates()), true);
+  prodA.setAlphabet(A1.getAlphabet() union A2.getAlphabet());
+
+  prodA.setInitialState([A1.getInitialState(), A2.getInitialState()]);
+  prodA.setFinalStates(cross(A1.getFinalStates(), A2.getFinalStates()), true);
+
+  let dest1, dest2;
+
+  foreach(state in prodA.getStates()) {
+    foreach(symbol in prodA.getAlphabet()) {
+      dest1 = Ta[state[0]][symbol];
+      dest2 = Tb[state[1]][symbol];
+      if(!dest1.isEmpty() && !dest2.isEmpty()) {
+	      prodA.addTransition(
+            [state[0], state[1]],
+                  symbol,
+            [dest1.getList()[0], dest2.getList()[0]]
+          );
+      }
+    }
+  }
+  return prodA;
+}
+
+run(product, get_automaton(currentAutomaton), get_automaton(currentAutomaton+1));
