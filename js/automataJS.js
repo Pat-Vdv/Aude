@@ -785,6 +785,9 @@
             return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables});
          }
       }
+      else if(symbol === '!') {
+         return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables, value:value, onlyOneValue:onlyOneValue});
+      }
       else {
          res += symbol; // ?? (string, number, litteral, ... ?)
       }
@@ -988,7 +991,7 @@
             }
          }
          else if(type === operator) {
-            if(onlyOneValue) {
+            if(onlyOneValue && symbol !== '!') {
                i = deb;
                return res;
             }
