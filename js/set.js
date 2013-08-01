@@ -401,9 +401,6 @@
        * @returns {string} Returns the string representation of the set.
        */
       toString: function() {
-         if(this.isEmpty()) {
-            return 'Set({})';
-         }
          var res = '';
          var l = this.getSortedList();
          for(var i in l) {

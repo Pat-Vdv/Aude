@@ -60,7 +60,9 @@
       }
 
       this.states = new Set(states);
-      this.trans =  new Set(Sigma);
+      this.Sigma = new Set(Sigma);
+      this.q_init = q_init;
+      this.trans =  new Set(trans);
       this.trans.setTypeConstraint(pkg.Transition);
       this.finalStates = new Set(finalStates);
       if(!this.currentStates) {
@@ -68,8 +70,6 @@
          this.lastTakenTransitions = new Set();
       }
       this.lastTakenTransitions.setTypeConstraint(pkg.Transition);
-      this.Sigma = new Set(Sigma);
-      this.q_init = q_init;
    };
 
    pkg.Automaton.prototype = {
@@ -843,7 +843,7 @@
       }
    };
 
-   pkg.Transition.prototype.serializeElement = pkg.Transition.prototype;
+   pkg.Transition.prototype.serializeElement = pkg.Transition.prototype.toString;
 
    pkg.new_automaton = function () {
       return new pkg.Automaton();
