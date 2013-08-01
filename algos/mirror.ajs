@@ -7,7 +7,7 @@ function mirror(A) {
          mirA.setInitialState('I');
          return mirA;
       case 1:
-         mira.setInitialState(F.getList()[0]);
+         mirA.setInitialState(F.getList()[0]);
          break;
       default:
          ini : String = 'I';
