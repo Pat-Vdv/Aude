@@ -1,0 +1,37 @@
+function mirror(A) {
+   mirA : Automaton;
+   F    : Set of State = A.getFinalStates();
+
+   switch(F.card()) {
+      case 0:
+         mirA.setInitialState('I');
+         return mirA;
+      case 1:
+         mira.setInitialState(F.getList()[0]);
+         break;
+      default:
+         ini : String = 'I';
+         while(A.hasState(ini)) {
+            ini += 'I';
+         }
+
+         mirA.setInitialState(ini);
+         foreach(state in F) {
+            mirA.addState(state);
+            mirA.addTransition(ini, epsilon, state);
+         }
+   }
+
+   foreach(state in A.getStates()) {
+      mirA.addState(state);
+   }
+   foreach(t in A.getTransitions()) {
+      mirA.addTransition(t.endState, t.symbol, t.startState);
+   }
+
+   mirA.setFinalState(A.getInitialState());
+
+   return mirA;
+}
+
+run(mirror, get_automaton(currentAutomaton));

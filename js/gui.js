@@ -1366,4 +1366,5 @@
    _("fr", "Reg. Exp. → minimized automaton", "Exp. Reg. → automate minimisé");
    _("fr", "Complete", "Compléter");
    _("fr", "Product", "Produit");
+   _("fr", "Mirror", "Miroir");
 })();

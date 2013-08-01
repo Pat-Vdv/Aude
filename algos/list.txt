@@ -2,6 +2,7 @@ determinization.ajs?v=1    / Determinize
 minimization.ajs?v=1       / Minimize
 completion.ajs?v=1         / Complete
 product.ajs?v=1            / Product
+mirror.ajs?v=1             / Mirror
 epsElim.ajs?v=1            / ε-eliminate
 emptyLanguage.ajs?v=1      / Test empty language
 infiniteLanguage.ajs?v=1   / Test infinite language
