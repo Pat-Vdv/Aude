@@ -49,7 +49,7 @@
     */
    pkg.Automaton = function (states, Sigma, q_init, trans, finalStates) {
       if(states) {
-         if(state instanceof pkg.Automaton) {
+         if(states instanceof pkg.Automaton) {
             pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.q_init, trans.copy(), finalStates.copy());
             this.currentStates = A.currentStates.copy();
             this.lastTakenTransitions = A.lastTakenTransitions.copy();
