@@ -1,0 +1,32 @@
+Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})
+
+Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})
+
+Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2}) a Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})
+
+<representation type="image/svg+xml">
+<svg width="0" height="0" viewBox="0.00 0.00 566.00 484.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph1" class="graph">
+<title>automaton</title>
+
+
+
+<g id="QXV0b21hdG9uKHsxLDJ9LCB7YSxifSwgMSwge1RyYW5zaXRpb24oMSwgYSwgMil9LHsyfSk=" class="node"><title>Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})</title>
+<ellipse fill="transparent" stroke="black" cx="340" cy="259.8" rx="217.748" ry="217.748"></ellipse>
+<ellipse fill="transparent" stroke="black" cx="340" cy="259.8" rx="221.746" ry="221.746"></ellipse>
+<text text-anchor="middle" x="340" y="264" font-family="Times,serif" font-size="14.00">Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})</text>
+</g>
+
+<g id="initialStateArrow" class="edge"><title>_begin-&gt;Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})</title>
+<path fill="none" stroke="black" d="M80.25399780273438,259.79998779296875C163.5026652018229,259.79998779296875 246.75133260091144,259.79998779296875 108.25399780273438,259.79998779296875"></path>
+<polygon fill="black" stroke="black" points="118.25399780273438,259.79998779296875 108.25399780273438,255.79998779296875 113.25399780273438,259.79998779296875 108.25399780273438,259.79998779296875 108.25399780273438,259.79998779296875 108.25399780273438,259.79998779296875 113.25399780273438,259.79998779296875 108.25399780273438,263.79998779296875 118.25399780273438,259.79998779296875 118.25399780273438,259.79998779296875"></polygon>
+</g>
+
+<g id="QXV0b21hdG9uKHsxLDJ9LCB7YSxifSwgMSwge1RyYW5zaXRpb24oMSwgYSwgMil9LHsyfSk= QXV0b21hdG9uKHsxLDJ9LCB7YSxifSwgMSwge1RyYW5zaXRpb24oMSwgYSwgMil9LHsyfSk=" class="edge"><title>Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})-&gt;Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})</title>
+<path fill="none" stroke="black" d="M309.838,40.158 C317.172,28.021 327.227,20.8 340,20.8 C349.58,20.8 357.631,24.862 364.151,32.013"></path>
+<polygon fill="black" stroke="black" points="367.04,30.034 370.162,40.158 361.408,34.19 367.04,30.034"></polygon>
+<text text-anchor="middle" x="340" y="16.600000000000023" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+</g>
+</svg>
+</representation>
