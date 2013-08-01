@@ -3,11 +3,11 @@
 
 2
 
-"0" a "0"
-"0" ε "1"
-"1" b "1"
-"1" ε "2"
-"2" c "2"
+0 a 0
+0 ε 1
+1 b 1
+1 ε 2
+2 c 2
 
 <representation type="image/svg+xml">
 <svg width="0" height="0" viewBox="0.00 0.00 326.00 86.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

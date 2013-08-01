@@ -5,11 +5,11 @@
 1
 4
 
-"0" h "1"
-"2" ε "3"
-"3" l "3"
-"3" o "4"
-"1" e "2"
+0 h 1
+2 ε 3
+3 l 3
+3 o 4
+1 e 2
 
 <representation type="image/svg+xml">
 <svg width="1200" height="1120" viewBox="49.146 -176.42 461.538 430.769" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
