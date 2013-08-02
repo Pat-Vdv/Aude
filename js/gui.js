@@ -1210,7 +1210,7 @@
                            window.gotScript(includeName, xhr.responseText);
                         }
                         else {
-                           window.getScriptFailed(includeName, includer, libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})', xhr.status)));
+                           window.getScriptFailed(includeName, includer, libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})'), xhr.status));
                         }
                      }
                   };
