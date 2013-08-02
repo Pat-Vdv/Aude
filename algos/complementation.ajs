@@ -1,0 +1,13 @@
+include completion;
+
+function complement(A) {
+   compA : Automaton = complete(A);
+
+   foreach(state in compA.getStates()) {
+      compA.toggleFinalState(state);
+   }
+
+   return compA;
+}
+
+run(complement, get_automaton(0));

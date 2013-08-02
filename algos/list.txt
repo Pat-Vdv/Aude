@@ -1,6 +1,7 @@
 determinization.ajs?v=1    / Determinize
 minimization.ajs?v=1       / Minimize
 completion.ajs?v=1         / Complete
+complemetion.ajs?v=1       / Complement
 product.ajs?v=1            / Product
 mirror.ajs?v=1             / Mirror
 epsElim.ajs?v=1            / ε-eliminate
