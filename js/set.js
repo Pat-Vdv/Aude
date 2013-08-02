@@ -129,11 +129,11 @@
             if(typeof this.typeConstraint === "string") {
                if(this.typeConstraint === "integer") {
                   if(!(typeof element === 'number' && element % 1 === 0)) {
-                     throw(new Error(_("pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.")));
+                     throw(new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint.")));
                   }
                }
                else if(typeof element !== this.typeConstraint) {
-                  throw(new Error(_("pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.")));
+                  throw(new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint.")));
                }
             }
             else if(!(element instanceof this.typeConstraint)) {
@@ -141,7 +141,7 @@
                   element = pkg.to_set(element); // this is ok to implicitely convert lists to sets
                }
                else {
-                  throw(new Error(_("pkg.Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
+                  throw(new Error(_("Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
                }
             }
          }
@@ -564,8 +564,21 @@
                else if(typeof e === "object" && e.serializeElement) {
                   return e.serializeElement();
                }
-               else {
+               else if(e.toJSON) {
                   return JSON.stringify(e);
+               }
+               else {
+                  var res = '', keys = Object.keys(e).sort();
+                  for(var i in keys) {
+                     if(res) {
+                        res = ','
+                     }
+                     else {
+                        res = '{';
+                     }
+                     res += JSON.stringify(keys[i]) + ':' + pkg.Set.prototype.elementToString(e[keys[i]]);
+                  }
+                  return res ? res + '}' : 'Object()';
                }
          }
       },
@@ -604,18 +617,41 @@
                   ++j;
                }
 
-               if(s[j] === '}') {
+               if(s[j] === "}") {
                   lastIndex = j+1;
                   closed = true;
                   j = lastIndex;
                   break;
                }
-               var nextValue = Set.prototype.getNextValue(s, j, len);
-               set.add(nextValue.value);
+
+               var nextValue = pkg.Set.prototype.getNextValue(s, j, len);
+               j = nextValue.lastIndex;
+               if(s[j] === ':') {
+                  if(set instanceof pkg.Set) {
+                     if(set.isEmpty()) {
+                        set = {};
+                     }
+                     else {
+                        throw(new Error(_("Value is malformed.")));
+                     }
+                  }
+                  ++j;
+
+                  var key = nextValue.value;
+                  nextValue = pkg.Set.prototype.getNextValue(s, j, len, true, ':');
+                  set[key] = nextValue.value;
+               }
+               else if(set instanceof pkg.Set) {
+                  set.add(nextValue.value);
+               }
+               else {
+                  throw(new Error(_("Value is malformed.")));
+               }
+
                j = nextValue.lastIndex;
             }
             if(!closed) {
-               throw(new Error("Value is malformed."));
+               throw(new Error(_("Value is malformed.")));
             }
             return {
                value:set,
@@ -652,7 +688,7 @@
             };
          }
          else {
-            while(j < len && s[j].trim() && '(,})]'.indexOf(s[j]) === -1) {
+            while(j < len && s[j].trim() && ':(,})]'.indexOf(s[j]) === -1) {
                ++j;
             }
             var valName = s.substring(j0,j).trim();
@@ -674,6 +710,12 @@
                      value : new Date(values[0] || null),
                      lastIndex:j+1
                   }
+               }
+               else if(valName === 'Object') {
+                  return {
+                     value : new Object(values[0] || null),
+                     lastIndex:j+1
+                  };
                }
                var f = function(){};
                f.prototype = that[valName].prototype;
@@ -744,7 +786,7 @@
          if(nextValue.lastIndex === len) {
             return nextValue.value;
          }
-         throw new Error('Value is malformed');
+         throw new Error(_('Value is malformed.'));
       }
    };
 
@@ -861,7 +903,7 @@
       return set.isEmpty();
    };
 
-   _("fr", "pkg.Set.checkConstraint(element): The element does not satisfies the type constraint.", "pkg.Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
+   _("fr", "Set.checkConstraint(element): The element does not satisfies the type constraint.", "Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
    _("fr", "Value is malformed.", "La valeur est malformée.");
    _("fr", "Constructor name in value refers to unkown class.", "Le nom de constructeur dans la valeur fait référence à une classe inconnue.");
 })(this, this);
