@@ -94,6 +94,7 @@
        * @method
        * @memberof Automaton
        * @param {any} state The state to add, can be of any type.
+       * @see Automaton#setNonFinalState
        */
       addFinalState: function(state) {
          this.addState(state, true);
@@ -108,8 +109,8 @@
       },
 
       /**
-       * This method is an alias of the addFinalStateState method.
-       * @see Automaton#addFinalState
+       * This method is an alias of the addFinalState method.
+       * @see Automaton#setNonFinalState
        */
       setFinalState: function(state) {
          this.addState(state, true);
@@ -120,11 +121,27 @@
        * @method
        * @memberof Automaton
        * @param {any} state The state to add, can be of any type.
+       * @see Automaton#addFinalState
        */
       setNonFinalState: function(state) {
          this.finalStates.remove(state);
       },
 
+      /**
+       * This methodes toggles a state in the Set of final states of the automaton.
+       * @method
+       * @memberof Automaton
+       * @param {any} state The state to add or remove, can be of any type.
+       */
+      toggleFinalState: function(state) {
+         if(this.finalStates.contains(state)) {
+            this.setNonFinalState(state);
+         }
+         else {
+            this.setFinalState(state);
+         }
+      },
+ 
       /**
        * This method is an alias of the addFinalStateState method.
        * @method
@@ -135,6 +152,16 @@
          this.addState(state, true);
       },
 
+      /**
+       * This method is an alias of the toggleFinalState method.
+       * @method
+       * @memberof Automaton
+       * @see Automaton#toggleFinalState
+       */
+      toggleAcceptingState: function(state) {
+         this.toggleFinalState(state);
+      },
+      
       /**
        * This method is an alias of the setNonFinalState method.
        * @method
