@@ -59,6 +59,10 @@
       return t.replace(/\\\\/g, "\\");
    }
 
+   function toBrokenGraphvizTitle(t) {
+      return t.toString().replace(/\\/g, "\\\\");
+   }
+
    // set current automaton's SVG 
    pkg.setSVG = function (svg, index) {
       var svgWorkingNode;
@@ -498,7 +502,7 @@
             g.id = id;
             g.setAttribute('class', 'edge');
             var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-            title.textContent = atob(nodeEdit.id) + '->' + atob(endState.id);
+            title.textContent = toBrokenGraphvizTitle(atob(nodeEdit.id)) + '->' + toBrokenGraphvizTitle(atob(endState.id));
             g.appendChild(title);
 
             var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
@@ -759,20 +763,20 @@
                   var tid = n.t[i][0].id.split(' ');
                   if(tid[0] === tid[1]) {
                      n.t[i][0].id = tb + ' ' + tb;
-                     n.t[i][0].querySelector('title').textContent = t + '->' + t;
+                     n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(t) + '->' + toBrokenGraphvizTitle(t);
                   }
                   else if(n.t[i][1]) {// if node is origin
                      n.t[i][0].id = tb + ' ' + tid[1];
-                     n.t[i][0].querySelector('title').textContent = t + '->' + atob(tid[1]);
+                     n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(t) + '->' + toBrokenGraphvizTitle(atob(tid[1]));
                   }
                   else {
                      n.t[i][0].id = tid[0] + ' ' + tb;
-                     n.t[i][0].querySelector('title').textContent = atob(tid[0]) + '->' + t;
+                     n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(atob(tid[0])) + '->' + toBrokenGraphvizTitle(t);
                   }
                }
                nodeList[t] = nodeList[oldid];
                delete nodeList[oldid];
-               node.querySelector('title').textContent = text.textContent = t;
+               node.querySelector('title').textContent = toBrokenGraphvizTitle(text.textContent = t);
                node.setAttribute('id', tb);
             }
          }
@@ -795,7 +799,7 @@
          }
          g.id = btoa(id);
          var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-         title.textContent = id;
+         title.textContent = toBrokenGraphvizTitle(id);
          var ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
 
          var pt = svgcursorPoint(e);
