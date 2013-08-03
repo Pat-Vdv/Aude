@@ -34,7 +34,7 @@
    "use strict";
 
    function toString(q) {
-      return Set.prototype.elementToString(q);
+      return automaton2dot_standardizedString(q).replace(/\\\\/g, "\\");
    }
 
    function dotState(q) {
@@ -60,8 +60,28 @@
       return r;
    }
 
-   pkg.automaton2dot = function (A,title) {
+   pkg.automaton2dot_standardizedString = function(s) {
+      if(typeof s === 'string') {
+         s = s.trim();
+         try {
+            var v = Set.prototype.getValue(s);
+            if(typeof v === 'string' && s[0] === s[s.length-1] && (s[0] === '"' || s[0] === "'")) {
+               return s.substring(1, s.length-1);
+            }
+            else {
+               return Set.prototype.elementToString(v);
+            }
+         }
+         catch(e) {
+            return s;
+         }
+      }
+      else {
+         return Set.prototype.elementToString(s);
+      }
+   };
 
+   pkg.automaton2dot = function (A, title) {
       if(!title) {
          title = "automaton";
       }

@@ -55,6 +55,10 @@
       pkg.setSVG('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(0 0)"> <title>automaton</title></g></svg>', index);
    };
 
+   function fixBrokenGraphvizTitle(t) {
+      return t.replace(/\\\\/g, "\\");
+   }
+
    // set current automaton's SVG 
    pkg.setSVG = function (svg, index) {
       var svgWorkingNode;
@@ -125,7 +129,7 @@
          initialStateArrow = workingInitialStateArrow;
       }
       if(workingInitialStateArrow) {
-         setInitialState(svgWorkingNode.getElementById(btoa(workingInitialStateArrow.querySelector('title').textContent.substr(8))));
+         setInitialState(svgWorkingNode.getElementById(btoa(fixBrokenGraphvizTitle(workingInitialStateArrow.querySelector('title').textContent.substr(8)))));
          // 8 : size of "_begin->"
       }
       pkg.setCurrentIndex(pkg.currentIndex);
@@ -220,13 +224,13 @@
       }
    };
 
+   pkg.getStringValueFunction = function(s){return JSON.stringify(s);};
+
    // Retrieve the code of the automaton #index, svg code included.
    // if the <svg> representation is not desired (e.g. you need a cleaner visual representation of the automaton),
    // set withoutSVG to true
-   pkg.getAutomatonCode = function (index, withoutSVG, getStringValue) {
-      if(!getStringValue) {
-         getStringValue = function(s){return JSON.stringify(s);};
-      }
+   pkg.getAutomatonCode = function (index, withoutSVG) {
+      var getStringValue = pkg.getStringValueFunction;
 
       pkg.cleanSVG(pkg.currentIndex);
       if(!initialStates[index]) {
@@ -279,16 +283,16 @@
       return code + (withoutSVG ? '':'\n<representation type="image/svg+xml">\n' + pkg.outerHTML(svgs[index]).trim() + '\n</representation>\n');
    };
 
-   pkg.getAutomaton = function (index, getValue) {
+   pkg.getValueFunction = pkg.standardizeStringValueFunction = function(s) {return s;};
+
+   pkg.getAutomaton = function (index) {
       var A = new Automaton();
       pkg.cleanSVG(pkg.currentIndex);
       if(!initialStates[index]) {
          return ''; // automata without initial states are not supported
       }
 
-      if(!getValue) {
-         getValue = function(s) {return s;};
-      }
+      var getValue = pkg.getValueFunction;
 
       var nodes = svgs[index].querySelectorAll('.node'), i, len;
 
@@ -740,6 +744,7 @@
          var text = node.querySelector('text');
          var t = prompt(_("Which name do you want for the state ?"), text.textContent);
          if(t) {
+            t = pkg.standardizeStringValueFunction(t);
             var tb = btoa(t);
             var existingNode;
             if(existingNode = pkg.svgNode.getElementById(tb)) {

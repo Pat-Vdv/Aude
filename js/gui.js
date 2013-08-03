@@ -28,30 +28,32 @@
        blockResult       = false,
        waitingFor        = new Set(),
        launchAfterImport = false,
-       getValue          = function(s) {
-          try {
-             var v = Set.prototype.getValue(s);
-             return v;
-          }
-          catch(e) {
-             return s;
-          }
-       },
-       getStringValue    = function(s) {
-          try {
-             Set.prototype.getValue(s); // s is a legal value
-             return s;
-          }
-          catch(e) {
-             return JSON.stringify(s); // turn into string
-          }
-       },
        resultToLeft      = document.createElement('button'),
        zoom              = {svgZoom:1},
        _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
        results,
        not;
+
+   AutomataDesigner.getValueFunction = function(s) {
+      try {
+         var v = Set.prototype.getValue(s);
+         return v;
+      }
+      catch(e) {
+         return s;
+      }
+   };
+
+   AutomataDesigner.getStringValueFunction = function(s) {
+      try {
+         Set.prototype.getValue(s); // s is a legal value
+         return s;
+      }
+      catch(e) {
+         return JSON.stringify(s); // turn into string
+      }
+   };
 
    function notify (title, content, type) {
       if(!not || !not.displayed) {
@@ -234,6 +236,8 @@
    };
 
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
+      AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
+
       if(window.js18Supported) {
          libD.jsLoad('js/automataJS.js', automatonJSLoaded, "application/javascript;version=1.8");
          libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
@@ -383,7 +387,7 @@
             exportFN = fn;
 
             if(switchmode.value === 'design') {
-               automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false, getStringValue);
+               automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
             }
             else {
                AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
@@ -416,7 +420,7 @@
          };
       }
       document.getElementById('redraw').onclick = function() {
-         automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, true, getStringValue);
+         automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, true);
          if(automatoncodeedit.value) {
             AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
          }
@@ -489,7 +493,7 @@
       
       function automatonSetNumber(index) {
          AutomataDesigner.setCurrentIndex(index);
-         automatoncodeedit.value = AutomataDesigner.getAutomatonCode(index, false, getStringValue);
+         automatoncodeedit.value = AutomataDesigner.getAutomatonCode(index, false);
       }
 
       var switchmode = document.getElementById("switchmode");
@@ -530,7 +534,7 @@
             onResize();
             break;
          case "automatoncode":
-            automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false, getStringValue);
+            automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
             if(cm && cm.getValue()) {
                toolbar.className = 'designmode codemode';
             }
@@ -617,19 +621,14 @@
          }
 
          var A;
-         if(automataNumber <= i ||  !(A = AutomataDesigner.getAutomaton(i, getValue))) {
+         if(automataNumber <= i ||  !(A = AutomataDesigner.getAutomaton(i))) {
             throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn't exist."), JSON.stringify(i))));
          }
          return A;
       };
 
       AutomataDesignerGlue.requestSVG = function(index) {
-         try {
-            AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), 'svg'), index);
-         }
-         catch(e) {
-            console.log(e.message);
-         }
+         AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), 'svg'), index);
       };
 
       var freader = new FileReader(), automatonFileName, programFileName;
@@ -843,7 +842,7 @@
       }
 
       function saveAutomaton(fname) {
-         saveAs(new Blob([AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false, getStringValue)], {type:'text/plain'}), fname);
+         saveAs(new Blob([AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false)], {type:'text/plain'}), fname);
       }
       
       saveas.onclick = function() {
@@ -957,7 +956,7 @@
                   span.textContent = word[i];
                   wordDiv.appendChild(span);
                }
-               currentAutomaton = AutomataDesigner.getAutomaton(index, getValue);
+               currentAutomaton = AutomataDesigner.getAutomaton(index);
                var q_init = currentAutomaton.getInitialState();
                listOfExecutions = [[[q_init, epsilon]]];
                currentAutomaton.setCurrentState(q_init);

@@ -564,26 +564,31 @@
                else if(typeof e === "object" && e.serializeElement) {
                   return e.serializeElement();
                }
-               else if(e.toJSON) {
-                  return JSON.stringify(e);
+               else if(typeof e === "object") {
+                  if(e.toJSON) {
+                     return JSON.stringify(e);
+                  }
+                  else {
+                     var res = '', keys = Object.keys(e).sort();
+                     for(var i in keys) {
+                        if(res) {
+                           res = ','
+                        }
+                        else {
+                           res = '{';
+                        }
+                        res += JSON.stringify(keys[i]) + ':' + pkg.Set.prototype.elementToString(e[keys[i]]);
+                     }
+                     return res ? res + '}' : 'Object()';
+                  }
                }
                else {
-                  var res = '', keys = Object.keys(e).sort();
-                  for(var i in keys) {
-                     if(res) {
-                        res = ','
-                     }
-                     else {
-                        res = '{';
-                     }
-                     res += JSON.stringify(keys[i]) + ':' + pkg.Set.prototype.elementToString(e[keys[i]]);
-                  }
-                  return res ? res + '}' : 'Object()';
+                  return e.toString();
                }
          }
       },
 
-      getNextValue: function(s, j, len) {
+      getNextValue: function(s, j, len, map) {
          if(len === undefined) {
             len = s.length;
          }
@@ -773,16 +778,16 @@
                   }
             }
             return {
-               value:s.substring(j0,j).trim(),
+               value:typeof map === 'object' && valName in map ? map[valName] : valName,
                lastIndex:j
             };
          }
       },
  
-      getValue: function(s) {
+      getValue: function(s, map) {
          s = s.trim();
          var len = s.length,
-             nextValue = Set.prototype.getNextValue(s, 0, len);
+             nextValue = Set.prototype.getNextValue(s, 0, len, map);
          if(nextValue.lastIndex === len) {
             return nextValue.value;
          }
