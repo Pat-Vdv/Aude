@@ -1167,8 +1167,8 @@
       }
       var ellipse = getBigEllipse(node), cy = ellipse.cy.baseVal.value, cx = ellipse.cx.baseVal.value, rx = ellipse.rx.baseVal.value;
       path.setAttribute('d', 'M' + (cx-rx-38) + ',' + cy +
-                             'C' + (cx-10-(rx+28)*2/3) + ',' + cy +
-                             ' ' + (cx-10-(rx+28)/3)   + ',' + cy +
+                             'C' + (cx-rx-(38-10)*2/3) + ',' + cy +
+                             ' ' + (cx-rx-(38-10)/3)   + ',' + cy +
                              ' ' + (cx-rx-10) + ',' + cy
       );
 
