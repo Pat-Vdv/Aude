@@ -629,7 +629,10 @@
                   break;
                }
 
-               var nextValue = pkg.Set.prototype.getNextValue(s, j, len);
+               var nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
+               if(j === nextValue.lastIndex) {
+                  throw(new Error(_("Value is malformed.")));
+               }
                j = nextValue.lastIndex;
                if(s[j] === ':') {
                   if(set instanceof pkg.Set) {
@@ -643,7 +646,7 @@
                   ++j;
 
                   var key = nextValue.value;
-                  nextValue = pkg.Set.prototype.getNextValue(s, j, len, true, ':');
+                  nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
                   set[key] = nextValue.value;
                }
                else if(set instanceof pkg.Set) {
@@ -680,7 +683,10 @@
                   break;
                }
 
-               var nextValue = Set.prototype.getNextValue(s, j, len);
+               var nextValue = Set.prototype.getNextValue(s, j, len, map);
+               if(j === nextValue.lastIndex) {
+                  throw(new Error(_("Value is malformed.")));
+               }
                tuple.push(nextValue.value);
                j = nextValue.lastIndex;
             }
@@ -705,7 +711,7 @@
                   var nextValue, values = [];
                   ++j;
                   while(j < len && s[j] !== ')') {
-                     nextValue = Set.prototype.getNextValue(s,j,len);
+                     nextValue = Set.prototype.getNextValue(s,j,len, map);
                      j = nextValue.lastIndex;
                      values.push(nextValue.value);
                   }
@@ -787,7 +793,7 @@
       getValue: function(s, map) {
          s = s.trim();
          var len = s.length,
-             nextValue = Set.prototype.getNextValue(s, 0, len, map);
+             nextValue = Set.prototype.getNextValue(s, 0, len, map, '');
          if(nextValue.lastIndex === len) {
             return nextValue.value;
          }
