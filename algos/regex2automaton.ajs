@@ -176,9 +176,10 @@ function regexToAutomaton(regex) {
         case '.':
            isSymbol = false;
            return regex[i++];
-        case epsilon:
+        case 'ε':
            isSymbol = true;
-           return regex[i++];
+           ++i;
+           return epsilon;
         default:
            isSymbol = true;
            var code = regex.charCodeAt(i);

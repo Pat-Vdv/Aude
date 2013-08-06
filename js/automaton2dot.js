@@ -34,6 +34,9 @@
    "use strict";
 
    function toString(q) {
+      if(q === pkg.epsilon) {
+         return 'ε';
+      }
       return automaton2dot_standardizedString(q).replace(/\\\\/g, "\\");
    }
 

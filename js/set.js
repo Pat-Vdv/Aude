@@ -535,7 +535,7 @@
          return true;
       },
 
-      elementToString : function(e) {
+      elementToString : function(e, map) {
          if(typeof e === 'number' && isNaN(e)) {
             return 'NaN';
          }
@@ -553,7 +553,7 @@
                   return listToString(e);
                }
                else if(typeof e === 'string') {
-                  if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e) == e) {
+                  if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e) == e || (typeof map === 'object' && map.hasOwnProperty(e))) {
                      e = JSON.stringify(e);
                   }
                   return e.toString();

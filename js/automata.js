@@ -1155,10 +1155,11 @@
    };
 
    /**
-    * epsilon = 'ε': Represents epsilon to manipulate epsilon transitions.
+    * epsilon: Represents epsilon to manipulate epsilon transitions.
+    * epsilon is a function to enforce equality to be true when and only when comparing explicitely with epsilon.
     * @alias epsilon
     */
-   pkg.epsilon = 'ε';
+   pkg.epsilon = function(){};
 
    var map = {
       "\\e":pkg.epsilon,
@@ -1182,7 +1183,7 @@
     * @return {String} Returns the formatted version of the string representation of the transition
     */
    pkg.format_transition = function (trans) {
-      return pkg.parse_transition(trans);
+      var res='', symbols = pkg.parse_transition(trans);
       for(var i in symbols) {
          if(res) {
             res +=',';
@@ -1191,7 +1192,7 @@
             res += 'ε';
          }
          else {
-            res += Set.prototype.elementToString(symbols[i]);
+            res += Set.prototype.elementToString(symbols[i], map);
          }
       }
       return res;
