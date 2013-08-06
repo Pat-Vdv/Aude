@@ -793,7 +793,7 @@
       getValue: function(s, map) {
          s = s.trim();
          var len = s.length,
-             nextValue = Set.prototype.getNextValue(s, 0, len, map, '');
+             nextValue = Set.prototype.getNextValue(s, 0, len, map);
          if(nextValue.lastIndex === len) {
             return nextValue.value;
          }
