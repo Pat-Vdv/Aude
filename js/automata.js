@@ -1155,44 +1155,24 @@
    };
 
    /**
+    * epsilon = 'ε': Represents epsilon to manipulate epsilon transitions.
+    * @alias epsilon
+    */
+   pkg.epsilon = 'ε';
+
+   var map = {
+      "\\e":pkg.epsilon,
+      "ε":pkg.epsilon
+   };
+   
+   /**
     * Returns the list of symbols of a transition from its string representation
     * @alias parse_transition
     * @param {String} text The string representation of a transition
     * @returns {Array} Returns an array of symbols corresponding to the representation of the transition.
     */
    pkg.parse_transition = function (text) {
-      var symbols = [];
-      var symbol, i = 0, len = text.length;
-
-      while(i < len) {
-         if(text[i] === ',') {
-            if(symbol = text.substr(0,i).trim()) {
-               symbols.push(symbol.trim());
-            }
-            ++i;
-            text = text.substr(i);
-            len -= i;
-            i=0;
-         }
-         else if(text[i] === '"' || text[i] === "'") {
-            var end = text[i++];
-            while(i < len && text[i] !== end) {
-               if(text[i] === '\\') {
-                  ++i;
-               }
-               ++i;
-            }
-            ++i;
-            symbols.push(text.substr(0,i).trim());
-            text = text.substr(i);
-            i = 0;
-         }
-         else {
-            ++i;
-         }
-      }
-      symbols.push(text);
-      return symbols;
+      return Set.prototype.getValue('(' + text + ')', map);
    };
 
    /**
@@ -1202,28 +1182,20 @@
     * @return {String} Returns the formatted version of the string representation of the transition
     */
    pkg.format_transition = function (trans) {
-      var res = '';
-      var symbols = pkg.parse_transition(trans);
+      return pkg.parse_transition(trans);
       for(var i in symbols) {
          if(res) {
             res +=',';
          }
-         if(symbols[i].trim() === '\\e') {
+         if(symbols[i] === pkg.epsilon) {
             res += 'ε';
          }
          else {
-            res += symbols[i];
+            res += Set.prototype.elementToString(symbols[i]);
          }
       }
       return res;
    };
-
-   /**
-    * epsilon = 'ε': Represents epsilon to manipulate epsilon transitions.
-    * @alias epsilon
-    */
-   pkg.epsilon = 'ε';
-
 
    _("fr", "Automaton.setStates(): The given argument is not a Set.", "Automaton.setStates() : L'argument donné n'est pas un ensemble.");
    _("fr", "Automaton.setFinalStates(): The given argument is not a Set.", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble.");
