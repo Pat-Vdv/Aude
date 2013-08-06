@@ -282,7 +282,7 @@
 
             var symbols = parse_transition(text);
             for(var s in symbols) {
-               code +=  getStringValue(f) + ' ' + (symbols[s] === epsilon ? '\\e' : Set.prototype.elementToString(symbol[s], map)) + ' ' + getStringValue(t) + '\n';
+               code +=  getStringValue(f) + ' ' + (symbols[s] === epsilon ? '\\e' : Set.prototype.elementToString(symbols[s], map)) + ' ' + getStringValue(t) + '\n';
             }
          }
       }
