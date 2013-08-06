@@ -64,7 +64,6 @@ function Automata_STAR(A) {
 }
 
 function Automata_CAT(A1, A2) {
-  console.log(A1.toString(), A2.toString());
   catA : Automaton;
 
   finalStates : Set of List;
@@ -308,10 +307,6 @@ function regexToAutomaton(regex) {
   }
 
   function symbol2expr(l) {
-    console.log({
-        type:'symbol',
-        s:l
-     });
      return {
         type:'symbol',
         s:l
@@ -394,13 +389,13 @@ function regexToAutomaton(regex) {
            }
         case 'symbol':
            R = new Automaton();
-           R.setInitialState('0');
-           R.setFinalState('1');
-           R.addTransition('0', tree.s, '1');
+           R.setInitialState(0);
+           R.setFinalState(1);
+           R.addTransition(0, tree.s, 1);
            return R;
         case 'void':
            R = new Automaton();
-           R.setInitialState('0');
+           R.setInitialState(0);
            return R;
         default:
            error(); // should never ever happen

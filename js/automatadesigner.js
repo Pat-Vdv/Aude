@@ -228,7 +228,9 @@
       }
    };
 
-   pkg.getStringValueFunction = function(s){return JSON.stringify(s);};
+   pkg.getStringValueFunction = function(s){return s === 'ε' ? '\\e' : JSON.stringify(s);};
+
+   var map = {'\\e':epsilon, 'ε':epsilon};
 
    // Retrieve the code of the automaton #index, svg code included.
    // if the <svg> representation is not desired (e.g. you need a cleaner visual representation of the automaton),
@@ -280,14 +282,14 @@
 
             var symbols = parse_transition(text);
             for(var s in symbols) {
-               code +=  getStringValue(f) + ' ' + symbols[s] + ' ' + getStringValue(t) + '\n';
+               code +=  getStringValue(f) + ' ' + (symbols[s] === epsilon ? '\\e' : Set.prototype.elementToString(symbol[s], map)) + ' ' + getStringValue(t) + '\n';
             }
          }
       }
       return code + (withoutSVG ? '':'\n<representation type="image/svg+xml">\n' + pkg.outerHTML(svgs[index]).trim() + '\n</representation>\n');
    };
 
-   pkg.getValueFunction = pkg.standardizeStringValueFunction = function(s) {return s;};
+   pkg.getValueFunction = pkg.standardizeStringValueFunction = function(s) {return s === '\\e' ? 'ε' : s;};
 
    pkg.getAutomaton = function (index) {
       var A = new Automaton();

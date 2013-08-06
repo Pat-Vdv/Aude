@@ -1099,19 +1099,9 @@
     * @returns {String} The string representation of the Automaton. The empty string is returned if the Automaton is not correct, e.g. no initial state is Set.
     */
    pkg.automaton_code = function (a) {
-      function toString(o) {
-         if(o instanceof Array) {
-            return '(' + o.toString() + ')';
-         }
-         else if(o instanceof Set) {
-            return o.toString();
-         }
-         else {
-            return JSON.stringify(o);
-         }
-      }
+      var q_init   = a.getInitialState(),
+          toString = Set.prototype.elementToString;
 
-      var q_init = a.getInitialState();
       if(q_init === undefined || q_init === null) {
          return "";
       }
@@ -1135,21 +1125,12 @@
 
       r += "\n";
       for(i in T) {
-         r += (
-                  (T[i].symbol) instanceof Set
-                  ? T[i].startState.toString()
-                  : toString(T[i].startState)
-              ) +
-              ' ' + (
-                  (T[i].symbol) instanceof Set
-                  ? T[i].symbol.toString()
-                  : toString(T[i].symbol)
-              ) +
-              ' ' + (
-                  (T[i].endState) instanceof Set
-                  ? T[i].endState.toString()
-                  : toString(T[i].endState)
-              ) + '\n';
+         r += toString(T[i].startState)
+                     + ' ' + 
+              (T[i].symbol === pkg.epsilon ? '\\e' : toString(T[i].symbol, map))
+                     + ' ' +
+              toString(T[i].endState)
+                     + '\n';
       }
       return r + '\n';
    };

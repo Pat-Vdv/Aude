@@ -30,6 +30,10 @@
        launchAfterImport = false,
        resultToLeft      = document.createElement('button'),
        zoom              = {svgZoom:1},
+       map               = {
+          '\\e':epsilon,
+          'ε':epsilon
+       },
        _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
        results,
@@ -37,7 +41,7 @@
 
    AutomataDesigner.getValueFunction = function(s) {
       try {
-         var v = Set.prototype.getValue(s);
+         var v = Set.prototype.getValue(s, map);
          return v;
       }
       catch(e) {
@@ -47,7 +51,7 @@
 
    AutomataDesigner.getStringValueFunction = function(s) {
       try {
-         Set.prototype.getValue(s); // s is a legal value
+         Set.prototype.getValue(s, map); // s is a legal value
          return s;
       }
       catch(e) {
