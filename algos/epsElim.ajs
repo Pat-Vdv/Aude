@@ -13,22 +13,24 @@ function epsElim(A) {
     if(A.hasTransition(q1, a, q2)) {
       return true;
     }
-    else {
-      alreadySeenStates.add(q1);
-      if(a != epsilon) {
-        if(A.hasTransition(q1, a, q1)) {
-          if(canReach(q1, epsilon, q2, alreadySeenStates minus q1))
-            return true;
+
+    alreadySeenStates.add(q1);
+    if(a != epsilon) {
+      if(A.hasTransition(q1, a, q1)) {
+        if(canReach(q1, epsilon, q2, alreadySeenStates minus q1)) {
+          return true;
         }
-        foreach(state in Transitions[q1][a]) {
-          if(canReach(state, epsilon, q2, alreadySeenStates))
-            return true;
+      }
+      foreach(state in Transitions[q1][a]) {
+        if(canReach(state, epsilon, q2, alreadySeenStates)) {
+          return true;
         }
-        if(Transitions[q1][epsilon]) {
-          foreach(state in Transitions[q1][epsilon]) {
-            if(canReach(state, a, q2, alreadySeenStates))
-              return true;
-          }
+      }
+    }
+    if(Transitions[q1][epsilon]) {
+      foreach(state in Transitions[q1][epsilon]) {
+        if(canReach(state, a, q2, alreadySeenStates)) {
+          return true;
         }
       }
     }
