@@ -270,6 +270,7 @@
           curAlgo           = document.getElementById('predef-algos'),
           quiz              = document.getElementById('quiz'),
           divQuiz           = document.getElementById('div-quiz'),
+          automataContainer = document.getElementById('automata-container'),
           head              = document.querySelector('head'),
           exportFN          = '',
           executionTimeout  = 0,
@@ -682,7 +683,7 @@
       filequiz.onchange      = openQuiz;
 
       function startQuiz(quiz) {
-         AutomataDesigner.svgContainer.style.display = 'none';
+         automataContainer.style.display = 'none';
          if(!(quiz.questions && quiz.questions instanceof Array)) {
             throw new Error(_("The quiz doesn't have its list of question."));
          }
@@ -724,8 +725,8 @@
       }
 
       function closeQuiz() {
-         AutomataDesigner.svgContainer.style.display = '';
-         AutomataDesigner.svgContainer.style.top     = '';
+         automataContainer.style.display = '';
+         automataContainer.style.top     = '';
          divQuiz.textContent = '';
          divQuiz.className.classList.remove('enabled');
       }
@@ -733,7 +734,7 @@
       function nextQuizQuestion(quiz) {
          divQuiz.classList.remove('intro');
          divQuiz.classList.add('started');
-         AutomataDesigner.svgContainer.style.display = 'none';
+         automataContainer.style.display = 'none';
          ++quiz.currentQuestion;
          if(quiz.currentQuestion >= quiz.questions.length) {
             quiz.refs.content.textContent = _("The Quiz is finished!");
@@ -795,8 +796,8 @@
             case "word":
                refs.answers.innerHTML = '<p>' +  _("You can draw the automaton bellow.") + '</p>';
                setTimeout(function() {
-                  AutomataDesigner.svgContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
-                  AutomataDesigner.svgContainer.style.display = '';
+                  automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
+                  automataContainer.style.display = '';
                }, 0);
                break;
             case "automatonEquiv":
@@ -804,8 +805,8 @@
                   getScript('equivalence');
                }
                setTimeout(function() {
-                  AutomataDesigner.svgContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
-                  AutomataDesigner.svgContainer.style.display = '';
+                  automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
+                  automataContainer.style.display = '';
                }, 0);
                break;
             case "program":
