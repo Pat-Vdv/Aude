@@ -265,6 +265,7 @@
           exportResult      = document.getElementById('export_result'),
           fileprogram       = document.getElementById('fileprogram'),
           automatonPlus     = document.getElementById('automaton_plus'),
+          automatonMinus    = document.getElementById('automaton_minus'),
           executeBtn        = document.getElementById('execute'),
           wordDiv           = document.getElementById('word'),
           curAlgo           = document.getElementById('predef-algos'),
@@ -567,7 +568,7 @@
          automatonSetNumber(automatonCount++);
       };
 
-      document.getElementById('automaton_minus').onclick = function() {
+      automatonMinus.onclick = function() {
          if(automatonCount > 1) {
             var curAutomaton = parseInt(automataNumber.value);
             automataNumber.removeChild(document.getElementById('automaton_n' + (automatonCount-1)));
@@ -684,6 +685,7 @@
 
       function startQuiz(quiz) {
          automataContainer.style.display = 'none';
+         automatonPlus.onclick();
          if(!(quiz.questions && quiz.questions instanceof Array)) {
             throw new Error(_("The quiz doesn't have its list of question."));
          }
@@ -725,10 +727,11 @@
       }
 
       function closeQuiz() {
+         automatonMinus.onclick();
          automataContainer.style.display = '';
          automataContainer.style.top     = '';
          divQuiz.textContent = '';
-         divQuiz.className.classList.remove('enabled');
+         divQuiz.classList.remove('enabled');
       }
 
       function nextQuizQuestion(quiz) {
@@ -754,9 +757,10 @@
                      ['span', {'#':'questionContent'}]
                   ]],
                   ["div#quiz-answers", {"#":"answers"}],
-                  ["div.button-container",
+                  ["div.button-container", [
+                     ["button", {"#": "prev"}, _("Previous question")],
                      ["button", {"#": "ok"}, _("Next question")]
-                  ]
+                  ]]
                ], refs)
          );
          if(q.instructionHTML) {
@@ -819,6 +823,15 @@
                notify(_("Question type not known"), libD.format(_('Type of question {0} is not known. Known types are: <ul><li>"mcq" for multiple choices question),</li><li>"word" (to draw an automaton which recognizes a given list of words).')),"error");
          }
          refs.ok.onclick = quiz.refs.startQuiz.onclick;
+         if(quiz.currentQuestion) {
+            refs.prev.onclick = function() {
+              quiz.currentQuestion -= 2;
+              refs.ok.onclick();
+            }
+         }
+         else {
+            refs.prev.style.display = 'none';
+         }
       };
 
       quiz.onclick = function() {
@@ -1352,6 +1365,7 @@
    _("fr", "Quiz", "Quiz");
    _("fr", "Question {0}: ", "Question {0} : ");
    _("fr", "Next question", "Question suivante");
+   _("fr", "Previous question", "Question précédente");
    _("fr", "The Quiz is finished!", "Le quiz est fini !");
    _("fr", "Error in the Quiz", "Erreur dans le quiz");
    _("fr", "There is an error in the Quiz: {0}", "Il y a une erreur dans le quiz : {0}");

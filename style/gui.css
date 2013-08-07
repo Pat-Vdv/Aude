@@ -310,6 +310,7 @@ select {
     border-radius:4px;
     border:1px solid silver;
     padding:2px;
+    margin:0 0.5ex;
     -webkit-box-shadow:0 0 1px silver;
     box-shadow:0 0 1px silver;
     -webkit-transition:500ms;
