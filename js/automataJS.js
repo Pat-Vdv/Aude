@@ -668,7 +668,7 @@
             i = deb;
             return '';
          }
-         else if(symbol === 'for' && !IterationsSupported && (tmp = parseForeach(inForeach, symbol, constraintedVariables))) {
+         else if(symbol === 'for' && !IterationsSupported && 'for' !== (tmp = parseForeach(inForeach, symbol, constraintedVariables))) {
             return res + tmp;
          }
          return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getExpression({inForeach:(symbol === 'while' || symbol === 'for' || symbol === 'switch') ? false : inForeach,constraintedVariables:copy(constraintedVariables),noValue:true});
@@ -1192,7 +1192,7 @@
          expr1 += inExpr;
          inExpr = getSymbol();
       }
-      if(inExpr !== 'in' && inExpr !== 'of') {
+      if(inExpr !== 'in' && inExpr !== 'of' || (inExpr === 'in' && keyword === 'for')) {
          i = deb;
          return keyword;
       }
