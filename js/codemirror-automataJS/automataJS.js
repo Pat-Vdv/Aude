@@ -252,14 +252,6 @@ CodeMirror.defineMode("automataJS", function(config, parserConfig) {
     };
   }
 
-  function maybe(wanted) {
-    return function(type) {
-      if (type == wanted) return cont();
-      else if (type == "," || type === "}") return pass();
-      else return cont(arguments.callee);
-    };
-  }
-
   function statement(type) {
     if (type == "var") return cont(pushlex("vardef"), vardef1, expect(";"), poplex);
     if (type == "keyword a") return cont(pushlex("form"), expression, statement, poplex);
@@ -476,7 +468,6 @@ CodeMirror.defineMode("automataJS", function(config, parserConfig) {
     blockCommentStart: jsonMode ? null : "/*",
     blockCommentEnd: jsonMode ? null : "*/",
     lineComment: jsonMode ? null : "//",
-
     jsonMode: jsonMode
   };
 });

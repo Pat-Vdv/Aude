@@ -539,12 +539,18 @@ libD.isJsLoaded = function(fname)
 	<libD.cssLoad>
 	<libD.getCSS>
 */
-libD.jsLoad = function(fname, callback, type)
+libD.jsLoad = function(fname, callback, type, defer, async)
 {
 	var script = document.createElement('script');
 	script.src = fname;
 	script.type = type || 'text/javascript';
    script.onload = callback;
+   if(defer) {
+      script.defer = "defer";
+   }
+   if(async) {
+      script.async = "async";
+   }
 	document.getElementsByTagName('head')[0].appendChild(script);
 };
 

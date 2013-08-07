@@ -243,12 +243,7 @@
       AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
 
       if(window.js18Supported) {
-         libD.jsLoad('js/automataJS.js', automatonJSLoaded, "application/javascript;version=1.8");
          libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
-      }
-      else {
-         // workaround chromium issue #45702
-         libD.jsLoad('js/automataJS.js' + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), automatonJSLoaded);
       }
 
       AutomataDesigner.load();
@@ -257,7 +252,6 @@
           content           = document.getElementById('content'),
           codeedit          = document.getElementById('codeedit'),
           automataedit      = document.getElementById('automataedit'),
-          leftedit          = document.getElementById('leftedit'),
           automatoncode     = document.getElementById('automatoncode'),
           automatoncodeedit = document.getElementById('automatoncodeedit'),
           leftPane          = document.getElementById('left-pane'),
@@ -839,8 +833,6 @@
          }
       };
 
-      var saveLink = document.createElement('a');
-      
       function saveProgram(fname) {
          saveAs(new Blob([cm.getValue()], {type:'text/plain;charset=utf-8'}), fname);
       }
