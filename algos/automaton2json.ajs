@@ -1,6 +1,14 @@
 function automaton2json(A) {
+  let map = {
+     "\\e":epsilon,
+     "ε":epsilon
+  };
+
   function toString(e) {
-    return JSON.stringify(e.toString());
+    if(e === epsilon) {
+       return '\\\\e';
+    }
+    return JSON.Stringify(Set.prototype.elementToString(e, map));
   }
 
   let finalStates = A.getFinalStates(),
@@ -42,6 +50,35 @@ function automaton2json(A) {
     result += '\n\t\t[' + toString(transition.startState) + ',' + toString(transition.symbol) + ',' + toString(transition.endState) + ']';
   }
   return result + '\n\t]\n}';
+}
+
+function object2automaton(o) {
+  let map = {
+     "\\e":epsilon,
+     "ε":epsilon
+  };
+
+   A : Automaton;
+
+   let fromString = Set.prototype.getValue;
+
+   for(let i in o.states) {
+      A[i ? 'addState' : 'setInitialState'](fromString(o.states[i], map));
+   }
+
+   foreach(s in o.finalStates) {
+      A.addFinalState(fromString(s, map));
+   }
+
+   foreach(t in o.transitions) {
+      A.addTransition(
+         fromString(t[0], map),
+         fromString(t[1],     map),
+         fromString(t[2],   map)
+      );
+   }
+
+   return A;
 }
 
 run(automaton2json, get_automaton(currentAutomaton));

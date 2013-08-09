@@ -1,6 +1,13 @@
-function complete(A) {
+function complete(A, alphabet) {
    compA : Automaton;
    trans : Table = A.getTransitionsTable();
+
+   if(alphabet) {
+      alphabet U= A.getAlphabet();
+   }
+   else {
+      alphabet = A.getAlphabet();
+   }
 
    compA.setInitialState(A.getInitialState());
 
@@ -10,11 +17,16 @@ function complete(A) {
    }
 
    foreach(state in A.getStates()) {
-      foreach(symbol in A.getAlphabet()) {
-         if(trans[state][symbol].isEmpty()) {
+      foreach(symbol in alphabet) {
+         if(!trans[state][symbol] || trans[state][symbol].isEmpty()) {
             compA.addState(well);
             compA.addTransition(state, symbol, well);
          }
+      }
+   }
+   if(compA.hasState(well)) {
+      foreach(a in compA.getAlphabet()) {
+         compA.addTransition(well, a, well);
       }
    }
 

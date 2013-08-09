@@ -113,10 +113,12 @@ function Automata_CAT(A1, A2) {
    Note: Spaces are ignored; "·" can be writen "." or can be ignored.
 
    Symbol:
-      (letter)
-      (LETTER)
-      (figure)
+      letter
+      LETTER
+      figure
       ε
+      \e             →   ε
+      \ anyCaracter  →   anyCaracter
 
    Regular Expressions : Semantic
 
@@ -160,12 +162,12 @@ function regexToAutomaton(regex) {
      switch(regex[i]) {
         case '\\':
            ++i;
-           isSymbol = false;
-           if(get_lex() === 'e') {
+           isSymbol = true;
+           if(regex[i]  === 'e') {
               ++i;
               return epsilon;
            }
-           error();
+           return regex[i++];
         case '(':
         case ')':
         case '+':

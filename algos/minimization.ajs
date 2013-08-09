@@ -1,7 +1,16 @@
 include determinization;
+include completion;
 
-function minimize(A, dontDeterminize) {
-  A : Automaton = !dontDeterminize && !isDeterminized(A) ? determinize(A) : A;
+function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, alphabet) {
+
+  // before minimizing, automaton must be determinist and complete.
+  if(!isAlreadyDeterminized && !isDeterminized(A)) {
+     A = determinize(A);
+  }
+  if(!isAlreadyDeterminizedAndComplete) {
+     A = complete(A, alphabet);
+  }
+
   MinA : Automaton;
   table : List = A.getTransitionsTable();
   
@@ -33,19 +42,11 @@ function minimize(A, dontDeterminize) {
       q2 = l[l.length-1];
       
       foreach(a in A.getAlphabet()) {
-        found1 = table[q1][a].card() > 0;
-        found2 = table[q2][a].card() > 0;
-        if(found1 !== found2) {
-          partition.remove(couple);
-          break;
-        }
-        else if(found1) {
-          foreach(qq1 in table[q1][a]) {
-            foreach(qq2 in table[q2][a]) {
-              if(copyPartition.contains([q1, qq1]) !== copyPartition.contains([q2, qq2])) {
-                partition.remove(couple);
-                break;
-              }
+        foreach(qq1 in table[q1][a]) {
+          foreach(qq2 in table[q2][a]) {
+            if(copyPartition.contains([q1, qq1]) !== copyPartition.contains([q2, qq2])) {
+              partition.remove(couple);
+              break;
             }
           }
         }
