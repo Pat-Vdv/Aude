@@ -622,6 +622,7 @@
       */
       setCurrentStates: function(states) {
          this.lastTakenTransitions.empty();
+         states = to_set(states);
          if(states.subsetOf(this.states)) {
             this.currentStates = new_set(states);
             this.currentStatesAddAccessiblesByEpsilon();
