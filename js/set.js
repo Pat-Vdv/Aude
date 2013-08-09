@@ -100,7 +100,7 @@
        */
       contains: function(element) {
          element =  this.checkConstraint(element);
-         return element in this.l;
+         return this.elementToString(element) in this.l;
          // fixme: this.l[element] === element doesn't work correctly because [1,4] !== [1,4]
       },
  
@@ -157,14 +157,13 @@
        */
       add: function(element) {
          element =  this.checkConstraint(element);
+         var rep = this.elementToString(element);
          if((element instanceof pkg.Set) && !this.contains(element)) {
             var that = this;
-            var rep = element.toString();
             var bind = function() {
                if(rep in that.l) {
                   delete that.l[rep];
-                  rep = element.toString();
-                  that.l[element] = element;
+                  that.l[rep] = element;
                   that.updated('elementModified');
                }
                else {
@@ -174,7 +173,7 @@
 
             element.listen(bind, 'all');
          }
-         this.l[element] = element;
+         this.l[rep] = element;
          this.updated('add', element);
       },
 
@@ -185,7 +184,7 @@
        * @param {any} element The element to remove from the set.
        */
       remove: function(element) {
-         delete this.l[element];
+         delete this.l[this.elementToString(element)];
          this.updated('remove', element);
       },
 
