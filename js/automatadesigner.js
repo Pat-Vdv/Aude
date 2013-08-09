@@ -65,6 +65,10 @@
 
    // set current automaton's SVG 
    pkg.setSVG = function (svg, index) {
+      if(!svg) {
+         return pkg.clearSVG(index);
+      }
+
       var svgWorkingNode;
       if(index === pkg.currentIndex) {
          if(typeof svg === "string") {
