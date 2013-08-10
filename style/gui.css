@@ -301,7 +301,7 @@ select {
     text-align:justify;
     margin:1em 1ex;
     color:#222;
-    font-family:sans-serif
+    font-family:"Ubuntu", "Liberation Sans", "Deja Vu Sans", Arial, sans-serif;
 }
 
 .button-container {
