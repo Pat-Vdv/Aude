@@ -348,6 +348,13 @@ function regexToAutomaton(regex) {
         return binary(e1, '.', get_regex(l2, closing));
      }
      else {
+        while(l2 === '*') {
+           e1 = unary(e1, '*');
+           l2 = get_lex();
+           if(isSymbol) {
+              return binary(e1, '.', get_regex(l2, closing));
+           }
+        }
         switch(l2) {
            case '':
               return e1;
@@ -356,8 +363,6 @@ function regexToAutomaton(regex) {
            case '+':
            case '.':
               return binary(e1, l2, get_regex('', closing));
-           case '*':
-              return unary(e1, '*');
            case '(':
               return binary(e1, '.', get_regex('(', closing));
            case ')':
