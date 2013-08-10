@@ -256,7 +256,9 @@ select {
 
 #div-quiz {
     position:relative;
-    z-index:1000;
+    z-index:100;
+    max-height:100%;
+    overflow:auto
 }
 
 #quiz-title, #quiz-author {
@@ -286,6 +288,8 @@ select {
     top:0;
     font-size:small;
     right:0;
+    color:#C63;
+    text-decoration:none;
     padding-right:1ex
 }
 
@@ -365,4 +369,49 @@ select {
    left:0;
    right:0;
    bottom:0;
+}
+
+#correction-table {
+    border-collapse:collapse;
+    box-shadow: 2px 2px 2px silver;
+    margin:auto;
+}
+
+#correction-table td, #correction-table th {
+    border:1px solid gray;
+    padding:0.5ex;
+}
+
+#correction-table td {
+    vertical-align:top;
+    text-align:left
+}
+
+#correction-table .possibilities li, .qcmt li {
+    list-style:none;
+}
+
+.qinst .possibilities, .qcmt ul {
+   margin:0;
+   padding:0;
+}
+
+.qinst .possibilities li {
+    margin-left:1ex
+}
+
+#correction-table th {
+    background:#F5F5F5;
+    text-align:center;
+    font-size:x-small;
+}
+
+.qstate {
+    text-align:center !important
+}
+
+.qid {
+    color:#07C;
+    float:left;
+    font-size:bold
 }

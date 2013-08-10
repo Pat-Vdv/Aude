@@ -685,11 +685,20 @@
 
       function startQuiz(quiz) {
          automataContainer.style.display = 'none';
+         handleImports(['equivalence', 'regex2automaton', "automaton2json"], 'Quiz');
          automatonPlus.onclick();
          if(!(quiz.questions && quiz.questions instanceof Array)) {
             throw new Error(_("The quiz doesn't have its list of question."));
          }
          quiz.currentQuestion = -1;
+
+         for(var i=0, len = quiz.questions.length, a = quiz.answers = new Array(len); i < len; ++i) {
+            a[i] = {
+               isCorrect:false,
+               userResponse:null,
+               reasons:[]
+            };
+         }
          divQuiz.classList.add('intro');
          divQuiz.classList.remove('started');
          divQuiz.textContent = '';
@@ -715,38 +724,225 @@
          
          quiz.refs = refs;
          refs.closeQuiz.onclick = closeQuiz;
-         refs.startQuiz.onclick = function() {
+         refs.startQuiz.onclick = nextQuestion(quiz);
+      }
+
+      function nextQuestion(quiz, previous, delta) {
+         return function() {
+            if(delta) {
+               quiz.currentQuestion -= 2;
+            }
             try {
-               nextQuizQuestion(quiz);
+               nextQuizQuestion(quiz, previous);
             }
             catch(e) {
-               notify(_("Error in the Quiz"), libD.format(_("There is an error in the Quiz: {0}"), e.message), "error");
+               if(typeof e === 'string') {
+                  notify(_("Error in the Quiz"), libD.format(_("There is an error in the Quiz: {0}"), e), "error");
+               }
+               else {
+                  throw(e);
+               }
             }
             return false;
          };
       }
-
       function closeQuiz() {
          automatonMinus.onclick();
          automataContainer.style.display = '';
          automataContainer.style.top     = '';
          divQuiz.textContent = '';
          divQuiz.classList.remove('enabled');
+         AutomataDesigner.redraw();
+         zoom.redraw();
       }
 
-      function nextQuizQuestion(quiz) {
+      function nextQuizQuestion(quiz, previousQuestion) {
          divQuiz.classList.remove('intro');
          divQuiz.classList.add('started');
          automataContainer.style.display = 'none';
+         if(typeof previousQuestion === 'number' && previousQuestion >= 0) {
+            var q = quiz.questions[previousQuestion],
+                r = quiz.answers[previousQuestion];
+            quiz.answers[previousQuestion].reasons = [];
+            switch(q.type) {
+               case "mcq":
+                  var answers       = r.userResponse = new Set(),
+                      possibilities = q.possibilities;
+
+                  for(var i in possibilities) {
+                     if(quiz.currentAnswersRefs['answer-' + i].checked) {
+                        answers.add('id' in possibilities[i] ? possibilities[i].id : parseInt(i)+1);
+                     }
+                  }
+                  var diff = sym_diff(answers, q.answers);
+                  if(!(r.isCorrect = diff.isEmpty())) {
+                     r.reasons.push(libD.format(_("Wrong answer for {0}."), diff.getSortedList().toString()));
+                  }
+                  break;
+               case "word":
+                  var respA = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex),
+                      words = q.words,
+                      regex = '';
+
+                  r.userResponse = AutomataDesigner.getSVG(AutomataDesigner.currentIndex);
+
+                  if(respA) {
+                     for(var i in words) {
+                        if(!respA.acceptedWord(words[i])) {
+                           r.isCorrect = false;
+                           r.reasons.push(
+                              words[i]
+                                ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), words[i])
+                                : _("The empty word is not accepted while it should be.")
+                           );
+                        }
+                        if(regex) {
+                           regex += '+';
+                        }
+                        regex+= words[i].replace(/([^0-9a-zA-Z])/g, "\\$1");
+                     }
+                     if(!r.reasons[0]) {
+                        if(!(r.isCorrect = automataAreEquivalent(regexToAutomaton(regex), respA))) {
+                           r.reasons.push(_("The given automaton accepts too many words."));
+                        }
+                     }
+                  }
+                  else {
+                     r.isCorrect = false;
+                     r.reasons.push(_("Question was not answered."));
+                  }
+                  break;
+               case "automatonEquiv":
+                  var respA = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
+
+                  r.userResponse = AutomataDesigner.getSVG(AutomataDesigner.currentIndex);
+
+                  if(respA) {
+                     try {
+                        var A = object2automaton(q.automaton);
+                     }
+                     catch(e) {
+                        throw _("Automaton given in the quiz is not correct.");
+                     }
+                     if(!(r.isCorrect = automataAreEquivalent(A, respA))) {
+                        
+                        if(q.examples instanceof Array) {
+                           for(var i in t.examples) {
+                              if(!respA.acceptedWord(t.examples[i])) {
+                                 r.reasons.push(
+                                    t.examples[i]
+                                      ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), t.examples[i])
+                                      : _("The empty word is not accepted while it should be.")
+                                 );
+                              }
+                           }
+                        }
+                        if(q.counterExamples instanceof Array) {
+                           for(var i in t.counterExamples) {
+                              if(respA.acceptedWord(t.counterExamples[i])) {
+                                 r.reasons.push(
+                                    t.counterExamples[i]
+                                      ? libD.format(_("Word <i>{0}</i> is accepted while it shouldn’t be."), t.counterExamples[i])
+                                      : _("The empty word is accepted while it shouldn’t be.")
+                                 );
+                              }
+                           }
+                        }
+
+                        if(!r.reasons[0]) {
+                           r.reasons.push(_("The given automaton isn’t equivalent to the expected one."));
+                        }
+                     }
+                  }
+                  else {
+                     r.isCorrect = false;
+                     r.reasons.push(_("Question was not answered."));
+                  }
+                  break;
+            }
+         }
+
          ++quiz.currentQuestion;
          if(quiz.currentQuestion >= quiz.questions.length) {
-            quiz.refs.content.textContent = _("The Quiz is finished!");
+            quiz.refs.content.textContent = '';
+            quiz.refs.content.appendChild(libD.jso2dom(['p', _("The Quiz is finished! Here are the details of the correction.")]));
+            var refs = {};
+            var answers = libD.jso2dom(['table#correction-table',
+               ["tr", [
+                  ["th", _("Instruction")],
+                  ["th", _("Correct answer?")],
+                  ["th", _("Comments")]
+               ]]
+            ]);
+
+            for(var i in quiz.answers) {
+               answers.appendChild(libD.jso2dom(['tr', [
+                  ['td.qinst', {'#':'answerInstr'}, [
+                     ['span.qid', ('id' in quiz.questions[i] ? quiz.questions[i].id : (parseInt(i)+1)) + '. '],
+                     ['div.qinstr-content']
+                  ]],
+                  ['td.qstate', quiz.answers[i].isCorrect ? _("Yes") : _("No")],
+                  ['td.qcmt', {'#':'answerCmt'}]
+               ]], refs));
+               
+               if(quiz.answers[i].reasons[1]) {
+                  var li, ul = document.createElement('ul');
+                  for(var j in quiz.answers[i].reasons) {
+                     li = document.createElement('li');
+                     li.innerHTML = quiz.answers[i].reasons[j];
+                     ul.appendChild(li);
+                  }
+                  refs.answerCmt.appendChild(ul);
+               }
+               else {
+                  refs.answerCmt.innerHTML = quiz.answers[i].reasons[0] || '';
+               }
+
+               if(quiz.questions[i].instructionHTML) {
+                  textFormat(quiz.questions[i].instructionHTML, refs.answerInstr.lastChild, true);
+               }
+               else {
+                  textFormat(quiz.questions[i].instruction, refs.answerInstr.lastChild);
+               }
+               refs.answerInstr.appendChild(document.createElement('ul'));
+               refs.answerInstr.lastChild.className = 'possibilities';
+               var possibilities = quiz.questions[i].possibilities;
+               if(possibilities) {
+                  for(var i in possibilities) {
+                     refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
+                        ["span.quiz-answer-id", ('id' in possibilities[i] ? possibilities[i].id : (parseInt(i)+1)) + '. '],
+                        ["span", {"#": i + 'content'}]
+                     ]], refs));
+                     if(possibilities[i].automaton) {
+                        refs[i + 'content'].innerHTML = automaton2svg(automatonFromObj(possibilities[i].automaton));
+                     }
+                     else if(possibilities[i].html) {
+                        refs[i + 'content'].innerHTML = possibilities[i].html;
+                     }
+                     else if(possibilities[i].text) {
+                        textFormat(possibilities[i].text, refs[i + 'content']);
+                     }
+                     else if(possibilities[i].html) {
+                        textFormat(possibilities[i].html, refs[i + 'content'], true);
+                     }
+                  }
+               }
+            }
+            
+            quiz.refs.content.appendChild(answers);
+            quiz.refs.content.appendChild(libD.jso2dom([
+               ['p', _("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
+               ['div.button-container', ['button', {"#":"prev"}, _("Previous page")]]
+            ], refs));
+            refs.prev.onclick = nextQuestion(quiz, null, true);
             return;
          }
+
          var q = quiz.questions[quiz.currentQuestion],
-             qid = q.id || (quiz.currentQuestion + 1),
+             qid = 'id' in q ? q.id : (quiz.currentQuestion + 1),
              refs = {};
  
+         quiz.currentAnswersRefs = refs;
          quiz.refs.content.textContent = '';
          quiz.refs.content.appendChild(
                libD.jso2dom([
@@ -772,15 +968,17 @@
          switch(q.type) {
             case "mcq":
                var possibilities = q.possibilities,
-                   anwserRefs    = {};
+                   anwserRefs    = {},
+                   qid;
                if(!(q.possibilities)) {
-                  throw new Error(libD.format(_("Question {0} has no answers."), qid));
+                  throw libD.format(_("Question {0} has no answers."), qid);
                }
                refs.answers.appendChild(document.createElement('ul'));
                for(var i in possibilities) {
+                  qid = 'id' in possibilities[i] ? possibilities[i].id : (parseInt(i)+1);
                   refs.answers.firstChild.appendChild(libD.jso2dom(["li", ["label", [
                      ["input", {"type":"checkbox", "#":"answer-" + i}],
-                     ["span.quiz-answer-id", (possibilities[i].id || (i+1)) + '. '],
+                     ["span.quiz-answer-id", qid + '. '],
                      ["span", {"#": i + 'content'}]
                   ]]], refs));
                   if(possibilities[i].automaton) {
@@ -795,22 +993,29 @@
                   else if(possibilities[i].html) {
                      textFormat(possibilities[i].html, refs[i + 'content'], true);
                   }
+                  if(quiz.answers[quiz.currentQuestion].userResponse instanceof Set && quiz.answers[quiz.currentQuestion].userResponse.contains(qid)) {
+                     refs["answer-" + i].checked = true;
+                  }
                }
                break;
             case "word":
                refs.answers.innerHTML = '<p>' +  _("You can draw the automaton bellow.") + '</p>';
+               AutomataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AutomataDesigner.currentIndex);
                setTimeout(function() {
                   automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
                   automataContainer.style.display = '';
+                  AutomataDesigner.redraw();
+                  zoom.redraw();
                }, 0);
                break;
             case "automatonEquiv":
-               if(!window.automataAreEquivalent) {
-                  getScript('equivalence');
-               }
+               refs.answers.innerHTML = '<p>' +  _("You can draw the automaton bellow.") + '</p>';
+               AutomataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AutomataDesigner.currentIndex);
                setTimeout(function() {
                   automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
                   automataContainer.style.display = '';
+                  AutomataDesigner.redraw();
+                  zoom.redraw();
                }, 0);
                break;
             case "program":
@@ -820,14 +1025,13 @@
                
                break;
             default:
-               notify(_("Question type not known"), libD.format(_('Type of question {0} is not known. Known types are: <ul><li>"mcq" for multiple choices question),</li><li>"word" (to draw an automaton which recognizes a given list of words).')),"error");
+               notify(_("Question type not known"), libD.format(_('Type of question {0} is not known. Known types are: <ul><li>"mcq" for multiple choices question,</li><li>"word" (to draw an automaton which accepts a given list of words).</li></ul>')),"error");
          }
-         refs.ok.onclick = quiz.refs.startQuiz.onclick;
+
+         refs.ok.onclick = nextQuestion(quiz, quiz.currentQuestion);
+
          if(quiz.currentQuestion) {
-            refs.prev.onclick = function() {
-              quiz.currentQuestion -= 2;
-              refs.ok.onclick();
-            }
+            refs.prev.onclick = nextQuestion(quiz, quiz.currentQuestion, true);
          }
          else {
             refs.prev.style.display = 'none';
@@ -1366,16 +1570,34 @@
    _("fr", "Question {0}: ", "Question {0} : ");
    _("fr", "Next question", "Question suivante");
    _("fr", "Previous question", "Question précédente");
-   _("fr", "The Quiz is finished!", "Le quiz est fini !");
+   _("fr", "The Quiz is finished! Here are the details of the correction.", "Le quiz est terminé ! Voici les détails de la correction.");
    _("fr", "Error in the Quiz", "Erreur dans le quiz");
    _("fr", "There is an error in the Quiz: {0}", "Il y a une erreur dans le quiz : {0}");
    _("fr", "Question {0} has no answers.", "La question {0} n’a pas de réponse.");
    _("fr", "You can draw the automaton bellow.", "Vous pouvez dessiner l'automate ci-dessous.");
-   _("fr", "Test equivalence of 2 automata", "Tester l'équiv. entre 2 automates");
+   _("fr", "Equiv. between 2 automata", "Équiv. entre 2 automates");
    _("fr", "Reg. Exp. → automaton", "Exp. Reg. → automate");
    _("fr", "Reg. Exp. → minimized automaton", "Exp. Reg. → automate minimisé");
    _("fr", "Complete", "Compléter");
    _("fr", "Complement", "Complémenter");
    _("fr", "Product", "Produit");
    _("fr", "Mirror", "Miroir");
+   _("fr", "Wrong answer for {0}.", "Réponse incorrecte pour {0}.");
+   _("fr", "The given automaton accepts too many words.", "L’automate donné accepte trop de mots.");
+   _("fr", "The empty word is accepted while it shouldn’t be.", "Le mot vide est accepté alors qu’il ne devrait pas l’être.");
+   _("fr", "The empty word is not accepted while it should be.", "Le mot vide n’est pas accepté alors qu’il devrait l’être.");
+   _("fr", "Word <i>{0}</i> is accepted while it shouldn’t be.", "Le mot <i>{0}</i> est accepté alors qu’il ne devrait pas l’être.");
+   _("fr", "Word <i>{0}</i> is not accepted while it should be.", "Le mot <i>{0}</i> n’est pas accepté alors qu’il devrait l‘être.");
+   _("fr", "The given automaton isn’t equivalent to the expected one.", "L’automate donné n’est pas équivalent à l’automate attendu.");
+   _("fr", "Question type not known", "Type de question inconnu")
+   _("fr", 'Type of question {0} is not known. Known types are: <ul><li>"mcq" for multiple choices question,</li><li>"word" (to draw an automaton which accepts a given list of words).</li></ul>', 'Le type de la question {0} est inconnu. Les types reconnus sont : <ul><li>"mcq" pour question à choix multiples,</li><li>"word" (pour dessiner un automate qui accepte une liste donnée de mots).</li></ul>');
+   _("fr", "Question was not answered.", "Vous n’avez pas répondu à la question.");
+   _("fr", "We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)", "Nous souhaitons ne pas vous donner de note. Votre progression est la chose la plus importante, au delà de toute note arbitraire, absolue et dénuée de sens. Continuez vos efforts ;-)");
+   _("fr", "Correct answer?", "Réponse correcte ?");
+   _("fr", "Comments", "Commentaires");
+   _("fr", "Instruction", "Énoncé");
+   _("fr", "Yes", "Oui");
+   _("fr", "No", "Non");
+   _("fr", "Previous page", "Page précédente");
+   _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
 })();
