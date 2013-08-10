@@ -603,7 +603,8 @@
       setCurrentState: function(state) {
          this.lastTakenTransitions.empty();
          if(this.states.contains(state)) {
-            this.currentStates.interInPlace([state]);
+            this.currentStates.empty();
+            this.currentStates.add(state);
             this.currentStatesAddAccessiblesByEpsilon();
          }
       },
@@ -624,7 +625,8 @@
          this.lastTakenTransitions.empty();
          states = to_set(states);
          if(states.subsetOf(this.states)) {
-            this.currentStates = new_set(states);
+            this.currentStates.empty();
+            this.currentStates.unionInPlace(to_set(states));
             this.currentStatesAddAccessiblesByEpsilon();
          }
       },
@@ -828,7 +830,7 @@
              transitions = this.getLastTakenTransitions().copy();
          this.setCurrentState(this.getInitialState());
          this.runWord(symbols);
-         var accepted = !inter(this.currentStates, this.getFinalStates()).isEmpty();
+         var accepted = !(inter(this.currentStates, this.finalStates).isEmpty());
          this.setCurrentStates(states);
          this.lastTakenTransitions = transitions;
          return accepted;
