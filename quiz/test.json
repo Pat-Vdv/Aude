@@ -60,6 +60,11 @@
                ["2","b","2"]
             ]
          }
+      },
+      {
+         "type":"automatonEquiv",
+         "instructionHTML":"(version expression régulière) Soit $\\Sigma=\\{a,b\\}$. Écrivez un automate qui reconnait tous les mots qui ont un nombre de <i>b</i> multiple de trois, et seulement eux.",
+         "regex":"a*(ba*ba*ba*)*"
       }
-   ]
+      ]
 }
