@@ -140,6 +140,9 @@
          setInitialState(svgWorkingNode.getElementById(btoa(fixBrokenGraphvizTitle(workingInitialStateArrow.querySelector('title').textContent.substr(8)))));
          // 8 : size of "_begin->"
       }
+      else {
+         initialState = initialStates[index] = null;
+      }
       pkg.setCurrentIndex(pkg.currentIndex);
    };
 
@@ -1152,7 +1155,12 @@
    function setInitialState (node) {
       var path, polygon, title;
 
-      if(!initialStateArrow) {
+      if(initialStateArrow) {
+         path    = initialStateArrow.querySelector('path');
+         polygon = initialStateArrow.querySelector('polygon');
+         title   = initialStateArrow.querySelector('title');
+      }
+      else {
          initialStateArrow = initialStateArrows[pkg.currentIndex] = document.createElementNS('http://www.w3.org/2000/svg', 'g');
          initialStateArrow.id = 'initialStateArrow';
          title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
@@ -1165,11 +1173,6 @@
          initialStateArrow.appendChild(path);
          initialStateArrow.appendChild(polygon);
          pkg.svgNode.querySelector('g').appendChild(initialStateArrow);
-      }
-      else {
-         path    = initialStateArrow.querySelector('path');
-         polygon = initialStateArrow.querySelector('polygon');
-         title   = initialStateArrow.querySelector('title');
       }
       var ellipse = getBigEllipse(node), cy = ellipse.cy.baseVal.value, cx = ellipse.cx.baseVal.value, rx = ellipse.rx.baseVal.value;
       path.setAttribute('d', 'M' + (cx-rx-38) + ',' + cy +
