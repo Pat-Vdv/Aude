@@ -42,7 +42,7 @@
       },
       {
          "type":"word",
-         "instruction":"Soit $\\Sigma=\\{h,e,i,l,o,y\\}$. Trouvez un automate qui reconnaît les mots suivants: 'hey', 'hello', 'hi'.",
+         "instruction":"Soit $\\Sigma=\\{h,e,i,l,o,y\\}$. Trouvez un automate qui reconnaît les mots suivants, et seulement eux: 'hey', 'hello', 'hi'.",
          "words":["hey", "hello", "hi"]
       },
       {
