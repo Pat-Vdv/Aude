@@ -819,6 +819,11 @@
             res += white + '.' + symbol2;
          }
          else if(symbol === '?') {
+            if(onlyOneValue) {
+               i = deb;
+               return res;
+            }
+
             var pres = getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
             res += white + '?' + pres + getSymbol() /* ':' */ + getExpression({inForeach:inForeach,onlyOneValue:true,constraintedVariables:constraintedVariables});
          }
