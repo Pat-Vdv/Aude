@@ -840,7 +840,7 @@
       var set = pkg.new_set(), e;
       for(var i in set1.l) {
          e = set1.l[i];
-         if(set2.contains(i)) {
+         if(set2.contains(set1.l[i])) {
             set.add(e);
          }
       }
