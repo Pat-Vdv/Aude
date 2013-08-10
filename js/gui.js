@@ -818,11 +818,24 @@
                   r.userResponse = AutomataDesigner.getSVG(AutomataDesigner.currentIndex);
 
                   if(respA) {
-                     try {
-                        var A = object2automaton(q.automaton);
+                     if(q.automaton) {
+                        try {
+                           var A = object2automaton(q.automaton);
+                        }
+                        catch(e) {
+                           throw _("Automaton given in the quiz is not correct.");
+                        }
                      }
-                     catch(e) {
-                        throw _("Automaton given in the quiz is not correct.");
+                     else if(q.regex) {
+                        try {
+                           var A = regexToAutomaton(q.regex);
+                        }
+                        catch(e) {
+                           throw _("The regex given in the quiz is not valid.");
+                        }
+                     }
+                     else {
+                        throw _("No regular expression or automaton was given in the quiz.");
                      }
                      if(!(r.isCorrect = automataAreEquivalent(A, respA))) {
                         
@@ -1600,4 +1613,7 @@
    _("fr", "No", "Non");
    _("fr", "Previous page", "Page précédente");
    _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
+   _("fr", "No regular expression or automaton was given in the quiz.", "Aucun automate ou aucune expression régulière n’a été donné dans le quiz.");
+   _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
+
 })();
