@@ -137,7 +137,15 @@
          initialStateArrow = workingInitialStateArrow;
       }
       if(workingInitialStateArrow) {
-         setInitialState(svgWorkingNode.getElementById(btoa(fixBrokenGraphvizTitle(workingInitialStateArrow.querySelector('title').textContent.substr(8)))));
+         setInitialState (
+            svgWorkingNode.getElementById(
+               btoa(
+                  fixBrokenGraphvizTitle(
+                     workingInitialStateArrow.querySelector('title').textContent.substr(8)
+                  )
+               )
+            )
+         );
          // 8 : size of "_begin->"
       }
       else {
@@ -792,6 +800,9 @@
                   delete nodeList[oldid];
                   node.querySelector('title').textContent = toBrokenGraphvizTitle(text.textContent = t);
                   node.setAttribute('id', tb);
+                  if(node === initialState) {
+                     setInitialState(node);
+                  }
                }
             }
          });
@@ -1186,7 +1197,12 @@
          initialStateArrow.appendChild(polygon);
          pkg.svgNode.querySelector('g').appendChild(initialStateArrow);
       }
-      var ellipse = getBigEllipse(node), cy = ellipse.cy.baseVal.value, cx = ellipse.cx.baseVal.value, rx = ellipse.rx.baseVal.value;
+
+      var ellipse = getBigEllipse(node),
+               cy = ellipse.cy.baseVal.value,
+               cx = ellipse.cx.baseVal.value,
+               rx = ellipse.rx.baseVal.value;
+
       path.setAttribute('d', 'M' + (cx-rx-38) + ',' + cy +
                              'C' + (cx-rx-(38-10)*2/3) + ',' + cy +
                              ' ' + (cx-rx-(38-10)/3)   + ',' + cy +
