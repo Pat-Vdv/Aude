@@ -552,7 +552,7 @@
                   return listToString(e);
                }
                else if(typeof e === 'string') {
-                  if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e) == e || (typeof map === 'object' && map.hasOwnProperty(e))) {
+                  if(!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e).toString() === e || (typeof map === 'object' && map.hasOwnProperty(e))) {
                      e = JSON.stringify(e);
                   }
                   return e.toString();
