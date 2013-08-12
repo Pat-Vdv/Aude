@@ -1,0 +1,7 @@
+0
+
+
+
+<representation type="image/svg+xml">
+<svg viewBox="192 256.5 384 490" height="980" width="768" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="graph1" class="graph"> <title>automaton</title><g id="MA==" class="node"><title>0</title><ellipse cy="383.75" cx="364" ry="18.3848" rx="17.8879" stroke="black" fill="transparent"></ellipse><text y="387.75" x="364" font-size="14.00" font-family="Times Roman, serif" text-anchor="middle">0</text></g><g id="initialStateArrow"><title>_begin-&gt;0</title><path d="M308.1121006011963,383.75C327.4454339345296,383.75 336.778767267863,383.75 336.1121006011963,383.75" stroke="black"></path><polygon points="346.1121006011963,383.75 336.1121006011963,379.75 341.1121006011963,383.75 336.1121006011963,383.75 336.1121006011963,383.75 336.1121006011963,383.75 341.1121006011963,383.75 336.1121006011963,387.75 346.1121006011963,383.75 346.1121006011963,383.75" fill="black" stroke="black"></polygon></g></g></svg>
+</representation>
