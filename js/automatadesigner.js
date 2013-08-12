@@ -501,40 +501,45 @@
             return;
          }
 
-         var trans = prompt(_("New transition: ") + _("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), '');
-         if(trans === null) {
-            pathEdit.parentNode.removeChild(pathEdit);
-            pkg.svgContainer.onmousemove = null;
-         }
-         else {
-            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.id = id;
-            g.setAttribute('class', 'edge');
-            var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-            title.textContent = toBrokenGraphvizTitle(atob(nodeEdit.id)) + '->' + toBrokenGraphvizTitle(atob(endState.id));
-            g.appendChild(title);
+         pkg.svgContainer.onmousemove = null;
+         pkg.prompt(
+            _("New transition"),
+            _("Please give transitions's symbols separated by commas.\nYou can suround special characters with simple or double quotes."),
+            '',
+            function(trans) {
+               if(trans === null) {
+                  pathEdit.parentNode.removeChild(pathEdit);
+               }
+               else {
+                  var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                  g.id = id;
+                  g.setAttribute('class', 'edge');
+                  var title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                  title.textContent = toBrokenGraphvizTitle(atob(nodeEdit.id)) + '->' + toBrokenGraphvizTitle(atob(endState.id));
+                  g.appendChild(title);
 
-            var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+                  var polygon = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
 
-            polygon.setAttribute('fill', 'black');
-            polygon.setAttribute('stroke', 'black');
+                  polygon.setAttribute('fill', 'black');
+                  polygon.setAttribute('stroke', 'black');
 
-            var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.textContent = format_transition(trans || "\\e");
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('font-family', 'Times Roman,serif');
-            text.setAttribute('font-size', '14.00');
-            cleanTransitionPos(pathEdit, polygon.points, text, nodeEdit, endState);
-            g.appendChild(pathEdit);
-            g.appendChild(polygon);
-            g.appendChild(text);
-            pkg.svgNode.querySelector('g').appendChild(g);
-            pkg.svgContainer.onmousemove = null;
-            nodeList[atob(endState.id)].t.push([g, false]); // false : state is not origin
-            if(nodeEdit !== endState) {
-               nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
+                  var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                  text.textContent = format_transition(trans || "\\e");
+                  text.setAttribute('text-anchor', 'middle');
+                  text.setAttribute('font-family', 'Times Roman,serif');
+                  text.setAttribute('font-size', '14.00');
+                  cleanTransitionPos(pathEdit, polygon.points, text, nodeEdit, endState);
+                  g.appendChild(pathEdit);
+                  g.appendChild(polygon);
+                  g.appendChild(text);
+                  pkg.svgNode.querySelector('g').appendChild(g);
+                  nodeList[atob(endState.id)].t.push([g, false]); // false : state is not origin
+                  if(nodeEdit !== endState) {
+                     nodeList[atob(nodeEdit.id)].t.push([g, true]); // true : state is origin
+                  }
+               }
             }
-         }
+         );
       }
 
       function transitionStraight(edge) {
@@ -755,48 +760,55 @@
 
       function editNodeName(node) {
          var text = node.querySelector('text');
-         var t = prompt(_("Which name do you want for the state ?"), text.textContent);
-         if(t) {
-            t = pkg.standardizeStringValueFunction(t);
-            var tb = btoa(t);
-            var existingNode;
-            if(existingNode = pkg.svgNode.getElementById(tb)) {
-               if(node !== existingNode) {
-                  alert(_("Sorry, but a state is already named like this."));
-               }
-            }
-            else {
-               var oldid = atob(node.id),
-                   n = nodeList[oldid];
-               for(var i=0, len = n.t.length; i < len; ++i) {
-                  var tid = n.t[i][0].id.split(' ');
-                  if(tid[0] === tid[1]) {
-                     n.t[i][0].id = tb + ' ' + tb;
-                     n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(t) + '->' + toBrokenGraphvizTitle(t);
-                  }
-                  else if(n.t[i][1]) {// if node is origin
-                     n.t[i][0].id = tb + ' ' + tid[1];
-                     n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(t) + '->' + toBrokenGraphvizTitle(atob(tid[1]));
-                  }
-                  else {
-                     n.t[i][0].id = tid[0] + ' ' + tb;
-                     n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(atob(tid[0])) + '->' + toBrokenGraphvizTitle(t);
+         pkg.prompt(_("Name of the state"), _("Which name do you want for the state ?"), text.textContent, function(t) {
+            if(t) {
+               t = pkg.standardizeStringValueFunction(t);
+               var tb = btoa(t);
+               var existingNode;
+               if(existingNode = pkg.svgNode.getElementById(tb)) {
+                  if(node !== existingNode) {
+                     alert(_("Sorry, but a state is already named like this."));
                   }
                }
-               nodeList[t] = nodeList[oldid];
-               delete nodeList[oldid];
-               node.querySelector('title').textContent = toBrokenGraphvizTitle(text.textContent = t);
-               node.setAttribute('id', tb);
+               else {
+                  var oldid = atob(node.id),
+                      n = nodeList[oldid];
+                  for(var i=0, len = n.t.length; i < len; ++i) {
+                     var tid = n.t[i][0].id.split(' ');
+                     if(tid[0] === tid[1]) {
+                        n.t[i][0].id = tb + ' ' + tb;
+                        n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(t) + '->' + toBrokenGraphvizTitle(t);
+                     }
+                     else if(n.t[i][1]) {// if node is origin
+                        n.t[i][0].id = tb + ' ' + tid[1];
+                        n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(t) + '->' + toBrokenGraphvizTitle(atob(tid[1]));
+                     }
+                     else {
+                        n.t[i][0].id = tid[0] + ' ' + tb;
+                        n.t[i][0].querySelector('title').textContent = toBrokenGraphvizTitle(atob(tid[0])) + '->' + toBrokenGraphvizTitle(t);
+                     }
+                  }
+                  nodeList[t] = nodeList[oldid];
+                  delete nodeList[oldid];
+                  node.querySelector('title').textContent = toBrokenGraphvizTitle(text.textContent = t);
+                  node.setAttribute('id', tb);
+               }
             }
-         }
+         });
       }
 
       function editTransitionSymbols(edge) {
          var text = edge.querySelector('text');
-         var t = prompt(_("Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible."), text.textContent);
-         if(t !== null) {
-            text.textContent = format_transition(t || '\\e');
-         }
+         var t = pkg.prompt(
+            _("Transitions' symbols"),
+            _("Please give transitions's symbols separated by commas.\nYou can suround special characters with simple or double quotes."),
+            text.textContent,
+            function(t) {
+               if(t !== null) {
+                  text.textContent = format_transition(t || '\\e');
+               }
+            }
+         );
       }
 
       function createNode(e) {
@@ -1564,8 +1576,13 @@
       }
    }
 
-   _("fr", "New transition: ", "Nouvelle transition :");
-   _("fr", "Please give the list of this transitions's symbols separating them by a comma.\nIn case of special characters, put symbols between double quotes; escaping characters with a backslash is possible.", "Veuillez donner les symboles de cette transition en les séparant par des vigules.\nEn cas de caractères spéciaux, encadrez par des guillemets doubles. L’antislash permet d'échapper les caractères.");
+   pkg.prompt = function(title, descr, def, fun) {
+      fun(window.prompt(title + ': ' + descr, def));
+   };
+
+   _("fr", "New transition", "Nouvelle transition");
+   _("fr", "Name of the state", "Nom de l’état");
+   _("fr", "Please give transitions's symbols separated by commas.\nYou can suround special characters with simple or double quotes.", "Veuillez donner les symboles de la transition en les séparant par des vigules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles.");
    _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l’état initial.");
    _("fr", "Which name do you want for the state ?", "Quel nom voulez-vous donner à l’état ?");
    _("fr", "Sorry, but a state is already named like this.", "Désolé, mais un état porte déjà ce nom.");

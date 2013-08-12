@@ -293,6 +293,59 @@
 
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
       AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
+      AutomataDesigner.prompt = (function() {
+         var refs = {},
+             win,
+             func,
+             winContent = libD.jso2dom(['div.libD-ws-colors-auto', [
+               ['div', ['label', {"#":"descr","for":"prompt-input","style":"white-space:pre-wrap"}]],
+               ['div', {style:"display:table;width:100%"},
+                  ['div', {style:"display:table-row"}, [
+                     ['div', {style:"display:table-cell;width:100%"}, ['input#prompt-input', {"#":"input", type:"text",style:"width:100%"}]],
+                     ['div',  {style:"display:table-cell"}, [
+                        ['input', {"#":"ok", type:"button", value:_("OK")}]
+                     ]]
+                  ]]
+               ]
+            ]], refs);
+
+         function close() {
+            if(func) {
+               func(null);
+            }
+         }
+         refs.ok.onclick = function() {
+            func(refs.input.value);
+            func = null;
+            win.close();
+         };
+         refs.input.onkeydown = function(e) {
+            if(e.keyCode === 13) {
+               refs.ok.onclick();
+               e.preventDefault();
+               e.stopPropagation();
+               return false;
+            }
+         };
+
+         return function(title, descr, def, fun) {
+            func = fun;
+            if(!win || !win.ws) {
+               win = libD.newWin({
+                  content:winContent,
+                  center:true,
+                  minimizable:false
+               });
+               win.addEvent('close', close);
+               win.ws.wm.handleSurface(win, winContent);
+            }
+            win.show();
+            win.setTitle(title);
+            refs.descr.textContent = descr;
+            refs.input.value = def;
+            refs.input.select();
+         };
+      })();
       head = document.querySelector('head');
 
       if(window.js18Supported) {
