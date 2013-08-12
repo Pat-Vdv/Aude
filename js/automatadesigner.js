@@ -302,7 +302,7 @@
       var A = new Automaton();
       pkg.cleanSVG(pkg.currentIndex);
       if(!initialStates[index]) {
-         return ''; // automata without initial states are not supported
+         return null; // automata without initial states are not supported
       }
 
       var getValue = pkg.getValueFunction;
@@ -1469,7 +1469,7 @@
    pkg.stateSetBackgroundColor = function (index, state, color) {
       var s = svgs[index];
       if(s) {
-         var state = s.getElementById(btoa(state));
+         var state = s.getElementById(btoa(pkg.getStringValueFunction(state)));
          if(state) {
             getBigEllipse(state).setAttribute('fill', color);
          }
@@ -1482,6 +1482,8 @@
 
    pkg.transitionSetColor = function (index, startState, symbol, endState, color) {
       var s = svgs[index];
+      startState = pkg.getStringValueFunction(startState);
+      endState   = pkg.getStringValueFunction(endState);
       if(s) {
          var edge = s.getElementById(btoa(startState) + ' ' + btoa(endState));
          if(edge) {

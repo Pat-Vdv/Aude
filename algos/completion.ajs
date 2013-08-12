@@ -1,6 +1,6 @@
 function complete(A, alphabet) {
    compA : Automaton;
-   trans : Table = A.getTransitionsTable();
+   let trans = A.getTransitionFunction();
 
    if(alphabet) {
       alphabet U= A.getAlphabet();
@@ -18,7 +18,7 @@ function complete(A, alphabet) {
 
    foreach(state in A.getStates()) {
       foreach(symbol in alphabet) {
-         if(!trans[state][symbol] || trans[state][symbol].isEmpty()) {
+         if(trans(state, symbol).isEmpty()) {
             compA.addState(well);
             compA.addTransition(state, symbol, well);
          }

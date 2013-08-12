@@ -37,6 +37,7 @@
        _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
        results,
+       head,
        not;
 
    AutomataDesigner.getValueFunction = function(s) {
@@ -194,7 +195,7 @@
 
    function execProgram(code) {
       if(code) {
-         window.loadProgram(code);
+         loadProgram(code);
       }
 
       if(window.userProgram && waitingFor.isEmpty()) {
@@ -223,6 +224,57 @@
 
    var enableAutoHandlingError = false;
 
+   function getScript(includeName, includer) {
+      if(waitingFor.contains(includeName)) {
+         return;
+      }
+
+      if(includeName[0] === "'") {
+         includeName = includeName.replace(/"/g, '\\"');
+         includeName = includeName.substr(1, includeName.length-1);
+      }
+      if(includeName[0] === '"') {
+         try {
+            includeName = JSON.parse(includeName); // should not happen
+         }
+         catch(e) {
+            handleError(libD.format(_("Syntax error: bad import parameter in {0}"), includer));
+            return;
+         }
+      }
+      if(includeName.length < 4 || includeName.substr(includeName.length-4) !== '.ajs') {
+         includeName += '.ajs';
+      }
+      waitingFor.add(includeName);
+      AutomatonGlue.getScript(includeName, includer);
+   }
+
+   function handleImports(includes, includer) {
+      for(var i in includes) {
+         getScript(includes[i], includer);
+      }
+   }
+
+   function loadProgram(code) {
+      var script   = document.getElementById('useralgo'),
+          includes = [];
+      if(script) {
+         head.removeChild(script);
+      }
+      waitingFor.empty();
+      window.userProgram = null;
+      script = document.createElement('script');
+      script.id = 'useralgo';
+      if(js18Supported) {
+         script.type = 'text/javascript;version=1.8';
+      }
+      script.textContent = 'function userProgram(run) {"use strict";\n' + AutomataJS.toPureJS(code, includes) + '\n}';
+      enableAutoHandlingError = "user's program";
+      head.appendChild(script);
+      enableAutoHandlingError = false;
+      handleImports(includes, "user's program");
+   };
+
    function automatonJSLoaded() {
       window.onerror = function(message, url, lineNumber) {
          if(enableAutoHandlingError) {
@@ -236,14 +288,18 @@
          }
       };
       offsetError = -1;
-      window.loadProgram(':');
+      loadProgram(':');
    };
 
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
       AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
+      head = document.querySelector('head');
 
       if(window.js18Supported) {
          libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
+      }
+      else {
+         automatonJSLoaded();
       }
 
       AutomataDesigner.load();
@@ -272,7 +328,6 @@
           quiz              = document.getElementById('quiz'),
           divQuiz           = document.getElementById('div-quiz'),
           automataContainer = document.getElementById('automata-container'),
-          head              = document.querySelector('head'),
           exportFN          = '',
           executionTimeout  = 0,
           executeWin,
@@ -1112,12 +1167,6 @@
          }
       };
 
-      function handleImports(includes, includer) {
-         for(var i in includes) {
-            getScript(includes[i], includer);
-         }
-      }
-
       var execute;
       (function() {
          var word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep;
@@ -1148,7 +1197,7 @@
                      for(var i in currentStates) {
                         AutomataDesigner.stateSetBackgroundColor(
                            index,
-                           currentStates[i].toString(),
+                           currentStates[i],
                            currentAutomaton.isAcceptingState(currentStates[i])
                               ? CURRENT_FINAL_STATE_COLOR
                               : CURRENT_STATE_COLOR
@@ -1228,7 +1277,7 @@
                for(var i in states) {
                   AutomataDesigner.stateSetBackgroundColor(
                      index,
-                     states[i].toString(),
+                     states[i],
                      STATE_REFUSED
                   );
                }
@@ -1242,9 +1291,11 @@
                   results.appendChild(document.createElement('div'));
                   results.lastChild.className = 'execution';
                   res = '';
+                  var s;
                   for(var k in listOfExecutions[i]) {
                      if(k) {
-                        res += k == 0 ? listOfExecutions[i][k][0] : ': ' + listOfExecutions[i][k][1] + ' → ' + listOfExecutions[i][k][0];
+                        s = listOfExecutions[i][k][1];
+                        res += k == 0 ? Set.prototype.elementToString(listOfExecutions[i][k][0]) : ': ' + (s === epsilon ? 'ε' : Set.prototype.elementToString(s, {"\\e":epsilon,"ε":epsilon})) + ' → ' + Set.prototype.elementToString(listOfExecutions[i][k][0]);
                      }
                   }
                   results.lastChild.textContent = res;
@@ -1286,26 +1337,6 @@
          }
          
       }
-
-      window.loadProgram = function (code) {
-         var script   = document.getElementById('useralgo'),
-             includes = [];
-         if(script) {
-            head.removeChild(script);
-         }
-         waitingFor.empty();
-         window.userProgram = null;
-         script = document.createElement('script');
-         script.id = 'useralgo';
-         if(js18Supported) {
-            script.type = 'text/javascript;version=1.8';
-         }
-         script.textContent = 'function userProgram(run) {"use strict";\n' + AutomataJS.toPureJS(code, includes) + '\n}';
-         enableAutoHandlingError = "user's program";
-         head.appendChild(script);
-         enableAutoHandlingError = false;
-         handleImports(includes, "user's program");
-      };
 
       var nextLoadIsPrefefAlgo, predefAlgoFunctions = [], loadPredefAlgoAfterImport = null;
 
@@ -1390,31 +1421,6 @@
             }, 0);
          }
       };
-
-      function getScript(includeName, includer) {
-         if(waitingFor.contains(includeName)) {
-            return;
-         }
-
-         if(includeName[0] === "'") {
-            includeName = includeName.replace(/"/g, '\\"');
-            includeName = includeName.substr(1, includeName.length-1);
-         }
-         if(includeName[0] === '"') {
-            try {
-               includeName = JSON.parse(includeName); // should not happen
-            }
-            catch(e) {
-               handleError(libD.format(_("Syntax error: bad import parameter in {0}"), includer));
-               return;
-            }
-         }
-         if(includeName.length < 4 || includeName.substr(includeName.length-4) !== '.ajs') {
-            includeName += '.ajs';
-         }
-         waitingFor.add(includeName);
-         AutomatonGlue.getScript(includeName, includer);
-      }
 
       window.getScriptFailed = function(includeName, includer, reason) {
          handleError(libD.format(_("Error: import failed: '{0}' (in '{1}')."), reason, includer), '(?)');

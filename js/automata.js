@@ -355,7 +355,7 @@
        * @see Automaton#removeTransition
        * @see Automaton#hasTransition
        * @see Automaton#getTransitions
-       * @see Automaton#getTransitionsTable
+       * @see Automaton#getTransitionFunction
        * @see Transition
        */
       addTransition: function(t) {
@@ -378,7 +378,7 @@
        * @see Automaton#addTransition
        * @see Automaton#hasTransition
        * @see Automaton#getTransitions
-       * @see Automaton#getTransitionsTable
+       * @see Automaton#getTransitionFunction
        * @see Transition
        * @see Automaton#removeSymbol
        * @see Automaton#removeState
@@ -402,7 +402,7 @@
         * @see Automaton#removeTransition
         * @see Automaton#hasTransition
         * @see Automaton#getTransitions
-        * @see Automaton#getTransitionsTable
+        * @see Automaton#getTransitionFunction
         * @see Transition
         */
       hasTransition: function(t) {
@@ -423,7 +423,7 @@
        * @see Automaton#addTransition
        * @see Automaton#removeTransition
        * @see Automaton#hasTransition
-       * @see Automaton#getTransitionsTable
+       * @see Automaton#getTransitionFunction
        * @see Transition
        */
       getTransitions: function() {
@@ -446,42 +446,86 @@
       },
 
       /**
-       * This method returns the transition table of the automaton.
-       * 
+       * This method returns the transition function of the automaton. This function is such that:
+       *  - f() returns the set of start states
+       *  - f(startState) return the set of symbols such that one more (startState, symbol, endState) transitions exist(s)
+       *  - f(startState, symbol) returns the set states reachable with (startState, symbol)
+       *  - f(null, null, true) returns the set of endStates of all transitions.
        * @method
        * @memberof Automaton
        * 
-       * @returns {Array} Returns a bi-dimensional array representing transitions by symbol by state.
+       * @returns {Function} Returns a convenient function to manipulate transitions of the automaton.
        * @example
-       *   var table = A.getTransitionsTable();
-       *   for(var startState in table) {
-       *      for(var symbol in table[startState]) {
-       *          // table[startState][symbol] is defined for each couple (startState, symbol) of the automaton and is a Set.
-       *          table[startState][symbol].forReach(function(endState) {
+       *   var f = A.getTransitionFunction();
+       *   f().forEach(function(startState) {
+       *      f(startState).forEach(function(symbol) {
+       *          f(startState, symbol).forReach(function(endState) {
        *             console.log(startState, symbol, endState); // logs all the automaton's transition
-       *          });
-       *      }
-       *   }
+       *          })
+       *      });
+       *   });
        * @see Automaton#addTransition
        * @see Automaton#removeTransition
        * @see Automaton#hasTransition
        * @see Transition
        */
-      getTransitionsTable: function() {
-         // In this loop, we build sets of accessible states by couple (state, symbol) in the list "table".
-         var table = {}, that = this, transition, transList = this.getTransitions().getList();
-         this.states.forEach(function(state) {
-            table[state] = {};
-            that.Sigma.forEach(function (symbol) {
-               table[state][symbol] = new Set();
-            });
-            table[state][pkg.epsilon] = new Set();
-         });
+      getTransitionFunction: function() {
+         var transList = this.getTransitions().getList(),
+             transition,
+             symbolsByState = [],
+             startState,
+             startStates = new Set(),
+             endStates   = new Set(),
+             endStatesByStartStateBySymbols = {},
+             endStatesByStartStateEpsilon = {},
+             symbol;
          for(var t in transList) {
             transition = transList[t];
-            table[transition.startState][transition.symbol].add(transition.endState);
+            startStates.add(transition.startState);
+            endStates.add(transition.endState);
+            startState = Set.prototype.elementToString(transition.startState);
+            if(!symbolsByState[startState]) {
+               symbolsByState[startState] = new Set();
+               endStatesByStartStateBySymbols[startState] = {};
+            }
+            if(transition.symbol === pkg.epsilon) {
+               if(!endStatesByStartStateEpsilon[startState]) {
+                  endStatesByStartStateEpsilon[startState] = new Set();
+               }
+               endStatesByStartStateEpsilon[startState].add(transition.endState);
+            }
+            else {
+               symbol = Set.prototype.elementToString(transition.symbol);
+               if(!endStatesByStartStateBySymbols[startState][symbol]) {
+                  endStatesByStartStateBySymbols[startState][symbol] = new Set();
+               }
+               endStatesByStartStateBySymbols[startState][symbol].add(transition.endState);
+            }
+            symbolsByState[startState].add(transition.symbol);
          }
-         return table;
+
+         transList = null;
+
+         return function(startState, symbol, getEndStates) {
+            if(getEndStates) {
+               return endStates;
+            }
+            switch(arguments.length) {
+               case 0:
+                  return startStates;
+               case 1:
+                  return symbolsByState[Set.prototype.elementToString(startState)] || new Set();
+               case 2:
+                  return symbol === pkg.epsilon ?
+                     endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)] || new Set()
+                        :
+                     (
+                        (
+                           endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || {}
+                        )[Set.prototype.elementToString(symbol)]
+                  ) || new Set();
+            }
+         };
       },
 
       /**
@@ -718,15 +762,15 @@
        * This methods looks at current states and transitions of the Automaton to add all states accessible with epsilon to the current states.
        * @method
        * @memberof Automaton
-       * @param {Array} [transitionsTable] The table of transition, as given by the getTransitionsTable() method
+       * @param {Function} [transitionFunction] The transition function, as given by the getTransitionFunction() method
        * @param {Set} [visited] States that were already visited by the function.
        */
-      currentStatesAddAccessiblesByEpsilon: function(transitionsTable, visited) {
+      currentStatesAddAccessiblesByEpsilon: function(transitionFunction, visited) {
          if(!visited) {
             visited = new Set();
          }
-         if(!transitionsTable) {
-            transitionsTable = this.getTransitionsTable();
+         if(!transitionFunction) {
+            transitionFunction = this.getTransitionFunction();
          }
          var cs   = this.currentStates.getList(),
              cont = false, // we continue if we added states
@@ -743,11 +787,11 @@
          for(var i in cs) {
             if(!visited.contains(cs[i])) {
                visited.add(cs[i]);
-               transitionsTable[cs[i]][pkg.epsilon].forEach(browseState);
+               transitionFunction(cs[i], pkg.epsilon).forEach(browseState);
             }
          }
          if(cont) {
-            this.currentStatesAddAccessiblesByEpsilon(transitionsTable, visited);
+            this.currentStatesAddAccessiblesByEpsilon(transitionFunction, visited);
          }
       },
 
@@ -757,14 +801,14 @@
        * @memberof Automaton
        * @throws {Error} Throws an error if epsilon is given as the symbol.
        * @param {any} symbol The symbol to "eat"
-       * @param {Array} [transitionsTable] The table of transition, as given by the getTransitionsTable() method
+       * @param {Function} [transitionFunction] The transition function, as given by the getTransitionFunction() method
        * @param {boolean} [dontEraseTakenTransitions] dontEraseTakenTransitions If true, don't reinitialize the Set of last taken transitions, just append newly taken transition to it.
        * @see Automaton#runWord
        * @see Automaton#acceptedWord
        * @see Automaton#getCurrentStates
        * @see Automaton#getLastTakenTransitions
        */
-      runSymbol: function(symbol, transitionsTable, dontEraseTakenTransitions) {
+      runSymbol: function(symbol, transitionFunction, dontEraseTakenTransitions) {
          if(symbol === pkg.epsilon) {
             throw(new Error(_("Automaton.runSymbol(): epsilon is forbidden.")));
          }
@@ -775,8 +819,8 @@
             return false;
          }
 
-         if(!transitionsTable) {
-            transitionsTable = this.getTransitionsTable();
+         if(!transitionFunction) {
+            transitionFunction = this.getTransitionFunction();
          }
          if(!dontEraseTakenTransitions) {
             this.lastTakenTransitions.empty();
@@ -794,9 +838,9 @@
             this.currentStates.remove(cs[i]);
          }
          for(var i in cs) {
-            transitionsTable[cs[i]][symbol].forEach(addState);
+            transitionFunction(cs[i], symbol).forEach(addState);
          }
-         this.currentStatesAddAccessiblesByEpsilon(transitionsTable);
+         this.currentStatesAddAccessiblesByEpsilon(transitionFunction);
       },
 
       /**
@@ -810,9 +854,9 @@
        * @see Automaton#getCurrentStates
       */
       runWord: function(symbols) {
-         var transitionsTable = this.getTransitionsTable();
+         var transitionFunction = this.getTransitionFunction();
          for(var i in symbols) {
-            this.runSymbol(symbols[i], transitionsTable);
+            this.runSymbol(symbols[i], transitionFunction);
          }
       },
 

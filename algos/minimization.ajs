@@ -12,7 +12,7 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
   }
 
   MinA : Automaton;
-  table : List = A.getTransitionsTable();
+  let trans = A.getTransitionFunction();
   
   // we make a partition of the states ; accepting and non accepting states are separated
   partition : Set of Set;
@@ -41,9 +41,9 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
       q1 = l[0];
       q2 = l[l.length-1];
       
-      foreach(a in A.getAlphabet()) {
-        foreach(qq1 in table[q1][a]) {
-          foreach(qq2 in table[q2][a]) {
+      foreach(a in trans(q1) union trans(q2)) {
+        foreach(qq1 in trans(q1, a)) {
+          foreach(qq2 in trans(q2, a)) {
             if(copyPartition.contains([q1, qq1]) !== copyPartition.contains([q2, qq2])) {
               partition.remove(couple);
               break;
@@ -60,9 +60,9 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
   function addState(q) {
     if(!remainingStates.contains(q)) {
       remainingStates.add(q);
-      if(q in table) {
-        foreach(bySymbol in table[q]) {
-          foreach(state in bySymbol) {
+      if(q belongsTo trans()) {
+        foreach(symbol in trans(q)) {
+          foreach(state in trans(q, symbol)) {
             addState(state);
           }
         }

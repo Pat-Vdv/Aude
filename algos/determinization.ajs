@@ -4,7 +4,7 @@ function determinize(A, complete) {
   A = epsElim(A);
   DetA : Automaton;
   Alphabet : Set = A.getAlphabet();
-  table : List = A.getTransitionsTable();
+  let trans = A.getTransitionFunction();
   
   function addDeterminizedState(newQ) {
     if(!DetA.hasState(newQ)) {
@@ -14,7 +14,7 @@ function determinize(A, complete) {
         QDest : Set;
         
         foreach(state in newQ) {
-          QDest U= table[state][symbol];
+          QDest U= trans(state, symbol);
         }
 
         if(complete || !QDest.isEmpty()) {
@@ -44,17 +44,17 @@ function determinize(A, complete) {
 }
 
 function isDeterminized(A) {
-   t        : Table = A.getTransitionsTable();
+   let trans = A.getTransitionFunction();
    Alphabet : Set = A.getAlphabet();
 
-   for(let state in t) {
+   foreach(state in trans()) {
       // epsilon transition:
-      if(t[state][epsilon] && !t[state][epsilon].isEmpty()) {
+      if(!trans(state, epsilon).isEmpty()) {
          return false;
       }
 
-      foreach(symbol in Alphabet) {
-         if(t[state][symbol].card() > 1) {
+      foreach(symbol in trans(state)) {
+         if(trans(state, symbol).card() > 1) {
             return false;
          }
       }

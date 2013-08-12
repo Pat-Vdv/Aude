@@ -16,8 +16,8 @@ function emptyLanguage(A) {
     }
   
     visitedStates.add(state);
-    for(var symbol in table[state]) { // for each symbol
-      foreach(destinationState in table[state][symbol]) {
+    foreach(symbol in trans(state)) { // for each symbol
+      foreach(destinationState in trans(state, symbol)) {
         if(!visit(destinationState)) {
           return false;
         }
@@ -27,7 +27,7 @@ function emptyLanguage(A) {
   }
   
 
-  table : List = A.getTransitionsTable();
+  let trans = A.getTransitionFunction();
   
   return visit(A.getInitialState());
 }

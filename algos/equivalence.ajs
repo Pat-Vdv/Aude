@@ -10,8 +10,8 @@ function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
   }
 
 
-  let trans1 = A1.getTransitionsTable(),
-      trans2 = A2.getTransitionsTable();
+  let trans1 = A1.getTransitionFunction(),
+      trans2 = A2.getTransitionFunction();
 
   A1Seen : Set of State;
 
@@ -29,22 +29,20 @@ function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
     A1Seen.add(s1);
     renamingFunction.add([s1, s2]);
 
-    for(let symbol in trans1[s1]) {
-      if(!trans2[s2][symbol]) { // Transition s1 symbol q and no transition s2 symbol q, not equivalent
-        return false;
+    foreach(symbol in trans1(s1)) {
+      if(trans1(s1, symbol).card() === trans2(s2, symbol).card()) { // If there is a destination state for the symbol for each state
+        if(!visit(
+          trans1(s1, symbol).getList()[0],
+          trans2(s2, symbol).getList()[0]
+        )) {
+          // we visit (s1', s2') with
+          //  - s1' the destination state of the transition (s1, symbol, dest) in A1
+          //  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
+          return false;
+        }
       }
       else {
-        if(trans1[s1][symbol].card() === trans2[s2][symbol].card()) { // If there is a destination state for the symbol for each state
-          if(!visit(
-            trans1[s1][symbol].getList()[0],
-            trans2[s2][symbol].getList()[0]
-          )) {
-            // we visit (s1', s2') with
-            //  - s1' the destination state of the transition (s1, symbol, dest) in A1
-            //  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
-            return false;
-          }
-        }
+         return false;
       }
     }
     return true;

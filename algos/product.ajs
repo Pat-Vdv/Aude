@@ -12,8 +12,8 @@ function product(A1, A2, deter) {
   }
 
   prodA : Automaton;
-  Ta    : Table = A1.getTransitionsTable();
-  Tb    : Table = A2.getTransitionsTable();
+  Ta    : Table = A1.getTransitionFunction();
+  Tb    : Table = A2.getTransitionFunction();
 
   prodA.setStates(cross(A1.getStates(), A2.getStates()), true);
   prodA.setAlphabet(A1.getAlphabet() union A2.getAlphabet());
@@ -25,8 +25,8 @@ function product(A1, A2, deter) {
 
   foreach(state in prodA.getStates()) {
     foreach(symbol in prodA.getAlphabet()) {
-      dest1 = Ta[state[0]][symbol];
-      dest2 = Tb[state[1]][symbol];
+      dest1 = Ta(state[0], symbol);
+      dest2 = Tb(state[1], symbol);
       if(!dest1.isEmpty() && !dest2.isEmpty()) {
 	      prodA.addTransition(
             [state[0], state[1]],

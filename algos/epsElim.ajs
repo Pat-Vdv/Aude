@@ -1,6 +1,6 @@
 function epsElim(A) {
   ElimA : Automaton;
-  Transitions : Table = A.getTransitionsTable();
+  let trans = A.getTransitionFunction();
   
   ElimA.setStates(A.getStates());
   ElimA.setFinalStates(A.getFinalStates());
@@ -21,19 +21,19 @@ function epsElim(A) {
           return true;
         }
       }
-      foreach(state in Transitions[q1][a]) {
+      foreach(state in trans(q1, a)) {
         if(canReach(state, epsilon, q2, alreadySeenStates)) {
           return true;
         }
       }
     }
-    if(Transitions[q1][epsilon]) {
-      foreach(state in Transitions[q1][epsilon]) {
-        if(canReach(state, a, q2, alreadySeenStates)) {
-          return true;
-        }
+
+    foreach(state in trans(q1, epsilon)) {
+      if(canReach(state, a, q2, alreadySeenStates)) {
+        return true;
       }
     }
+
     return false;
   }
   

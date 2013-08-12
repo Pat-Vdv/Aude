@@ -2,7 +2,7 @@ include epsElim;
 
 function infiniteLanguage(A) {
   A     : Automaton = epsElim(A);
-  table : Table = A.getTransitionsTable();
+  trans = A.getTransitionFunction();
   
   function onCycle(consideredState, visited, curState) {
     if(visited contains curState) {
@@ -11,8 +11,8 @@ function infiniteLanguage(A) {
     
     visited.add(curState);
     
-    for(var symbol in table[curState]) {
-      foreach(state in table[curState][symbol]) {
+    foreach(symbol in trans(curState)) {
+      foreach(state in trans(curState, symbol)) {
         if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
           return true;
         }
@@ -36,8 +36,8 @@ function infiniteLanguage(A) {
     
     visited.add(state);
     
-    foreach(destStates in table[state]) {
-      foreach(destState in destStates) {
+    foreach(symbol in trans(state)) {
+      foreach(destState in trans(state, symbol)) {
         if(visit(destState, visited.copy(), cycle)) {
           return true;
         }
