@@ -1341,6 +1341,10 @@
       var nextLoadIsPrefefAlgo, predefAlgoFunctions = [], loadPredefAlgoAfterImport = null;
 
       function launchPredefAlgo() {
+         if(curAlgo.value === 'id') {
+            setAutomatonResult(AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex));
+            return;
+         }
          if(predefAlgoFunctions[curAlgo.value]) {
             window.currentAutomaton = AutomataDesigner.currentIndex;
             if(typeof predefAlgoFunctions[curAlgo.value] === 'string') {
@@ -1621,5 +1625,5 @@
    _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
    _("fr", "No regular expression or automaton was given in the quiz.", "Aucun automate ou aucune expression régulière n’a été donné dans le quiz.");
    _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
-
+   _("fr", "Select an algorithm", "Choisir un algorithme");
 })();
