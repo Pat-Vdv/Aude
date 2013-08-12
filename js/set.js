@@ -775,7 +775,7 @@
                   };
                default:
                   var d = parseFloat(valName);
-                  if(d == valName) {
+                  if(d.toString() === valName) {
                      return {
                         value:d,
                         lastIndex:j
