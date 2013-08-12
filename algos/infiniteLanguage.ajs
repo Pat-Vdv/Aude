@@ -2,7 +2,7 @@ include epsElim;
 
 function infiniteLanguage(A) {
   A     : Automaton = epsElim(A);
-  trans = A.getTransitionFunction();
+  let trans = A.getTransitionFunction();
   
   function onCycle(consideredState, visited, curState) {
     if(visited contains curState) {
