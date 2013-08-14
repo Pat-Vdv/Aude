@@ -25,7 +25,7 @@ function complete(A, alphabet) {
       }
    }
    if(compA.hasState(well)) {
-      foreach(a in compA.getAlphabet()) {
+      foreach(a in A.getAlphabet()) {
          compA.addTransition(well, a, well);
       }
    }
