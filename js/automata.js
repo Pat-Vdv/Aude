@@ -50,9 +50,10 @@
    pkg.Automaton = function (states, Sigma, q_init, trans, finalStates) {
       if(states) {
          if(states instanceof pkg.Automaton) {
-            pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.q_init, trans.copy(), finalStates.copy());
-            this.currentStates = A.currentStates.copy();
-            this.lastTakenTransitions = A.lastTakenTransitions.copy();
+            pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.q_init, states.trans.copy(), states.finalStates.copy());
+            this.currentStates = states.currentStates.copy();
+            this.lastTakenTransitions = states.lastTakenTransitions.copy();
+            return;
          }
          else if(!(states instanceof Array) && !(states instanceof Set)) {
             throw new Error(_("Automaton constructor takes an Automaton in argument, or nothing."));
