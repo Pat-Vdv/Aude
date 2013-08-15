@@ -512,7 +512,7 @@
          pkg.svgContainer.onmousemove = null;
          pkg.prompt(
             _("New transition"),
-            _("Please give transitions's symbols separated by commas.\nYou can suround special characters with simple or double quotes."),
+            _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."),
             '',
             function(trans) {
                if(trans === null) {
@@ -812,7 +812,7 @@
          var text = edge.querySelector('text');
          var t = pkg.prompt(
             _("Transitions' symbols"),
-            _("Please give transitions's symbols separated by commas.\nYou can suround special characters with simple or double quotes."),
+            _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."),
             text.textContent,
             function(t) {
                if(t !== null) {
@@ -1598,7 +1598,7 @@
 
    _("fr", "New transition", "Nouvelle transition");
    _("fr", "Name of the state", "Nom de l’état");
-   _("fr", "Please give transitions's symbols separated by commas.\nYou can suround special characters with simple or double quotes.", "Veuillez donner les symboles de la transition en les séparant par des vigules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles.");
+   _("fr", "Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes.", "Veuillez donner les symboles de la transition en les séparant par des vigules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles.");
    _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l’état initial.");
    _("fr", "Which name do you want for the state ?", "Quel nom voulez-vous donner à l’état ?");
    _("fr", "Sorry, but a state is already named like this.", "Désolé, mais un état porte déjà ce nom.");
