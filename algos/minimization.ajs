@@ -33,23 +33,19 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
     oldCard = partition.card();
     copyPartition = partition.copy();
     l  : List;
-    q1 : State;
-    q2 : State;
+    let q1, q2, qq1, qq2; // states
   
     foreach(couple in copyPartition) {
       l  = couple.getList();
       q1 = l[0];
       q2 = l[l.length-1];
-      
       foreach(a in trans(q1) union trans(q2)) {
-        foreach(qq1 in trans(q1, a)) {
-          foreach(qq2 in trans(q2, a)) {
-            if(copyPartition.contains([q1, qq1]) !== copyPartition.contains([q2, qq2])) {
-              partition.remove(couple);
-              break;
-            }
-          }
-        }
+         qq1 = trans(q1, a).getList()[0];
+         qq2 = trans(q2, a).getList()[0];
+         if(copyPartition.contains([q1, qq1]) !== copyPartition.contains([q2, qq2])) {
+           partition.remove(couple);
+           break;
+         }
       }
     }
   }
