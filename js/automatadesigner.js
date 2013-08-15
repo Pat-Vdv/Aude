@@ -1264,7 +1264,7 @@
    //          Check its implementation for more details.
    pkg.outerHTML = function (node) {
       // webkit does not support inner/pkg.outerHTML for pure XML nodes
-      if("pkg.outerHTML" in node) {
+      if("outerHTML" in node) {
          return node.pkg.outerHTML;
       }
       else {
