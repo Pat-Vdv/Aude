@@ -326,6 +326,10 @@
                e.stopPropagation();
                return false;
             }
+            else if(e.keyCode === 27) {
+               win.close();
+               return false;
+            }
          };
 
          return function(title, descr, def, fun) {
