@@ -730,7 +730,7 @@
 
          var A;
          if(automataNumber <= i ||  !(A = AutomataDesigner.getAutomaton(i))) {
-            throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn't exist."), JSON.stringify(i))));
+            throw(new Error(libD.format(_("get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."), JSON.stringify(i))));
          }
          return A;
       };
@@ -1574,7 +1574,7 @@
    _("fr", "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)", "Quel nom voulez-vous donner à l'image exportée ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg)");
    _("fr", "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)", "Quel nom voulez-vous donner au fichier exporté ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)");
    _("fr", "Which name do you want to give to the exported text file?", "Quel nom voulez-vous donner au fichier texte exporté ?");
-   _("fr",  "get_automaton: Automaton n°{0} doesn't exist.", "get_automaton: L'automate n°{0} n'existe pas.");
+   _("fr",  "get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state.", "get_automaton: L’automate n°{0} n'existe pas ou n’a pas d’état initial.");
    _("fr", "Please enter a name for the file in which the program will be saved.", "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré.");
    _("fr", "Please enter a name for the file in which the automaton will be saved.", "Veuillez saisir un nom pour le fichier dans lequel l'automate sera enregistré.");
    _("fr", "Syntax error: bad import parameter in {0}", "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}");

@@ -753,17 +753,17 @@
 
       function removeNode(node) {
          if(node === initialState) {
-            alert(_("Sorry, but you can't remove the initial state."));
+            initialStateArrow.parentNode.removeChild(initialStateArrow);
+            initialState = initialStates[pkg.currentIndex] = initialStateArrows[pkg.currentIndex] = initialStateArrow = null;
          }
-         else {
-            var tid = atob(node.id);
-            var n = nodeList[tid];
-            for(var i in n.t) {
-               deleteTransition(n.t[i][0], tid);
-            }
-            delete nodeList[tid];
-            node.parentNode.removeChild(node);
+
+         var tid = atob(node.id);
+         var n = nodeList[tid];
+         for(var i in n.t) {
+            deleteTransition(n.t[i][0], tid);
          }
+         delete nodeList[tid];
+         node.parentNode.removeChild(node);
       }
 
       function editNodeName(node) {
