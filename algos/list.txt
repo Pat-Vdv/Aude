@@ -1,6 +1,6 @@
 determinization.ajs?v=3    / Determinize
 minimization.ajs?v=3       / Minimize
-completion.ajs?v=4         / Complete
+completion.ajs?v=5         / Complete
 complemetion.ajs?v=2       / Complement
 product.ajs?v=3            / Product
 mirror.ajs?v=2             / Mirror
