@@ -4,7 +4,7 @@
 // NEEDS: automaton.js
 
 /*
-   Copyright (c) 1998, Raphaël Jakse (Université Joseph Fourier)
+   Copyright (c) 2013, Raphaël Jakse (Université Joseph Fourier)
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are met:
@@ -159,7 +159,7 @@
 
                   for(var symbol_index in symbols) {
                      s = toString(symbols[symbol_index]);
-                     if(s.match(/[\s,"]/)) {
+                     if(typeof symbols[symbol_index] === "string" && s.match(/[\s,"]/)) {
                         s = JSON.stringify(s);
                      }
 

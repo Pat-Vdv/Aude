@@ -339,7 +339,7 @@
 
             var symbols = parse_transition(text);
             for(var s in symbols) {
-               A.addTransition(getValue(f), getValue(symbols[s]), getValue(t));
+               A.addTransition(getValue(f), symbols[s], getValue(t));
             }
          }
       }
