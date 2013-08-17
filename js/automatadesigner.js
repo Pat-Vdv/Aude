@@ -306,14 +306,14 @@
 
    pkg.getValueFunction = pkg.standardizeStringValueFunction = function(s) {return s === '\\e' ? 'ε' : s;};
 
-   pkg.getAutomaton = function (index) {
+   pkg.getAutomaton = function (index, onlyStrings) {
       var A = new Automaton();
       pkg.cleanSVG(pkg.currentIndex);
       if(!initialStates[index]) {
          return null; // automata without initial states are not supported
       }
 
-      var getValue = pkg.getValueFunction;
+      var getValue = onlyStrings ? function(v){return pkg.getValueFunction(v).toString()} : pkg.getValueFunction;
 
       var nodes = svgs[index].querySelectorAll('.node'), i, len;
 
@@ -339,7 +339,7 @@
 
             var symbols = parse_transition(text);
             for(var s in symbols) {
-               A.addTransition(getValue(f), symbols[s], getValue(t));
+               A.addTransition(getValue(f), onlyStrings ? symbols[s].toString() : symbols[s], getValue(t));
             }
          }
       }

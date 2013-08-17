@@ -1285,7 +1285,7 @@
                   span.textContent = word[i];
                   wordDiv.appendChild(span);
                }
-               currentAutomaton = AutomataDesigner.getAutomaton(index);
+               currentAutomaton = AutomataDesigner.getAutomaton(index, true);
                var q_init = currentAutomaton.getInitialState();
                listOfExecutions = [[[q_init, epsilon]]];
                currentAutomaton.setCurrentState(q_init);
