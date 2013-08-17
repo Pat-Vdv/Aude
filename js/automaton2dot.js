@@ -33,11 +33,11 @@
 (function(pkg) {
    "use strict";
 
-   function toString(q) {
+   function toString(q, trans) {
       if(q === pkg.epsilon) {
          return 'ε';
       }
-      return automaton2dot_standardizedString(q).replace(/\\\\/g, "\\");
+      return automaton2dot_standardizedString(q, trans).replace(/\\\\/g, "\\");
    }
 
    function dotState(q) {
@@ -63,8 +63,8 @@
       return r;
    }
 
-   pkg.automaton2dot_standardizedString = function(s) {
-      if(typeof s === 'string') {
+   pkg.automaton2dot_standardizedString = function(s, trans) {
+      if(!trans && typeof s === 'string') {
          s = s.trim();
          try {
             var v = Set.prototype.getValue(s);
@@ -80,7 +80,7 @@
          }
       }
       else {
-         return Set.prototype.elementToString(s);
+         return Set.prototype.elementToString(s, trans ? {"ε":epsilon} : {});
       }
    };
 
@@ -158,10 +158,7 @@
                       tmp     = "";
 
                   for(var symbol_index in symbols) {
-                     s = toString(symbols[symbol_index]);
-                     if(typeof symbols[symbol_index] === "string" && s.match(/[\s,"]/)) {
-                        s = JSON.stringify(s);
-                     }
+                     s = toString(symbols[symbol_index], true);
 
                      tmp += cat(comma, s);
                      if(!comma.length) {
