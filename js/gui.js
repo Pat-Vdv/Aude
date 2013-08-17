@@ -80,6 +80,7 @@
          splitter.classList.remove('disabled');
          sw = splitter.offsetWidth;
          splitterMove({clientX:splitter.offsetLeft});
+         AutomataDesigner.userZoom(zoom);
          onResize();
       }
    }
@@ -120,6 +121,10 @@
       results.firstChild.appendChild(resultToLeft);
       if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
          notify(_("Program Result"), svgCode, 'normal');
+      }
+      zoom.svgNode = results.querySelector('svg');
+      if(zoom.redraw) {
+         zoom.redraw();
       }
    }
 
@@ -298,7 +303,9 @@
       leftPane.style.right = ((width - e.clientX)*100 / width) + '%';
       results.style.left =  ((e.clientX + sw)*100/width) + '%';
       AutomataDesigner.redraw();
-      zoom.redraw();
+      if(zoom.redraw) {
+         zoom.redraw();
+      }
    }
 
    function automatonJSLoaded() {
@@ -324,7 +331,9 @@
       }
       content.style.top  = toolbar.offsetHeight + 'px';
       AutomataDesigner.redraw();
-      zoom.redraw();
+      if(zoom.redraw) {
+         zoom.redraw();
+      }
    }
 
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
@@ -438,8 +447,7 @@
       splitter = document.getElementById('splitter');
       leftPane = document.getElementById('left-pane');
       content  = document.getElementById('content'),
-      toolbar  = document.getElementById('toolbar')
-      AutomataDesigner.userZoom(zoom);
+      toolbar  = document.getElementById('toolbar');
 
       resultToLeft.appendChild(libD.jso2dom([
          ['img', {alt:'', src:'icons/oxygen/16x16/actions/arrow-left.png'}],
@@ -800,7 +808,6 @@
                startQuiz(JSON.parse(freader.result));
             }
             catch(e) {
-               console.log(e.message);
                notify(_("Loading the quiz failed"), (libD.format(_("The quiz seems to be malformed: {0}"), e.message, "error")));
             }
          };
