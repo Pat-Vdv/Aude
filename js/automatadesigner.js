@@ -222,11 +222,11 @@
       }
 
       if(that.svgNode) {
-         var centerX = that.svgNode.viewBox.baseVal.x + that.svgNode.viewBox.baseVal.width/2;
-         var centerY = that.svgNode.viewBox.baseVal.y + that.svgNode.viewBox.baseVal.height/2;
          pkg.setViewBoxSize(that);
-         that.svgNode.viewBox.baseVal.x = centerX - that.svgNode.viewBox.baseVal.width/2;
-         that.svgNode.viewBox.baseVal.y = centerY - that.svgNode.viewBox.baseVal.height/2;
+//          var centerX = that.svgNode.viewBox.baseVal.x + that.svgNode.viewBox.baseVal.width/2;
+//          var centerY = that.svgNode.viewBox.baseVal.y + that.svgNode.viewBox.baseVal.height/2;
+//          that.svgNode.viewBox.baseVal.x = centerX - that.svgNode.viewBox.baseVal.width/2;
+//          that.svgNode.viewBox.baseVal.y = centerY - that.svgNode.viewBox.baseVal.height/2;
       }
    };
 

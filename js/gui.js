@@ -37,8 +37,13 @@
        _                 = window.AutomataGuil10n = libD.l10n(),
        offsetError,
        results,
+       splitter,
+       leftPane,
+       content,
+       toolbar,
        head,
-       not;
+       not,
+       sw;
 
    AutomataDesigner.getValueFunction = function(s) {
       try {
@@ -69,6 +74,16 @@
       not.setType(type);
    }
 
+   function enableResults() {
+      if(!sw) {
+         results.classList.remove('disabled');
+         splitter.classList.remove('disabled');
+         sw = splitter.offsetWidth;
+         splitterMove({clientX:splitter.offsetLeft});
+         onResize();
+      }
+   }
+
    function textFormat(text, node, html) {
       if(!node) {
          node = document.createElement('span');
@@ -80,6 +95,7 @@
 
    function setTextResult(t, dontNotify) {
       automatonResult = null;
+      enableResults();
       var res = document.createElement('pre');
       res.textContent = t;
       results.textContent = '';
@@ -96,6 +112,7 @@
    }
 
    function setAutomatonResult(A) {
+      enableResults();
       automatonResult = A;
       var svgCode = automaton2svg(A);
 
@@ -275,6 +292,15 @@
       handleImports(includes, "user's program");
    };
 
+   function splitterMove (e) {
+      var width = document.body.offsetWidth;
+      splitter.style.left = (e.clientX*100 / width) + '%';
+      leftPane.style.right = ((width - e.clientX)*100 / width) + '%';
+      results.style.left =  ((e.clientX + sw)*100/width) + '%';
+      AutomataDesigner.redraw();
+      zoom.redraw();
+   }
+
    function automatonJSLoaded() {
       window.onerror = function(message, url, lineNumber) {
          if(enableAutoHandlingError) {
@@ -290,6 +316,16 @@
       offsetError = -1;
       loadProgram(':');
    };
+
+   function onResize () {
+      var width = document.body.offsetWidth;
+      if(sw) {
+         results.style.left =  ((splitter.offsetLeft + sw)*100/width) + '%';
+      }
+      content.style.top  = toolbar.offsetHeight + 'px';
+      AutomataDesigner.redraw();
+      zoom.redraw();
+   }
 
    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom'], function() {
       AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
@@ -360,14 +396,10 @@
       }
 
       AutomataDesigner.load();
-      var splitter          = document.getElementById('splitter'),
-          toolbar           = document.getElementById('toolbar'),
-          content           = document.getElementById('content'),
-          codeedit          = document.getElementById('codeedit'),
+      var codeedit          = document.getElementById('codeedit'),
           automataedit      = document.getElementById('automataedit'),
           automatoncode     = document.getElementById('automatoncode'),
           automatoncodeedit = document.getElementById('automatoncodeedit'),
-          leftPane          = document.getElementById('left-pane'),
           fileautomaton     = document.getElementById('fileautomaton'),
           filequiz          = document.getElementById('filequiz'),
           drawToolbar       = document.getElementById('draw-toolbar'),
@@ -402,8 +434,11 @@
           EXECUTION_STEP_TIME = 1200;
        }
 
-      results = zoom.svgContainer = document.getElementById('results');
-
+      results  = zoom.svgContainer = document.getElementById('results');
+      splitter = document.getElementById('splitter');
+      leftPane = document.getElementById('left-pane');
+      content  = document.getElementById('content'),
+      toolbar  = document.getElementById('toolbar')
       AutomataDesigner.userZoom(zoom);
 
       resultToLeft.appendChild(libD.jso2dom([
@@ -573,17 +608,7 @@
          }
       };
 
-      var sw = splitter.offsetWidth;
       var cm; // code mirror object
-
-      function splitterMove (e) {
-         var width = document.body.offsetWidth;
-         splitter.style.left = (e.clientX*100 / width) + '%';
-         leftPane.style.right = ((width - e.clientX)*100 / width) + '%';
-         results.style.left =  ((e.clientX + sw)*100/width) + '%';
-         AutomataDesigner.redraw();
-         zoom.redraw();
-      }
 
       splitter.onmousedown = function(e) {
          window.onmousemove = splitterMove;
@@ -591,18 +616,9 @@
             window.onmousemove = null;
          };
       };
-      
-      function onResize () {
-         var width = document.body.offsetWidth;
-         results.style.left =  ((splitter.offsetLeft + sw)*100/width) + '%';
-         content.style.top  = toolbar.offsetHeight + 'px';
-         AutomataDesigner.redraw();
-         zoom.redraw();
-      }
 
       window.addEventListener('resize', onResize, false);
-      splitterMove({clientX:splitter.offsetLeft});
-      
+
       function automatonSetNumber(index) {
          AutomataDesigner.setCurrentIndex(index);
          automatoncodeedit.value = AutomataDesigner.getAutomatonCode(index, false);
