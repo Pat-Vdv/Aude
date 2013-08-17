@@ -415,3 +415,27 @@ select {
     float:left;
     font-size:bold
 }
+
+#svg-container {
+   z-index:100;
+}
+
+#welcome {
+   z-index:0;
+   color:gray;
+   font-family:"Ubuntu", "Liberation Sans", sans-serif;
+   position:absolute;
+   top:1ex;
+   right:1ex;
+   left:1ex;
+   bottom:1ex;
+   overflow:auto;
+   line-height:1.5em;
+   text-shadow:5px 5px 5px #EEE
+}
+
+#welcome h2 {
+   font-size:x-large;
+   text-align:center;
+   font-weight:normal
+}

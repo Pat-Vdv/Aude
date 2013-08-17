@@ -395,6 +395,7 @@
             refs.input.select();
          };
       })();
+
       head = document.querySelector('head');
 
       if(window.js18Supported) {
@@ -453,6 +454,34 @@
          ['img', {alt:'', src:'icons/oxygen/16x16/actions/arrow-left.png'}],
          ['span', _('This automaton into the editor')]
       ]));
+
+      (function() {
+         var divWelcome = document.createElement('div');
+         divWelcome.id = "welcome";
+         divWelcome.innerHTML = libD.format(_('<h2>Welcome to {0}.</h2>\
+<p>Here is the area where you can <strong>draw automata</strong>.</p>\
+<ul>\
+   <li>To create a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
+   <li>To create a <strong>new transition</strong>, ctrl+click on the start state and then click on the end state of the transition.</li>\
+   <li>To <strong>rename</strong> a state or a transition, double-click on it.</li>\
+   <li>To set a state as <strong>initial</strong>, ctrl+right click on the state.</li>\
+   <li>To set a state as <strong>accepting</strong>, right-click on it.</li>\
+   <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>\
+</ul>\
+<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt="" src="icons/oxygen/16x16/actions/draw-brush.png" /><b style="color:black;font-size:small">?</b> toolbar icon.</p>\
+<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>\
+<p>To load a quiz, click on the "Load a Quiz" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>\
+<p>To hide this text, cliquez-dessus.</p>\
+<p> Enjoy yourself!</p>'), "LiveAutomaton");
+
+         AutomataDesigner.svgContainer.parentNode.appendChild(divWelcome);
+         function hideWelcome() {
+            AutomataDesigner.svgContainer.parentNode.removeChild(divWelcome);
+            AutomataDesigner.svgContainer.removeEventListener("click", hideWelcome, false);
+         }
+         AutomataDesigner.svgContainer.addEventListener("click", hideWelcome, false);
+      })();
+
       window.addEventListener('keydown', function(e) {
          if(e.ctrlKey || e.metaKey) {
             if(e.keyCode === 83) {
@@ -1706,4 +1735,34 @@
    _("fr", "No regular expression or automaton was given in the quiz.", "Aucun automate ou aucune expression régulière n’a été donné dans le quiz.");
    _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
    _("fr", "Select an algorithm", "Choisir un algorithme");
+   _("fr", '<h2>Welcome to {0}.</h2>\
+<p>Here is the area where you can <strong>draw automata</strong>.</p>\
+<ul>\
+   <li>To create a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
+   <li>To create a <strong>new transition</strong>, ctrl+click on the start state and then click on the end state of the transition.</li>\
+   <li>To <strong>rename</strong> a state or a transition, double-click on it.</li>\
+   <li>To set a state as <strong>initial</strong>, ctrl+right click on the state.</li>\
+   <li>To set a state as <strong>accepting</strong>, right-click on it.</li>\
+   <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>\
+</ul>\
+<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt="" src="icons/oxygen/16x16/actions/draw-brush.png" /><b style="color:black;font-size:small">?</b> toolbar icon.</p>\
+<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>\
+<p>To load a quiz, click on the "Load a Quiz" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>\
+<p>To hide this text, cliquez-dessus.</p>\
+<p> Enjoy yourself!</p>',
+          '<h2>Bienvenue sur {0}.</h2>\
+<p>Ceci est l’endroit où vous pouvez <strong>dessiner des automates</strong>.</p>\
+<ul>\
+   <li>Pour créer un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez que l’état soit placé.</li>\
+   <li>Pour créer une <strong>nouvelle transition</strong>, ctrl+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>\
+   <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>\
+   <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>\
+   <li>Pour rendre un état <strong>accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>\
+   <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>\
+</ul>\
+<p>Vous pouvez <strong>accéder à ces instructions</strong> à tout moment en cliquant sur l’icône <img alt="" src="icons/oxygen/16x16/actions/draw-brush.png" /><b style="color:black;font-size:small">?</b> de la barre d’outils.</p>\
+<p>Quand vous exécuterez un programme ou un algorithme, le <strong>résultat</strong> apparaîtra <strong>à la droite</strong> de l’écran.</p>\
+<p>Pour ouvrir un quiz, cliquez sur le bouton "Charger un Quiz" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p>\
+<p>Pour faire disparaître ce texte, cliquez dessus.</p>\
+<p> Amusez vous bien !</p>');
 })();
