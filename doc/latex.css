@@ -1,0 +1,179 @@
+@import url(notes-commun.css);
+
+body {
+	margin:0;
+	padding:0;
+	font-family:"Latin Modern Roman", serif;
+}
+
+#links {
+	font-size:small;
+	padding:0;
+	margin:0;
+	text-align:right;
+	border-bottom:1px solid gray
+}
+
+#doc-title {
+	font-family:"Latin Modern Roman", serif;
+	font-weight:normal;
+	text-align:center;
+	font-size:1.7rem
+}
+
+#links li {
+	display:inline-block;
+	list-style:none;
+	padding:0.2ex
+}
+
+#links li:not(:last-child) {
+	border-right:1px solid gray;
+	padding-right:1ex
+}
+
+.whata-real-title-level-1 {
+	font-size:1.6em;
+}
+
+.whata-real-title-level-2 {
+	font-size:1.4em;
+}
+
+.whata-real-title-level-3 {
+	font-size:1.3em;
+}
+
+.whata-real-title-level-4 {
+	font-size:1.2em;
+}
+
+.whata-real-title-level-5 {
+	font-size:1.1em;
+}
+
+.whata-real-title-level-6 {
+	font-size:1.05em;
+}
+
+a {
+	text-decoration:none
+}
+
+#sommaire li {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+#sommaire ul {
+	margin:0;
+	padding:0;
+	padding-left:3ex
+}
+
+#sommaire>ul {
+	padding:0
+}
+
+#sommaire a {
+	color:black
+}
+
+#sommaire a:hover {
+	text-shadow: 0 0 5px #DD0
+}
+
+.in-box {
+	border-left:2px solid black;
+	margin-left:1.5ex;
+	padding-left:1ex
+}
+
+.in-box p {
+	text-indent:0
+}
+
+.box>h1:first-child {
+	margin-bottom:0;
+	padding-bottom:0;
+	font-size:1em;
+	margin-left:0ex;
+}
+
+.box {
+	margin-bottom:1ex;
+}
+.whata-paragraph-title:after {
+	content:"  ";
+	white-space:pre;
+}
+
+.whata blockquote, .whata quote {
+	background:transparent;
+	border:0;
+	font-style:italic
+}
+
+.whata-code-block.whata-pcode, .whata-pcode code {
+	font-size:1rem;
+	font-family:"Latin Modern Roman", serif;
+}
+
+.whata code, .whata pre, .c .de1, .c .de2 {
+	font-family:"Latin Modern Mono", monospace !important;
+	font-size:12pt !important;
+}
+
+.MathJax .mi, .MathJax .mi *, .MathJax .mn, .MathJax .mtext, .MathJax .mtext * /*  .MathJax .mo *, .MathJax .mo, */ {
+/* 	font-family:"Latin Modern Math", MathJax_Math, serif !important; */
+}
+
+.whata h1:not(:last-child), .whata h2:not(:last-child), .whata h3:not(:last-child), .whata h4:not(:last-child), .whata h5:not(:last-child), .whata h6:not(:last-child) {
+	margin-bottom:0.5rem
+}
+
+.whata-h1, .whata-h2, .whata-h3, .whata-h4, .whata-h5, .whata-h6 {
+	margin-top:0.7em;
+	margin-bottom:0.5em
+}
+
+.whata pre:first-child {
+	margin-top:0
+}
+
+.whata pre:last-child {
+	margin-bottom:0
+}
+
+.whata-title-number:after {
+	content:" ";
+	font-size:0.1em;
+	white-space:pre
+}
+
+body {
+	max-width:140ex;
+	margin:auto;
+}
+
+.whata-code-block, .whata-output {
+	border:none;
+	margin-top:0.5ex;
+	margin-bottom:0.5ex;
+}
+
+.whata-geshi .ln {
+	background:transparent;
+	color:black;
+	padding-right:1ex
+}
+
+.whata-geshi td.de1 {
+	border:1px solid #333;
+	width:100%;
+}
+
+.whata {
+	padding:0
+}
