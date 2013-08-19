@@ -479,7 +479,7 @@
             AutomataDesigner.svgContainer.parentNode.removeChild(divWelcome);
             AutomataDesigner.svgContainer.removeEventListener("click", hideWelcome, false);
          }
-         AutomataDesigner.svgContainer.addEventListener("click", hideWelcome, false);
+         document.body.addEventListener("click", hideWelcome, false);
       })();
 
       window.addEventListener('keydown', function(e) {
@@ -581,7 +581,7 @@
                saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type:'text/plain;charset=utf-8'}), fn);
             }
             else {
-               var A = get_automaton(AutomataDesigner.currentIndex);
+               var A = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
                if(A) {
                   saveAs(new Blob([automaton2dot(A)], {type:'text/plain;charset=utf-8'}), fn);
                }
