@@ -503,6 +503,7 @@
       });
 
       executeBtn.onclick = function() {
+         enableResults();
          if(!executeWin || !executeWin.ws) {
             var refs = {};
             executeWin = libD.newWin({
@@ -1278,7 +1279,7 @@
 
       var execute;
       (function() {
-         var word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep;
+         var accepting, word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep;
          execute = function(byStep, w, ind) {
             if(typeof w === 'string') {
                word  = w;
@@ -1303,11 +1304,18 @@
                      }
 
                      currentStates = currentAutomaton.getCurrentStates().getList();
+                     accepting = false;
+                     var accepted;
                      for(var i in currentStates) {
+                        accepted = currentAutomaton.isAcceptingState(currentStates[i]);
+                        if(!accepting && accepted) {
+                           accepting = true;
+                        }
+
                         AutomataDesigner.stateSetBackgroundColor(
                            index,
                            currentStates[i],
-                           currentAutomaton.isAcceptingState(currentStates[i])
+                           accepted
                               ? CURRENT_FINAL_STATE_COLOR
                               : CURRENT_STATE_COLOR
                         );
@@ -1316,7 +1324,7 @@
                   else {
                      currentStates = currentAutomaton.getCurrentStates().getList();
                      currentAutomaton.runSymbol(word[0]);
-                     wordDiv.childNodes[currentSymbolNumber++].className = 'eaten';
+                     wordDiv.firstChild.childNodes[currentSymbolNumber++].className = 'eaten';
                      word = word.substr(1);
                      currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
                      for(var i in currentTransitions) {
@@ -1336,28 +1344,42 @@
                   index = AutomataDesigner.currentIndex;
                }
                wordDiv.textContent = '';
+               var layer1 = document.createElement('div');
+               layer1.id = "word-layer1";
                for(var span, i=0, len = word.length; i < len; ++i) {
                   span = document.createElement('span');
                   span.textContent = word[i];
-                  wordDiv.appendChild(span);
+                  layer1.appendChild(span);
                }
+               wordDiv.appendChild(layer1);
+               var layer2 = layer1.cloneNode(true);
+               layer2.id = "word-layer2";
+               wordDiv.appendChild(layer2);
+               
                currentAutomaton = AutomataDesigner.getAutomaton(index, true);
                var q_init = currentAutomaton.getInitialState();
                listOfExecutions = [[[q_init, epsilon]]];
                currentAutomaton.setCurrentState(q_init);
                currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
 
-               if(EXECUTION_STEP_TIME || executionByStep) {
-                  currentAutomaton.getCurrentStates().forEach(function(q) {
+               accepting = false;
+               var accepted;
+               currentStates = currentAutomaton.getCurrentStates().getList();
+               for(var i in currentStates) {
+                  accepted = currentAutomaton.isAcceptingState(currentStates[i]);
+                  if(!accepting && accepted) {
+                     accepting = true;
+                  }
+                  if(EXECUTION_STEP_TIME || executionByStep) {
                      AutomataDesigner.stateSetBackgroundColor(
                         index,
-                        q,
-                        currentAutomaton.isAcceptingState(q)
-                        ? CURRENT_FINAL_STATE_COLOR
-                        : CURRENT_STATE_COLOR
+                        currentStates[i],
+                        accepted
+                           ? CURRENT_FINAL_STATE_COLOR
+                           : CURRENT_STATE_COLOR
                      );
-                  });
-               }
+                  }
+               };
             }
 
             if(currentTransitions) {
@@ -1384,14 +1406,6 @@
             }
 
             if(stepNumber && !currentStates.length) {
-               var states = currentAutomaton.getStates().getList();
-               for(var i in states) {
-                  AutomataDesigner.stateSetBackgroundColor(
-                     index,
-                     states[i],
-                     STATE_REFUSED
-                  );
-               }
                stepNumber = -1;
             }
 
@@ -1415,6 +1429,10 @@
 
             if(stepNumber === -1) {
                executionTimeout = 0;
+               var color = accepting ? CURRENT_FINAL_STATE_COLOR : STATE_REFUSED;
+               wordDiv.firstChild.style.color = color;
+               wordDiv.childNodes[1].style.color = color;
+
             }
             else {
                if(!word[0]) { // the word is completely eaten
