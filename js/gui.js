@@ -1348,13 +1348,15 @@
                currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
 
                if(EXECUTION_STEP_TIME || executionByStep) {
-                  AutomataDesigner.stateSetBackgroundColor(
-                     index,
-                     q_init.toString(),
-                     currentAutomaton.isAcceptingState(q_init)
-                     ? CURRENT_FINAL_STATE_COLOR
-                     : CURRENT_STATE_COLOR
-                  );
+                  currentAutomaton.getCurrentStates().forEach(function(q) {
+                     AutomataDesigner.stateSetBackgroundColor(
+                        index,
+                        q,
+                        currentAutomaton.isAcceptingState(q)
+                        ? CURRENT_FINAL_STATE_COLOR
+                        : CURRENT_STATE_COLOR
+                     );
+                  });
                }
             }
 

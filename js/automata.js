@@ -280,9 +280,6 @@
       setInitialState: function(state) {
          this.states.add(state);
          this.q_init = state;
-         if(this.currentStates.isEmpty()) {
-            this.currentStates.add(state);
-         }
       },
 
       /**

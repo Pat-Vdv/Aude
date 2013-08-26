@@ -339,7 +339,7 @@
 
             var symbols = parse_transition(text);
             for(var s in symbols) {
-               A.addTransition(getValue(f), onlyStrings ? symbols[s].toString() : symbols[s], getValue(t));
+               A.addTransition(getValue(f), (onlyStrings && (symbols[s] !== epsilon)) ? symbols[s].toString() : symbols[s], getValue(t));
             }
          }
       }
