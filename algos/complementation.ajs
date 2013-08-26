@@ -10,4 +10,4 @@ function complement(A) {
    return compA;
 }
 
-run(complement, get_automaton(0));
+run(complement, get_automaton(currentAutomaton));
