@@ -477,7 +477,7 @@
          AutomataDesigner.svgContainer.parentNode.appendChild(divWelcome);
          function hideWelcome() {
             AutomataDesigner.svgContainer.parentNode.removeChild(divWelcome);
-            AutomataDesigner.svgContainer.removeEventListener("click", hideWelcome, false);
+            document.body.removeEventListener("click", hideWelcome, false);
          }
          document.body.addEventListener("click", hideWelcome, false);
       })();
