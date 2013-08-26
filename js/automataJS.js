@@ -173,7 +173,6 @@
        number          = 64,
        operator        = 128,
        comma_semicolon = 256,
-//     comment         = 512, // comments are like whitespace, in fact.
        closeParen      = 1024,
        closeCurly      = 2048,
        openBracket     = 4096,
@@ -812,9 +811,12 @@
          }
 
          if(type === dot) {
-               var symbol2 = getSymbol();
+            var symbol2 = getSymbol();
+            if(type === whitespace) {
+               symbol2 += getSymbol();
+            }
             if(type !== variable) {// Syntax error ?
-               return res + white + symbol2;
+               return res + white + '.' + symbol2;
             }
             res += white + '.' + symbol2;
          }
