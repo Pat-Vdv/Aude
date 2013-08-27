@@ -353,6 +353,10 @@
       return '';
    };
 
+   pkg.getSVGNode = function(index) {
+      return svgs[index];
+   };
+
    pkg.load = function() {
       if(!pkg.svgContainer) {
          pkg.svgContainer = document.getElementById('svg-container');

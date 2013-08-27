@@ -3,7 +3,8 @@ html,body {
    margin:0;
    width:100%;
    height:100%;
-   position:relative
+   position:relative;
+   font-family:"Ubuntu", "Liberation Sans", "Deja Vu Sans", Arial, sans-serif;
 }
 
 #content {
@@ -302,7 +303,6 @@ select {
     text-align:justify;
     margin:1em 1ex;
     color:#222;
-    font-family:"Ubuntu", "Liberation Sans", "Deja Vu Sans", Arial, sans-serif;
 }
 
 .button-container {
@@ -447,4 +447,79 @@ select {
 #word-layer2 {
    opacity:0.4;
    z-index:0;
+}
+
+#automata-list-chooser {
+   position:absolute;
+   top:0;
+   right:0;
+   bottom:0;
+   z-index:1000;
+   background:#EFFAFF;
+   max-width:40ex;
+   box-shadow: -1px 0 1px #DDD;
+}
+
+#automata-list-chooser-close {
+   position:absolute;
+   top:0;
+   right:1ex;
+   font-size:small;
+   text-decoration:none;
+   color:red
+}
+
+#automata-list-chooser svg {
+   max-width:2rem;
+   max-height:2rem;
+}
+
+#automata-list-chooser-content {
+   list-style:none;
+   padding:0;
+   margin:1ex 1px;
+   border:1px solid #DDD;
+   background:white;
+}
+
+#automata-list-chooser-content li {
+   padding:0.3ex;
+   margin:0;
+}
+#automata-list-chooser-content li span, #automata-list-chooser-content li svg {
+   display:inline-block;
+   vertical-align:middle;
+}
+
+#automata-list-chooser-content li:hover {
+   background:#DEF
+}
+
+#automata-list-chooser-content a {
+   text-decoration:none;
+   display:block;
+   color:gray
+}
+
+#automata-list-chooser p {
+   text-align:justify;
+   text-indent:2ex;
+   font-size:small;
+   color:gray;
+   font-style:italic;
+   margin:1.5rem 1ex 0 0;
+}
+
+.automaton-number {
+   color:#0A5;
+   font-weight:bold;
+   text-align:right;
+   padding:0 0.5ex;
+   float:right;
+   min-width:3ex;
+   right:0
+}
+
+p img {
+  vertical-align:middle 
 }

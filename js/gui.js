@@ -429,8 +429,14 @@
           automataContainer = document.getElementById('automata-container'),
           exportFN          = '',
           executionTimeout  = 0,
-          executeWin,
           localStorage      = window.localStorage || {},
+          automataList      = [],
+          automataListDiv   = document.getElementById('automata-list-chooser'),
+          automataListClose = document.getElementById('automata-list-chooser-close'),
+          automataListUL    = document.getElementById('automata-list-chooser-content'),
+          automataListBtn   = document.getElementById('automata-list-chooser-btn'),
+          automataListIntro = document.getElementById('automata-list-chooser-intro'),
+          executeWin,
           CURRENT_FINAL_STATE_COLOR     = localStorage.CURRENT_FINAL_STATE_COLOR     || 'rgba(90, 160, 0, 0.5)',
           CURRENT_TRANSITION_COLOR      = localStorage.CURRENT_TRANSITION_COLOR      || '#BD5504',
           CURRENT_STATE_COLOR           = localStorage.CURRENT_STATE_COLOR           || '#FFFF7B',
@@ -472,7 +478,7 @@
 <p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>\
 <p>To load a quiz, click on the "Load a Quiz" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>\
 <p>To hide this text, cliquez-dessus.</p>\
-<p> Enjoy yourself!</p>'), "LiveAutomaton");
+<p> Enjoy yourself!</p>'), "Aude");
 
          AutomataDesigner.svgContainer.parentNode.appendChild(divWelcome);
          function hideWelcome() {
@@ -732,6 +738,9 @@
          automataNumber.value = automatonCount;
          AutomataDesigner.newAutomaton(automatonCount);
          automatonSetNumber(automatonCount++);
+         if(!automataListDiv.classList.contains('disabled')) {
+            showAutomataListChooser();
+         }
       };
 
       automatonMinus.onclick = function() {
@@ -746,6 +755,18 @@
                automatonSetNumber(curAutomaton);
             }
             --automatonCount;
+            var i = automataList.indexOf(curAutomaton);
+            if(i !== -1) {
+               automataList.splice(i, 1);
+               for(var j = 0, len = automataList.length; j < len; ++j) {
+                  if(automataList[j] > i) {
+                     --automataList[j];
+                  }
+               }
+            }
+            if(!automataListDiv.classList.contains('disabled')) {
+               showAutomataListChooser();
+            }
          }
       };
 
@@ -793,6 +814,116 @@
          return A;
       };
 
+      automataListDiv.querySelector('p:last-child').innerHTML = libD.format(_('This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.'), "icons/oxygen/16x16/actions/format-list-ordered.png");
+
+      var salc_cur_automaton = -1;
+      automataListUL.onmouseover = function(e) {
+         if(salc_cur_automaton === -1) {
+            salc_cur_automaton = AutomataDesigner.currentIndex;
+         }
+      };
+
+      automataListUL.onmouseout = function(e) {
+         var e = e.toElement || e.relatedTarget;
+         if((e === automataListUL || e === automataListUL.parentNode) && salc_cur_automaton !== -1) {
+            AutomataDesigner.setCurrentIndex(salc_cur_automaton);
+            salc_cur_automaton = -1;
+         }
+      };
+
+      function showAutomataListChooser(count, callback) {
+         if(callback || automataListBtn.onclick) {
+            automataListBtn.classList.remove('disabled');
+            automataListIntro.innerHTML = libD.format(_('The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "OK" to launch the algorithm.'), count);
+            if(callback) {
+               automataListBtn.onclick = function() {
+                  if(automataList.length < count) {
+                     alert(libD.format(_("You didn’t select enough automata. Please select {0} automata."), count));
+                     return;
+                  }
+                  automataListClose.onclick();
+                  automataListBtn.onclick = null;
+                  callWithList(count, callback);
+               };
+            }
+         }
+         else {
+            automataListBtn.classList.add('disabled');
+            automataListIntro.textContent = _("You can choose the order in which automata will be used in algorithms.");
+            count = 0;
+         }
+
+         automataListUL.textContent = '';
+         for(var i=0, li, a,number,indexInList; i < automatonCount; ++i) {
+            li = document.createElement('li');
+            a  = document.createElement('a');
+            a.href = '#';
+            a._index = i;
+            indexInList = automataList.indexOf(i);
+            number = document.createElement('span');
+            number.className = 'automaton-number';
+
+            if(indexInList !== -1) {
+               number.textContent = indexInList;
+            }
+
+            a.onclick = function() {
+               if(this.lastChild.textContent) {
+                  var j = parseInt(this.lastChild.textContent);
+                  this.lastChild.textContent = '';
+                  automataList.splice(j, 1);
+                  for(var k,lastChild, i=0; i < automatonCount; ++i) {
+                     lastChild = automataListUL.childNodes[i].firstChild.lastChild;
+                     k = parseInt(lastChild.textContent);
+                     if(k >= j) {
+                        lastChild.textContent = k-1;
+                     }
+                  }
+               }
+               else {
+                  this.lastChild.textContent = automataList.length;
+                  automataList.push(this._index);
+               }
+            }
+            a.onmouseover = function() {
+               console.log(salc_cur_automaton);
+               if(salc_cur_automaton !== -1) {
+                  console.log(this._index);
+                  AutomataDesigner.setCurrentIndex(this._index);
+               }
+            }
+            a.appendChild(document.createElement('span'));
+            a.lastChild.textContent = libD.format(_("Automaton #{0}"), i);
+            a.appendChild(number);
+            li.appendChild(a);
+            automataListUL.appendChild(li);
+         }
+         automataListDiv.classList.remove('disabled');
+      }
+
+      document.getElementById('automata-list').onclick = function(){showAutomataListChooser();};
+
+      function callWithList(count, callback) {
+         var automata = [];
+         for(var i=0; i < count; ++i) {
+            automata.push(get_automaton(automataList[i]));
+         }
+         callback.call(this, automata);
+      }
+
+      window.get_automatons = function(count, callback) {
+         if(automataList.length < count) {
+            showAutomataListChooser(count, callback);
+         }
+         else {
+            callWithList(count, callback);
+         }
+      };
+
+      document.getElementById('automata-list-chooser-close').onclick = function() {
+         automataListDiv.classList.add('disabled');
+      };
+      
       AutomataDesignerGlue.requestSVG = function(index) {
          AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), 'svg'), index);
       };
@@ -1717,6 +1848,7 @@
    _("fr", "The quiz seems to be malformed: {0}", "Le quiz semble mal formé : {0}");
    _("fr", "Start the Quiz", "Démarrer le quiz");
    _("fr", "Close the Quiz", "Fermer le quiz");
+   _("fr", "Close", "Fermer");
    _("fr", "Quiz: ", "Quiz : ");
    _("fr", "Quiz", "Quiz");
    _("fr", "Question {0}: ", "Question {0} : ");
@@ -1755,6 +1887,10 @@
    _("fr", "No regular expression or automaton was given in the quiz.", "Aucun automate ou aucune expression régulière n’a été donné dans le quiz.");
    _("fr", "Automaton given in the quiz is not correct.", "L’automate donné dans le quiz n’est pas correct.");
    _("fr", "Select an algorithm", "Choisir un algorithme");
+   _("fr", "You didn’t select enough automata. Please select {0} automata.", "Vous n’avez pas sélectionné assez d’automates. Veuillez en sélectionner {0}.");
+   _("fr", "Automaton #{0}", "Automate n°{0}");
+   _("fr", "You can choose the order in which automata will be used in algorithms.", 'Vous pouvez choisir l’ordre dans lequel les automates seront utilisés dans les algorithmes.');
+   _("fr", "Continue execution", "Continuer l’exécution");
    _("fr", '<h2>Welcome to {0}.</h2>\
 <p>Here is the area where you can <strong>draw automata</strong>.</p>\
 <ul>\
@@ -1785,4 +1921,6 @@
 <p>Pour ouvrir un quiz, cliquez sur le bouton "Charger un Quiz" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p>\
 <p>Pour faire disparaître ce texte, cliquez dessus.</p>\
 <p> Amusez vous bien !</p>');
+_("fr", 'The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "OK" to launch the algorithm.', 'L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « OK » pour lancer l’algorithme.');
+_("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.');
 })();
