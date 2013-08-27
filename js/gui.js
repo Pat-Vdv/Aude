@@ -799,7 +799,16 @@
 
       window.reallyRun = function() {
          blockResult = true;
-         setResult(arguments[0].apply(window, [].slice.call(arguments, 1)));
+         if(arguments[0] === get_automatons) {
+            var f = arguments[2];
+            get_automatons(arguments[1], function() {
+               console.log(arguments);
+               setResult(f.apply(this, arguments));
+            });
+         }
+         else {
+            setResult(arguments[0].apply(window, [].slice.call(arguments, 1)));
+         }
       };
 
       window.get_automaton = function(i) {
@@ -886,9 +895,7 @@
                }
             }
             a.onmouseover = function() {
-               console.log(salc_cur_automaton);
                if(salc_cur_automaton !== -1) {
-                  console.log(this._index);
                   AutomataDesigner.setCurrentIndex(this._index);
                }
             }
@@ -908,7 +915,7 @@
          for(var i=0; i < count; ++i) {
             automata.push(get_automaton(automataList[i]));
          }
-         callback.call(this, automata);
+         callback.apply(this, automata);
       }
 
       window.get_automatons = function(count, callback) {
