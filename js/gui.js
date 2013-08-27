@@ -823,7 +823,7 @@
          return A;
       };
 
-      automataListDiv.querySelector('p:last-child').innerHTML = libD.format(_('This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.'), "icons/oxygen/16x16/actions/format-list-ordered.png");
+      automataListDiv.querySelector('p:last-child').innerHTML = libD.format(_('This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.'), "icons/oxygen/16x16/actions/format-list-ordered.png");
 
       var salc_cur_automaton = -1;
       automataListUL.onmouseover = function(e) {
@@ -843,7 +843,7 @@
       function showAutomataListChooser(count, callback) {
          if(callback || automataListBtn.onclick) {
             automataListBtn.classList.remove('disabled');
-            automataListIntro.innerHTML = libD.format(_('The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "OK" to launch the algorithm.'), count);
+            automataListIntro.innerHTML = libD.format(_('The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.'), count);
             if(callback) {
                automataListBtn.onclick = function() {
                   if(automataList.length < count) {
@@ -1928,6 +1928,6 @@
 <p>Pour ouvrir un quiz, cliquez sur le bouton "Charger un Quiz" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p>\
 <p>Pour faire disparaître ce texte, cliquez dessus.</p>\
 <p> Amusez vous bien !</p>');
-_("fr", 'The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "OK" to launch the algorithm.', 'L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « OK » pour lancer l’algorithme.');
-_("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.');
+_("fr", 'The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.', 'L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « Continuer l’exécution » quand vous avez fait votre choix.');
+_("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre.');
 })();
