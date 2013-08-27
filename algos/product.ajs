@@ -40,4 +40,4 @@ function product(A1, A2, deter) {
   return prodA;
 }
 
-run(product, get_automaton(currentAutomaton), get_automaton(currentAutomaton+1));
+run(get_automatons, 2, product);

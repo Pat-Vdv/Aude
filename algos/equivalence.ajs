@@ -51,4 +51,4 @@ function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
   return visit(A1.getInitialState(), A2.getInitialState()) && (symetryAlreadyDone || automataAreEquivalent(A2, A1, true));
 }
           
-run(automataAreEquivalent, get_automaton(currentAutomaton), get_automaton(currentAutomaton+1));
+run(get_automatons, 2, automataAreEquivalent);
