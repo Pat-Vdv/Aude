@@ -12,12 +12,12 @@
       <script src="js/boot.js"></script>
       <script src="js/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script>
-      //<!--
+      /*<!--//*/
          if(!window.js18Supported) {
             var js18Supported = false;
          }
          if(!window.AutomataDesigner) {
-            // we are in the development version, lets load everything
+            /* we are in the development version, lets load everything */
             function boot() {
                for(var i in arguments) {
                   document.write('<script src="' + arguments[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
@@ -39,7 +39,6 @@
                "js/codemirror-automataJS/automataJS.js"
             );
          }
-      // -->
          MathJax.Hub.Config({
             tex2jax: {
                ignoreClass: "tex2jax_ignore",
@@ -53,6 +52,7 @@
          window.addEventListener('load', function() {
             setTimeout(libD.jsLoad, 10, "js/lib/viz.js", null, '', true, true);
          }, false);
+      /* --> //*/
       </script>
    </head>
    <body>
