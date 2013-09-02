@@ -1,4 +1,4 @@
-Live Automata is a free (as in free speech and in free beer) software to teach and experiment with automata.
+Aude is a free (as in free speech and in free beer) software to teach and experiment with automata.
 
 What is an automaton?
 ---------------------
@@ -67,7 +67,7 @@ What is the license of the program?
 
 Author
 ------
-   Raphaël Jakse (at UJF) : raphael dot jakse at gmail dot com
+   Raphaël Jakse (UJF) : raphael dot jakse at imag dot fr
    Supervised by Yliès Falcon between June 1st and July, 15 : ylies dot falcone at ujf-grenoble dot fr
 
    This program was started as a personal project around November 2012. The main goal was to get to know automata and related algorithms, and also help friends in their revisions, in the hope more people, teachers included, would find it useful.
