@@ -842,8 +842,8 @@
       function showAutomataListChooser(count, callback) {
          if(callback || automataListBtn.onclick) {
             automataListBtn.classList.remove('disabled');
-            automataListIntro.innerHTML = libD.format(_('The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.'), count);
             if(callback) {
+               automataListIntro.innerHTML = libD.format(_('The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.'), count);
                automataListBtn.onclick = function() {
                   if(automataList.length < count) {
                      alert(libD.format(_("You didn’t select enough automata. Please select {0} automata."), count));
