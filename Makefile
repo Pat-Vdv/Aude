@@ -10,7 +10,7 @@ dirlist.txt:
 all: js/boot.js minify-css minify-html dirlist.txt clean-src
 
 minify-css:
-	css=`uglifycss style/gui.css`; \
+	css=`uglifycss style/gui.css`
 	echo $$css > style/gui.css
 
 minify-html:
