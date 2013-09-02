@@ -520,6 +520,41 @@ select {
    right:0
 }
 
+#pane-distantfile a {
+   text-decoration:none;
+   color:gray
+}
+
+#loaddistantfile p {
+   margin-bottom:0;
+   padding-bottom:0;
+}
+
+
+#pane-distantfile, #pane-localfile {
+   padding:1ex
+}
+
+#pane-localfile {
+   float:right
+}
+
+#pane-localfile button {
+   margin-left:1em
+}
+
+#loaddistantfile .title {
+   color:#444;
+   font-size:1.2em;
+   margin-top:3px;
+   padding-top:0;
+   font-weight:bold
+}
+
+#pane-distantfile {
+   float:left
+}
+
 p img {
   vertical-align:middle 
 }

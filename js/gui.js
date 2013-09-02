@@ -936,11 +936,17 @@
 
       var freader = new FileReader(), automatonFileName, programFileName;
 
-      function openAutomaton() {
-         freader.onload = function() {
-            automatoncodeedit.value = freader.result;
+      function openAutomaton(code) {
+         if(typeof code === 'string') {
+            automatoncodeedit.value = code;
             AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+            return;
+         }
+
+         freader.onload = function() {
+            openAutomaton(freader.result);
          };
+
          freader.readAsText(fileautomaton.files[0], 'utf-8');
          automatonFileName = fileautomaton.value;
       }
@@ -961,22 +967,30 @@
          return A;
       }
 
-      function openProgram() {
+      function openProgram(code) {
+         if(typeof code === 'string') {
+            cm.setValue(code);
+            return;
+         }
+
          freader.onload = function() {
-            cm.setValue(freader.result);
+            openProgram(freader.result);
          };
          freader.readAsText(fileprogram.files[0], 'utf-8');
          programFileName = fileprogram.value;
       }
 
+      function loadQuiz(code) {
+         try {
+            startQuiz(JSON.parse(code));
+         }
+         catch(e) {
+            notify(_("Loading the quiz failed"), (libD.format(_("The quiz seems to be malformed: {0}"), e.message, "error")));
+         }
+      }
       function openQuiz() {
          freader.onload = function() {
-            try {
-               startQuiz(JSON.parse(freader.result));
-            }
-            catch(e) {
-               notify(_("Loading the quiz failed"), (libD.format(_("The quiz seems to be malformed: {0}"), e.message, "error")));
-            }
+            loadQuiz(freader.result);
          };
          freader.readAsText(filequiz.files[0], 'utf-8');
       }
@@ -986,6 +1000,10 @@
       filequiz.onchange      = openQuiz;
 
       function startQuiz(quiz) {
+         if(switchmode.value === 'program') {
+            switchmode.value = 'design';
+            switchmode.onchange();
+         }
          automataContainer.style.display = 'none';
          handleImports(['equivalence', 'regex2automaton', "automaton2json"], 'Quiz');
          automatonPlus.onclick();
@@ -1739,6 +1757,120 @@
                line.textContent = _(descr);
                curAlgo.appendChild(line);
             }
+            window.getFile('dirlist.txt', function(data) {
+               var files = {a:[],q:[],e:[]}, win;
+               data = data.split("\n");
+               for(var i in data) {
+                  if(data[i]) {
+                     files[data[i][0]].push(data[i]);
+                  }
+               }
+               data = null;
+
+               function makeWindow(title, textList, funList, btnText, letter, folder, ext, fileelem) {
+                  var refs = {}, a, li;
+                  
+                  if(win && win.ws) {
+                     win.close();
+                  }
+                  win = libD.newWin({
+                     title:title,
+                     center:true,
+                     height:'80%',
+                     width:'75%',
+                     content:libD.jso2dom(['div#loaddistantfile.libD-ws-colors-auto', [
+                        ['div#pane-localfile', [
+                           ["p.title", _("From your computer")],
+                           ["p", ["button", {"#":"btn"}, btnText]]
+                        ]],
+                        ['div#pane-distantfile', [
+                           ["p.title", textList],
+                           ["ul",{"#":"list"}],
+                        ]]
+                     ]], refs),
+                     show:true
+                  });
+
+                  for(var i in files[letter]) {
+
+                     li = document.createElement('li');
+                     a  = document.createElement('a');
+                     a.href = '#';
+                     a.onclick = funList;
+                     a._file = files[letter][i];
+                     a.textContent = files[letter][i].replace(folder, '').replace(new RegExp('\.' + ext + '$'), '');
+                     li.appendChild(a);
+                     refs.list.appendChild(li);
+                  }
+                  refs.btn.onclick = function() {
+                     win.close();
+                     fileelem.click();
+                  };
+               }
+
+               function lfile(fun, fail) {
+                  return function() {
+                     win.close();
+                     getFile(this._file, fun, function(message, status) {
+                        notify(fail);
+                     }, true);
+                     return false;
+                  }
+               }
+
+               if(files.q.length) {
+                  quiz.onclick = function() {
+                     makeWindow(
+                        _("Load a Quiz"),
+                        _("Ready to use quizes"),
+                        lfile(loadQuiz, _("Loading quiz failed.")),
+                        _("Load a quiz"),
+                        'q',
+                        'quiz/',
+                        'json',
+                        filequiz
+                     );
+                  };
+               }
+               if(files.e.length || files.a.length) {
+                  open.onclick = function() {
+                     if(switchmode.value === "program") {
+                        if(files.a.length) {
+                           makeWindow(
+                              _("Load a program"),
+                              _("Built-in algorithms"),
+                              lfile(openProgram, _("Loading program failed.")),
+                              _("Load a program"),
+                              'a',
+                              'algos/',
+                              'ajs',
+                              fileprogram
+                           );
+                        }
+                        else {
+                           fileprogram.click();
+                        }
+                     }
+                     else {
+                        if(files.e.length) {
+                           makeWindow(
+                              _("Load an automaton"),
+                              _("Examples of automaton"),
+                              lfile(openAutomaton, _("Loading automaton failed.")),
+                              _("Load an automaton"),
+                              'e',
+                              'examples-automata/',
+                              'txt',
+                              fileprogram
+                           );
+                        }
+                        else {
+                           fileprogram.click();
+                        }
+                     }
+                  };
+               }
+            });
          },
          function(message) {
            if(message === 'status') {
@@ -1888,6 +2020,17 @@
    _("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre.');
    _("fr", 'The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})', 'Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP : {0})');
    _("fr", "Unable to get the list of predefined algorithms", "Impossible d’avoir la liste des algorithmes prédéfinis");
+   _("fr", "Ready to use quizes", "Quiz prêts à être utilisés");
+   _("fr", "Built-in algorithms", "Algorithmes intégrés");
+   _("fr", "Examples of automaton", "Exemples d'automate");
+   _("fr", "Load a quiz", "Ouvrir un quiz");
+   _("fr", "Load a program", "Ouvrir un programme");
+   _("fr", "Load an automaton", "Ouvrir un automate");
+   _("fr", "Loading program failed.", "L’ouverture du programme a échoué"),
+   _("fr", "Loading automaton failed.", "L’ouverture de l’automate a échoué.");
+   _("fr", "Loading quiz failed.", "L’ouverture du quiz a échoué.");
+   _("fr", "From your computer", "Depuis votre ordinateur")
+
    _("fr", '<h2>Welcome to {0}.</h2>\
 <p>Here is the area where you can <strong>draw automata</strong>.</p>\
 <ul>\
