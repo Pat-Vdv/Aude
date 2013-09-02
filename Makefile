@@ -11,7 +11,7 @@ all: js/boot.js minify-css minify-html dirlist.txt clean-src
 
 minify-css:
 	css=`uglifycss style/gui.css`;\
-	echo $$css > style/gui.css
+	echo "$$css" > style/gui.css
 
 minify-html:
 	html=`nodejs -e "console.log(\
@@ -27,6 +27,6 @@ minify-html:
 				}\
 			)\
 		);"`;\
-	echo $$html > index.html
+	echo "$$html" > index.html
 clean:
 	rm -rf js/boot.js dirlist.txt
