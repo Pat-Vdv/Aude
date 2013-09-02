@@ -1775,7 +1775,8 @@
                   }
                   win = libD.newWin({
                      title:title,
-                     center:true,
+                     left:'25%',
+                     top:'25%',
                      height:'80%',
                      width:'75%',
                      content:libD.jso2dom(['div#loaddistantfile.libD-ws-colors-auto', [
