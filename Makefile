@@ -7,11 +7,29 @@ clean-src:
 dirlist.txt:
 	find quiz examples-automata algos > dirlist.txt
 
-all: js/boot.js clean-src minify-css
+all: js/boot.js minify-css minify-html dirlist.txt clean-src
 
 minify-css:
 	css=`uglifycss style/gui.css`; \
 	echo $$css > style/gui.css
 
+minify-html:
+	html=`nodejs -e "require('fs').readFile(\
+	   'index.html',\
+	   'utf8',\
+	   function(err,data) {\
+	      console.log(\
+	         require('html-minifier').minify(\
+	            data, {\
+	               removeComments: true,\
+	               removeCommentsFromCDATA: true,\
+	               collapseWhitespace: true,\
+	               collapseBooleanAttributes: true\
+	            }\
+	         )\
+	      );\
+	    }\
+	)"`
+	echo $$html > index.html
 clean:
 	rm -rf js/boot.js dirlist.txt
