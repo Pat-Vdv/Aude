@@ -1702,26 +1702,18 @@
                handleError(libD.format(_("Error: import: absolute paths are not supported in this version (in '{0}')'"), includer));
             }
             else {
-               try {
-                  var xhr = new XMLHttpRequest();
-                  //workaround chromium issue #45702
-                  xhr.open('get', 'algos/' + includeName + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), false);
-                  xhr.onreadystatechange = function() {
-                     if(xhr.readyState === 4) {
-                        if(!xhr.status || xhr.status === 200) {
-                           window.gotScript(includeName, xhr.responseText);
-                        }
-                        else {
-                           window.getScriptFailed(includeName, includer, libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})'), xhr.status));
-                        }
-                     }
-                  };
-                  xhr.overrideMimeType('text/plain');
-                  xhr.send();
-               }
-               catch(e) {
-                  window.getScriptFailed(includeName, includer, e.message);
-               }
+               window.getFile('algos/' + includeName,
+                    function(data) {
+                       window.gotScript(includeName, data);
+                    },
+                    function(message, status) {
+                       if(message === 'status') {
+                          message = libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})'), status);
+                       }
+                       window.getScriptFailed(includeName, includer, message);
+                    },
+                    true
+               );
             }
          }
       };
@@ -1735,49 +1727,44 @@
          }
       };
 
-      var xhr = new XMLHttpRequest();
-      //workaround chromium issue #45702
-      xhr.open('get', 'algos/list.txt' + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), false);
-      xhr.onreadystatechange = function() {
-         if(xhr.readyState === 4) {
-            if(!xhr.status || xhr.status === 200) {
-               var line,fname, descr, algos = xhr.responseText.split("\n");
-               for(var i=0; i < algos.length;++i) {
-                  line = algos[i].split("/");
-                  fname = line[0].trim();
-                  descr = line[1].trim();
-                  line = document.createElement('option');
-                  line.value = fname;
-                  line.textContent = _(descr);
-                  curAlgo.appendChild(line);
-               }
+      window.getFile('algos/list.txt',
+         function(data) {
+            var line,fname, descr, algos = data.split("\n");
+            for(var i=0; i < algos.length;++i) {
+               line = algos[i].split("/");
+               fname = line[0].trim();
+               descr = line[1].trim();
+               line = document.createElement('option');
+               line.value = fname;
+               line.textContent = _(descr);
+               curAlgo.appendChild(line);
             }
-            else {
-               notify(_("Getting list of predefined algorithms"), libD.format(_("Unable to get the list of predefined algorithms. Status:{0}"), xhr.status));
-            }
+         },
+         function(message) {
+           if(message === 'status') {
+              message = libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})'), status);
+           }
+            notify(_("Unable to get the list of predefined algorithms"), message);
          }
-      };
-      xhr.overrideMimeType('text/plain');
-      xhr.send();
+     );
 
-      switchmode.onchange();
+     switchmode.onchange();
       
-      var translatedNodes = document.querySelectorAll('[data-translated-content]');
-      for(var i=0, len = translatedNodes.length; i < len; ++i) {
-         translatedNodes[i].textContent = _(translatedNodes[i].textContent);
-      }
-      translatedNodes = document.querySelectorAll('[data-translated-title]');
-      for(var i=0, len = translatedNodes.length; i < len; ++i) {
-         if(translatedNodes[i].title) {
-            translatedNodes[i].title = _(translatedNodes[i].title);
-         }
-         if(translatedNodes[i].alt) {
-            translatedNodes[i].alt= _(translatedNodes[i].alt);
-         }
-      }
+     var translatedNodes = document.querySelectorAll('[data-translated-content]');
+     for(var i=0, len = translatedNodes.length; i < len; ++i) {
+        translatedNodes[i].textContent = _(translatedNodes[i].textContent);
+     }
+     translatedNodes = document.querySelectorAll('[data-translated-title]');
+     for(var i=0, len = translatedNodes.length; i < len; ++i) {
+        if(translatedNodes[i].title) {
+           translatedNodes[i].title = _(translatedNodes[i].title);
+        }
+        if(translatedNodes[i].alt) {
+           translatedNodes[i].alt= _(translatedNodes[i].alt);
+        }
+     }
 
-      onResize();
-
+     onResize();
    }, false);
    _("fr", "Program Result", "Résultat");
    _("fr", '\nStack trace: \n', "\nPile de l\'erreur : \n");
@@ -1897,6 +1884,10 @@
    _("fr", "Automaton #{0}", "Automate n°{0}");
    _("fr", "You can choose the order in which automata will be used in algorithms.", 'Vous pouvez choisir l’ordre dans lequel les automates seront utilisés dans les algorithmes.');
    _("fr", "Continue execution", "Continuer l’exécution");
+   _("fr", 'The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.', 'L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « Continuer l’exécution » quand vous avez fait votre choix.');
+   _("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre.');
+   _("fr", 'The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})', 'Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP : {0})');
+   _("fr", "Unable to get the list of predefined algorithms", "Impossible d’avoir la liste des algorithmes prédéfinis");
    _("fr", '<h2>Welcome to {0}.</h2>\
 <p>Here is the area where you can <strong>draw automata</strong>.</p>\
 <ul>\
@@ -1927,6 +1918,4 @@
 <p>Pour ouvrir un quiz, cliquez sur le bouton "Charger un Quiz" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p>\
 <p>Pour faire disparaître ce texte, cliquez dessus.</p>\
 <p> Amusez vous bien !</p>');
-_("fr", 'The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.', 'L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « Continuer l’exécution » quand vous avez fait votre choix.');
-_("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre.');
 })();

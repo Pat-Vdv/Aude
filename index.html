@@ -9,8 +9,19 @@
       <script type="text/javascript;version=1.8">
          var js18Supported = true;
       </script>
+      <script src="js/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+         MathJax.Hub.Config({
+            tex2jax: {
+               ignoreClass: "tex2jax_ignore",
+               processClass: "tex2jax_process",
+               inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+               displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+               preferredFont: "STIX",
+               processEnvironments: false
+            }
+         });
+      </script>
       <script src="js/boot.js"></script>
-      <script src="js/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       <script>
       /*<!--//*/
          if(!window.js18Supported) {
@@ -27,6 +38,7 @@
                "js/lib/libD/1.0/core.js",
                "js/lib/hammer.min.js",
                "js/mousewheel.js",
+               "js/getFile.js",
                "js/set.js",
                "js/automata.js",
                "js/automaton2dot.js",
@@ -39,18 +51,8 @@
                "js/codemirror-automataJS/automataJS.js"
             );
          }
-         MathJax.Hub.Config({
-            tex2jax: {
-               ignoreClass: "tex2jax_ignore",
-               processClass: "tex2jax_process",
-               inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-               displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-               preferredFont: "STIX",
-               processEnvironments: false
-            }
-         });
          window.addEventListener('load', function() {
-            setTimeout(libD.jsLoad, 10, "js/lib/viz.js", null, '', true, true);
+            setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
          }, false);
       /* --> //*/
       </script>
