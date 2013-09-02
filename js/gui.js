@@ -802,7 +802,6 @@
          if(arguments[0] === get_automatons) {
             var f = arguments[2];
             get_automatons(arguments[1], function() {
-               console.log(arguments);
                setResult(f.apply(this, arguments));
             });
          }
