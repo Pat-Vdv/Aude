@@ -917,6 +917,8 @@
                      break;
                   case "state":
                      constraintedVariables.type.remove(varName);
+                     tmp += defaultValue ? defaultValue : '""';
+                     break;
                   case "string":
                      tmp += defaultValue ? ('Audescript.as("",' + defaultValue + ')') : '""';
                      break;

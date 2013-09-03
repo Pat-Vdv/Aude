@@ -537,8 +537,17 @@
        * @see Automaton#hasSymbol
        * @see Automaton#removeSymbol
        */
-      setAlphabet: function(alphabet) {
-         this.Sigma = alphabet;
+      setAlphabet: function(alphabet, byRef) {
+         if(byRef) {
+            if(alphabet instanceof Set) {
+               this.Sigma = alphabet;
+               return;
+            }
+            else {
+               throw new Error(_("Automaton.setAlphabet(): The given argument is not a Set."));
+            }
+         }
+         this.Sigma = new_set(alphabet);
       },
 
       /**
@@ -1225,6 +1234,7 @@
    };
 
    _("fr", "Automaton.setStates(): The given argument is not a Set.", "Automaton.setStates() : L'argument donné n'est pas un ensemble.");
+   _("fr", "Automaton.setAlphabet(): The given argument is not a Set.", "Automaton.setAlphabet() : L'argument donné n'est pas un ensemble.");
    _("fr", "Automaton.setFinalStates(): The given argument is not a Set.", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble.");
    _("fr", "Automaton.runSymbol(): epsilon is forbidden.", "Automaton.runSymbol(): epsilon est interdit.");
    _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
