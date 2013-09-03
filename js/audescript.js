@@ -360,7 +360,7 @@
             ++i;
             var deb = i,
                 symbol = getSymbol().toLowerCase();
-            if(symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has') {
+            if(symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto') {
                return '!' + symbol;
             }
             i = deb;
@@ -930,6 +930,9 @@
                   case "function":
                      tmp += defaultValue ? 'Audescript.as(function(){},' + defaultValue + ')' : 'function(){}';
                      break;
+                  case "mappingfunction":
+                     tmp += defaultValue ? defaultValue : 'getMappingFunction()';
+                     break;
                   case "set":
                      if(defaultValue) {
                         tmp += (defaultValue.trim().substr(0,7) === 'to_set(') ? defaultValue : 'to_set(' +  defaultValue + ')';
@@ -1044,18 +1047,21 @@
                if(symbol && symbol[0] === '!') {
                   not = '!';
                   symbol = symbol.substr(1);
-                  if(symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'has') {
+                  if(symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'haskey') {
                      i = deb;
                      return res;
                   }
                }
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'has' || symbol === 'symdiff') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'haskey' || symbol === 'symdiff' || symbol === 'element_of') {
                if(symbol === 'symdiff') {
                   symbol = 'sym_diff';
                }
                else if(symbol === 'subsetof') {
                   symbol = 'subset_of';
+               }
+               else if(symbol === 'element_of') {
+                  symbol = 'elementof';
                }
       
                var deb2 = i, symbol2 = getSymbol(), white2, symbol2;
@@ -1068,20 +1074,24 @@
                }
 
                if(type === operator) {
-                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff') {
+                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff') {
                      i = deb;
                      return res;
                   }
 
                   return res + '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
-               else if(symbol === 'contains' || symbol === 'subset_of' || symbol === 'has' || symbol === 'sym_diff') {
+               else if(symbol === 'contains' || symbol === 'subset_of' || symbol === 'sym_diff') {
                   i = deb2;
                   return ' ' + not + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else if(symbol === 'elementof' || symbol === 'belongsto') {
                   i = deb2;
                   return ' ' + not + 'contains(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ','  + (white === ' ' ? '' : white) + res + ')';
+               }
+               else if(symbol === 'haskey') {
+                  i = deb2;
+                  return ' ' + not + '(' + res + ').hasKey(' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
                }
                else {
                   i = deb2;
