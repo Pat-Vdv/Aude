@@ -55,11 +55,11 @@
       };
 
       f.hasKey = function(k) {
-         return m.hasOwnProperty(Set.prototype.elementToString(k)
+         return m.hasOwnProperty(Set.prototype.elementToString(k));
       };
 
       f.getKey = function(k) {
-         var key = Set.prototype.elementToString(a1);
+         var key = Set.prototype.elementToString(k);
          if(m.hasOwnProperty(key)) {
             return m[key];
          }
@@ -72,7 +72,7 @@
                f.removeKey(k);
                break;
             case 2:
-               m[Set.prototype.elementToString(a1)] = a2;
+               m[Set.prototype.elementToString(k)] = v;
                return;
             default:
                throw new Error('Bad arguments number.');
@@ -81,8 +81,9 @@
       };
 
       f.removeKey = function(k) {
-         delete m[Set.prototype.elementToString(a1)];
+         delete m[Set.prototype.elementToString(k)];
       };
+
       return f;
    }
 })(this);
