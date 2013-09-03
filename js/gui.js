@@ -290,7 +290,7 @@
       if(js18Supported) {
          script.type = 'text/javascript;version=1.8';
       }
-      script.textContent = 'function userProgram(run) {"use strict";\n' + AutomataJS.toPureJS(code, includes) + '\n}';
+      script.textContent = 'function userProgram(run) {"use strict";\n' + Audescript.toPureJS(code, includes) + '\n}';
       enableAutoHandlingError = "user's program";
       head.appendChild(script);
       enableAutoHandlingError = false;
@@ -1667,7 +1667,7 @@
          waitingFor.remove(includeName);
 
          var includes = [];
-         code = AutomataJS.toPureJS(code, includes);
+         code = Audescript.toPureJS(code, includes);
 
          if(nextLoadIsPrefefAlgo) {
             predefAlgoFunctions[includeName] = code;

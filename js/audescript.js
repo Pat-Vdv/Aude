@@ -34,12 +34,12 @@
 
 (function(pkg, that) {
    "use strict";
-   var _ = pkg.AutomataJS10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
-   if(!pkg.AutomataJS) {
-      pkg.AutomataJS = {};
+   var _ = pkg.Audescript10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
+   if(!pkg.Audescript) {
+      pkg.Audescript = {};
    }
 
-   // things needed to execute AutomataJS code.
+   // things needed to execute Audescript code.
    if(!that.StopIteration) {
       that.StopIteration = {};
    }
@@ -105,20 +105,20 @@
    catch(e){}
 
    // checks "real" equality between v1 and v2
-   pkg.AutomataJS.eq = function(v1, v2) {
+   pkg.Audescript.eq = function(v1, v2) {
       return v1 == v2 || (
             typeof v1 === typeof v2
          && (v1 instanceof Set && v2 instanceof Set
             ? v1.card() === v2.card() && !minus(v1, v2).card()
             : (v1 instanceof Transition && v2 instanceof Transition
-               ?     pkg.AutomataJS.eq(v1.symbol, v2.symbol)
-                  && pkg.AutomataJS.eq(v1.startState, v2.startState)
-                  && pkg.AutomataJS.eq(v1.endState, v2.endState)
+               ?     pkg.Audescript.eq(v1.symbol, v2.symbol)
+                  && pkg.Audescript.eq(v1.startState, v2.startState)
+                  && pkg.Audescript.eq(v1.endState, v2.endState)
                : (v1 instanceof Automaton && v2 instanceof Automaton
-                  ?     pkg.AutomataJS.eq(v1.states, v2.states)
-                     && pkg.AutomataJS.eq(v1.finalStates, v2.finalStates)
-                     && pkg.AutomataJS.eq(v1.trans, v2.trans)
-                     && pkg.AutomataJS.eq(v1.q_init, v2.q_init)
+                  ?     pkg.Audescript.eq(v1.states, v2.states)
+                     && pkg.Audescript.eq(v1.finalStates, v2.finalStates)
+                     && pkg.Audescript.eq(v1.trans, v2.trans)
+                     && pkg.Audescript.eq(v1.q_init, v2.q_init)
                   : JSON.stringify(v1) === JSON.stringify(v2)
                )
             )
@@ -127,7 +127,7 @@
    };
 
    // checks if value can be assigned to variable and return the right value. integerCheck enforce value being an integer.
-   pkg.AutomataJS.as = function(variable, value, integerCheck) {
+   pkg.Audescript.as = function(variable, value, integerCheck) {
       if(variable instanceof Set && value instanceof Set) {
          if(!variable.typeConstraint  || variable.typeConstraint === value.constaintType) {
             return value;
@@ -907,28 +907,28 @@
                   switch(typeOfVar.toLowerCase()) {
                   case "integer":
                   case "int":
-                     tmp += defaultValue ? ('AutomataJS.as(0,' + defaultValue + ', true)') : '0';
+                     tmp += defaultValue ? ('Audescript.as(0,' + defaultValue + ', true)') : '0';
                      constraintedVariables.type.add('0' + varName);
                      break;
                   case "list":
                   case "array":
                   case "table":
-                     tmp += defaultValue ? ('AutomataJS.as([],' + defaultValue + ')') : '[]';
+                     tmp += defaultValue ? ('Audescript.as([],' + defaultValue + ')') : '[]';
                      break;
                   case "state":
                      constraintedVariables.type.remove(varName);
                   case "string":
-                     tmp += defaultValue ? ('AutomataJS.as("",' + defaultValue + ')') : '""';
+                     tmp += defaultValue ? ('Audescript.as("",' + defaultValue + ')') : '""';
                      break;
                   case "bool":
                   case "boolean":
-                     tmp += defaultValue ? ('AutomataJS.as(false,' + defaultValue + ')') : 'false';
+                     tmp += defaultValue ? ('Audescript.as(false,' + defaultValue + ')') : 'false';
                      break;
                   case "automaton":
-                     tmp += defaultValue ? 'AutomataJS.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
+                     tmp += defaultValue ? 'Audescript.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
                      break;
                   case "function":
-                     tmp += defaultValue ? 'AutomataJS.as(function(){},' + defaultValue + ')' : 'function(){}';
+                     tmp += defaultValue ? 'Audescript.as(function(){},' + defaultValue + ')' : 'function(){}';
                      break;
                   case "set":
                      if(defaultValue) {
@@ -1003,18 +1003,18 @@
                return res;
             }
             if(symbol === '==') {
-               return white + " AutomataJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+               return white + " Audescript.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
             else if(symbol === '!=') {
-               return white + " !AutomataJS.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
+               return white + " !Audescript.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
             else if(symbol[symbol.length-1] === '=') {
                if(constraintedVariables.type.contains(res.trim())) {
                   if(symbol.length > 1) {
-                     return white + res + '=AutomataJS.as(' + res.trim() + ',' +  res.trim() + symbol.substr(0,symbol.length-1) + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
+                     return white + res + '=Audescript.as(' + res.trim() + ',' +  res.trim() + symbol.substr(0,symbol.length-1) + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
                   }
                   else {
-                     return white + res + '=AutomataJS.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
+                     return white + res + '=Audescript.as(' + res.trim() + ',' +  getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + ',' + (constraintedVariables.type.contains('0' + res.trim()) ? 'true':'false') + ')';
                   }
                }
                else if(!constSupported && constraintedVariables.consts.contains(res.trim())) {
@@ -1271,7 +1271,7 @@
       return res;
    }
 
-   AutomataJS.toPureJS = function (str, includesArray) {
+   Audescript.toPureJS = function (str, includesArray) {
       includes = includesArray || [];
       len     = str.length;
       s       = str;
