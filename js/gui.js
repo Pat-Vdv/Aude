@@ -2046,7 +2046,7 @@
    _("fr", "Loading automaton failed.", "L’ouverture de l’automate a échoué.");
    _("fr", "Loading quiz failed.", "L’ouverture du quiz a échoué.");
    _("fr", "From your computer", "Depuis votre ordinateur")
-
+   _("fr", "Choose and order the parameter automata", "Choisir et ordonner les automates paramètres");
    _("fr", '<h2>Welcome to {0}.</h2>\
 <p>Here is the area where you can <strong>draw automata</strong>.</p>\
 <ul>\
