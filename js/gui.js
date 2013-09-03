@@ -1976,8 +1976,8 @@
    _("fr", "Remove current automaton", "Supprimer cet automate");
    _("fr", "There is no automaton to save.", "Il n'y a pas d'automate à enregistrer.");
    _("fr", "Automaton", "Automate");
-   _("fr", "Action:", "Action :");
    _("fr", "Determinize", "Déterminiser");
+   _("fr", "Simplify names of the states", "Simplifier les noms des états");
    _("fr", "ε-eliminate", "ε-éliminer");
    _("fr", "Minimize", "Minimiser");
    _("fr", "Determinize & Minimize", "Déterminiser & Minimiser");
