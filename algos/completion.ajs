@@ -11,22 +11,22 @@ function complete(A, alphabet) {
 
    compA.setInitialState(A.getInitialState());
 
-   let well = 'W';
-   while(A.hasState(well)) {
-      well += 'W';
+   let sink = 'S';
+   while(A.hasState(sink)) {
+      sink += 'S';
    }
 
    foreach(state in A.getStates()) {
       foreach(symbol in alphabet) {
          if(trans(state, symbol).isEmpty()) {
-            compA.addState(well);
-            compA.addTransition(state, symbol, well);
+            compA.addState(sink);
+            compA.addTransition(state, symbol, sink);
          }
       }
    }
-   if(compA.hasState(well)) {
+   if(compA.hasState(sink)) {
       foreach(a in alphabet) {
-         compA.addTransition(well, a, well);
+         compA.addTransition(sink, a, sink);
       }
    }
 

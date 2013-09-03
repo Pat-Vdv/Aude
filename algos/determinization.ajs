@@ -18,7 +18,7 @@ function determinize(A, complete) {
         }
 
         if(complete || !QDest.isEmpty()) {
-           // if completion is not asked, don't create a well state
+           // if completion is not asked, don't create a sink state
            addDeterminizedState(QDest);
            DetA.addTransition(newQ, symbol, QDest);
         }
