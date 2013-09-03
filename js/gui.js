@@ -28,6 +28,7 @@
        blockResult       = false,
        waitingFor        = new Set(),
        launchAfterImport = false,
+       deferedResultShow = false,
        resultToLeft      = document.createElement('button'),
        zoom              = {svgZoom:1},
        map               = {
@@ -76,6 +77,10 @@
 
    function enableResults() {
       if(!sw) {
+         if(switchmode.value === 'program') {
+            deferedResultShow = true;
+            return;
+         }
          results.classList.remove('disabled');
          splitter.classList.remove('disabled');
          sw = splitter.offsetWidth;
@@ -693,6 +698,11 @@
             onResize();
             break;
          case "design":
+            if(deferedResultShow) {
+               setTimeout(enableResults, 0);
+               deferedResultShow = false;
+            }
+
             if(cm && cm.getValue()) {
                toolbar.className = 'designmode';
             }
@@ -706,6 +716,11 @@
             onResize();
             break;
          case "automatoncode":
+            if(deferedResultShow) {
+               setTimeout(enableResults, 0);
+               deferedResultShow = false;
+            }
+
             automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
             if(cm && cm.getValue()) {
                toolbar.className = 'designmode codemode';
