@@ -1,3 +1,5 @@
+include normalization;
+
 function Automata_OR(A1, A2) {
   orA : Automaton;
 
@@ -412,4 +414,6 @@ function regexToAutomaton(regex) {
   return to_automaton(get_regex());
 }
 
-run(regexToAutomaton);
+run(function() {
+   return normalize(regexToAutomaton())
+});

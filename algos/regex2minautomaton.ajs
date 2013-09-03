@@ -1,9 +1,10 @@
 include determinization;
 include minimization;
 include regex2automaton;
+include normalization;
 
 run(
    function(A) {
-      return minimize(determinize(regexToAutomaton()));
+      return normalize(minimize(determinize(regexToAutomaton())));
    }
 );
