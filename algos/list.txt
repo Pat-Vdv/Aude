@@ -1,6 +1,6 @@
 determinization.ajs    / Determinize
 minimization.ajs       / Minimize
-completion.ajsv=5      / Complete
+completion.ajs         / Complete
 complementation.ajs    / Complement
 product.ajs            / Product
 mirror.ajs             / Mirror
