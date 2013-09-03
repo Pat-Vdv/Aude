@@ -1,0 +1,20 @@
+.whata p {
+   text-indent: 2ex;
+}
+
+.whata ul > li {
+   margin-left:6ex
+}
+
+.whata p + pre {
+   margin-left:2ex
+}
+
+.whata-table {
+   min-width:90%;
+   text-align:center
+}
+
+img {
+   max-width:100%
+}
