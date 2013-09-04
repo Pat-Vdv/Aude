@@ -970,9 +970,9 @@ else
 		Defines the place libD has to hit to load javascript files (see <libD.jsLoad>.
 		Default: '/share/js/'.
 */
-
-libD.jsPath = '/share/js/'; // default js path. Mind the '/' at the end.
-
+if(!libD.jsPath) {
+   libD.jsPath = '/share/js/'; // default js path. Mind the '/' at the end.
+}
 /*
  Contant: majorVersion
 	libD's major version, as string. For the version of libD you are exploring, it is set to "1.0".
@@ -986,33 +986,40 @@ libD.majorVersion = '1.0';
 			- the actual path from where libD was loaded if libD succeeds in determining it
 			- <libD.jsPath> + 'libD/' + <libD.majorVersion> + '/' otherwise
 */
-libD.path = libD.jsPath + 'libD/1.0/'; // if libD doesn't manage to determine where it is stored, default value.
-
+if(!libD.path) {
+   libD.path = libD.jsPath + 'libD/1.0/'; // if libD doesn't manage to determine where it is stored, default value.
+}
 /*
 	Value: appPath
 		Defines the place where libD Apps are located. Default: <libD.jsPath> + 'apps/'.
 */
-libD.appPath = libD.jsPath + 'apps/'; // default libD.app path. Mind the '/' at the end.
-
+if(!libD.appPath) {
+   libD.appPath = libD.jsPath + 'apps/'; // default libD.app path. Mind the '/' at the end.
+}
 /*
 	Value: theme
 		The default theme used by concerned libD's various modules. Default: 'default'.
 		themes are usually located in <libD.path> + 'css/'
 */
-libD.theme = 'default';
+if(!libD.theme) {
+   libD.theme = 'default';
+}
 
 /*
 	Value: iconPack
 		The default icon pack to use, when needed. Third party scripts / apps using libD are encouraged to use this value for integration matters.
 */
-libD.iconPack = '/share/icons/oxygen/';
+if(!libD.iconPack) {
+   libD.iconPack = '/share/icons/oxygen/';
+}
 
 /*
 	Value: iconSize
 		The default icon size to use, when needed. Third party scripts / apps are encouraged to use this value as a fallback.
 */
-libD.iconSize = '22x22';
-
+if(!libD.iconSize) {
+   libD.iconSize = '22x22';
+}
 /*
  Contant: pathWasGuessed
  If libD actually succeeded in finding it's location, this value is set to true. False otherwise.
