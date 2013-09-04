@@ -126,7 +126,7 @@
    Another thing that can be said is that unlike others tools, this one is written with web technologies, which makes the program usable without any installation and will make the port on tablets easy. Thanks to web technologies, the program should work on any desktop operating system, provided a recent browser is installed, and the support for mobile operating systems should follow quickly.
 ]
 
-[ =. Conclusion about the internship
+[ = Conclusion about the internship
    Though it was eventually not possible to use the program in concrete applications like real robots, and to do some research during the internship due to a lack of time, which is sad, I really enjoyed it.
 
    What was great in this internship was to reach the computer science research community, to discover what a computer science lab looks like and how people of the lab work. I also really enjoyed working on a project I started myself months before and defining a great part of the internship subject with my supervisor.
@@ -136,4 +136,12 @@
    It increased my confidence on my ability to work even if no explicit constraint is imposed. You work alone and together at the same time to discover new and build great things, and that is awesome.
 
    Another great thing is I know that my program will be used to teach automata and this is amazing. I hope it will make automata learning more enjoyable or, at least, easier.
+]
+
+[ = Links
+   - JFLAP: [[http://www.jflap.org/]]
+   - Visual Automata Simulator: [[http://www.cs.usfca.edu/~~jbovet/vas.html]]
+   - jFAST - the Finite Automata Simulator: [[http://jfast-fsm-sim.sourceforge.net/]]
+   - Université Joseph Fourier: [[http://ujf-grenoble.fr/]]
+   - Verimag: [[http://www-verimag.imag.fr/]]x
 ]
