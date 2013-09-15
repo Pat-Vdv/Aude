@@ -1,71 +1,70 @@
 [set
-   title  =  Training Report ~n Realisation of a tool for manipulating and teaching automata ~n Université Joseph Fourier ~n Lab: Verimag ~n Supervisor: Yliès Falcone
+   title  =  "Training Report ~n Realisation of a tool for manipulating and teaching automata ~n Université Joseph Fourier ~n Labs: Verimag, LIG ~n Supervisor: Yliès Falcone"
    author = Raphaël Jakse
-   date   = August 2013
+   date   = September 2013
    css    = whata.css \ latex.css \ custom.css
 ]
 
 [ =. Introduction
-   In this internship, we developed a tool with the aim of easing teaching, learning and manipulation of automata. As for students, this tool can facilitate their learning by adding an interactive aspect to the lesson. This includes drawing automata, determinizing / minimizing them and more generally applying any algorithm of the lesson on them, run a word on it and write custom algorithms and test them on drawn automata.
+   In this internship, we developed a tool with the aim of easing teaching, learning and manipulation of automata. As for students, this tool can facilitate their learning by adding an interactive aspect to the lesson including drawing, determinizing / minimizing automata and more generally applying any algorithm of the lesson on them, run a word on it and write custom algorithms and test them on drawn automata.
 ]
 
 [ = Features
    [ = Drawing automata
-      Writing code being boring and off-putting for many people, like others tools of the domain, the tool provides a means to input automata by drawing them with the mouse and the keyboard in a hopefully intuitive way.
+      Writing code being annoying for many people, like others tools of the domain, the tool provides a means to input automata by drawing them with the mouse and the keyboard in a hopefully intuitive way.
 
-      However, for repetitive tasks or big automata, it may be more convenient to write automata instead of drawing it. As a consequence, the tool also provides a way to input automata by writing them using a language which was maid as concise as possible.
+      However, for repetitive tasks or big automata, it may be more convenient to write automata instead of drawing them. As a consequence, the tool also provides a way to input automata by writing them using a language which was made as concise as possible.
 
-      In order to display results of algorithms or automata which were written rather than drawn, the tool embeds a Javascript version of Graphviz to render graphical version of automata automatically.
+      In order to display results of algorithms or automata which were written rather than drawn, the tool embeds a Javascript version[footnote Viz.js: [[https://github.com/mdaines/viz.js/]]] of Graphviz[footnote [[http://www.graphviz.org/]]] to render graphical version of automata automatically.
 
-      To help writing documents about automata, the tool provides a way to export images or DOT codes of automata produced by the user or the tool. DOT documents can then be translated into TiKZ format in order to include automata in a LaTeX document.
+      To help writing documents about automata, the tool provides a way to export images or DOT[footnote [[http://www.graphviz.org/content/dot-language]]] codes of automata produced by the user or the tool. DOT documents can then be translated into TiKZ[footnote [[http://www.ctan.org/tex-archive/graphics/pgf/]]] format in order to include automata in a LaTeX document.
    ]
    
    [ = Algorithms
-      One of the most important features of the tool is its ability to run algorithms on automaton, and having these algorithm written and readable by the user in a dedicated language especially designed for manipulating sets and automata, still remaining generalist by being based on Javascript.
+      One of the most important features of the tool is its ability to run algorithms (See figure [ref=aude-algo]). These algorithms are written in a dedicated language especially designed for manipulating sets and automata. 
 
       The tool comes with a tiny number of basic algorithms such as:
-       - Determinizaion
-       - Completion
-       - Minimization
-       - Epsilon removal
-       - Product
-       - Equivalence
-       - Complementation
-       - Empty and infinite language tests
-       - Regular expression to automaton
+       - determinization: get a determinist automaton from any automaton.
+       - completion: get a complete automaton from any automaton.
+       - minimization: get a minimal automaton from any automaton.
+       - epsilon removal: get an automaton without any epsilon transition from any automaton.
+       - product: get an automaton which recognize the intersection of the two input automata's respective languages.
+       - equivalence: test whether two automata recognize the same language.
+       - complementation: get an automaton which recognize the complementary language of the input automaton.
+       - empty and infinite language tests: test whether an automaton recognize the empty language and an infinite language, respectively
+       - regular expression to automaton: get an automaton recognizing the language described by a regular expression.
 
-       [illustr [img=aude-algo.png width=500pt]]
+       [img=aude-algo.png figure="Result of an algorithm execution." width=500pt ref=aude-algo]
 
-      In addition to that, users can write their own algorithms using the same dedicated language as the one used for writing embedded algorithms.
+      [newpage]
+      In addition, users can write their own algorithms using the same dedicated language as the one used for writing embedded algorithms (See figure [ref=aude-prog]).
       
-       [illustr [img=aude-prog.png width=500pt]]
+       [img=aude-prog.png width=500pt figure="Writing algorithms." ref=aude-prog]
       
-      The tool can handle as many automata as necessary. That is to say, one can write an algorithm taking [m n] automata, with [m n] being any natural number (in the limits of the computer’s resources). The user will be asked to choose which automata are to send to the algorithm when running it.
+      The tool can handle as many automata as necessary. That is to say, one can write an algorithm taking [m n] automata, with [m n] being any natural number. The user will be asked to choose which automata should be sent to the algorithm when running it.
 
-       [illustr [img=aude-list-automata.png width=500pt]]
+       [img=aude-list-automata.png width=500pt figure="Choose which automata should be sent to the algorithm." ref=aude-list]
    ]
-   
    [ = Running words
-      The tool features word execution on automata. Word execution is not an exclusive feature of this program, others tools can do this. However, special care was taken to make it pleasant and easy to follow by showing the execution progressively taking place, the word progressively being “eaten”, with smooth transitions.
+      The tool features word execution on automata. Special care was taken to make it pleasant and easy to follow by showing the execution progressively taking place, the word progressively being “consumed” (See figure [ref=word-exec]).
       
-       [illustr [img=word-execution.png width=500pt]]
+       [img=word-execution.png width=500pt figure="Word execution." ref=word-exec]
    ]
-   
    [ = Quiz
-      With the tool, you can run custom quiz. The ability to run quizzes written by anybody (a teacher, a student) directly inside the tool, however, is probably an exclusive feature as of September 2013.
+      With the tool, one can run custom quizzes (see picture [ref=aude-quiz]). The ability to run quizzes written by anybody (a teacher, a student) directly inside the tool, however, is probably an exclusive feature as of September 2013.
 
-      You can write or run quizzes featuring:
-       - Mere multiple choice questions, with zero, one or more answers, with any number of possible answers (stay reasonable however!)
-       - Questions that ask the user to draw an automaton corresponding to a set of words
-       - Questions that ask the user to draw an automaton corresponding to a language defined by an automaton or a regular expression in the quiz file.
+      One can write or run quizzes featuring:
+       - mere multiple choice questions, with zero, one or more answers, with any number of possible answers.
+       - questions that ask the user to draw an automaton corresponding to a set of words.
+       - questions that ask the user to draw an automaton corresponding to a language defined by an automaton or a regular expression in the quiz file.
 
-      LaTeX can be used to write mathematics in the quiz, thanks to MathJax.
+      LaTeX can be used to write mathematics in the quiz, thanks to MathJax[footnote [[http://www.mathjax.org/]]].
       
-       [illustr [img=aude-quiz.png width=500pt]]
+       [img=aude-quiz.png width=500pt figure="Quiz." ref=aude-quiz]
    ]
    
    [ = Internationalization
-      It is almost always easier to learn something non-trivial in one's native language. While the tool is still only available in English and in French, it was conceived to make internationalization as easy as possible. Some work is still needed to make this happen, but not so much: in addition to a couple of lines of code, what is essentially needed is contributions from people who can speak well English and another language in which the tool is still not translated.
+      It is almost always easier to learn something non-trivial in one's native language. While the tool is still only available in English and in French, it was conceived to make internationalization as easy as possible. Some work is still needed to make this happen but what is essentially needed is contributions from people who can speak well English and another language in which the tool is still not translated.
       
       [illustr [img=translate.png width=200pt]]
    ]
@@ -80,16 +79,16 @@
        - [* Web-compatible]. The idea behind being web-compatible is that users don’t have to install anything to try and use the tool. Ideally, they just click on a link and they are instantly in front of the tool, with nothing to install but a browser.
        - [* server-independent]. While an online version of the tool could have extra features, it had to remain available for offline usage in order to be able to use the tool in any situation a computer could be used. Staying server-independent also ensures that the tool will scale well as the user base grows.
 
-      These constraints naturally led to the usage of HTML, CSS combined with Javascript, a reasonably fast, pleasant and widespread client-side language that doesn’t need any special installation on the user’s computer to run. Many people work with Javascript, this leads to the availability of tools of great quality around this language (debuggers, editors, engines, JIT compilers, browsers) and of many great libraries. Most notably, the existence of ports of Graphviz in Javascript is what made developing the tool as it is today in Javascript possible.
-      
-      With regard to the language used for writing algorithms, we could have used Javascript directly, but Javascript is not well adapted for sets and therefore automata manipulation. The goal was to be able to write algorithms in a language which is close to their descriptions (e.g. in pseudo code), which use sets. We could have designed an entirely new language to match our expectations but that is counter-productive: it means writing a entire interpreter or compiler, which would have taken too much time and would have surely had bad performances. It would have led to an incomplete programming language to grow.
-      
-      We instead opted for extending Javascript (as we already have what we need to run Javascript in a browser) with what we need: sets and some other constructions to make automata-related algorithms look better.
+      These constraints naturally led to the usage of HTML, CSS combined with Javascript, a reasonably fast and widespread client-side language that doesn’t need any special installation on user’s computer to run.
    ]
    
    [ = Extending Javascript
+      With regard to the language used for writing algorithms, we could have used Javascript directly, but Javascript is not well adapted for sets and therefore automata manipulation. The goal was to be able to write algorithms in a language which is close to their descriptions (e.g. in pseudo code), which use sets. We could have designed an entirely new language to match our expectations but that is counter-productive: it means writing a entire interpreter or compiler, which would have taken too much time and would have surely had bad performances. It would have led to an incomplete programming language to grow.
+      
+      We instead opted for extending Javascript (as we already have what we need to run Javascript in a browser) with what we need: sets and some other constructions to make automata-related algorithms look better.
+
       In our case, extending a programming language means:
-       - Extending the "standard library": adding a class to manipulate sets and a class to manipulate automata.
+       - Extending the “standard library”: adding a class to manipulate sets and a class to manipulate automata.
        - Modifying the grammar of the language: adding features like set manipulations and iteration.
 
       To do this, we basically need a function which takes a file written in our programming language which gives the corresponding pure Javascript code, with the following constraints:
@@ -102,32 +101,25 @@
       | [c foreach([i i] in [i object]) { ... }] | [c [i object].forEach(function(i){...})] |
       | [c [i varname] : [i Type]]               | [c var [i varname] = new [i Type]]       |
 
-      However, this would be naive: This transformations must not be done inside string literals, [i object] in [c foreach] can contain parenthesis, the variable declaration can hold a initialization value, set literals look very similar to blocks of codes, [c foreach] can be nested so a need to match curly brackets appears, [c break] and [c return] statement must be transformed inside [c foreach] loop, etc. Manipulated languages are not [i regular][footnote a language is regular iff it can be described with a regular expression. Rules like “there is the same number of opening and closing parenthesis” make a language not regular.] and transformations are not that trivial eventually. As a consequence, another method needs to be used, the code must be analyzed more subtly.
-
-      It turned out that the needed flexibility for extending the language comfortably required to recognize each instruction and expression recursively, which rapidly leads to reading corresponding parts of the ECMAScript documentation in order to know how to do it. Special cases and implicit semicolons (which are permitted in Javascript) need to be handled, which complicates things a bit.
+      These transformations must not be done inside string literals, [i object] in [c foreach] can contain parenthesis, the variable declaration can hold a initialization value, set literals look very similar to blocks of codes, [c foreach] can be nested so a need to match curly brackets appears, [c break] and [c return] statement must be transformed inside [c foreach] loop, etc. Manipulated languages are not [i regular][footnote a language is regular iff it can be described with a regular expression. Rules like “there is the same number of opening and closing parenthesis” make a language not regular.] and transformations are not that trivial eventually. As a consequence, another method needs to be used, the code must be parsed more subtly.
 
       A project like [[http://zaach.github.io/jison/ | Jison]], which is a parser like [[http://www.gnu.org/software/bison/ | Bison]] might have been used[footnote See [[http://cjihrig.com/blog/creating-a-javascript-parser/]] for an implementation of a Javascript parser with Jison]. However, handwriting the parser was chosen in order to keep whitespace characters intact, to have full control over optional semicolons (if a semicolon was not written by the programmer, the semicolon should not appear in the generated code) and to handle ambiguities between regular expression tokens (which begin with [c /]) and division operators ([c /], [c /=]) easily. Handwriting the parser also seemed to be a more efficient and straightforward solution here because transformations can be made without generating any abstract syntax tree. Moreover, this let write a quite flexible parser, validation being delegated to the actual Javascript engine, which already has a good error reporting system.
    ]
 ]
 
 [ = Comparison with others automata tools
-   Writing a tool for automata manipulation without looking to already existent projects would be a mistake: a tool with the same goals and the same expectations could already exist, making the creation of a new tool from scratch completely pointless. Contributing to such a project instead of beginning a new one would probably be a better approach.
-
-   As a consequence, it is essential to position the project among the others tools of the domain and tell what is new.
-
    Like most tools of the domain, the tool gives the ability to the user to draw automata. However, unlike its friends, the user has more freedom in [* choosing the shape of the transitions], though Visual Automata Simulator is great for this, and thanks to the tight integration of Graphviz, automata can be [* (re)drawn automatically] and have a [* familiar look].
    
    Like most others tools, the program comes with basic common algorithms related to automata. However, it comes with [* far more algorithms] than its friends and [* lets the user write its own algorithms easily], providing a language close to Javascript with sets as first-class citizens, which makes it suitable for manipulation of automata.
 
-   The program is designed with the user in mind: everything is thought to be the more pleasant and natural possible, appearance not being set aside. Ugliness and unfriendliness are bugs. An example of this is the graphical execution of a word: current states are seen in yellow, transitions being taken right now are brown and current final states are green. If a word runs out of the automaton, its states are drawn in red. The execution can be made [* step by step] or not, and animations are designed to be beautiful and to ease the visualization of the execution.
+   The program is designed with the user in mind: everything is thought to be the more pleasant and natural possible, appearance not being set aside. An example of this is the graphical execution of a word: current states are seen in yellow, transitions being taken right now are brown and current final states are green. If a word runs out of the automaton, its states are drawn in red. The execution can be made [* step by step] or not and animations were designed to ease the visualization of the execution.
 
    What also make the program stand out is the Quiz Feature: it gives the ability to teachers and students to [* write quiz for students] and these quizzes are run by the tool, using its automata manipulation capabilities. Questions of the quiz can be mere multiple choices questions as well as asking the user to write automata or regular expressions.
    
    Another thing that can be said is that unlike others tools, this one is written with web technologies, which makes the program usable without any installation and will make the port on tablets easy. Thanks to web technologies, the program should work on any desktop operating system, provided a recent browser is installed, and the support for mobile operating systems should follow quickly.
 ]
-
+[newpage]
 [ = Conclusion about the internship
-   Though it was eventually not possible to use the program in concrete applications like real robots, and to do some research during the internship due to a lack of time, which is sad, I really enjoyed it.
 
    What was great in this internship was to reach the computer science research community, to discover what a computer science lab looks like and how people of the lab work. I also really enjoyed working on a project I started myself months before and defining a great part of the internship subject with my supervisor.
 
@@ -135,11 +127,19 @@
 
    Another great thing is I know that my program will be used to teach automata and this is amazing. I hope it will make automata learning more enjoyable or, at least, easier.
 ]
-
 [ = Links
    - JFLAP: [[http://www.jflap.org/]]
    - Visual Automata Simulator: [[http://www.cs.usfca.edu/~~jbovet/vas.html]]
    - jFAST - the Finite Automata Simulator: [[http://jfast-fsm-sim.sourceforge.net/]]
-   - Université Joseph Fourier: [[http://ujf-grenoble.fr/]]
+   - Université Joseph Fourier: [[http://www.ujf-grenoble.fr/]]
    - Verimag: [[http://www-verimag.imag.fr/]]
+   - LIG: [[http://www.liglab.fr/]]
+]
+
+[ = Bibliography
+   - Lessons at Université Joseph Fourier: [[http://www-verimag.imag.fr/~~lakhnech/inf232/cours.pdf]] (Yassine Lakhnech, Yliès Falcone)
+   - Specifications of ECMAScript 5.1: [[http://www.ecma-international.org/ecma-262/5.1/]]
+   - Domain specific language on automata:Design and Implementation problems: [[http://www.lrde.epita.fr/dload/20030604-Seminar/fosse0604_DSL_on_automata_report.pdf]]
+   - Creating a JavaScript Parser: [[http://cjihrig.com/blog/creating-a-javascript-parser/ | ]]
+   - More about Javascript Lexer at Mozilla: [[http://www-archive.mozilla.org/js/language/js20-2002-04/core/lexer.html]], [[http://www-archive.mozilla.org/js/language/js20-2000-07/formal/lexer-grammar.html]]
 ]

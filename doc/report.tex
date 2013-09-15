@@ -23,7 +23,7 @@
 \let\subsubsubsection\paragraph
 \let\subsubsubsubsection\subparagraph
 \lstset{breaklines=true, breakatwhitespace=true, captionpos=b, tabsize=3, showtabs=false, numbers=left, frame=single, firstnumber=1}
-\usepackage[english]{babel}\author{Raphaël Jakse}\date{August 2013}\title{Training Report \\ Realisation of a tool for manipulating and teaching automata \\ Université Joseph Fourier \\ Lab: Verimag \\ Supervisor: Yliès Falcone}
+\usepackage[english]{babel}\author{Raphaël Jakse}\date{September 2013}\title{Training Report \\ Realisation of a tool for manipulating and teaching automata \\ Université Joseph Fourier \\ Labs: Verimag, LIG \\ Supervisor: Yliès Falcone}
 \begin{document}
 \maketitle
 \tableofcontents
@@ -42,7 +42,7 @@
 
 
 \paragraph{}
-In this internship, we developed a tool with the aim of easing teaching, learning and manipulation of automata. As for students, this tool can facilitate their learning by adding an interactive aspect to the lesson. This includes drawing automata, determinizing / minimizing them and more generally applying any algorithm of the lesson on them, run a word on it and write custom algorithms and test them on drawn automata.
+In this internship, we developed a tool with the aim of easing teaching, learning and manipulation of automata. As for students, this tool can facilitate their learning by adding an interactive aspect to the lesson including drawing, determinizing / minimizing automata and more generally applying any algorithm of the lesson on them, run a word on it and write custom algorithms and test them on drawn automata.
 
 
 
@@ -55,19 +55,19 @@ In this internship, we developed a tool with the aim of easing teaching, learnin
 
 
 \paragraph{}
-Writing code being boring and off-putting for many people, like others tools of the domain, the tool provides a means to input automata by drawing them with the mouse and the keyboard in a hopefully intuitive way.
+Writing code being annoying for many people, like others tools of the domain, the tool provides a means to input automata by drawing them with the mouse and the keyboard in a hopefully intuitive way.
 
       
 \paragraph{}
-However, for repetitive tasks or big automata, it may be more convenient to write automata instead of drawing it. As a consequence, the tool also provides a way to input automata by writing them using a language which was maid as concise as possible.
+However, for repetitive tasks or big automata, it may be more convenient to write automata instead of drawing them. As a consequence, the tool also provides a way to input automata by writing them using a language which was made as concise as possible.
 
       
 \paragraph{}
-In order to display results of algorithms or automata which were written rather than drawn, the tool embeds a Javascript version of Graphviz to render graphical version of automata automatically.
+In order to display results of algorithms or automata which were written rather than drawn, the tool embeds a Javascript version\footnote{Viz.js: \href{https://github.com/mdaines/viz.js/}{https://github.com/mdaines/viz.js/}} of Graphviz\footnote{\href{http://www.graphviz.org/}{http://www.graphviz.org/}} to render graphical version of automata automatically.
 
       
 \paragraph{}
-To help writing documents about automata, the tool provides a way to export images or DOT codes of automata produced by the user or the tool. DOT documents can then be translated into TiKZ format in order to include automata in a LaTeX document.
+To help writing documents about automata, the tool provides a way to export images or DOT\footnote{\href{http://www.graphviz.org/content/dot-language}{http://www.graphviz.org/content/dot-language}} codes of automata produced by the user or the tool. DOT documents can then be translated into TiKZ\footnote{\href{http://www.ctan.org/tex-archive/graphics/pgf/}{http://www.ctan.org/tex-archive/graphics/pgf/}} format in order to include automata in a LaTeX document.
    
    
    
@@ -76,43 +76,38 @@ To help writing documents about automata, the tool provides a way to export imag
 
 
 \paragraph{}
-One of the most important features of the tool is its ability to run algorithms on automaton, and having these algorithm written and readable by the user in a dedicated language especially designed for manipulating sets and automata, still remaining generalist by being based on Javascript.
+One of the most important features of the tool is its ability to run algorithms (See figure \ref{aude-algo}). These algorithms are written in a dedicated language especially designed for manipulating sets and automata. 
 
       
 \paragraph{}
 The tool comes with a tiny number of basic algorithms such as:
        
 \begin{itemize}
-	\item{ Determinizaion}
-	\item{ Completion}
-	\item{ Minimization}
-	\item{ Epsilon removal}
-	\item{ Product}
-	\item{ Equivalence}
-	\item{ Complementation}
-	\item{ Empty and infinite language tests}
-	\item{ Regular expression to automaton}
+	\item{ determinization: get a determinist automaton from any automaton.}
+	\item{ completion: get a complete automaton from any automaton.}
+	\item{ minimization: get a minimal automaton from any automaton.}
+	\item{ epsilon removal: get an automaton without any epsilon transition from any automaton.}
+	\item{ product: get an automaton which recognize the intersection of the two input automata's respective languages.}
+	\item{ equivalence: test whether two automata recognize the same language.}
+	\item{ complementation: get an automaton which recognize the complementary language of the input automaton.}
+	\item{ empty and infinite language tests: test whether an automaton recognize the empty language and an infinite language, respectively}
+	\item{ regular expression to automaton: get an automaton recognizing the language described by a regular expression.}
 \end{itemize}
+\begin{figure}[htb]\centering\includegraphics[width=500pt]{{aude-algo}.png}\caption{Result of an algorithm execution.}\label{aude-algo}\end{figure}
 
-\begin{center}\includegraphics[width=500pt]{{aude-algo}.png}\end{center}
-
-
+      
+\newpage
       
 \paragraph{}
-In addition to that, users can write their own algorithms using the same dedicated language as the one used for writing embedded algorithms.
+In addition, users can write their own algorithms using the same dedicated language as the one used for writing embedded algorithms (See figure \ref{aude-prog}).
       
-       
-\begin{center}\includegraphics[width=500pt]{{aude-prog}.png}\end{center}
-
+       \begin{figure}[htb]\centering\includegraphics[width=500pt]{{aude-prog}.png}\caption{Writing algorithms.}\label{aude-prog}\end{figure}
       
       
 \paragraph{}
-The tool can handle as many automata as necessary. That is to say, one can write an algorithm taking $ n $ automata, with $ n $ being any natural number (in the limits of the computer’s resources). The user will be asked to choose which automata are to send to the algorithm when running it.
+The tool can handle as many automata as necessary. That is to say, one can write an algorithm taking $ n $ automata, with $ n $ being any natural number. The user will be asked to choose which automata should be sent to the algorithm when running it.
 
-       
-\begin{center}\includegraphics[width=500pt]{{aude-list-automata}.png}\end{center}
-
-   
+       \begin{figure}[htb]\centering\includegraphics[width=500pt]{{aude-list-automata}.png}\caption{Choose which automata should be sent to the algorithm.}\label{aude-list}\end{figure}
    
    
 
@@ -120,12 +115,9 @@ The tool can handle as many automata as necessary. That is to say, one can write
 
 
 \paragraph{}
-The tool features word execution on automata. Word execution is not an exclusive feature of this program, others tools can do this. However, special care was taken to make it pleasant and easy to follow by showing the execution progressively taking place, the word progressively being “eaten”, with smooth transitions.
+The tool features word execution on automata. Special care was taken to make it pleasant and easy to follow by showing the execution progressively taking place, the word progressively being “consumed” (See figure \ref{word-exec}).
       
-       
-\begin{center}\includegraphics[width=500pt]{{word-execution}.png}\end{center}
-
-   
+       \begin{figure}[htb]\centering\includegraphics[width=500pt]{{word-execution}.png}\caption{Word execution.}\label{word-exec}\end{figure}
    
    
 
@@ -133,24 +125,22 @@ The tool features word execution on automata. Word execution is not an exclusive
 
 
 \paragraph{}
-With the tool, you can run custom quiz. The ability to run quizzes written by anybody (a teacher, a student) directly inside the tool, however, is probably an exclusive feature as of September 2013.
+With the tool, one can run custom quizzes (see picture \ref{aude-quiz}). The ability to run quizzes written by anybody (a teacher, a student) directly inside the tool, however, is probably an exclusive feature as of September 2013.
 
       
 \paragraph{}
-You can write or run quizzes featuring:
+One can write or run quizzes featuring:
        
 \begin{itemize}
-	\item{ Mere multiple choice questions, with zero, one or more answers, with any number of possible answers (stay reasonable however!)}
-	\item{ Questions that ask the user to draw an automaton corresponding to a set of words}
-	\item{ Questions that ask the user to draw an automaton corresponding to a language defined by an automaton or a regular expression in the quiz file.}
+	\item{ mere multiple choice questions, with zero, one or more answers, with any number of possible answers.}
+	\item{ questions that ask the user to draw an automaton corresponding to a set of words.}
+	\item{ questions that ask the user to draw an automaton corresponding to a language defined by an automaton or a regular expression in the quiz file.}
 \end{itemize}
 
 \paragraph{}
-LaTeX can be used to write mathematics in the quiz, thanks to MathJax.
+LaTeX can be used to write mathematics in the quiz, thanks to MathJax\footnote{\href{http://www.mathjax.org/}{http://www.mathjax.org/}}.
       
-       
-\begin{center}\includegraphics[width=500pt]{{aude-quiz}.png}\end{center}
-
+       \begin{figure}[htb]\centering\includegraphics[width=500pt]{{aude-quiz}.png}\caption{Quiz.}\label{aude-quiz}\end{figure}
    
    
    
@@ -159,7 +149,7 @@ LaTeX can be used to write mathematics in the quiz, thanks to MathJax.
 
 
 \paragraph{}
-It is almost always easier to learn something non-trivial in one's native language. While the tool is still only available in English and in French, it was conceived to make internationalization as easy as possible. Some work is still needed to make this happen, but not so much: in addition to a couple of lines of code, what is essentially needed is contributions from people who can speak well English and another language in which the tool is still not translated.
+It is almost always easier to learn something non-trivial in one's native language. While the tool is still only available in English and in French, it was conceived to make internationalization as easy as possible. Some work is still needed to make this happen but what is essentially needed is contributions from people who can speak well English and another language in which the tool is still not translated.
       
       
 \begin{center}\includegraphics[width=200pt]{{translate}.png}\end{center}
@@ -191,15 +181,7 @@ Constraints were essentially:
 \end{itemize}
 
 \paragraph{}
-These constraints naturally led to the usage of HTML, CSS combined with Javascript, a reasonably fast, pleasant and widespread client-side language that doesn’t need any special installation on the user’s computer to run. Many people work with Javascript, this leads to the availability of tools of great quality around this language (debuggers, editors, engines, JIT compilers, browsers) and of many great libraries. Most notably, the existence of ports of Graphviz in Javascript is what made developing the tool as it is today in Javascript possible.
-      
-      
-\paragraph{}
-With regard to the language used for writing algorithms, we could have used Javascript directly, but Javascript is not well adapted for sets and therefore automata manipulation. The goal was to be able to write algorithms in a language which is close to their descriptions (e.g. in pseudo code), which use sets. We could have designed an entirely new language to match our expectations but that is counter-productive: it means writing a entire interpreter or compiler, which would have taken too much time and would have surely had bad performances. It would have led to an incomplete programming language to grow.
-      
-      
-\paragraph{}
-We instead opted for extending Javascript (as we already have what we need to run Javascript in a browser) with what we need: sets and some other constructions to make automata-related algorithms look better.
+These constraints naturally led to the usage of HTML, CSS combined with Javascript, a reasonably fast and widespread client-side language that doesn’t need any special installation on user’s computer to run.
    
    
    
@@ -208,10 +190,18 @@ We instead opted for extending Javascript (as we already have what we need to ru
 
 
 \paragraph{}
+With regard to the language used for writing algorithms, we could have used Javascript directly, but Javascript is not well adapted for sets and therefore automata manipulation. The goal was to be able to write algorithms in a language which is close to their descriptions (e.g. in pseudo code), which use sets. We could have designed an entirely new language to match our expectations but that is counter-productive: it means writing a entire interpreter or compiler, which would have taken too much time and would have surely had bad performances. It would have led to an incomplete programming language to grow.
+      
+      
+\paragraph{}
+We instead opted for extending Javascript (as we already have what we need to run Javascript in a browser) with what we need: sets and some other constructions to make automata-related algorithms look better.
+
+      
+\paragraph{}
 In our case, extending a programming language means:
        
 \begin{itemize}
-	\item{ Extending the "standard library": adding a class to manipulate sets and a class to manipulate automata.}
+	\item{ Extending the “standard library”: adding a class to manipulate sets and a class to manipulate automata.}
 	\item{ Modifying the grammar of the language: adding features like set manipulations and iteration.}
 \end{itemize}
 
@@ -238,11 +228,7 @@ To transform the input code into pure Javascript, regular expressions come in mi
 
       
 \paragraph{}
-However, this would be naive: This transformations must not be done inside string literals, {\itshape object} in \lstinline!foreach! can contain parenthesis, the variable declaration can hold a initialization value, set literals look very similar to blocks of codes, \lstinline!foreach! can be nested so a need to match curly brackets appears, \lstinline!break! and \lstinline!return! statement must be transformed inside \lstinline!foreach! loop, etc. Manipulated languages are not {\itshape regular}\footnote{a language is regular iff it can be described with a regular expression. Rules like “there is the same number of opening and closing parenthesis” make a language not regular.} and transformations are not that trivial eventually. As a consequence, another method needs to be used, the code must be analyzed more subtly.
-
-      
-\paragraph{}
-It turned out that the needed flexibility for extending the language comfortably required to recognize each instruction and expression recursively, which rapidly leads to reading corresponding parts of the ECMAScript documentation in order to know how to do it. Special cases and implicit semicolons (which are permitted in Javascript) need to be handled, which complicates things a bit.
+These transformations must not be done inside string literals, {\itshape object} in \lstinline!foreach! can contain parenthesis, the variable declaration can hold a initialization value, set literals look very similar to blocks of codes, \lstinline!foreach! can be nested so a need to match curly brackets appears, \lstinline!break! and \lstinline!return! statement must be transformed inside \lstinline!foreach! loop, etc. Manipulated languages are not {\itshape regular}\footnote{a language is regular iff it can be described with a regular expression. Rules like “there is the same number of opening and closing parenthesis” make a language not regular.} and transformations are not that trivial eventually. As a consequence, another method needs to be used, the code must be parsed more subtly.
 
       
 \paragraph{}
@@ -256,14 +242,6 @@ A project like \href{http://zaach.github.io/jison/}{Jison}, which is a parser li
 
 
 \paragraph{}
-Writing a tool for automata manipulation without looking to already existent projects would be a mistake: a tool with the same goals and the same expectations could already exist, making the creation of a new tool from scratch completely pointless. Contributing to such a project instead of beginning a new one would probably be a better approach.
-
-   
-\paragraph{}
-As a consequence, it is essential to position the project among the others tools of the domain and tell what is new.
-
-   
-\paragraph{}
 Like most tools of the domain, the tool gives the ability to the user to draw automata. However, unlike its friends, the user has more freedom in {\em choosing the shape of the transitions}, though Visual Automata Simulator is great for this, and thanks to the tight integration of Graphviz, automata can be {\em (re)drawn automatically} and have a {\em familiar look}.
    
    
@@ -272,7 +250,7 @@ Like most others tools, the program comes with basic common algorithms related t
 
    
 \paragraph{}
-The program is designed with the user in mind: everything is thought to be the more pleasant and natural possible, appearance not being set aside. Ugliness and unfriendliness are bugs. An example of this is the graphical execution of a word: current states are seen in yellow, transitions being taken right now are brown and current final states are green. If a word runs out of the automaton, its states are drawn in red. The execution can be made {\em step by step} or not, and animations are designed to be beautiful and to ease the visualization of the execution.
+The program is designed with the user in mind: everything is thought to be the more pleasant and natural possible, appearance not being set aside. An example of this is the graphical execution of a word: current states are seen in yellow, transitions being taken right now are brown and current final states are green. If a word runs out of the automaton, its states are drawn in red. The execution can be made {\em step by step} or not and animations were designed to ease the visualization of the execution.
 
    
 \paragraph{}
@@ -283,15 +261,12 @@ What also make the program stand out is the Quiz Feature: it gives the ability t
 Another thing that can be said is that unlike others tools, this one is written with web technologies, which makes the program usable without any installation and will make the port on tablets easy. Thanks to web technologies, the program should work on any desktop operating system, provided a recent browser is installed, and the support for mobile operating systems should follow quickly.
 
 
+\newpage
 
 
 \section{ Conclusion about the internship}
 
 
-\paragraph{}
-Though it was eventually not possible to use the program in concrete applications like real robots, and to do some research during the internship due to a lack of time, which is sad, I really enjoyed it.
-
-   
 \paragraph{}
 What was great in this internship was to reach the computer science research community, to discover what a computer science lab looks like and how people of the lab work. I also really enjoyed working on a project I started myself months before and defining a great part of the internship subject with my supervisor.
 
@@ -305,16 +280,30 @@ Another great thing is I know that my program will be used to teach automata and
 
 
 
-
 \section{ Links}
 
 
 \begin{itemize}
 	\item{ JFLAP: \href{http://www.jflap.org/}{http://www.jflap.org/}}
-	\item{ Visual Automata Simulator: \href{http://www.cs.usfca.edu/%5Ctextasciitilde%20jbovet/vas.html}{http://www.cs.usfca.edu/\textasciitilde jbovet/vas.html}}
+	\item{ Visual Automata Simulator: \href{http://www.cs.usfca.edu/~jbovet/vas.html}{http://www.cs.usfca.edu/\textasciitilde jbovet/vas.html}}
 	\item{ jFAST - the Finite Automata Simulator: \href{http://jfast-fsm-sim.sourceforge.net/}{http://jfast-fsm-sim.sourceforge.net/}}
-	\item{ Université Joseph Fourier: \href{http://ujf-grenoble.fr/}{http://ujf-grenoble.fr/}}
+	\item{ Université Joseph Fourier: \href{http://www.ujf-grenoble.fr/}{http://www.ujf-grenoble.fr/}}
 	\item{ Verimag: \href{http://www-verimag.imag.fr/}{http://www-verimag.imag.fr/}}
+	\item{ LIG: \href{http://www.liglab.fr/}{http://www.liglab.fr/}}
+\end{itemize}
+
+
+
+
+\section{ Bibliography}
+
+
+\begin{itemize}
+	\item{ Lessons at Université Joseph Fourier: \href{http://www-verimag.imag.fr/~lakhnech/inf232/cours.pdf}{http://www-verimag.imag.fr/\textasciitilde lakhnech/inf232/cours.pdf} (Yassine Lakhnech, Yliès Falcone)}
+	\item{ Specifications of ECMAScript 5.1: \href{http://www.ecma-international.org/ecma-262/5.1/}{http://www.ecma-international.org/ecma-262/5.1/}}
+	\item{ Domain specific language on automata:Design and Implementation problems: \href{http://www.lrde.epita.fr/dload/20030604-Seminar/fosse0604\_DSL\_on\_automata\_report.pdf}{http://www.lrde.epita.fr/dload/20030604-Seminar/fosse0604\_DSL\_on\_automata\_report.pdf}}
+	\item{ Creating a JavaScript Parser: \href{http://cjihrig.com/blog/creating-a-javascript-parser/}{http://cjihrig.com/blog/creating-a-javascript-parser/}}
+	\item{ More about Javascript Lexer at Mozilla: \href{http://www-archive.mozilla.org/js/language/js20-2002-04/core/lexer.html}{http://www-archive.mozilla.org/js/language/js20-2002-04/core/lexer.html}, \href{http://www-archive.mozilla.org/js/language/js20-2000-07/formal/lexer-grammar.html}{http://www-archive.mozilla.org/js/language/js20-2000-07/formal/lexer-grammar.html}}
 \end{itemize}
 \end{sloppypar}
 \end{document}
