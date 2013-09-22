@@ -59,22 +59,22 @@ To help writing documents about automata, the tool provides a way to export imag
 
 
 \paragraph{}
-So as to let students experiment with automata-related algorithm, the tool embeds a custom programming language and some common algorithms written run algorithms (See figure \ref{aude-algo}). These algorithms are written in a dedicated language especially designed for manipulating sets and automata. 
+So as to let students experiment with automata-related algorithm, the tool embeds a custom programming language and some common algorithms written in this language especially designed for manipulating sets and automata (see figure \ref{aude-algo}). With this possibility of testing algorithms of the lesson, of reading and implementing them without worrying about sets implementation, automata-related algorithms are made more experiencible for students.
 
          
 \paragraph{}
 The tool comes with some basic algorithms such as:
           
 \begin{itemize}
-	\item{ determinization: get a determinist automaton from any automaton.}
-	\item{ completion: get a complete automaton from any automaton.}
-	\item{ minimization: get a minimal automaton from any automaton.}
-	\item{ epsilon removal: get an automaton without any epsilon transition from any automaton.}
-	\item{ product: get an automaton which recognize the intersection of the two input automata's respective languages.}
-	\item{ equivalence: test whether two automata recognize the same language.}
-	\item{ complementation: get an automaton which recognize the complementary language of the input automaton.}
-	\item{ empty and infinite language tests: test whether an automaton recognize the empty language and an infinite language, respectively}
-	\item{ regular expression to automaton: get an automaton recognizing the language described by a regular expression.}
+	\item{determinization: get a determinist automaton from any automaton.}
+	\item{completion: get a complete automaton from any automaton.}
+	\item{minimization: get a minimal automaton from any automaton.}
+	\item{epsilon removal: get an automaton without any epsilon transition from any automaton.}
+	\item{product: get an automaton which recognize the intersection of the two input automata's respective languages.}
+	\item{equivalence: test whether two automata recognize the same language.}
+	\item{complementation: get an automaton which recognize the complementary language of the input automaton.}
+	\item{empty and infinite language tests: test whether an automaton recognize the empty language and an infinite language, respectively}
+	\item{regular expression to automaton: get an automaton recognizing the language described by a regular expression.}
 \end{itemize}
 \begin{figure}[htb]\centering\includegraphics[width=500pt]{{../aude-algo}.png}\caption{Result of an algorithm execution.}\label{aude-algo}\end{figure}
 
@@ -82,7 +82,7 @@ The tool comes with some basic algorithms such as:
 \newpage
          
 \paragraph{}
-In addition, users can write their own algorithms using the same dedicated language as the one used for writing embedded algorithms (See figure \ref{aude-prog}).
+In addition, students can write their own algorithms using the same dedicated language as the one used for writing embedded algorithms (See figure \ref{aude-prog}).
          
           \begin{figure}[htb]\centering\includegraphics[width=500pt]{{../aude-prog}.png}\caption{Writing algorithms.}\label{aude-prog}\end{figure}
          
@@ -90,15 +90,15 @@ In addition, users can write their own algorithms using the same dedicated langu
 \paragraph{}
 Algorithms can take several automata parameters. The user will be asked to choose which automata should be sent to the algorithm when running it.
 
-          \begin{figure}[htb]\centering\includegraphics[width=500pt]{{../aude-list-automata}.png}\caption{Choose which automata should be sent to the algorithm.}\label{aude-list}\end{figure}
+          \begin{figure}[htb]\centering\includegraphics[width=500pt]{{../aude-list-automata}.png}\caption{Choosing which automata should be sent to the algorithm.}\label{aude-list}\end{figure}
       
       
 
 \subsubsection{ Running words}
 
-
 \paragraph{}
-The tool features word execution on automata. Special care was taken to make it pleasant and easy to follow by showing the execution progressively taking place, the word progressively being “consumed” (See figure \ref{word-exec}).
+Finite state automata are all about word recognition and the execution of a word is probably the most important thing to understand in the automata theory before going any farther. As a result, special care when transmitting the idea of word execution to students must be all the more taken.
+The tool features animated word execution and particular attention was taken to make it easy to follow. Students can test words on their drawn and see what path(s) lead to word acceptation or from which state(s) the word was rejected (See figure \ref{word-exec}).
          
           \begin{figure}[htb]\centering\includegraphics[width=500pt]{{../word-execution}.png}\caption{Word execution.}\label{word-exec}\end{figure}
       
