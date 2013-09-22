@@ -34,7 +34,7 @@
 
 (function(pkg, that) {
    "use strict";
-   var _ = pkg.Audescript10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
+   var _ = pkg.Audescriptl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    if(!pkg.Audescript) {
       pkg.Audescript = {};
    }
@@ -1055,7 +1055,7 @@
                   }
                }
             }
-            if(symbol === 'inter' || symbol === 'union' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'haskey' || symbol === 'symdiff' || symbol === 'element_of') {
+            if(symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'haskey' || symbol === 'symdiff' || symbol === 'element_of') {
                if(symbol === 'symdiff') {
                   symbol = 'sym_diff';
                }
@@ -1076,7 +1076,7 @@
                }
 
                if(type === operator) {
-                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff') {
+                  if(symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff' || symbol === '') {
                      i = deb;
                      return res;
                   }
