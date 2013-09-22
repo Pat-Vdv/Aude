@@ -1838,7 +1838,7 @@
                   quiz.onclick = function() {
                      makeWindow(
                         _("Load a Quiz"),
-                        _("Ready to use quizes"),
+                        _("Ready to use quizzes"),
                         lfile(loadQuiz, _("Loading quiz failed.")),
                         _("Load a quiz"),
                         'q',
@@ -1877,7 +1877,7 @@
                               'e',
                               'examples-automata/',
                               'txt',
-                              fileprogram
+                              fileautomaton
                            );
                         }
                         else {
@@ -1932,7 +1932,7 @@
    _("fr", "Execute Program", "Lancer le programme");
    _("fr", "Design", "Dessin");
    _("fr", "Program", "Programme");
-   _("fr", "Automaton code", "Code de l'automate");
+   _("fr", "Automaton code", "Code de l’automate");
    _("fr", "Open", "Ouvrir");
    _("fr", "Save", "Enregistrer");
    _("fr", "Save As", "Enregistrer sous");
@@ -2036,7 +2036,7 @@
    _("fr", 'This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.', 'Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src="{0}" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre.');
    _("fr", 'The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})', 'Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP : {0})');
    _("fr", "Unable to get the list of predefined algorithms", "Impossible d’avoir la liste des algorithmes prédéfinis");
-   _("fr", "Ready to use quizes", "Quiz prêts à être utilisés");
+   _("fr", "Ready to use quizzes", "Quiz prêts à être utilisés");
    _("fr", "Built-in algorithms", "Algorithmes intégrés");
    _("fr", "Examples of automaton", "Exemples d'automate");
    _("fr", "Load a quiz", "Ouvrir un quiz");
