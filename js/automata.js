@@ -447,11 +447,11 @@
        * This method returns the transition function of the automaton. This function is such that:
        *  - f() returns the set of start states
        *  - f(startState) return the set of symbols such that one more (startState, symbol, endState) transitions exist(s)
-       *  - f(startState, symbol) returns the set states reachable with (startState, symbol)
+       *  - f(startState, symbol) returns the set of states reachable with (startState, symbol). If determinizedFunction is true, return the only state reachable with (startState, symbol).
        *  - f(null, null, true) returns the set of endStates of all transitions.
        * @method
        * @memberof Automaton
-       * 
+       * @param {Boolean} determinizedFunction If the automaton is deterministic, makes the transition function easier to use (see description for more information). Leads to undetermined behavior in case the automaton is not deterministic.
        * @returns {Function} Returns a convenient function to manipulate transitions of the automaton.
        * @example
        *   var f = A.getTransitionFunction();
@@ -467,7 +467,7 @@
        * @see Automaton#hasTransition
        * @see Transition
        */
-      getTransitionFunction: function() {
+      getTransitionFunction: function(determinizedFunction) {
          var transList = this.getTransitions().getList(),
              transition,
              symbolsByState = [],
@@ -487,17 +487,27 @@
                endStatesByStartStateBySymbols[startState] = {};
             }
             if(transition.symbol === pkg.epsilon) {
-               if(!endStatesByStartStateEpsilon[startState]) {
-                  endStatesByStartStateEpsilon[startState] = new Set();
+               if(determinizedFunction) {
+                  endStatesByStartStateEpsilon[startState] = transition.endState;
                }
-               endStatesByStartStateEpsilon[startState].add(transition.endState);
+               else {
+                  if(!endStatesByStartStateEpsilon[startState]) {
+                     endStatesByStartStateEpsilon[startState] = new Set();
+                  }
+                  endStatesByStartStateEpsilon[startState].add(transition.endState);
+               }
             }
             else {
                symbol = Set.prototype.elementToString(transition.symbol);
-               if(!endStatesByStartStateBySymbols[startState][symbol]) {
-                  endStatesByStartStateBySymbols[startState][symbol] = new Set();
+               if(determinizedFunction) {
+                  endStatesByStartStateBySymbols[startState][symbol] = transition.endState;
                }
-               endStatesByStartStateBySymbols[startState][symbol].add(transition.endState);
+               else {
+                  if(!endStatesByStartStateBySymbols[startState][symbol]) {
+                     endStatesByStartStateBySymbols[startState][symbol] = new Set();
+                  }
+                  endStatesByStartStateBySymbols[startState][symbol].add(transition.endState);
+               }
             }
             symbolsByState[startState].add(transition.symbol);
          }
@@ -515,13 +525,11 @@
                   return symbolsByState[Set.prototype.elementToString(startState)] || new Set();
                case 2:
                   return symbol === pkg.epsilon ?
-                     endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)] || new Set()
+                     endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)] || (determinizedFunction ? undefined : new Set())
                         :
                      (
-                        (
-                           endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || {}
-                        )[Set.prototype.elementToString(symbol)]
-                  ) || new Set();
+                        endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || []
+                     )[Set.prototype.elementToString(symbol)] || (determinizedFunction ? undefined : new Set());
             }
          };
       },
