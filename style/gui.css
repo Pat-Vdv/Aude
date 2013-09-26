@@ -125,7 +125,7 @@ html,body {
    overflow:auto;
 }
 
-#results pre {
+#results pre, .libD_notify-area pre {
    white-space:pre-wrap;
 }
 
@@ -256,7 +256,8 @@ select {
 }*/
 
 .libD_notify-area {
-   max-width:none !important
+   max-width:80%;
+   max-height:80%
 }
 
 #div-quiz {
@@ -375,13 +376,16 @@ select {
    bottom:0;
 }
 
-#correction-table {
+table {
     border-collapse:collapse;
-    box-shadow: 2px 2px 2px silver;
     margin:auto;
 }
 
-#correction-table td, #correction-table th {
+#correction-table {
+    box-shadow: 2px 2px 2px silver;
+}
+
+td, th {
     border:1px solid gray;
     padding:0.5ex;
 }

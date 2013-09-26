@@ -30,4 +30,44 @@ function distinguableStates(A) {
   return D;
 }
 
-run(distinguableStates, get_automaton(currentAutomaton));
+if(typeof Node === 'function' && typeof document === 'object' && document instanceof Node) {
+   run(
+      function(A) {
+         let res = distinguableStates(A);
+         let states = A.getStates().getSortedList();
+         let len = states.length;
+         let table = document.createElement('table');
+         let r, c;
+
+         foreach(i in {1,...,len-1}) {
+            r = table.insertRow();
+            c = document.createElement('th');
+            c.textContent = Set.prototype.elementToString(states[i]);
+            r.appendChild(c);
+            
+            foreach(j in {0,...,i-1}) {
+               c = r.insertCell();
+               if(res contains [states[i], states[j]])
+               c.textContent = '×';
+            }
+         }
+         r = table.insertRow();
+         r.insertCell();
+         foreach(j in {0,...,len-2}) {
+            c = document.createElement('th');
+            c.textContent = Set.prototype.elementToString(states[j]);
+            r.appendChild(c);
+         }
+
+         let div = document.createElement('div');
+         let p = document.createElement('pre');
+         p.textContent = res.toString();
+         div.appendChild(p);
+         div.appendChild(table);
+         return div;
+      }, get_automaton(currentAutomaton)
+   );
+}
+else {
+   run(distinguableStates, get_automaton(currentAutomaton));
+}

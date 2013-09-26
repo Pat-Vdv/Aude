@@ -112,6 +112,18 @@
          }
       }
    }
+   
+   function setNodeResult(n, dontNotify) {
+      automatonResult = null;
+      enableResults();
+      results.textContent = '';
+      results.appendChild(n);
+      if(!dontNotify) {
+         if((not && not.displayed) || !codeedit.classList.contains('disabled')) {
+            notify(_("Program Result"), n.cloneNode(true), 'normal');
+         }
+      }
+   }
 
    function automaton2svg(A) {
       return Viz(automaton2dot(A), 'svg').replace(/<\?.*\?>/g, '').replace(/<![^>]*>/g, '');
@@ -136,6 +148,9 @@
    function setResult(res) {
       if(res instanceof Automaton) {
          setAutomatonResult(res);
+      }
+      else if(HTMLElement && res instanceof HTMLElement) {
+         setNodeResult(res);
       }
       else if(res) {
          setTextResult(res.toString());
