@@ -123,6 +123,9 @@ html,body {
    bottom:0;
    position:absolute;
    overflow:auto;
+}
+
+#results pre {
    white-space:pre-wrap;
 }
 
