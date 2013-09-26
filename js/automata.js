@@ -525,7 +525,7 @@
                   return symbolsByState[Set.prototype.elementToString(startState)] || new Set();
                case 2:
                   return symbol === pkg.epsilon ?
-                     endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)] || (determinizedFunction ? undefined : new Set())
+                     (endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)] || (determinizedFunction ? undefined : new Set()))
                         :
                      (
                         endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || []

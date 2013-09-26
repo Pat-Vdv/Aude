@@ -7,6 +7,7 @@ mirror.ajs             / Mirror
 epsElim.ajs            / ε-eliminate
 emptyLanguage.ajs      / Test empty language
 infiniteLanguage.ajs   / Test infinite language
+differentiability.ajs  / List differentiable states
 equivalence.ajs        / Equiv. between 2 automata
 normalization.ajs      / Simplify names of the states
 automaton2json.ajs     / JSON representation

@@ -1,0 +1,33 @@
+// This function takes an automaton A and returns a set of
+// couples of states that are differentiable two at a time.
+function distinguableStates(A) {
+  let F     = A.getFinalStates(),
+      Q     = A.getStates(),
+      Sigma = A.getAlphabet(),
+      delta = A.getTransitionFunction(true);
+
+  D     : Set of List = F cross (Q minus F); // The set of couples of differentiable states
+                                              // initialized with final/non final states
+  D_pre : Set of List = emptySet;            // value of D during the previous iteration
+  X     : Set of List;
+  while(D != D_pre) {
+    D_pre = D.copy();
+
+    X = emptySet; // we find new differentiable states
+    foreach(p in Q) {
+       foreach(q in Q) {
+         if([p, q] !belongsTo D) {
+           foreach(a in Sigma) {
+             if([delta(p, a), delta(q, a)] belongsTo D || [delta(q, a), delta(p, a)] belongsTo D) {
+               D.add([p, q]);
+               D.add([q, p]);
+             }
+           }
+         }
+       }
+    }
+  }
+  return D;
+}
+
+run(distinguableStates, get_automaton(currentAutomaton));

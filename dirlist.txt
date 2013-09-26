@@ -1,4 +1,5 @@
 quiz/test.json
+quiz/exam-mi-parcours-2012-2013.json
 examples-automata/lecture1/product-a.txt
 examples-automata/lecture1/empty0.txt
 examples-automata/lecture1/empty1.txt
@@ -12,6 +13,7 @@ examples-automata/lecture1/ex-minimisation.txt
 examples-automata/lecture2/hey-web-http.txt
 examples-automata/lecture2/third-to-last-is-1.txt
 examples-automata/lecture2/zero-one-sigmastar.txt
+examples-automata/differentiability.txt
 examples-automata/hello.txt
 examples-automata/test.txt
 examples-automata/lecture3/decimals.txt
@@ -20,8 +22,10 @@ examples-automata/ex-eps-elim.txt
 examples-automata/url.txt
 examples-automata/say-hello.txt
 examples-automata/ex-minimisation.txt
+algos/normalization.ajs
 algos/epsElim.ajs
 algos/determinization.ajs
+algos/differentiability.ajs
 algos/product.ajs
 algos/automaton2json.ajs
 algos/regex2automaton.ajs

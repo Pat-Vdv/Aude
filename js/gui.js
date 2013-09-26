@@ -1980,7 +1980,7 @@
    _("fr", "Simplify names of the states", "Simplifier les noms des états");
    _("fr", "ε-eliminate", "ε-éliminer");
    _("fr", "Minimize", "Minimiser");
-   _("fr", "Determinize & Minimize", "Déterminiser & Minimiser");
+   _("fr", "List differentiable states", "Lister les état distingables");
    _("fr", "Test empty language", "Tester language vide");
    _("fr", "Test infinite language", "Tester language infini");
    _("fr", "JSON representation", "Représentation JSON");
