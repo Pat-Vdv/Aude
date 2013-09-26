@@ -3,11 +3,7 @@
 
 
 \paragraph{}
-One of the needed feature to automata manipulation is being able to input them in a convenient way and like other tools of the domain, the tool provides a means to input automata by drawing them with the mouse and the keyboard in a hopefully intuitive way.
-
-
-\paragraph{}
-For student who want to go farther, for repetitive tasks or big automata, the tool provides a way to write automata using a concise language instead of drawing them.
+One of the needed feature to automata manipulation is being able to input them in a convenient way and like other tools of the domain, the tool provides a means to input automata by drawing them with the mouse and the keyboard in a hopefully intuitive way. For student who want to go farther, for repetitive tasks or big automata, the tool provides a way to write automata using a concise language instead of drawing them.
 
 
 \paragraph{}
@@ -16,8 +12,6 @@ To display results of algorithms or automata which were written rather than draw
 
 \paragraph{}
 To help writing documents about automata, the tool provides a way to export images or DOT\footnote{\href{http://www.graphviz.org/content/dot-language}{http://www.graphviz.org/content/dot-language}} codes of automata produced by the user or the tool. DOT documents can then be translated into TiKZ\footnote{\href{http://www.ctan.org/tex-archive/graphics/pgf/}{http://www.ctan.org/tex-archive/graphics/pgf/}} format in order to include automata in a LaTeX document.
-
-
 
 
 \subsection{Algorithms}
@@ -102,7 +96,7 @@ The finite state automaton is usually represented by a quintuplet $(Q, \Sigma, \
 \end{itemize}
 
 \paragraph{}
-The usual definition of the finite state automaton is entirely based and completely depends on sets, and so are algorithms (see figure \ref{algo-diff})
+The usual definition of the finite state automaton is entirely based and completely depends on sets, and so are automata-related algorithms (see figure~\ref{algo-diff}). As a result, the tool embeds a programming language in which sets are first-class citizens. Instead of writing an entirely new programming language, choice was made to extend Javascript to sets and automata. This implies that students have access to all the features of a widespread generalist programming language as well as features specific to the Automata Theory. See figure~\ref{audejs-ex} to see an implementation of the algorithm~\ref{algo-diff}. 
 
 \begin{algorithm}
    \caption{Find differentiable states}
@@ -124,6 +118,9 @@ The usual definition of the finite state automaton is entirely based and complet
 
 \lstset{language=JavaScript}
 
+\begin{figure}
+\label{audejs-ex}
+\caption{}
 \begin{lstlisting}
 function distinguableStates(A) {
    let F     = A.getFinalStates(),
@@ -153,38 +150,94 @@ function distinguableStates(A) {
    return D;
 }
 \end{lstlisting}
-
+\end{figure}
 \paragraph{}
-With regard to the language used for writing algorithms, we could have used Javascript directly, but Javascript is not well adapted for sets and therefore automata manipulation. The goal was to be able to write algorithms in a language which is close to their descriptions (e.g. in pseudo code), which use sets. We could have designed an entirely new language to match our expectations but that is counter-productive: it means writing a entire interpreter or compiler, which would have taken too much time and would have surely had bad performances. It would have led to an incomplete programming language to grow.
-
-\paragraph{}
-We instead opted for extending Javascript (as we already have what we need to run Javascript in a browser) with what we need: sets and some other constructions to make automata-related algorithms look better.
-
-      
-\paragraph{}
-In our case, extending a programming language means:
+Extending a programming language, in our case, means:
        
 \begin{itemize}
-   \item{ Extending the “standard library”: adding a class to manipulate sets and a class to manipulate automata.}
-   \item{ Modifying the grammar of the language: adding features like set manipulations and iteration.}
+   \item{Extending the ``standard librar'': adding a class to manipulate sets and a class to manipulate automata.}
+   \item{Modifying the grammar of the language: adding features like set manipulations and iteration.}
 \end{itemize}
 
 \paragraph{}
-To do this, we basically need a function which takes a file written in our programming language which gives the corresponding pure Javascript code, with the following constraints:
-       
+Concretely, the tool embeds a function which maps a code written in our programming language to a pure Javascript code. This Javascript code can then be executed in any Javascript-compatible Web browser.
+The mapping is done with the following constraints:
 \begin{itemize}
    \item{ $ n $\textsuperscript{th} line  of the generated code must correspond to the $ n $\textsuperscript{th}  line of the input code, for accuracy in error reporting}
    \item{ The generated code must be identical to the input code if the input code is pure Javascript.}
 \end{itemize}
 
 \paragraph{}
-To transform the input code into pure Javascript, regular expressions come in mind, as transformations seem quite simple:
-      
+Since sets look like Javascript blocks of code, transformations must not be done inside strings, and some transformations can be nested, regular expressions are not sufficient to handle the translation.
+
+\DefineShortVerb{\#}
+\SaveVerb{v1}#foreach(i in object) { ... }#
+\SaveVerb{v3}#varname : Type#
+\SaveVerb{v4}#var varname = new Type#
+\UndefineShortVerb{\#}
+
+\lstset{numbers=none, frame=none}
+
+\newsavebox\foreachinput
+\begin{lrbox}{\foreachinput}
+\begin{minipage}{0.5\textwidth}
+ \begin{lstlisting}
+foreach(e in mySet) {
+  if(e == {1,2,3}) {
+   break; // we found our triplet
+  }
+  else if(e instanceof Set) { // if e is a Set
+    try{(e).forEach(function(f ) {
+      if( contains(e, epsilon)) {
+        throw 0; //we found epsilon
+      }
+    }
+  )}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){throw e;}}}
+
+  if(  Audescript.eq(e, new Set())) {
+     throw -1; // we found the empty set. Stopping the execution.
+  }
+}
+
+// ...
+)}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){return e;}}
+ \end{lstlisting}
+\end{minipage}
+\end{lrbox}
+
+
+\newsavebox\foreachgenerated
+\begin{lrbox}{\foreachgenerated}
+\begin{minipage}{0.5\textwidth}
+ \begin{lstlisting}
+   try{(mySet).forEach(function(e ) {
+  if(  Audescript.eq(e, to_set([1,2,3]))) {
+   throw StopIteration; // we found our triplet
+  }
+  else if(e instanceof Set) { // if e is a Set
+    try{(e).forEach(function(f ) {
+      if( contains(e, epsilon)) {
+        throw 0; //we found epsilon
+      }
+    }
+  )}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){throw e;}}}
+
+  if(  Audescript.eq(e, new Set())) {
+     throw -1; // we found the empty set. Stopping the execution.
+  }
+}
+
+// ...
+)}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){return e;}}
+ \end{lstlisting}
+\end{minipage}
+\end{lrbox}
+
 \noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
 \hline
-{\bfseries  Input code                              } & {\bfseries  Generated code (simplified)             }\tabularnewline
+{\bfseries  Input code                              } & {\bfseries  Generated code             }\tabularnewline
 \hline
- \UseVerb{v1}  &  \UseVerb{v2} \tabularnewline
+ \UseVerb{v1}  & \usebox\foreachgenerated \tabularnewline
 \hline
  \UseVerb{v3}                &  \UseVerb{v4}       \tabularnewline
 \hline

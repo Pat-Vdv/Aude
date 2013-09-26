@@ -16,16 +16,10 @@
 \let\subsubsubsection\paragraph
 \let\subsubsubsubsection\subparagraph
 \lstset{breaklines=true, breakatwhitespace=true, captionpos=b, tabsize=3, showtabs=false, numbers=left, frame=single, firstnumber=1}
-\DefineShortVerb{\!}
-\SaveVerb{v1}!foreach(i in object) { ... }!
-\SaveVerb{v2}!object.forEach(function(i){...})!
-\SaveVerb{v3}!varname : Type!
-\SaveVerb{v4}!var varname = new Type!
-\UndefineShortVerb{\!}
 \usepackage[english]{babel}
 
 \lstdefinelanguage{JavaScript}{
-  keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with, cross, minus, belongsTo,true,false, let, foreach, Union},
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with, cross, minus, belongsTo,true,false, let, foreach, Union, emptySet},
   morecomment=[l]{//},
   morecomment=[s]{/*}{*/},
   morestring=[b]',
