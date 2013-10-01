@@ -56,10 +56,13 @@
    }
    catch(e){}
 
-   try {
-      abbreviatedFunctionSupported = eval("(function() true)()");
+   if(typeof Packages !== "object" || String(Packages) !== "[JavaPackage ]") {
+      // disable this feature detection in rhino as it crashes it
+      try {
+         abbreviatedFunctionSupported = eval("(function() true)()");
+      }
+      catch(e){}
    }
-   catch(e){}
 
    try {
      letExpressionSupported  = eval('(function(){var a=1, t; let (a=2){if(a === 2){t = true}}; return t && a === 1;})();');
@@ -221,7 +224,6 @@
          lastSignificantType = type = end;
          return '';
       }
-
       if(s[i] === ")") {
          lastSignificantType = type = closeParen;
          return s[i++];
@@ -468,6 +470,19 @@
          return "throw StopIteration";
       }
       else if(symbol === "return") {
+         var d = i;
+         var s = getSymbol();
+         if(type === whitespace) {
+            if(s.indexOf('\n') !== -1) {
+               i = d;
+               return "throw null";
+            }
+            s = getSymbol();
+         }
+         i = d;
+         if(s === ';') {
+            return "throw null";
+         }
          return "throw";
       }
       else if(symbol === "continue") {
@@ -658,9 +673,10 @@
                }
                return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables), noset_obj:true}));
             }
+
             i = d;
             lastSignificantType = type = instruction;
-            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset_obj:true}));
+            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset_obj:true,noComma:true}));
 
          }
          else if(value) {
@@ -845,10 +861,11 @@
             res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getSymbol(); // symbol should be ']'
          }
          else if(symbol === '(') {
-            if(oldType !== variable) {
-               i = deb;
-               return res;
-            }
+// lines below are commented because expressions like (f)()() should be accepted. arrayFunction[i]() also.
+//             if(oldType !== variable) {
+//                i = deb;
+//                return res;
+//             }
             res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getSymbol(); // symbol should be ')'
          }
          else if(symbol === ',') {
@@ -1283,7 +1300,7 @@
       return res;
    }
 
-   Audescript.toPureJS = function (str, includesArray) {
+   pkg.Audescript.toPureJS = function (str, includesArray) {
       includes = includesArray || [];
       len     = str.length;
       s       = str;
@@ -1315,4 +1332,4 @@
    };
 
    _("fr", "Assignation Error: types of the value and the variable don't match.", "Erreur d\'affectation : la valeur et la variable ont des types qui ne correspondent pas.")
-})(this, this);
+})(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);
