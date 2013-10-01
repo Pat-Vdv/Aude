@@ -12,15 +12,16 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
   }
 
   MinA : Automaton;
-  let trans = A.getTransitionFunction();
+  let trans = A.getTransitionFunction(true);
   
-  // we make a partition of the states ; accepting and non accepting states are separated
+  // we make a partition of the states
   partition : Set of Set;
-  
+
+  // initial partition: final/non final states are separated
   foreach(q1 in A.getStates()) {
     foreach(q2 in A.getStates()) {
       if(A.isAcceptingState(q1) === A.isAcceptingState(q2))
-        partition.add([q1, q2]); // we add the set {q1, q2} to partition
+        partition.add([q1, q2]); // we add the set {q1, q2} to the partition (which is a set of sets)
     }
   }
   
@@ -29,7 +30,7 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
   found2 : bool;
   
   copyPartition : Set of Set;
-  do {
+  do { // while the partition receives modifications:
     oldCard = partition.card();
     copyPartition = partition.copy();
     l  : List;
@@ -40,9 +41,7 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
       q1 = l[0];
       q2 = l[l.length-1];
       foreach(a in trans(q1) union trans(q2)) {
-         qq1 = trans(q1, a).getList()[0];
-         qq2 = trans(q2, a).getList()[0];
-         if(copyPartition.contains([q1, qq1]) !== copyPartition.contains([q2, qq2])) {
+        if(!copyPartition.contains([trans(q1, a), trans(q2, a)])) {
            partition.remove(couple);
            break;
          }
@@ -58,9 +57,7 @@ function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, al
       remainingStates.add(q);
       if(q belongsTo trans()) {
         foreach(symbol in trans(q)) {
-          foreach(state in trans(q, symbol)) {
-            addState(state);
-          }
+          addState(trans(q, symbol));
         }
       }
     }
