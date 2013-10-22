@@ -487,11 +487,11 @@
          divWelcome.innerHTML = libD.format(_('<h2>Welcome to {0}.</h2>\
 <p>Here is the area where you can <strong>draw automata</strong>.</p>\
 <ul>\
-   <li>To create a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
-   <li>To create a <strong>new transition</strong>, ctrl+click on the start state and then click on the end state of the transition.</li>\
-   <li>To <strong>rename</strong> a state or a transition, double-click on it.</li>\
-   <li>To set a state as <strong>initial</strong>, ctrl+right click on the state.</li>\
-   <li>To set a state as <strong>accepting</strong>, right-click on it.</li>\
+   <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
+   <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>\
+   <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>\
+   <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>\
+   <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>\
    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>\
 </ul>\
 <p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt="" src="icons/oxygen/16x16/actions/draw-brush.png" /><b style="color:black;font-size:small">?</b> toolbar icon.</p>\
@@ -1965,14 +1965,14 @@
    _("fr", "Step", "Un pas");
    _("fr", "Delay between steps (ms): ", "Pause entre les étapes (ms) : ");
    _("fr", "This automaton into the editor", "Cet automate dans l'éditeur");
-   _("fr", "To create a new state, double-click on the drawing area where you want it to be.", "Pour créer un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous le voulez.");
+   _("fr", "To add a new state, double-click on the drawing area where you want it to be.", "Pour ajouter un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous voulez le placer.");
    _("fr", "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour ajouter une nouvelle transition, cliquez sur l'état de départ en appuyant sur Maj puis cliquez sur l'état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");
-   _("fr", "To modify the name of a state, double-click on it.", "Pour changer le nom d'un état, double-cliquez sur celui-ci.");
+   _("fr", "To rename a state, double-click on it.", "Pour renommer un état, double-cliquez dessus.");
    _("fr", "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>.", "Pour modifier les symboles d'une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>.");
    _("fr", "To remove a state, Ctrl+click on it.", "Pour supprimer un état, cliquez dessus en maintenant Ctrl enfoncé.");
    _("fr", "To remove a transition, Ctrl+click on its arrow.", "Pour supprimer une transition, cliquez sur sa flèche en maintenant Ctrl enfoncé.");
-   _("fr", "To set a non-accepting state as accepting (and conversely), right-click on it.", "Pour rendre un état non-accepteur accepteur (et inversement), cliquez droit sur celui-ci.");
-   _("fr", "To set a state as the initial state, Ctrl+right-click on it.", "Pour faire d'un état l'état initial, cliquez dessus avec le bouton droit en appuyant sur la touche Ctrl.");
+   _("fr", "To set a state as (non-)accepting, right-click on it.", "Pour rendre un état (non-)accepteur, cliquez droit sur celui-ci.");
+   _("fr", "To set a state as the initial state, Ctrl+right-click on it.", "Pour rendre un état initial, ctrl+cliquez dessus avec le bouton droit de la souris.");
    _("fr", "To make a transition straight, Shift+click on its arrow or its label.", "Pour rendre une transition droite, cliquez sur sa flèche ou son étiquette avec la touche Shift enfoncée.");
    _("fr", "New state", "Nouvel état");
    _("fr", "New transition", "Nouvelle transition");
@@ -1983,7 +1983,7 @@
    _("fr", "Toggle accepting/non accepting", "Changer accepteur/non accepteur");
    _("fr", "Set a state as initial", "Rendre un état initial");
    _("fr", "Make a transition straight", "Rendre une transition droite");
-   _("fr", "Toggle the design toolbar", "Afficher/Masquer la barre d'outils de dessin");
+   _("fr", "Toggle help", "Afficher / Masquer l’aide");
    _("fr", "Howto: input symbols", "Comment saisir des symboles");
    _("fr", "<p>In the window which will invit you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surrond them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quuotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>",
      "<p>Dans la fenêtre qui vous proposera de saisir des symboles, entrez simplement le symbole que vous voulez associer à la transition.</p><p>Si vous voulez saisir plusieurs symboles, séparez-les par des virgules.</p><p>Si vous voulez saisir des symboles contenant des espaces ou des virgules, encadrez-les par des guillemets doubles.</p><p>Si vous avez besoin de saisir un symbole contenant des guillemets ou des slashs, précédez ces deux caractères par un slash et encadrez le symbole par des guillemets.</p><p>Pour insérer un epsilon (ε-transition), vous pouvez le saisir directement ou utiliser <code>\\e</code>.</p>");
@@ -2065,11 +2065,11 @@
    _("fr", '<h2>Welcome to {0}.</h2>\
 <p>Here is the area where you can <strong>draw automata</strong>.</p>\
 <ul>\
-   <li>To create a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
-   <li>To create a <strong>new transition</strong>, ctrl+click on the start state and then click on the end state of the transition.</li>\
-   <li>To <strong>rename</strong> a state or a transition, double-click on it.</li>\
-   <li>To set a state as <strong>initial</strong>, ctrl+right click on the state.</li>\
-   <li>To set a state as <strong>accepting</strong>, right-click on it.</li>\
+   <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
+   <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>\
+   <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>\
+   <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>\
+   <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>\
    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>\
 </ul>\
 <p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt="" src="icons/oxygen/16x16/actions/draw-brush.png" /><b style="color:black;font-size:small">?</b> toolbar icon.</p>\
@@ -2080,11 +2080,11 @@
           '<h2>Bienvenue sur {0}.</h2>\
 <p>Ceci est l’endroit où vous pouvez <strong>dessiner des automates</strong>.</p>\
 <ul>\
-   <li>Pour créer un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez que l’état soit placé.</li>\
-   <li>Pour créer une <strong>nouvelle transition</strong>, ctrl+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>\
+   <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez le placer.</li>\
+   <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>\
    <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>\
    <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>\
-   <li>Pour rendre un état <strong>accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>\
+   <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>\
    <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>\
 </ul>\
 <p>Vous pouvez <strong>accéder à ces instructions</strong> à tout moment en cliquant sur l’icône <img alt="" src="icons/oxygen/16x16/actions/draw-brush.png" /><b style="color:black;font-size:small">?</b> de la barre d’outils.</p>\
