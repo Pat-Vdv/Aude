@@ -430,7 +430,7 @@ td, th {
 
 #welcome {
    z-index:0;
-   color:gray;
+   color:black;
    font-family:"Ubuntu", "Liberation Sans", sans-serif;
    line-height:1.5em;
    text-shadow:5px 5px 5px #EEE
