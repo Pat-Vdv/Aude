@@ -44,6 +44,9 @@ function automatonToRE(A, retStruct) {
             return string(e.v) + '*';
          }
       }
+      else if(e.type === 'void') {
+         return '∅';
+      }
       else {
          return '<err>';
       }
@@ -192,7 +195,7 @@ run(function(A) {
    let res = automatonToRE(A);
    if(this.MathJax) {
       let span = document.createElement('span');
-      span.textContent = '\\[\\rm{' + res.replace(/\(/g, '\\left(').replace(/\)/g, '\\right)').replace(/\*/g, '\\text{*}') + '}\\]';
+      span.textContent = '$$\\rm{' + res.replace(/\(/g, '\\left(').replace(/\)/g, '\\right)').replace(/\*/g, '\\text{*}').replace(/∅/g, '\\emptyset') + '}$$';
       MathJax.Hub.Queue(["Typeset",MathJax.Hub,span]);
       return span;
    }
