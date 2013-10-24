@@ -1,51 +1,202 @@
-function Monomial(symbols, state) {
-   this.symbol = symbols;
-   this.state = state;
-}
+include minimization;
 
-Monomial.prototype.toString = function () {
-   return '' + this.symbol + this.state;
-}
+function automatonToRE(A, retStruct) {
+   A = minimize(A);
 
-// a line of equation is a state and a set of monome
-
-function Equation(state, monomials) {
-   this.state = state;
-   this.monomials = monomials;
-}
-
-Equation.prototype.toString = function() {
-   var res = this.state + ' = ';
-   var plus = '';
-   foreach(m in this.monomials) {
-      if(plus) {
-         res += ' + ';
+   function string(e) {
+      if(e.type === 'epsilon') {
+         return 'ε';
+      }
+      else if(e.type === 'symbol') {
+         return Set.prototype.elementToString(e.v);
+      }
+      else if(e.type === '+') {
+         let l = e.v.getSortedList();
+         let res = '';
+         for(var i = 0, len = l.length; i < len; ++i) {
+            res += (res ? '+' : '') + string(l[i]);
+         }
+         return res;
+      }
+      else if(e.type === '.') {
+         if(e.v.type === '+') {
+            return '(' + string(e.v) + ')';
+         }
+         else {
+            res = '';
+            let l = e.v;
+            for(var i = 0, len = l.length; i < len; ++i) {
+               if(l[i].type === '+') {
+                  res += '(' + string(l[i]) + ')';
+               }
+               else {
+                  res += string(l[i]);
+               }
+            }
+            return res;
+         }
+      }
+      else if(e.type === '*') {
+         if(e.v.type === '.' || e.v.type === '+') {
+            return '(' + string(e.v) + ')*';
+         }
+         else {
+            return string(e.v) + '*';
+         }
       }
       else {
-         plus = true;
+         return '<err>';
       }
-
-      res += m;
    }
-   return res;
+
+   function RE_epsilon() {
+      return {type:'epsilon'};
+   }
+
+   function RE_void() {
+      return {type:'void'};
+   }
+
+   function RE(o) {
+      return o;
+   }
+
+   function RE_symbol(a) {
+      return {type:'symbol', v:a};
+   }
+
+   function RE_star(RE) {
+      if(RE.type === 'void') {
+         return RE_void();
+      }
+      if(RE.type === 'epsilon') {
+         return RE_epsilon();
+      }
+      if(RE.type === 'star') {
+         return RE;
+      }
+      if(RE.type === '+' && RE_epsilon() belongsTo RE.v) {
+         let v = RE.v minus {RE_epsilon()};
+         if(v.card() > 1) {
+            return {
+               type:'*', v: {
+                  type:'+',
+                  v:RE.v minus {RE_epsilon()}
+               }
+            };
+         }
+         else {
+            return {type:'*', v:v.getList()[0]};
+         }
+      }
+      return {type:'*', v:RE};
+   }
+
+   function RE_sum(RE1, RE2) {
+      if(RE1.type === 'void' || RE1 == RE2) {
+         return RE2;
+      }
+      if(RE2.type === 'void') {
+         return RE1;
+      }
+      if(RE1.type === '+') {
+         return {type:'+', v: RE2.type === '+' ? RE2.v union RE1.v : {RE2} union RE1.v};
+      }
+      if(RE2.type === '+') {
+         return {type:'+', v: {RE1} union RE2.v};
+      }
+      return {type:'+', v:{RE1, RE2}};
+   }
+
+   function RE_cat(RE1, RE2) {
+      if(RE1.type === 'void' || RE2.type === 'void') {
+         return RE_void();
+      }
+      if(RE1.type === 'epsilon') {
+         return RE2;
+      }
+      if(RE2.type === 'epsilon') {
+         return RE1;
+      }
+      if(RE1.type === '.') {
+        return {type: '.', v:RE2.type === '.' ?  RE1.v.concat(RE2.v) : RE1.v.concat([RE2])};
+      }
+      if(RE2.type === '.') {
+        return {type:'.', v:[RE1].concat(RE2.v)};
+      }
+      return {type: '.', v:[RE1, RE2]};
+   }
+
+   // We implement http://www.cs.uiuc.edu/class/fa06/cs475/Lectures/lec5.pdf
+   
+   
+   let Q     = A.getStates().getList();
+   let n     = Q.length;
+   let trans = A.getTransitionFunction(true);
+   let Sigma = A.getAlphabet();
+
+   let L = [];
+   q0 : State;
+
+   // Base case
+   L[0] = [];
+   foreach(i in {0,...,n-1}) {
+      L[0][i] = [];
+      if(Q[i] === A.getInitialState()) {
+        q0 = i;
+      }
+      foreach(j in {0,...,n-1}) {
+         L[0][i][j] = RE_void(); 
+         foreach(a in Sigma) {
+            if(trans(Q[i], a) === Q[j]) {
+               L[0][i][j] = RE_sum(L[0][i][j], RE_symbol(a));
+            }
+            if(i === j) {
+               L[0][i][j] = RE_sum(L[0][i][j], RE_epsilon());
+            }
+         }
+         console.dir(L[0][i][j]);
+      }
+   }
+
+   foreach(k in {1,...,n-1}) {
+      L[k] = [];
+      foreach(i in {0,...,n-1}) {
+         L[k][i] = [];
+         foreach(j in {0,...,n-1}) {
+            L[k][i][j] = RE_sum(
+                           L[k-1][i][j],
+                           RE_cat(
+                              L[k-1][i][k],
+                              RE_cat(
+                                 RE_star(L[k-1][k][k]),
+                                 L[k-1][k][j]
+                              )
+                           )
+                        );
+        }
+      }
+   }
+
+   let F   = A.getFinalStates();
+   let res = RE_void();
+   for(let f in Q) {
+      if(Q[f] belongsTo F) {
+        res = RE_sum(res, L[n-1][q0][f]);
+      }
+   }
+   return retStruct ? res : string(res);
 }
 
-function automaton2regex(A) {
-   sys : Set of Equation;
-   t : Table = A.getTransitionsTable();
-
-   foreach(state in A.getStates()) {
-      e : Equation;
-
-      e.state = state;
-      for(let symbol in A.getAlphabet()) {
-         foreach(dest in t[state][symbol]) {
-             e.monomials.add(new Monomial(symbol, dest));
-          }
-      }
-      sys.add(e);
+run(function(A) {
+   let res = automatonToRE(A);
+   if(this.MathJax) {
+      let span = document.createElement('span');
+      span.textContent = '\\[\\rm{' + res.replace(/\(/g, '\\left(').replace(/\)/g, '\\right)').replace(/\*/g, '\\text{*}') + '}\\]';
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,span]);
+      return span;
    }
-   return sys;
-}
-
-run(automaton2regex, get_automaton(currentAutomaton));
+   else {
+      return res;
+   }
+}, get_automaton(currentAutomaton));

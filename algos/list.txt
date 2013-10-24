@@ -13,3 +13,4 @@ normalization.ajs      / Simplify names of the states
 automaton2json.ajs     / JSON representation
 regex2automaton.ajs    / Reg. Exp. → automaton
 regex2minautomaton.ajs / Reg. Exp. → minimized automaton
+automaton2regex.ajs    / Automaton → Reg. Exp.
