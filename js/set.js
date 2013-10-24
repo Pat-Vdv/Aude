@@ -571,7 +571,7 @@
                      var res = '', keys = Object.keys(e).sort();
                      for(var i in keys) {
                         if(res) {
-                           res = ','
+                           res += ','
                         }
                         else {
                            res = '{';
@@ -613,7 +613,7 @@
             };
          }
          else if(s[j] === "{") {
-            var set = new Set();
+            var set = new pkg.Set();
             ++j;
             var closed = false;
             while(j < len) {
@@ -916,4 +916,4 @@
    _("fr", "Set.checkConstraint(element): The element does not satisfies the type constraint.", "Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
    _("fr", "Value is malformed.", "La valeur est malformée.");
    _("fr", "Constructor name in value refers to unkown class.", "Le nom de constructeur dans la valeur fait référence à une classe inconnue.");
-})(this, this);
+})(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);

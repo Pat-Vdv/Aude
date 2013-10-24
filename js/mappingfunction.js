@@ -86,4 +86,4 @@
 
       return f;
    }
-})(this);
+})(typeof exports === 'object' ? exports : this);

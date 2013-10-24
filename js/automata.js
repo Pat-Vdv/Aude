@@ -524,12 +524,20 @@
                case 1:
                   return symbolsByState[Set.prototype.elementToString(startState)] || new Set();
                case 2:
-                  return symbol === pkg.epsilon ?
-                     (endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)] || (determinizedFunction ? undefined : new Set()))
-                        :
-                     (
-                        endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || []
-                     )[Set.prototype.elementToString(symbol)] || (determinizedFunction ? undefined : new Set());
+                  if(symbol === pkg.epsilon) {
+                     var s = endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)];
+                     if(!determinizedFunction && s === undefined) {
+                        return new Set();
+                     }
+                     return s;
+                  }
+                  else {
+                     var s = (endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || [])[Set.prototype.elementToString(symbol)];
+                     if(!determinizedFunction && s === undefined) {
+                        return new Set();
+                     }
+                     return s;
+                  }
             }
          };
       },
@@ -1248,4 +1256,4 @@
    _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
    _("fr", "Automaton constructor takes an Automaton in argument, or nothing.", "Le constructeur Automaton prend un Automaton en paramètre, ou rien.");
 
-})(this, this);
+})(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);
