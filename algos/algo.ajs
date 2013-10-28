@@ -1,0 +1,171 @@
+function automatonToRegularExpression(A, raw) {
+   L : MappingFunction;
+   let res = emptySet;
+   let q_init = A.getInitialState();
+
+
+   // A regular expression is a set of parts of regular expressions.
+   // e = a_1+...+a_i is represented as {a_1,...,a_i}
+
+   // returns a string representation of the regular expression e
+   function string(e, parenthesis) {
+      if(e instanceof Set) {
+         // sum
+
+         let s = '';
+         let forbidEpsilon = e.card() !== 1;
+         parenthesis = parenthesis && forbidEpsilon;
+         let eps = REEpsilon();
+         foreach(p in e) {
+            if(!forbidEpsilon || p != eps) {
+               s += (s ? '+' : '')  + string(p);
+            }
+         }
+         return (parenthesis ? '(' : '') + s + (parenthesis ? ')' : '');
+      }
+      else {
+         switch(e.type) {
+            case 'epsilon':
+               return 'ε';
+            case 'symbol':
+               return Set.prototype.elementToString(e.value);
+            case 'cat':
+               return (parenthesis > 1 ? '(' : '') + string(e.value1, 1) + '·' + string(e.value2, 1) + (parenthesis > 1 ? ')' : '');
+            case 'star':
+               return string(e.value, 2) + '*';
+         }
+      }
+   }
+
+   // compute the star of a regular expression
+   function star(re) {
+      switch(re.type) {
+         case 'espilon':
+         case 'star':
+            return re;
+         default:
+            return {
+               type:'star',
+               value:re
+            };
+      }
+   }
+
+   // concatenates two regular expressions
+   function bicat(r1, r2) {
+      let epsSet = {REEpsilon()};
+
+      if(r1 == emptySet || r2 == emptySet) {
+         return emptySet;
+      }
+
+      if(r1 == epsSet) {
+         return r2;
+      }
+
+      if(r2 == epsSet) {
+         return r1;
+      }
+
+      let res = emptySet;
+
+      foreach(RE1 in r1) {
+         foreach(RE2 in r2) {
+           if(RE1.type == 'epsilon') {
+              res.add(RE2);
+           }
+           else if(RE2.type == 'epsilon') {
+              res.add(RE1);
+           }
+           else {
+             res.add({
+                type:'cat',
+                value1:RE1,
+                value2:RE2
+             });
+           }
+         }
+      }
+      return res;
+   }
+
+   // concatenates three regular expressions
+   function cat(r1,r2,r3) {
+      return bicat(r1, bicat(r2, r3));
+   }
+
+   // makes a part of regular expression from a symbol
+   function symbol(a) {
+      return {
+         type:'symbol',
+         value: a
+      }
+   }
+
+   // returns the epsilon part of a regular expression
+   function REEpsilon() {
+      return {
+         type:'epsilon'
+      }
+   }
+
+   // removes the state s
+   function remove(s) {
+      foreach(p in A.getStates()) {
+         foreach(q in A.getStates()) {
+            L([p,p], L([p, p]) union cat(L([p,s]), star(L([s,s])), L([s, p])));
+            L([q,q], L([q, q]) union cat(L([q,s]), star(L([s,s])), L([s, q])));
+            L([p,q], L([p, q]) union cat(L([p,s]), star(L([s,s])), L([s, q])));
+            L([q,p], L([q, p]) union cat(L([q,s]), star(L([s,s])), L([s, p])));
+         }
+      }
+   }
+
+
+   /* Initialization : */
+
+   foreach(p in A.getStates()) {
+      foreach(q in A.getStates()) {
+         if(p == q) {
+            // We map each (i,i) to the epsilon regular expression
+            L([p,q], {REEpsilon()});
+         }
+         else {
+            // We maps each (p,q) p ≠ q to the empty regular expression
+            L([p, q], emptySet);
+         }
+      }
+   }
+
+   /* Basis : for each (p,q) in Q², for each symbol a such that (p,a,q) is a transition, we map the regular expression a to (p,q) */
+   foreach(t in A.getTransitions()) {
+     L([t.startState, t.endState], L([t.startState, t.startState]) union {symbol(t.symbol)});
+   }
+
+   /* State removal : we remove each state which is not final nor initial */
+   foreach(q in A.getStates()) {
+      if(q != q_init && q !belongsTo A.getFinalStates()) {
+         remove(q);
+      }
+   }
+
+
+   foreach(f in A.getFinalStates()) {
+      res.add(
+         cat (
+            star(L([q_init,q_init])),
+            L([q_init,f]),
+            star(
+               cat(
+                  L([f,q_init]),
+                  star(L([q_init,q_init])),
+                  { L([q_init,f]), L([f,f]) }
+               )
+            )
+         )
+      );
+   }
+   return raw ? res : string(res);
+}
+
+run(automatonToRegularExpression, get_automaton(currentAutomaton), true);

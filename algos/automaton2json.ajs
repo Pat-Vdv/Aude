@@ -1,75 +1,75 @@
 function automaton2json(A) {
-  let map = {
-     "\\e":epsilon,
-     "ε":epsilon
-  };
-
-  function toString(e) {
-    if(e === epsilon) {
-       return '\\\\e';
-    }
-    return JSON.stringify(Set.prototype.elementToString(e, map));
-  }
-
-  let finalStates = A.getFinalStates(),
-      states      = A.getStates(),
-      transitions = A.getTransitions(),
-      q_init      = A.getInitialState(),
-      result      = '{\n\t"states": [' + toString(q_init),
-      began = false;
-
-  
-  foreach(state in states) {
-    if(state != q_init && finalStates !contains state) {
-      result += ',' + toString(state);
-    }
-  }
-
-  result += '],\n\t"finalStates": [';
-  foreach(state in finalStates) {
-    if(began) {
-      result += ',';
-    }
-    else {
-      began = true;
-    }
-    result += toString(state);
-  }
-
-  result += '],\n\t"transitions": [';
-  began = false;
-
-  foreach(transition in transitions) {
-    if(began) {
-      result += ',';
-    }
-    else {
-      began = true;
-    }
-    
-    result += '\n\t\t[' + toString(transition.startState) + ',' + toString(transition.symbol) + ',' + toString(transition.endState) + ']';
-  }
-  return result + '\n\t]\n}';
+   let map = {
+      "\\e":epsilon,
+      "ε":epsilon
+   };
+   
+   function toString(e) {
+      if(e === epsilon) {
+         return '\\\\e';
+      }
+      return JSON.stringify(Set.prototype.elementToString(e, map));
+   }
+   
+   let finalStates = A.getFinalStates(),
+       states      = A.getStates(),
+       transitions = A.getTransitions(),
+       q_init      = A.getInitialState(),
+       result      = '{\n\t"states": [' + toString(q_init),
+       began = false;
+   
+   
+   foreach(state in states) {
+      if(state != q_init && finalStates !contains state) {
+         result += ',' + toString(state);
+      }
+   }
+   
+   result += '],\n\t"finalStates": [';
+   foreach(state in finalStates) {
+      if(began) {
+         result += ',';
+      }
+      else {
+         began = true;
+      }
+      result += toString(state);
+   }
+   
+   result += '],\n\t"transitions": [';
+   began = false;
+   
+   foreach(transition in transitions) {
+      if(began) {
+         result += ',';
+      }
+      else {
+         began = true;
+      }
+      
+      result += '\n\t\t[' + toString(transition.startState) + ',' + toString(transition.symbol) + ',' + toString(transition.endState) + ']';
+   }
+   return result + '\n\t]\n}';
 }
 
 function object2automaton(o) {
-  let map = {
-     "\\e":epsilon,
-     "ε":epsilon
-  };
-
+   let map = {
+      "\\e":epsilon,
+      "ε":epsilon
+   };
+   
    A : Automaton;
-
+   
    let fromString = Set.prototype.getValue;
-
+   
    for(let i in o.states) {
       A[i == "0" ? 'setInitialState' : 'addState'](fromString(o.states[i], map));
    }
-
+   
    foreach(s in o.finalStates) {
       A.addFinalState(fromString(s, map));
    }
-
+   
    foreach(t in o.transitions) {
       A.addTransition(
          fromString(t[0], map),
@@ -77,7 +77,7 @@ function object2automaton(o) {
          fromString(t[2], map)
       );
    }
-
+   
    return A;
 }
 

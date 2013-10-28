@@ -2,107 +2,107 @@ include determinization;
 include completion;
 
 function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, alphabet) {
-
-  // before minimizing, automaton must be determinist and complete.
-  if(!isAlreadyDeterminized && !isDeterminized(A)) {
-     A = determinize(A);
-  }
-  if(!isAlreadyDeterminizedAndComplete) {
-     A = complete(A, alphabet);
-  }
-
-  MinA : Automaton;
-  let trans = A.getTransitionFunction(true);
-  
-  // we make a partition of the states
-  partition : Set of Set;
-
-  // initial partition: final/non final states are separated
-  foreach(q1 in A.getStates()) {
-    foreach(q2 in A.getStates()) {
-      if(A.isAcceptingState(q1) === A.isAcceptingState(q2))
-        partition.add([q1, q2]); // we add the set {q1, q2} to the partition (which is a set of sets)
-    }
-  }
-  
-  oldCard : Integer;
-  found1 : bool;
-  found2 : bool;
-  
-  copyPartition : Set of Set;
-  do { // while the partition receives modifications:
-    oldCard = partition.card();
-    copyPartition = partition.copy();
-    l  : List;
-    let q1, q2, qq1, qq2; // states
-  
-    foreach(couple in copyPartition) {
-      l  = couple.getList();
-      q1 = l[0];
-      q2 = l[l.length-1];
-      foreach(a in trans(q1) union trans(q2)) {
-        if(!copyPartition.contains([trans(q1, a), trans(q2, a)])) {
-           partition.remove(couple);
-           break;
+   
+   // before minimizing, automaton must be determinist and complete.
+   if(!isAlreadyDeterminized && !isDeterminized(A)) {
+      A = determinize(A);
+   }
+   if(!isAlreadyDeterminizedAndComplete) {
+      A = complete(A, alphabet);
+   }
+   
+   MinA : Automaton;
+   let trans = A.getTransitionFunction(true);
+   
+   // we make a partition of the states
+   partition : Set of Set;
+   
+   // initial partition: final/non final states are separated
+   foreach(q1 in A.getStates()) {
+      foreach(q2 in A.getStates()) {
+         if(A.isAcceptingState(q1) === A.isAcceptingState(q2))
+            partition.add([q1, q2]); // we add the set {q1, q2} to the partition (which is a set of sets)
+      }
+   }
+   
+   oldCard : Integer;
+   found1 : bool;
+   found2 : bool;
+   
+   copyPartition : Set of Set;
+   do { // while the partition receives modifications:
+      oldCard = partition.card();
+      copyPartition = partition.copy();
+      l  : List;
+      let q1, q2, qq1, qq2; // states
+      
+      foreach(couple in copyPartition) {
+         l  = couple.getList();
+         q1 = l[0];
+         q2 = l[l.length-1];
+         foreach(a in trans(q1) union trans(q2)) {
+            if(!copyPartition.contains([trans(q1, a), trans(q2, a)])) {
+               partition.remove(couple);
+               break;
+            }
          }
       }
-    }
-  }
-  while(partition.card() !== oldCard);
-  
-  remainingStates : Set of State;
-  
-  function addState(q) {
-    if(!remainingStates.contains(q)) {
-      remainingStates.add(q);
-      if(q belongsTo trans()) {
-        foreach(symbol in trans(q)) {
-          addState(trans(q, symbol));
-        }
+   }
+   while(partition.card() !== oldCard);
+   
+   remainingStates : Set of State;
+   
+   function addState(q) {
+      if(!remainingStates.contains(q)) {
+         remainingStates.add(q);
+         if(q belongsTo trans()) {
+            foreach(symbol in trans(q)) {
+               addState(trans(q, symbol));
+            }
+         }
       }
-    }
-  }
-  
-  addState(A.getInitialState());
-  
-  accepting : bool;
-  
-  s : Integer = 0;
-  newStates : List;
-  oldStates : MappingFunction;
-  while(remainingStates.card()) {
-    let l = remainingStates.getList();
-    newStates[s] = new Set();
-    newStates[s].add(l[0]);
-    oldStates(l[0], s);
-    accepting = false;
-    remainingStates.remove(l[0]);
-    if(A.isAcceptingState(l[0]))
-      accepting = true;
-    foreach(i in {1,...,l.length-1}) {
-      if(partition.contains([l[0], l[i]])) {
-        newStates[s].add(l[i]);
-        oldStates(l[i], s);
-        remainingStates.remove(l[i]);
-        if(!accepting && A.isAcceptingState(l[i])) {
-          accepting = true;
-        }
+   }
+   
+   addState(A.getInitialState());
+   
+   accepting : bool;
+   
+   s : Integer = 0;
+   newStates : List;
+   oldStates : MappingFunction;
+   while(remainingStates.card()) {
+      let l = remainingStates.getList();
+      newStates[s] = new Set();
+      newStates[s].add(l[0]);
+      oldStates(l[0], s);
+      accepting = false;
+      remainingStates.remove(l[0]);
+      if(A.isAcceptingState(l[0]))
+         accepting = true;
+      foreach(i in {1,...,l.length-1}) {
+         if(partition.contains([l[0], l[i]])) {
+            newStates[s].add(l[i]);
+            oldStates(l[i], s);
+            remainingStates.remove(l[i]);
+            if(!accepting && A.isAcceptingState(l[i])) {
+               accepting = true;
+            }
+         }
       }
-    }
-    MinA.addState(newStates[s]);
-    if(accepting)
-      MinA.setAcceptingState(newStates[s]);
-    if(newStates[s].contains(A.getInitialState()))
-      MinA.setInitialState(newStates[s]);
-    ++s;
-  }
-  
-  foreach(t in A.getTransitions()) {
-    if(oldStates hasKey t.startState  && oldStates hasKey t.endState)
-      MinA.addTransition(newStates[oldStates(t.startState)], t.symbol, newStates[oldStates(t.endState)]);
-  }
-  
-  return MinA;
+      MinA.addState(newStates[s]);
+      if(accepting)
+         MinA.setAcceptingState(newStates[s]);
+      if(newStates[s].contains(A.getInitialState()))
+         MinA.setInitialState(newStates[s]);
+      ++s;
+   }
+   
+   foreach(t in A.getTransitions()) {
+      if(oldStates hasKey t.startState  && oldStates hasKey t.endState)
+         MinA.addTransition(newStates[oldStates(t.startState)], t.symbol, newStates[oldStates(t.endState)]);
+   }
+   
+   return MinA;
 }
 
 run(minimize, get_automaton(currentAutomaton));

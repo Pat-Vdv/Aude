@@ -2,7 +2,7 @@ include minimization;
 
 function automatonToRE(A, retStruct) {
    A = minimize(A);
-
+   
    function string(e) {
       if(e.type === 'epsilon') {
          return 'ε';
@@ -10,64 +10,64 @@ function automatonToRE(A, retStruct) {
       else if(e.type === 'symbol') {
          return Set.prototype.elementToString(e.v);
       }
-      else if(e.type === '+') {
-         let l = e.v.getSortedList();
-         let res = '';
-         for(var i = 0, len = l.length; i < len; ++i) {
-            res += (res ? '+' : '') + string(l[i]);
-         }
-         return res;
-      }
-      else if(e.type === '.') {
-         if(e.v.type === '+') {
-            return '(' + string(e.v) + ')';
-         }
-         else {
-            res = '';
-            let l = e.v;
+         else if(e.type === '+') {
+            let l = e.v.getSortedList();
+            let res = '';
             for(var i = 0, len = l.length; i < len; ++i) {
-               if(l[i].type === '+') {
-                  res += '(' + string(l[i]) + ')';
-               }
-               else {
-                  res += string(l[i]);
-               }
+               res += (res ? '+' : '') + string(l[i]);
             }
             return res;
          }
-      }
-      else if(e.type === '*') {
-         if(e.v.type === '.' || e.v.type === '+') {
-            return '(' + string(e.v) + ')*';
-         }
-         else {
-            return string(e.v) + '*';
-         }
-      }
-      else if(e.type === 'void') {
-         return '∅';
-      }
-      else {
-         return '<err>';
-      }
+            else if(e.type === '.') {
+               if(e.v.type === '+') {
+                  return '(' + string(e.v) + ')';
+               }
+               else {
+                  res = '';
+                  let l = e.v;
+                  for(var i = 0, len = l.length; i < len; ++i) {
+                     if(l[i].type === '+') {
+                        res += '(' + string(l[i]) + ')';
+                     }
+                     else {
+                        res += string(l[i]);
+                     }
+                  }
+                  return res;
+               }
+            }
+               else if(e.type === '*') {
+                  if(e.v.type === '.' || e.v.type === '+') {
+                     return '(' + string(e.v) + ')*';
+                  }
+                  else {
+                     return string(e.v) + '*';
+                  }
+               }
+                  else if(e.type === 'void') {
+                     return '∅';
+                  }
+                     else {
+                        return '<err>';
+                     }
    }
-
+   
    function RE_epsilon() {
       return {type:'epsilon'};
    }
-
+   
    function RE_void() {
       return {type:'void'};
    }
-
+   
    function RE(o) {
       return o;
    }
-
+   
    function RE_symbol(a) {
       return {type:'symbol', v:a};
    }
-
+   
    function RE_star(RE) {
       if(RE.type === 'void') {
          return RE_void();
@@ -94,7 +94,7 @@ function automatonToRE(A, retStruct) {
       }
       return {type:'*', v:RE};
    }
-
+   
    function RE_sum(RE1, RE2) {
       if(RE1.type === 'void' || RE1 == RE2) {
          return RE2;
@@ -110,7 +110,7 @@ function automatonToRE(A, retStruct) {
       }
       return {type:'+', v:{RE1, RE2}};
    }
-
+   
    function RE_cat(RE1, RE2) {
       if(RE1.type === 'void' || RE2.type === 'void') {
          return RE_void();
@@ -122,14 +122,14 @@ function automatonToRE(A, retStruct) {
          return RE1;
       }
       if(RE1.type === '.') {
-        return {type: '.', v:RE2.type === '.' ?  RE1.v.concat(RE2.v) : RE1.v.concat([RE2])};
+         return {type: '.', v:RE2.type === '.' ?  RE1.v.concat(RE2.v) : RE1.v.concat([RE2])};
       }
       if(RE2.type === '.') {
-        return {type:'.', v:[RE1].concat(RE2.v)};
+         return {type:'.', v:[RE1].concat(RE2.v)};
       }
       return {type: '.', v:[RE1, RE2]};
    }
-
+   
    // We implement http://www.cs.uiuc.edu/class/fa06/cs475/Lectures/lec5.pdf
    
    
@@ -137,16 +137,16 @@ function automatonToRE(A, retStruct) {
    let n     = Q.length;
    let trans = A.getTransitionFunction(true);
    let Sigma = A.getAlphabet();
-
+   
    let L = [];
    q0 : State;
-
+   
    // Base case
    L[0] = [];
    foreach(i in {0,...,n-1}) {
       L[0][i] = [];
       if(Q[i] === A.getInitialState()) {
-        q0 = i;
+         q0 = i;
       }
       foreach(j in {0,...,n-1}) {
          L[0][i][j] = RE_void(); 
@@ -161,31 +161,31 @@ function automatonToRE(A, retStruct) {
          console.dir(L[0][i][j]);
       }
    }
-
+   
    foreach(k in {1,...,n-1}) {
       L[k] = [];
       foreach(i in {0,...,n-1}) {
          L[k][i] = [];
          foreach(j in {0,...,n-1}) {
             L[k][i][j] = RE_sum(
-                           L[k-1][i][j],
-                           RE_cat(
-                              L[k-1][i][k],
-                              RE_cat(
-                                 RE_star(L[k-1][k][k]),
-                                 L[k-1][k][j]
-                              )
-                           )
-                        );
-        }
+               L[k-1][i][j],
+               RE_cat(
+                  L[k-1][i][k],
+                  RE_cat(
+                     RE_star(L[k-1][k][k]),
+                     L[k-1][k][j]
+                  )
+               )
+            );
+         }
       }
    }
-
+   
    let F   = A.getFinalStates();
    let res = RE_void();
    for(let f in Q) {
       if(Q[f] belongsTo F) {
-        res = RE_sum(res, L[n-1][q0][f]);
+         res = RE_sum(res, L[n-1][q0][f]);
       }
    }
    return retStruct ? res : string(res);

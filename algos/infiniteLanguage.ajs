@@ -1,52 +1,52 @@
 include epsElim;
 
 function infiniteLanguage(A) {
-  A     : Automaton = epsElim(A);
-  let trans = A.getTransitionFunction();
-  
-  function onCycle(consideredState, visited, curState) {
-    if(visited contains curState) {
-      return false;
-    }
-    
-    visited.add(curState);
-    
-    foreach(symbol in trans(curState)) {
-      foreach(state in trans(curState, symbol)) {
-        if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
-          return true;
-        }
-      }	
-    }
-    return false;
-  }
-    
-  function visit(state, visited, cycle) {
-    if(visited contains state) {
-      return false;
-    }
-
-    if(!cycle) {
-      cycle = onCycle(state, emptySet(State), state);
-    }
-    
-    if(cycle && A.isFinalState(state)) {
-      return true;
-    }
-    
-    visited.add(state);
-    
-    foreach(symbol in trans(state)) {
-      foreach(destState in trans(state, symbol)) {
-        if(visit(destState, visited.copy(), cycle)) {
-          return true;
-        }
+   A     : Automaton = epsElim(A);
+   let trans = A.getTransitionFunction();
+   
+   function onCycle(consideredState, visited, curState) {
+      if(visited contains curState) {
+         return false;
       }
-    }
-    return false;
-  }
-    
-  return visit(A.getInitialState(), emptySet(State), false);
+      
+      visited.add(curState);
+      
+      foreach(symbol in trans(curState)) {
+         foreach(state in trans(curState, symbol)) {
+            if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
+               return true;
+            }
+         }	
+      }
+      return false;
+   }
+   
+   function visit(state, visited, cycle) {
+      if(visited contains state) {
+         return false;
+      }
+      
+      if(!cycle) {
+         cycle = onCycle(state, emptySet(State), state);
+      }
+      
+      if(cycle && A.isFinalState(state)) {
+         return true;
+      }
+      
+      visited.add(state);
+      
+      foreach(symbol in trans(state)) {
+         foreach(destState in trans(state, symbol)) {
+            if(visit(destState, visited.copy(), cycle)) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+   
+   return visit(A.getInitialState(), emptySet(State), false);
 }
 
 run(infiniteLanguage, get_automaton(currentAutomaton));

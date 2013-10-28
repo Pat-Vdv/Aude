@@ -1,0 +1,71 @@
+include epsElim;
+
+function determinize(A, complete) {
+   A = epsElim(A);
+   DetA : Automaton;
+   Alphabet : Set = A.getAlphabet();
+   let trans = A.getTransitionFunction();
+   
+   function addDeterminizedState(newQ) {
+      if(!DetA.hasState(newQ)) {
+         DetA.addState(newQ);
+         
+         foreach(symbol in Alphabet) {
+            QDest : Set;
+            
+            foreach(state in newQ) {
+               QDest U= trans(state, symbol);
+            }
+            
+            if(complete || !QDest.isEmpty()) {
+               // if completion is not asked, don't create a sink state
+               addDeterminizedState(QDest);
+               DetA.addTransition(newQ, symbol, QDest);
+            }
+         }
+      }
+      
+      foreach(state in newQ) {
+         if(A.isFinalState(state)) {
+            DetA.setFinalState(newQ);
+            break;
+         }
+      }
+   }
+   
+   QInit : Set;
+   
+   QInit.add(A.getInitialState());
+   addDeterminizedState(QInit);
+   
+   DetA.setInitialState(QInit);
+   
+   return DetA;
+}
+
+function isDeterminized(A) {
+   let trans = A.getTransitionFunction();
+   Alphabet : Set = A.getAlphabet();
+   
+   foreach(state in trans()) {
+      // epsilon transition:
+      if(!trans(state, epsilon).isEmpty()) {
+         return false;
+      }
+      
+      foreach(symbol in trans(state)) {
+         if(trans(state, symbol).card() > 1) {
+            return false;
+         }
+      }
+   }
+   return true;
+}
+
+run(function() {
+   let A = get_automaton(currentAutomaton);
+   if(isDeterminized(A)) {
+      return A;
+   }
+   return determinize(A);
+});

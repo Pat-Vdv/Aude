@@ -1,35 +1,35 @@
 include epsElim;
 
 function emptyLanguage(A) {
-  // If the automaton doesn't recognize any word, return true. Otherwize, return false. 
-  
-  A             : Automaton = epsElim(A);
-  visitedStates : Set of State;
-
-  function visit(state) {
-    if(visitedStates contains state) {
-      return true;
-    }
-  
-    if(A.isAcceptingState(state)) {
-      return false;
-    }
-  
-    visitedStates.add(state);
-    foreach(symbol in trans(state)) { // for each symbol
-      foreach(destinationState in trans(state, symbol)) {
-        if(!visit(destinationState)) {
-          return false;
-        }
+   // If the automaton doesn't recognize any word, return true. Otherwize, return false. 
+   
+   A             : Automaton = epsElim(A);
+   visitedStates : Set of State;
+   
+   function visit(state) {
+      if(visitedStates contains state) {
+         return true;
       }
-    }
-    return true;
-  }
-  
-
-  let trans = A.getTransitionFunction();
-  
-  return visit(A.getInitialState());
+      
+      if(A.isAcceptingState(state)) {
+         return false;
+      }
+      
+      visitedStates.add(state);
+      foreach(symbol in trans(state)) { // for each symbol
+         foreach(destinationState in trans(state, symbol)) {
+            if(!visit(destinationState)) {
+               return false;
+            }
+         }
+      }
+      return true;
+   }
+   
+   
+   let trans = A.getTransitionFunction();
+   
+   return visit(A.getInitialState());
 }
 
 run(emptyLanguage, get_automaton(currentAutomaton));

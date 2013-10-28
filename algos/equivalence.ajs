@@ -3,52 +3,52 @@ include minimization;
 include completion;
 
 function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
-  if(!symetryAlreadyDone) {
-    let alphabet = A1.getAlphabet() union A2.getAlphabet();
-    A1    = minimize(A1, false, false, alphabet);
-    A2    = minimize(A2, false, false, alphabet);
-  }
-
-
-  let trans1 = A1.getTransitionFunction(),
-      trans2 = A2.getTransitionFunction();
-
-  A1Seen : Set of State;
-
-  renamingFunction : Set of List; // [S1, S2] belongs to Renaming Function iff S1 in A1 is renamed to S2 in A2
-
-  function visit(s1, s2) {
-    if(A1Seen contains s1) {
-      return [s1, s2] belongsTo renamingFunction;
-    }
-
-    if(A1.isFinalState(s1) !== A2.isFinalState(s2)) {
-      return false;
-    }
-  
-    A1Seen.add(s1);
-    renamingFunction.add([s1, s2]);
-
-    foreach(symbol in trans1(s1)) {
-      if(trans1(s1, symbol).card() === trans2(s2, symbol).card()) { // If there is a destination state for the symbol for each state
-        if(!visit(
-          trans1(s1, symbol).getList()[0],
-          trans2(s2, symbol).getList()[0]
-        )) {
-          // we visit (s1', s2') with
-          //  - s1' the destination state of the transition (s1, symbol, dest) in A1
-          //  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
-          return false;
-        }
+   if(!symetryAlreadyDone) {
+      let alphabet = A1.getAlphabet() union A2.getAlphabet();
+      A1    = minimize(A1, false, false, alphabet);
+      A2    = minimize(A2, false, false, alphabet);
+   }
+   
+   
+   let trans1 = A1.getTransitionFunction(),
+       trans2 = A2.getTransitionFunction();
+   
+   A1Seen : Set of State;
+   
+   renamingFunction : Set of List; // [S1, S2] belongs to Renaming Function iff S1 in A1 is renamed to S2 in A2
+   
+   function visit(s1, s2) {
+      if(A1Seen contains s1) {
+         return [s1, s2] belongsTo renamingFunction;
       }
-      else {
+      
+      if(A1.isFinalState(s1) !== A2.isFinalState(s2)) {
          return false;
       }
-    }
-    return true;
-  }
-
-  return visit(A1.getInitialState(), A2.getInitialState()) && (symetryAlreadyDone || automataAreEquivalent(A2, A1, true));
+      
+      A1Seen.add(s1);
+      renamingFunction.add([s1, s2]);
+      
+      foreach(symbol in trans1(s1)) {
+         if(trans1(s1, symbol).card() === trans2(s2, symbol).card()) { // If there is a destination state for the symbol for each state
+            if(!visit(
+               trans1(s1, symbol).getList()[0],
+               trans2(s2, symbol).getList()[0]
+            )) {
+               // we visit (s1', s2') with
+               //  - s1' the destination state of the transition (s1, symbol, dest) in A1
+               //  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
+               return false;
+            }
+         }
+         else {
+            return false;
+         }
+      }
+      return true;
+   }
+   
+   return visit(A1.getInitialState(), A2.getInitialState()) && (symetryAlreadyDone || automataAreEquivalent(A2, A1, true));
 }
           
 run(get_automatons, 2, automataAreEquivalent);
