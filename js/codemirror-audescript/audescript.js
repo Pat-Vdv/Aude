@@ -262,6 +262,8 @@ CodeMirror.defineMode("audescript", function(config, parserConfig) {
     if (type == "function") return cont(functiondef);
     if (type == "for") return cont(pushlex("form"), expect("("), pushlex(")"), forspec1, expect(")"),
                                    poplex, statement, poplex);
+    if (type == "foreach") return cont(pushlex("form"), expect("("), pushlex(")"), foreachspec, expect(")"),
+                                   poplex, statement, poplex);
     if (type == "variable") return cont(pushlex("stat"), maybelabel);
     if (type == "switch") return cont(pushlex("form"), expression, pushlex("}", "switch"), expect("{"),
                                       block, poplex, poplex);
@@ -315,7 +317,7 @@ CodeMirror.defineMode("audescript", function(config, parserConfig) {
     if (type == ";") return;
     if (type == "(") return cont(pushlex(")", "call"), commasep(expressionNoComma, ")"), poplex, me);
     if (type == ".") return cont(property, me);
-    if (type == "[") return cont(pushlex("]"), expression, expect("]"), poplex, me);
+    if (type == "[") return cont(pushlex("]"), maybeexpression, expect("]"), poplex, me);
   }
   function maybelabel(type) {
     if (type == ":") return cont(poplex, statement);
@@ -380,20 +382,18 @@ CodeMirror.defineMode("audescript", function(config, parserConfig) {
     if (value == "=") return cont(expressionNoComma, vardef2);
     if (type == ",") return cont(vardef1);
   }
-  function maybeelse(indent) {
-    return function(type, value) {
-      if (type == "keyword b" && value == "else") {
-        cx.state.lexical = new JSLexical(indent, 0, "form", null, cx.state.lexical);
-        return cont(statement, poplex);
-      }
-      return pass();
-    };
+  function maybeelse(type, value) {
+    if (type == "keyword b" && value == "else") return cont(pushlex("form"), statement, poplex);
   }
   function forspec1(type) {
     if (type == "var") return cont(vardef1, expect(";"), forspec2);
+    if (type == "let") return cont(vardef1, expect(";"), forspec2);
     if (type == ";") return cont(forspec2);
     if (type == "variable") return cont(formaybein);
     return pass(expression, expect(";"), forspec2);
+  }
+  function foreachspec(type) {
+      if (type == "variable") return cont(formaybein);
   }
   function formaybein(_type, value) {
     if (value == "in") return cont(expression);
@@ -402,6 +402,7 @@ CodeMirror.defineMode("audescript", function(config, parserConfig) {
   function forspec2(type, value) {
     if (type == ";") return cont(forspec3);
     if (value == "in") return cont(expression);
+    if (value == "of") return cont(expression);
     return pass(expression, expect(";"), forspec3);
   }
   function forspec3(type) {
@@ -448,6 +449,12 @@ CodeMirror.defineMode("audescript", function(config, parserConfig) {
       if (state.tokenize == jsTokenComment) return CodeMirror.Pass;
       if (state.tokenize != jsTokenBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical;
+      // Kludge to prevent 'maybelse' from blocking lexical scope pops
+      for (var i = state.cc.length - 1; i >= 0; --i) {
+        var c = state.cc[i];
+        if (c == poplex) lexical = lexical.prev;
+        else if (c != maybeelse || /^else\b/.test(textAfter)) break;
+      }
       if (lexical.type == "stat" && firstChar == "}") lexical = lexical.prev;
       if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat")
         lexical = lexical.prev;
@@ -468,6 +475,9 @@ CodeMirror.defineMode("audescript", function(config, parserConfig) {
     blockCommentStart: jsonMode ? null : "/*",
     blockCommentEnd: jsonMode ? null : "*/",
     lineComment: jsonMode ? null : "//",
+    fold: "brace",
+
+    helperType: jsonMode ? "json" : "javascript",
     jsonMode: jsonMode
   };
 });
