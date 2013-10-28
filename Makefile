@@ -16,21 +16,20 @@ minify-css:
 	css=`uglifycss style/gui.css`;\
 	echo "$$css" > style/gui.css
 
-# this breaks things
 minify-html:
-# 	html=`nodejs -e "console.log(\
-# 			require('html-minifier').minify(\
-# 				require('fs').readFileSync(\
-# 					'index.html',\
-# 					'utf8' \
-# 				 ), {\
-# 					removeComments: true,\
-# 					removeCommentsFromCDATA: true,\
-# 					collapseWhitespace: true,\
-# 					collapseBooleanAttributes: true\
-# 				}\
-# 			)\
-# 		);"`;\
-# 	echo "$$html" > index.html
+	html=`nodejs -e "console.log(\
+			require('html-minifier').minify(\
+				require('fs').readFileSync(\
+					'index.html',\
+					'utf8' \
+				 ), {\
+					removeComments: true,\
+					removeCommentsFromCDATA: true,\
+					collapseWhitespace: true,\
+					collapseBooleanAttributes: true\
+				}\
+			)\
+		);"`;\
+	echo "$$html" > index.html
 clean:
 	rm -rf js/boot.js dirlist.txt
