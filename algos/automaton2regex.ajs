@@ -158,7 +158,6 @@ function automatonToRE(A, retStruct) {
                L[0][i][j] = RE_sum(L[0][i][j], RE_epsilon());
             }
          }
-         console.dir(L[0][i][j]);
       }
    }
    
