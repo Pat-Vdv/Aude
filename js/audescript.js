@@ -40,9 +40,13 @@
    }
 
    // things needed to execute Audescript code.
-   if(!that.StopIteration) {
-      that.StopIteration = {};
-   }
+   pkg.Audescript.StopIteration = {};
+   pkg.Audescript.ReturnValue = function(v) {
+      this.v = v;
+   };
+   pkg.Audescript.ThrowValue = function(v) {
+      this.v = v;
+   };
 
    var letDeclarationSupported      = false,
        arrowFunctionSupported       = false,
@@ -465,25 +469,40 @@
       }
    }
 
-   function foreachReplacements(symbol) {
+   function foreachReplacements(symbol, inForeach, constraintedVariables) {
       if(symbol === "break") {
-         return "throw StopIteration";
+         return "throw Audescript.StopIteration";
       }
-      else if(symbol === "return") {
+      else if(symbol === "return" || symbol === "throw") {
          var d = i;
          var s = getSymbol();
          if(type === whitespace) {
             if(s.indexOf('\n') !== -1) {
                i = d;
-               return "throw null";
+               if(symbol === 'throw') {
+                  return 'throw'; // Syntax error
+               }
+               else {
+                  return "throw new Audescript.ReturnValue(undefined)";
+               }
             }
             s = getSymbol();
          }
          i = d;
          if(s === ';') {
-            return "throw null";
+            if(symbol === 'throw') {
+               return "throw"; // Syntax error
+            }
+            else {
+               return "throw new Audescript.ReturnValue(undefined)";
+            }
          }
-         return "throw";
+         if(symbol === "throw") {
+            return "throw new Audescript.ThrowValue(" + getExpression({inForeach:inForeach, value:true, constraintedVariables:constraintedVariables}) + ")";
+         }
+         else {
+            return "throw new Audescript.ReturnValue(" + getExpression({inForeach:inForeach, value:true, constraintedVariables:constraintedVariables}) + ")";
+         }
       }
       else if(symbol === "continue") {
          return "return";
@@ -656,7 +675,7 @@
             i = deb;
             return '';
          }
-         return res + foreachReplacements(symbol);
+         return res + foreachReplacements(symbol, inForeach, constraintedVariables);
       }
       else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === "switch") {
          var tmp;
@@ -1264,7 +1283,7 @@
                }
                ef = '}';
             }
-            return 'try{(' + expr2 + ').forEach' + beforeParenthesis + '(function(' + ((declarationSymbol || keyword === 'foreach') ? expr1 : '') + ')' + bf + foreachBody + ef + ')}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){' + (inForeach ? 'throw ' : 'return ') + 'e;}}';
+            return 'try{(' + expr2 + ').forEach' + beforeParenthesis + '(function(' + ((declarationSymbol || keyword === 'foreach') ? expr1 : '') + ')' + bf + foreachBody + ef + ')}catch(e){if(e instanceof Audescript.ThrowValue){throw ' + (inForeach ? 'e' : 'e.v') + ';}else if(e instanceof Audescript.ReturnValue){' + (inForeach ? 'throw e' : 'return e.v') + ';}}';
          }
       }
    }
