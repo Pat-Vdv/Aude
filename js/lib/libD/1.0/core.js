@@ -545,6 +545,7 @@ libD.jsLoad = function(fname, callback, type, defer, async)
 	script.src = fname;
 	script.type = type || 'text/javascript';
    script.onload = callback;
+   script.onerror = function(){callback(true);};
    if(defer) {
       script.defer = "defer";
    }
