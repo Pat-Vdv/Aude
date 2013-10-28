@@ -4,3 +4,10 @@ Set.prototype.iterator =  function() {
    }
    return;
 }
+
+Set.prototype['@@iterator'] =  function() {
+   for(var i in this.l) {
+      yield {value:this.l[i]};
+   }
+   return;
+}
