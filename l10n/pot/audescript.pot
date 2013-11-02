@@ -1,0 +1,4 @@
+#TranslationFunction Audescriptl10n
+
+msgid  "Assignation Error: types of the value and the variable don’t match."
+msgstr ""

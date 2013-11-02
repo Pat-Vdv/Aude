@@ -1,0 +1,429 @@
+msgid "Program Result"
+msgstr "Résultat"
+
+msgid "\nStack trace: \n"
+msgstr "\nPile de l'erreur : \n"
+
+msgid "Error on line {0}, character {1}"
+msgstr "Erreur ligne {0}, caractère {1}"
+
+msgid "Error on line {0}"
+msgstr "Erreur à la ligne {0}"
+
+msgid "Execute the current automaton with a word"
+msgstr "Exécuter l'automate actuel sur un mot"
+
+msgid "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)"
+msgstr "Quel nom voulez-vous donner à l'image exportée ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg)"
+
+msgid "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
+msgstr "Quel nom voulez-vous donner au fichier exporté ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
+
+msgid "Which name do you want to give to the exported text file?"
+msgstr "Quel nom voulez-vous donner au fichier texte exporté ?"
+
+msgid "get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."
+msgstr "get_automaton: L’automate n°{0} n'existe pas ou n’a pas d’état initial."
+
+msgid "Please enter a name for the file in which the program will be saved."
+msgstr "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré."
+
+msgid "Please enter a name for the file in which the automaton will be saved."
+msgstr "Veuillez saisir un nom pour le fichier dans lequel l'automate sera enregistré."
+
+msgid "Syntax error: bad import parameter in {0}"
+msgstr "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}"
+
+msgid "Error: import failed: '{0}' (in '{1}')."
+msgstr "Erreur : l'import a échoué: '{0}' (depuis '{1}')."
+
+msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
+msgstr "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis '{0}')."
+
+msgid "Mode:"
+msgstr "Mode :"
+
+msgid "Execute Program"
+msgstr "Lancer le programme"
+
+msgid "Design"
+msgstr "Dessin"
+
+msgid "Program"
+msgstr "Programme"
+
+msgid "Automaton code"
+msgstr "Code de l’automate"
+
+msgid "Open"
+msgstr "Ouvrir"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Save As"
+msgstr "Enregistrer sous"
+
+msgid "Automaton:"
+msgstr "Automate :"
+
+msgid "Program:"
+msgstr "Programme :"
+
+msgid "Export"
+msgstr "Exporter"
+
+msgid "Redraw"
+msgstr "Redessiner"
+
+msgid "Run a word"
+msgstr "Exécuter un mot"
+
+msgid "Export result"
+msgstr "Exporter le résultat"
+
+msgid "Automaton n°"
+msgstr "Automate n°"
+
+msgid "result.txt"
+msgstr "resultat.txt"
+
+msgid "automaton.txt"
+msgstr "automate.txt"
+
+msgid "Word: "
+msgstr "Mot : "
+
+msgid "Run"
+msgstr "Exécuter"
+
+msgid "Step"
+msgstr "Un pas"
+
+msgid "Delay between steps (ms): "
+msgstr "Pause entre les étapes (ms) : "
+
+msgid "This automaton into the editor"
+msgstr "Cet automate dans l'éditeur"
+
+msgid "To add a new state, double-click on the drawing area where you want it to be."
+msgstr "Pour ajouter un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous voulez le placer."
+
+msgid "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
+msgstr "Pour ajouter une nouvelle transition, cliquez sur l'état de départ en appuyant sur Maj puis cliquez sur l'état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>."
+
+msgid "To rename a state, double-click on it."
+msgstr "Pour renommer un état, double-cliquez dessus."
+
+msgid "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
+msgstr "Pour modifier les symboles d'une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>."
+
+msgid "To remove a state, Ctrl+click on it."
+msgstr "Pour supprimer un état, cliquez dessus en maintenant Ctrl enfoncé."
+
+msgid "To remove a transition, Ctrl+click on its arrow."
+msgstr "Pour supprimer une transition, cliquez sur sa flèche en maintenant Ctrl enfoncé."
+
+msgid "To set a state as (non-)accepting, right-click on it."
+msgstr "Pour rendre un état (non-)accepteur, cliquez droit sur celui-ci."
+
+msgid "To set a state as the initial state, Ctrl+right-click on it."
+msgstr "Pour rendre un état initial, ctrl+cliquez dessus avec le bouton droit de la souris."
+
+msgid "To make a transition straight, Shift+click on its arrow or its label."
+msgstr "Pour rendre une transition droite, cliquez sur sa flèche ou son étiquette avec la touche Shift enfoncée."
+
+msgid "New state"
+msgstr "Nouvel état"
+
+msgid "New transition"
+msgstr "Nouvelle transition"
+
+msgid "Modify state's name"
+msgstr "Modifier le nom d'un état"
+
+msgid "Modify transitions' symbols"
+msgstr "Modifier les symboles d'une transition"
+
+msgid "Remove a state"
+msgstr "Supprimer un état"
+
+msgid "Remove a transition"
+msgstr "Supprimer une transition"
+
+msgid "Toggle accepting/non accepting"
+msgstr "Changer accepteur/non accepteur"
+
+msgid "Set a state as initial"
+msgstr "Rendre un état initial"
+
+msgid "Make a transition straight"
+msgstr "Rendre une transition droite"
+
+msgid "Toggle help"
+msgstr "Afficher / Masquer l’aide"
+
+msgid "Howto: input symbols"
+msgstr "Comment saisir des symboles"
+
+msgid "<p>In the window which will invite you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surround them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>"
+msgstr "<p>Dans la fenêtre qui vous proposera de saisir des symboles, entrez simplement le symbole que vous voulez associer à la transition.</p><p>Si vous voulez saisir plusieurs symboles, séparez-les par des virgules.</p><p>Si vous voulez saisir des symboles contenant des espaces ou des virgules, encadrez-les par des guillemets doubles.</p><p>Si vous avez besoin de saisir un symbole contenant des guillemets ou des slashs, précédez ces deux caractères par un slash et encadrez le symbole par des guillemets.</p><p>Pour insérer un epsilon (ε-transition), vous pouvez le saisir directement ou utiliser <code>\\e</code>.</p>"
+
+msgid "Create a new automaton"
+msgstr "Créer un nouvel automate"
+
+msgid "Remove current automaton"
+msgstr "Supprimer cet automate"
+
+msgid "There is no automaton to save."
+msgstr "Il n'y a pas d'automate à enregistrer."
+
+msgid "Automaton"
+msgstr "Automate"
+
+msgid "Determinize"
+msgstr "Déterminiser"
+
+msgid "Simplify names of the states"
+msgstr "Simplifier les noms des états"
+
+msgid "ε-eliminate"
+msgstr "ε-éliminer"
+
+msgid "Minimize"
+msgstr "Minimiser"
+
+msgid "List differentiable states"
+msgstr "Lister les état distingables"
+
+msgid "Test empty language"
+msgstr "Tester language vide"
+
+msgid "Test infinite language"
+msgstr "Tester language infini"
+
+msgid "JSON representation"
+msgstr "Représentation JSON"
+
+msgid "Load a Quiz"
+msgstr "Charger un Quiz"
+
+msgid "Loading the quiz failed"
+msgstr "Erreur lors du chargement du Quiz"
+
+msgid "The quiz seems to be malformed: {0}"
+msgstr "Le quiz semble mal formé : {0}"
+
+msgid "Start the Quiz"
+msgstr "Démarrer le quiz"
+
+msgid "Close the Quiz"
+msgstr "Fermer le quiz"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Quiz: "
+msgstr "Quiz : "
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Question {0}: "
+msgstr "Question {0} : "
+
+msgid "Next question"
+msgstr "Question suivante"
+
+msgid "Previous question"
+msgstr "Question précédente"
+
+msgid "The Quiz is finished! Here are the details of the correction."
+msgstr "Le quiz est terminé ! Voici les détails de la correction."
+
+msgid "Error in the Quiz"
+msgstr "Erreur dans le quiz"
+
+msgid "There is an error in the Quiz: {0}"
+msgstr "Il y a une erreur dans le quiz : {0}"
+
+msgid "Question {0} has no answers."
+msgstr "La question {0} n’a pas de réponse."
+
+msgid "You can draw the automaton bellow."
+msgstr "Vous pouvez dessiner l'automate ci-dessous."
+
+msgid "Equiv. between 2 automata"
+msgstr "Équiv. entre 2 automates"
+
+msgid "Reg. Exp. → automaton"
+msgstr "Exp. Reg. → automate"
+
+msgid "Reg. Exp. → minimized automaton"
+msgstr "Exp. Reg. → automate minimisé"
+
+msgid "Automaton → Reg. Exp."
+msgstr "Automate → Exp. Reg."
+
+msgid "Complete"
+msgstr "Compléter"
+
+msgid "Complement"
+msgstr "Complémenter"
+
+msgid "Product"
+msgstr "Produit"
+
+msgid "Mirror"
+msgstr "Miroir"
+
+msgid "Wrong answer for {0}."
+msgstr "Réponse incorrecte pour {0}."
+
+msgid "The given automaton accepts too many words."
+msgstr "L’automate donné accepte trop de mots."
+
+msgid "The empty word is accepted while it shouldn’t be."
+msgstr "Le mot vide est accepté alors qu’il ne devrait pas l’être."
+
+msgid "The empty word is not accepted while it should be."
+msgstr "Le mot vide n’est pas accepté alors qu’il devrait l’être."
+
+msgid "Word <i>{0}</i> is accepted while it shouldn’t be."
+msgstr "Le mot <i>{0}</i> est accepté alors qu’il ne devrait pas l’être."
+
+msgid "Word <i>{0}</i> is not accepted while it should be."
+msgstr "Le mot <i>{0}</i> n’est pas accepté alors qu’il devrait l‘être."
+
+msgid "The given automaton isn’t equivalent to the expected one."
+msgstr "L’automate donné n’est pas équivalent à l’automate attendu."
+
+msgid "Question type not known"
+msgstr "Type de question inconnu"
+
+msgid "Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>"
+msgstr "Le type de la question {0} est inconnu. Les types reconnus sont : <ul><li>\"mcq\" pour question à choix multiples,</li><li>\"word\" (pour dessiner un automate qui accepte une liste donnée de mots).</li></ul>"
+
+msgid "Question was not answered."
+msgstr "Vous n’avez pas répondu à la question."
+
+msgid "We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)"
+msgstr "Nous souhaitons ne pas vous donner de note. Votre progression est la chose la plus importante, au delà de toute note arbitraire, absolue et dénuée de sens. Continuez vos efforts ;-)"
+
+msgid "Correct answer?"
+msgstr "Réponse correcte ?"
+
+msgid "Comments"
+msgstr "Commentaires"
+
+msgid "Instruction"
+msgstr "Énoncé"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Previous page"
+msgstr "Page précédente"
+
+msgid "Automaton given in the quiz is not correct."
+msgstr "L’automate donné dans le quiz n’est pas correct."
+
+msgid "No regular expression or automaton was given in the quiz."
+msgstr "Aucun automate ou aucune expression régulière n’a été donné dans le quiz."
+
+msgid "Automaton given in the quiz is not correct."
+msgstr "L’automate donné dans le quiz n’est pas correct."
+
+msgid "Select an algorithm"
+msgstr "Choisir un algorithme"
+
+msgid "You didn’t select enough automata. Please select {0} automata."
+msgstr "Vous n’avez pas sélectionné assez d’automates. Veuillez en sélectionner {0}."
+
+msgid "Automaton #{0}"
+msgstr "Automate n°{0}"
+
+msgid "You can choose the order in which automata will be used in algorithms."
+msgstr "Vous pouvez choisir l’ordre dans lequel les automates seront utilisés dans les algorithmes."
+
+msgid "Continue execution"
+msgstr "Continuer l’exécution"
+
+msgid "The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."
+msgstr "L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « Continuer l’exécution » quand vous avez fait votre choix."
+
+msgid "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
+msgstr "Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src=\"{0}\" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre."
+
+msgid "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
+msgstr "Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP : {0})"
+
+msgid "Unable to get the list of predefined algorithms"
+msgstr "Impossible d’avoir la liste des algorithmes prédéfinis"
+
+msgid "Ready to use quizzes"
+msgstr "Quiz prêts à être utilisés"
+
+msgid "Built-in algorithms"
+msgstr "Algorithmes intégrés"
+
+msgid "Examples of automaton"
+msgstr "Exemples d'automate"
+
+msgid "Load a quiz"
+msgstr "Ouvrir un quiz"
+
+msgid "Load a program"
+msgstr "Ouvrir un programme"
+
+msgid "Load an automaton"
+msgstr "Ouvrir un automate"
+
+msgid "Loading program failed."
+msgstr "L’ouverture du programme a échoué"
+
+msgid "Loading automaton failed."
+msgstr "L’ouverture de l’automate a échoué."
+
+msgid "Loading quiz failed."
+msgstr "L’ouverture du quiz a échoué."
+
+msgid "From your computer"
+msgstr "Depuis votre ordinateur"
+
+msgid "Choose and order the parameter automata"
+msgstr "Choisir et ordonner les automates paramètres"
+
+msgid "<h2>Welcome to {0}.</h2>
+<p>Here is the area where you can <strong>draw automata</strong>.</p>
+<ul>
+   <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>
+   <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
+   <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
+   <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
+   <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
+   <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
+</ul>
+<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>
+<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>
+<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>
+<p>To hide this text, click on it.</p>
+<p> Enjoy yourself!</p>"
+msgstr "<h2>Bienvenue sur {0}.</h2>
+<p>Ceci est l’endroit où vous pouvez <strong>dessiner des automates</strong>.</p>
+<ul>
+   <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez le placer.</li>
+   <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>
+   <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>
+   <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>
+   <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>
+   <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>
+</ul>
+<p>Vous pouvez <strong>accéder à ces instructions</strong> à tout moment en cliquant sur l’icône <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> de la barre d’outils.</p>
+<p>Quand vous exécuterez un programme ou un algorithme, le <strong>résultat</strong> apparaîtra <strong>à la droite</strong> de l’écran.</p>
+<p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>
+<p> Amusez vous bien !</p>"
+

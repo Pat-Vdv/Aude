@@ -1,0 +1,19 @@
+#TranslationFunction Automatal10n
+
+msgid  "Automaton.setStates(): The given argument is not a Set."
+msgstr ""
+
+msgid  "Automaton.setAlphabet(): The given argument is not a Set."
+msgstr ""
+
+msgid  "Automaton.setFinalStates(): The given argument is not a Set."
+msgstr ""
+
+msgid  "Automaton.runSymbol(): epsilon is forbidden."
+msgstr ""
+
+msgid  "read_automaton: Line {0} is malformed."
+msgstr ""
+
+msgid  "Automaton constructor takes an Automaton in argument, or nothing."
+msgstr ""

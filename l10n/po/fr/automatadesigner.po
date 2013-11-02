@@ -1,0 +1,20 @@
+msgid  "New transition"
+msgstr "Nouvelle transition"
+
+msgid  "Name of the state"
+msgstr "Nom de l’état"
+
+msgid  "Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."
+msgstr "Veuillez donner les symboles de la transition en les séparant par des vigules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles."
+
+msgid  "Sorry, but you can't remove the initial state."
+msgstr "Désolé, mais vous ne pouvez pas supprimer l’état initial."
+
+msgid  "Which name do you want for the state ?"
+msgstr "Quel nom voulez-vous donner à l’état ?"
+
+msgid  "Sorry, but a state is already named like this."
+msgstr "Désolé, mais un état porte déjà ce nom."
+
+msgid  "Sorry, there is already a transition between these states in this way."
+msgstr "Désolé, il y a déjà une transition dans ce sens entre ces états."

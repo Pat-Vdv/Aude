@@ -1,0 +1,10 @@
+#TranslationFunction Setl10n
+
+msgid  "Set.checkConstraint(element): The element does not satisfies the type constraint."
+msgstr ""
+
+msgid  "Value is malformed."
+msgstr ""
+
+msgid  "Constructor name in value refers to unkown class."
+msgstr ""

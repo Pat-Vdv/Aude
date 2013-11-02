@@ -1,0 +1,4 @@
+#TranslationFunction Audescriptl10n
+
+msgid  "Assignation Error: types of the value and the variable don’t match."
+msgstr "Erreur d’affectation : la valeur et la variable ont des types qui ne correspondent pas."

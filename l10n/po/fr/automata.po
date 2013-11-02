@@ -1,0 +1,17 @@
+msgid  "Automaton.setStates(): The given argument is not a Set."
+msgstr "Automaton.setStates() : L'argument donné n'est pas un ensemble."
+
+msgid  "Automaton.setAlphabet(): The given argument is not a Set."
+msgstr "Automaton.setAlphabet() : L'argument donné n'est pas un ensemble."
+
+msgid  "Automaton.setFinalStates(): The given argument is not a Set."
+msgstr "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble."
+
+msgid  "Automaton.runSymbol(): epsilon is forbidden."
+msgstr "Automaton.runSymbol(): epsilon est interdit."
+
+msgid  "read_automaton: Line {0} is malformed."
+msgstr "read_automaton : La ligne {0} est mal formée."
+
+msgid  "Automaton constructor takes an Automaton in argument, or nothing."
+msgstr "Le constructeur Automaton prend un Automaton en paramètre, ou rien."

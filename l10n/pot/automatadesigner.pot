@@ -1,0 +1,22 @@
+#TranslationFunction AutomataDesigner.AutomataDesignerl10n
+
+msgid  "New transition"
+msgstr ""
+
+msgid  "Name of the state"
+msgstr ""
+
+msgid  "Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."
+msgstr ""
+
+msgid  "Sorry, but you can't remove the initial state."
+msgstr ""
+
+msgid  "Which name do you want for the state ?"
+msgstr ""
+
+msgid  "Sorry, but a state is already named like this."
+msgstr ""
+
+msgid  "Sorry, there is already a transition between these states in this way."
+msgstr ""
