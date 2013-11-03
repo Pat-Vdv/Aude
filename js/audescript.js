@@ -82,7 +82,7 @@
    try {
       constSupported         = eval("(function(){const a=1; try{a=2;}catch(e){return true;} return false;})();");
    }
-   catch(e){
+   catch(e) {
       if(e instanceof TypeError) {
          constSupported = true;
       }
@@ -136,7 +136,9 @@
       var k = 0;
       while(destructStr[i] !== ']') {
          i = destructNext(destructStr, i, '', true);
-         i = pkg.Audescript.destruct((e || [])[k], destructStr, res, true, i);
+         if(destructStr[i] !== ',') {
+            i = pkg.Audescript.destruct((e || [])[k], destructStr, res, true, i);
+         }
          i = destructNext(destructStr, i, ']');
          ++k;
       }
@@ -209,7 +211,7 @@
       }
       return ret + 'Audescript.des=null;})()';
    }
-   
+
    pkg.Audescript.destruct = function (e, destructStr, res, returnCurrentIndex, i) {
       if(!res) {
          res = {};
@@ -242,8 +244,24 @@
       return res;
    }
 
+   function tuples_eq(t1, t2) {
+      if(t1.length !== t2.length) {
+         return false;
+      }
+
+      for(var i=0; i < t1.length; ++i) {
+         if(!pkg.Audescript.eq(t1[i], t2[i])) {
+            return false;
+         }
+      }
+      return true;
+   }
+
    // checks "real" equality between v1 and v2
    pkg.Audescript.eq = function(v1, v2) {
+      if(v1 instanceof Tuple && v1.length === 1) {
+         return pkg.Audescript.eq(v2, v1[0]);
+      }
       return v1 == v2 || (
             typeof v1 === typeof v2
          && (v1 instanceof Set && v2 instanceof Set
@@ -257,7 +275,9 @@
                      && pkg.Audescript.eq(v1.finalStates, v2.finalStates)
                      && pkg.Audescript.eq(v1.trans, v2.trans)
                      && pkg.Audescript.eq(v1.q_init, v2.q_init)
-                  : JSON.stringify(v1) === JSON.stringify(v2)
+                  : (v1 instanceof Tuple && v2 instanceof Tuple)
+                     ? tuples_eq(v1, v2)
+                     : JSON.stringify(v1) === JSON.stringify(v2)
                )
             )
          )
@@ -280,12 +300,12 @@
 
       if(value !== null && value !== undefined && variable !== null && value !== undefined) {
          if(typeof value !== typeof variable && value.constructor !== variable.constructor) {
-            throw new Error(_("Assignation Error: types of the value and the variable don't match."));
+            throw new Error(_("Assignation Error: types of the value and the variable don’t match."));
          }
          return integerCheck ? (value > 0 ? Math.floor(value) : Math.ceil(value)) : value;
       }
       if(value !== variable) {
-         throw new Error(_("Assignation Error: types of the value and the variable don't match."));
+         throw new Error(_("Assignation Error: types of the value and the variable don’t match."));
       }
       return value;
    };
@@ -587,7 +607,7 @@
          var bufferSymbol = getSymbol();
          if(type === variable || type === instruction) {
             var v = s[d] + bufferSymbol;
-            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include' || v === 'let' || v === 'const') {
+            if(v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include' || v === 'let' || v === 'const' || v === 'try' || v === 'catch' || v === 'finally') {
                lastSignificantType = type = instruction;
             }
             return v;
@@ -753,12 +773,12 @@
                   pres += ',';
                   oneVal = false;
                }
-               pres += getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables}) + getWhite();
+               pres += getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + getWhite();
                symbol = getSymbol();
 
                if(symbol === ':') {
                   obj = true;
-                  pres += symbol + getExpression({inForeach:inForeach,value:true, noComma:true,constraintedVariables:constraintedVariables}) + getWhite();
+                  pres += symbol + getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables}) + getWhite();
                   symbol = getSymbol();
                }
 
@@ -780,12 +800,35 @@
          }
       }
       else if(symbol === '[') {
-         var pres = toPureJS({']':true}, inForeach);
+         var pres = getExpression({inForeach:inForeach,commaAllowed:true,constraintedVariables:constraintedVariables, endSymbols:{']':true}});
          res += '[' + pres + getSymbol(); // ']'
       }
       else if(symbol === '(') {
-         var pres = toPureJS({')':true}, inForeach);
-         res += '(' + pres + getSymbol(); // ')'
+         if(options.inForParenthesis) {
+            var iter = '', comp = '', decl = getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getWhite();
+            if(decl) {
+               comp = getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getWhite();
+               if(comp) {
+                  // we allow the comma operator here in this specific context (iteration part of the for loop)
+                  iter = getExpression({inForeach:false,commaAllowed:true,constraintedVariables:constraintedVariables}) + getWhite();
+               }
+            }
+            if(getSymbol() === ')') {
+               return res + '(' + decl + comp + iter + ')';
+            }
+            else {
+               i = deb;
+               lastSignificantType = oldType;
+               return '';
+            }
+         }
+         else {
+            var pres = toPureJS({')':true}, inForeach,constraintedVariables);
+            res += '(' + pres + getSymbol(); // ')'
+
+//             var pres = getExpression({inForeach:inForeach,commaAllowed:!options.blockComma,constraintedVariables:constraintedVariables, endSymbols:{')':true}});
+//             res += '(' + pres + getSymbol(); // ')'
+         }
       }
       else if(symbol === ';') {
          if(value) {
@@ -795,12 +838,11 @@
          return res + symbol;
       }
       else if(symbol === ',') {
-         if(value || options.noComma) {
-            lastSignificantType = oldType;
+         if(!options.commaAllowed) {
             --i;
             return res;
          }
-         return res + ',' + getExpression({inForeach:true, value:false, endSymbols:endSymbols,constraintedVariables:constraintedVariables});
+         return res + symbol + getExpression({inForeach:inForeach,value:value,commaAllowed:true,endSymbols:endSymbols,constraintedVariables:constraintedVariables});
       }
       else if(symbol === 'foreach') {
          if(value) {
@@ -816,33 +858,38 @@
          }
          return res + foreachReplacements(symbol, inForeach, constraintedVariables);
       }
-      else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === "switch") {
+      else if(symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === 'switch' || symbol === 'try' || symbol === 'catch' || symbol === 'finally') {
          var tmp;
-         if(symbol === 'function') {
-            var d = i;
-            var functionName = getWhite() + getSymbol();
+         if(symbol === 'function' || symbol === 'catch') {
+            if(symbol === 'function') {
+               var d = i;
+               var functionName = getWhite() + getSymbol();
 
-            if(lastSignificantType === variable) {
-               if(value) {
-                  i = deb;
-                  return '';
+               if(lastSignificantType === variable) {
+                  if(value) {
+                     i = deb;
+                     return '';
+                  }
+                  return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables), noset_obj:true}));
                }
-               return res + symbol + functionName + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables), noset_obj:true}));
-            }
 
-            i = d;
-            lastSignificantType = type = instruction;
-            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset_obj:true,noComma:true}));
+               i = d;
+               lastSignificantType = type = instruction;
+            }
+            return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + functionBody(getExpression({inForeach:false,constraintedVariables:copy(constraintedVariables),noset_obj:true}));
 
          }
          else if(value) {
             i = deb;
             return '';
          }
+         else if(symbol === 'try' || symbol === 'finally') {
+            return res + symbol + getExpression({inForeach:inForeach,constraintedVariables:copy(constraintedVariables),noset_obj:true});
+         }
          else if(symbol === 'for' && !IterationsSupported && 'for' !== (tmp = parseForeach(inForeach, symbol, constraintedVariables))) {
             return res + tmp;
          }
-         return res + symbol + getExpression({inForeach:false,constraintedVariables:constraintedVariables}) + getExpression({inForeach:(symbol === 'while' || symbol === 'for' || symbol === 'switch') ? false : inForeach,constraintedVariables:copy(constraintedVariables),noValue:true});
+         return res + symbol + getExpression({inForeach:false,inForParenthesis:symbol === 'for',blockComma:true,constraintedVariables:constraintedVariables}) + getExpression({inForeach:(symbol === 'while' || symbol === 'for' || symbol === 'switch') ? false : inForeach,constraintedVariables:copy(constraintedVariables),noValue:true});
       }
       else if(symbol === 'do') {
          if(value) {
@@ -1040,20 +1087,15 @@
             res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getSymbol(); // symbol should be ']'
          }
          else if(symbol === '(') {
-// lines below are commented because expressions like (f)()() should be accepted. arrayFunction[i]() also.
-//             if(oldType !== variable) {
-//                i = deb;
-//                return res + white;
-//             }
-            res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables}) + getSymbol(); // symbol should be ')'
+            res += white + symbol + getExpression({inForeach:inForeach,constraintedVariables:constraintedVariables,commaAllowed:true}) + getSymbol(); // symbol should be ')'
          }
          else if(symbol === ',') {
-            if(onlyOneValue || options.noComma) {
-               i = deb;
+            if(!options.commaAllowed) {
+               --i;
                lastSignificantType = oldType;
                return res + white;
             }
-            return res + white + symbol + getExpression({inForeach:inForeach,value:value,endSymbols:endSymbols,constraintedVariables:constraintedVariables});
+            return res + white + symbol + getExpression({inForeach:inForeach,value:value,commaAllowed:true,endSymbols:endSymbols,constraintedVariables:constraintedVariables});
          }
          else if(symbol === ';') {
             if(value) {
@@ -1067,7 +1109,6 @@
             if(value) {
                --i;
                lastSignificantType = oldType;
-               
                return res + white;
             }
 
@@ -1212,7 +1253,10 @@
             else if(symbol === '!=') {
                res = white + " !Audescript.eq(" + res + ',' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables}) + ')';
             }
-            else if(symbol[symbol.length-1] === '=') {
+            else if(symbol === '===') {
+               res = res + white + '===' + getExpression({inForeach:inForeach, onlyOneValue:true,constraintedVariables:constraintedVariables});
+            }
+            else if(symbol[symbol.length-1] === '=' && symbol !== '>=' && symbol != '<=') {
                var trimRes = res.trim();
                var newVal  = getExpression({inForeach:inForeach,value:true,constraintedVariables:constraintedVariables});
                if(!destructuringSupported && (trimRes[0] === '{' || trimRes[0] === '[')) {
@@ -1524,6 +1568,4 @@
    pkg.map = function(l, func) {
       return l.map(function(e){func(e);});
    };
-
-   _("fr", "Assignation Error: types of the value and the variable don't match.", "Erreur d\'affectation : la valeur et la variable ont des types qui ne correspondent pas.")
 })(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);
