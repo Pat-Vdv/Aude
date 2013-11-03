@@ -8,9 +8,11 @@ clean-src:
 
 clean-git:
 	rm -rf .git
-	
+
+.PHONY: dirlist.txt
+
 dirlist.txt:
-	find quiz examples-automata algos -type f > dirlist.txt
+	find quiz examples-automata algos l10n/js -type f > dirlist.txt
 
 minify-css:
 	css=`uglifycss style/gui.css`;\
