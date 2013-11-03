@@ -1599,14 +1599,4 @@
    pkg.prompt = function(title, descr, def, fun) {
       fun(window.prompt(title + ': ' + descr, def));
    };
-
-   _("fr", "New transition", "Nouvelle transition");
-   _("fr", "Name of the state", "Nom de l’état");
-   _("fr", "Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes.", "Veuillez donner les symboles de la transition en les séparant par des vigules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles.");
-   _("fr", "Sorry, but you can't remove the initial state.", "Désolé, mais vous ne pouvez pas supprimer l’état initial.");
-   _("fr", "Which name do you want for the state ?", "Quel nom voulez-vous donner à l’état ?");
-   _("fr", "Sorry, but a state is already named like this.", "Désolé, mais un état porte déjà ce nom.");
-   _("fr", "Sorry, there is already a transition between these states in this way.", "Désolé, il y a déjà une transition dans ce sens entre ces états.");
-
-   
 })(window.AutomataDesigner = {}, window.AutomataDesignerGlue || (window.AutomataDesignerGlue = {}), this);
