@@ -1224,7 +1224,7 @@
     * @returns {Array} Returns an array of symbols corresponding to the representation of the transition.
     */
    pkg.parse_transition = function (text) {
-      return Set.prototype.getValue('(' + text + ')', map);
+      return Set.prototype.getValue('[' + text + ']', map);
    };
 
    /**
@@ -1235,7 +1235,7 @@
     */
    pkg.format_transition = function (trans) {
       var res='', symbols = pkg.parse_transition(trans);
-      for(var i in symbols) {
+      for(var i=0, len = symbols.length; i < len; ++i) {
          if(res) {
             res +=',';
          }
@@ -1248,12 +1248,4 @@
       }
       return res;
    };
-
-   _("fr", "Automaton.setStates(): The given argument is not a Set.", "Automaton.setStates() : L'argument donné n'est pas un ensemble.");
-   _("fr", "Automaton.setAlphabet(): The given argument is not a Set.", "Automaton.setAlphabet() : L'argument donné n'est pas un ensemble.");
-   _("fr", "Automaton.setFinalStates(): The given argument is not a Set.", "Automaton.setFinalStates() : L'argument donné n'est pas un ensemble.");
-   _("fr", "Automaton.runSymbol(): epsilon is forbidden.", "Automaton.runSymbol(): epsilon est interdit.");
-   _("fr", "read_automaton: Line {0} is malformed.", "read_automaton : La ligne {0} est mal formée.");
-   _("fr", "Automaton constructor takes an Automaton in argument, or nothing.", "Le constructeur Automaton prend un Automaton en paramètre, ou rien.");
-
 })(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);
