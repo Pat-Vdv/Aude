@@ -8,6 +8,8 @@
       <link rel="stylesheet" href="style/gui.css" />
       <script type="text/javascript;version=1.8">
          var js18Supported = true;
+      </script>
+      <script>
          var libD = {path: 'js/lib/libD/1.0/'};
       </script>
       <script src="js/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -85,7 +87,7 @@
          <button id="automaton_plus" title="Create a new automaton" data-translated-title="true"><img alt="+" src="icons/oxygen/16x16/actions/list-add.png" /></button>
          <button id="automaton_minus" title="Remove current automaton" data-translated-title="true"><img alt="-" src="icons/oxygen/16x16/actions/list-remove.png" /></button>
          <button id="redraw" data-translated-content="true">Redraw</button>
-         <button id="draw-toolbar-btn" title="Toggle the design toolbar" data-translated-title="true" class="codemode-disabled"><img alt="?" src="icons/oxygen/16x16/actions/draw-brush.png" /><b>?</b></button>
+         <button id="draw-toolbar-btn" title="Toggle help" data-translated-title="true" class="codemode-disabled"><img alt="?" src="icons/oxygen/16x16/actions/draw-brush.png" /><b>?</b></button>
       </span>
       <span>
          <span class="sep"></span>
@@ -103,13 +105,17 @@
       </span>
 
       <div class="right">
-         <button id="quiz" data-translated-content="true" >Load a Quiz</button>
-         <button id="export_result" data-translated-content="true">Export result</button>
+         <span>
+            <button id="quiz" data-translated-content="true" >Load a Quiz</button>
+         </span>
+         <span>
+            <button id="export_result" data-translated-content="true">Export result</button>
+         </span>
       </div>
       <div class="designmode-specific disabled codemode-disabled" id="draw-toolbar">
          <span>
-            <button data-translated-content="true" value="To create a new state, double-click on the drawing area where you want it to be.">New state</button>
-            <button data-translated-content="true" value="To modify the name of a state, double-click on it.">Modify state's name</button>
+            <button data-translated-content="true" value="To add a new state, double-click on the drawing area where you want it to be.">New state</button>
+            <button data-translated-content="true" value="To rename a state, double-click on it.">Modify state's name</button>
             <button data-translated-content="true" value="To remove a state, Ctrl+click on it.">Remove a state</button>
          </span>
          <span>
@@ -119,7 +125,7 @@
             <button data-translated-content="true" value="To make a transition straight, Shift+click on its arrow or its label.">Make a transition straight</button>
          </span>
          <span>
-            <button data-translated-content="true" value="To set a non-accepting state as accepting (and conversely), right-click on it.">Toggle accepting/non accepting</button>
+            <button data-translated-content="true" value="To set a state as (non-)accepting, right-click on it.">Toggle accepting/non accepting</button>
             <button data-translated-content="true" value="To set a state as the initial state, Ctrl+right-click on it.">Set a state as initial</button>
          </span>
       </div>
