@@ -39,7 +39,7 @@
 
 (function(pkg, that) {
    "use strict";
-   var _ = pkg.setl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
+   var _ = pkg.Setl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function(s){return s;};
    
    /**
     * A class to manipulate sets in Javascript.
@@ -52,6 +52,9 @@
     * @param {Set} [l] This optional parameter is an Array, a Set or an Object containing the elements to add to the newly created set.
     */
    pkg.Set = function(l) {
+      if(!(this instanceof pkg.Set)) {
+         return new Set(l);
+      }
       this.l = {};
       this.listeners = [];
       if(l) {
@@ -59,8 +62,8 @@
             this.setTypeConstraint(l.typeConstraint);
             l = l.getList();
          }
-         if(l instanceof Array) {
-            for(var i in l) {
+         if(l instanceof Array || l instanceof pkg.Tuple) {
+            for(var i=0,len = l.length; i < len; ++i) {
                this.add(l[i]);
             }
          }
@@ -69,6 +72,9 @@
                for(var i in l.contents) {
                   this.add(l.contents[i]);
                }
+            }
+            else {
+               throw new Error("A Set can only be built from a list or another Set.");
             }
             if(l.typeConstraint) {
                this.setTypeConstraint(l.typeConstraint);
@@ -79,14 +85,22 @@
 
    function listToString(l) {
       var res = '';
-      for(var i in l) {
+      for(var i=0,len=l.length; i < len; ++i) {
          if(res) {
             res += ',';
          }
 
          res += pkg.Set.prototype.elementToString(l[i]);
       }
-      return '(' + res + ')';
+      if(l instanceof pkg.Tuple) {
+         if(l.length === 1) {
+            return res;
+         }
+         else {
+            return '(' + res + ')';
+         }
+      }
+      return '[' + res + ']';
    }
 
    pkg.Set.prototype = {
@@ -137,7 +151,7 @@
                }
             }
             else if(!(element instanceof this.typeConstraint)) {
-               if(this.typeConstraint === pkg.Set && element instanceof Array) {
+               if(this.typeConstraint === pkg.Set && element instanceof Array || element instanceof Tuple) {
                   element = pkg.to_set(element); // this is ok to implicitely convert lists to sets
                }
                else {
@@ -534,6 +548,18 @@
          return true;
       },
 
+      /**
+       * This method returns an element of the set. Notice: do not expect this to be random!
+       * @method getItem
+       * @memberof Set
+       * @returns {Boolean} Returns an element of the set.
+      */
+      getItem : function() {
+         for(var i in this.l) {
+            return this.l[i];
+         }
+      },
+
       elementToString : function(e, map) {
          if(typeof e === 'number' && isNaN(e)) {
             return 'NaN';
@@ -548,7 +574,7 @@
             case Infinity:
                return 'Infinity';
             default:
-               if(e instanceof Array) {
+               if(e instanceof Array || e instanceof pkg.Tuple) {
                   return listToString(e);
                }
                else if(typeof e === 'string') {
@@ -667,7 +693,7 @@
          }
          else if(s[j] === "(" || s[j] === '[') {
             var end = s[j] === '(' ? ')' : ']';
-            var tuple = [];
+            var tuple = (end === ')') ? new pkg.Tuple() : [];
             ++j;
             var closed = false;
             while(j < len) {
@@ -797,8 +823,163 @@
             return nextValue.value;
          }
          throw new Error(_('Value is malformed.'));
-      }
+      },
    };
+
+   pkg.Tuple = function () {
+      if(!(this instanceof pkg.Tuple)) {
+         return new Tuple().fromList(arguments);
+      }
+      var length = 0;
+      Object.defineProperty(this, "length", {
+         enumerable: false,
+         configurable: false,
+         get : function() {
+            return length;
+         },
+         set : function(v) {
+            if(v < length) {
+               while(length > v) {
+                  delete this[length-1];
+                  --length;
+               }
+            }
+            else if(v > length) {
+               this.setItem(length, undefined, true);
+               ++length;
+            }
+         }
+        
+      });
+      this.fromList(arguments);
+   }
+   
+   Object.defineProperties(pkg.Tuple.prototype, {
+      fromList: {
+         enumerable:false,
+         value: function(l) {
+            this.blockCheckCoupleToTuple = true;
+            for(var i=0,len=l.length; i < len; ++i) {
+               this.push(l[i]);
+            }
+            this.blockCheckCoupleToTuple = false;
+            this.checkCoupleToTuple();
+            return this;
+         }
+      },
+
+      flattenList: {
+         enumerable:false,
+         value: function(l) {
+            var cur = 0;
+            function add(e) {
+               if(e instanceof pkg.Tuple || e instanceof Array) {
+                  for(var i=0,len=e.length; i < len; ++i) {
+                     add(e[i]);
+                  }
+               }
+               else {
+                  this.setItem(cur, e);
+                  ++cur;
+               }
+            }
+            add(l);
+            return this;
+         }
+      },
+
+      item: {
+         enumerable:false,
+         value: function(i) {
+            return this[i];
+         }
+      },
+
+      setItem: {
+         enumerable:false,
+         value: function(i, e, noCheckLength) {
+            if(!noCheckLength && this.length <= i) {
+               while(this.length <= i) {
+                  this.length = i + 1;
+               }
+            }
+            Object.defineProperty(this, i, {
+               enumerable:true,
+               configurable:true,
+               get : function() {
+                  return e;
+               },
+               
+               set : function(nv) {
+                  e = nv;
+                  this.checkCoupleToTuple();
+               }
+            });
+            this.checkCoupleToTuple();
+            return this;
+         }
+      },
+
+      push: {
+         enumerable:false,
+         value: function(e) {
+            this.setItem(this.length, e);
+            this.checkCoupleToTuple();
+            return this;
+         }
+      },
+
+      checkCoupleToTuple: {
+         enumerable:false,
+         value: function() {
+            if(!this.blockCheckCoupleToTuple) {
+               this.blockCheckCoupleToTuple = true;
+               if(this.length !== 2 || !(this[0] instanceof pkg.Tuple)) {
+                  return;
+               }
+               var lastItem = this[1], t=this[0];
+               this.length = 0;
+               for(var i=0,len=t.length; i < len; ++i) {
+                  this.setItem(i, t[i]);
+               }
+               this.push(lastItem);
+               delete this.blockCheckCoupleToTuple;
+               this.checkCoupleToTuple();
+            }
+         }
+      },
+
+      asCouple: {
+         enumerable:false,
+         value: function() {
+            switch(this.length) {
+               case 0: return [];
+               case 1: return [this[0]];
+               case 2: return [this[0], this[1]];
+               default:
+                  return [Tuple(Array.prototype.slice.call(this, 0, this.length-1)), this[this.length-1]];
+            }
+         }
+      },
+
+      getList: {
+         enumerable:false,
+         value: function() {
+            var l = new Array(this.length);
+            for(var i = 0; i < this.length; ++i) {
+               l[i] = this[i];
+            }
+            return i;
+         }
+      },
+
+      toString: {
+         enumerable:false,
+         value: function() {
+            return Set.prototype.elementToString(this);
+         }
+      }
+   });
 
    pkg.Set.prototype.serializeElement = pkg.Set.prototype.toString;
    pkg.new_set = function (l) {
@@ -871,7 +1052,7 @@
       set2 = pkg.to_set(set2);
       for(var i in set1.l) {
          for(var j in set2.l) {
-            set.add([set1.l[i], set2.l[j]]);
+            set.add(new Tuple(set1.l[i], set2.l[j]));
          }
       }
       return set;
@@ -913,7 +1094,4 @@
       return set.isEmpty();
    };
 
-   _("fr", "Set.checkConstraint(element): The element does not satisfies the type constraint.", "Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type.");
-   _("fr", "Value is malformed.", "La valeur est malformée.");
-   _("fr", "Constructor name in value refers to unkown class.", "Le nom de constructeur dans la valeur fait référence à une classe inconnue.");
 })(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);
