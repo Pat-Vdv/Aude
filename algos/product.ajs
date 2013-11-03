@@ -16,11 +16,11 @@ function product(A1, A2, deter) {
    let Ta = A1.getTransitionFunction(),
        Tb = A2.getTransitionFunction();
    
-   prodA.setStates(cross(A1.getStates(), A2.getStates()), true);
+   prodA.setStates(A1.getStates() cross A2.getStates(), true);
    prodA.setAlphabet(A1.getAlphabet() union A2.getAlphabet());
    
-   prodA.setInitialState([A1.getInitialState(), A2.getInitialState()]);
-   prodA.setFinalStates(cross(A1.getFinalStates(), A2.getFinalStates()), true);
+   prodA.setInitialState(Tuple(A1.getInitialState(), A2.getInitialState()));
+   prodA.setFinalStates(A1.getFinalStates() cross A2.getFinalStates(), true);
    
    let dest1, dest2;
    
@@ -30,9 +30,9 @@ function product(A1, A2, deter) {
          dest2 = Tb(state[1], symbol);
          if(!dest1.isEmpty() && !dest2.isEmpty()) {
             prodA.addTransition(
-               [state[0], state[1]],
+               Tuple(state[0], state[1]),
                symbol,
-               [dest1.getList()[0], dest2.getList()[0]]
+               Tuple(dest1.getItem(), dest2.getItem())
             );
          }
       }

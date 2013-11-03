@@ -32,8 +32,8 @@ function automataAreEquivalent(A1, A2, symetryAlreadyDone) {
       foreach(symbol in trans1(s1)) {
          if(trans1(s1, symbol).card() === trans2(s2, symbol).card()) { // If there is a destination state for the symbol for each state
             if(!visit(
-               trans1(s1, symbol).getList()[0],
-               trans2(s2, symbol).getList()[0]
+               trans1(s1, symbol).getItem(),
+               trans2(s2, symbol).getItem()
             )) {
                // we visit (s1', s2') with
                //  - s1' the destination state of the transition (s1, symbol, dest) in A1

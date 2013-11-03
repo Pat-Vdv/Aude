@@ -89,7 +89,7 @@ function automatonToRE(A, retStruct) {
             };
          }
          else {
-            return {type:'*', v:v.getList()[0]};
+            return {type:'*', v:v.getItem()};
          }
       }
       return {type:'*', v:RE};
