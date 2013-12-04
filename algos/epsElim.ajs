@@ -1,57 +1,57 @@
 function epsElim(A) {
-  ElimA : Automaton;
-  let trans = A.getTransitionFunction();
-  
-  ElimA.setStates(A.getStates());
-  ElimA.setFinalStates(A.getFinalStates());
-  ElimA.setInitialState(A.getInitialState());
-  
-  function canReach(q1, a, q2, alreadySeenStates) {
-    if(alreadySeenStates.contains(q1))
+   ElimA : Automaton;
+   let trans = A.getTransitionFunction();
+   
+   ElimA.setStates(A.getStates());
+   ElimA.setFinalStates(A.getFinalStates());
+   ElimA.setInitialState(A.getInitialState());
+   
+   function canReach(q1, a, q2, alreadySeenStates) {
+      if(alreadySeenStates.contains(q1))
+         return false;
+      
+      if(A.hasTransition(q1, a, q2)) {
+         return true;
+      }
+      
+      alreadySeenStates.add(q1);
+      if(a != epsilon) {
+         if(A.hasTransition(q1, a, q1)) {
+            if(canReach(q1, epsilon, q2, alreadySeenStates minus {q1})) {
+               return true;
+            }
+         }
+         foreach(state in trans(q1, a)) {
+            if(canReach(state, epsilon, q2, alreadySeenStates)) {
+               return true;
+            }
+         }
+      }
+      
+      foreach(state in trans(q1, epsilon)) {
+         if(canReach(state, a, q2, alreadySeenStates)) {
+            return true;
+         }
+      }
+      
       return false;
-  
-    if(A.hasTransition(q1, a, q2)) {
-      return true;
-    }
-
-    alreadySeenStates.add(q1);
-    if(a != epsilon) {
-      if(A.hasTransition(q1, a, q1)) {
-        if(canReach(q1, epsilon, q2, alreadySeenStates minus q1)) {
-          return true;
-        }
+   }
+   
+   foreach(q1 in A.getStates()) {
+      foreach(q2 in A.getStates()) {
+         foreach(a in A.getAlphabet()) {
+            if(canReach(q1, a, q2, new Set)) {
+               ElimA.addTransition(q1, a, q2);
+            }
+         }
+         
+         if(q1 != q2 && A.isFinalState(q2) && canReach(q1, epsilon, q2, new Set)) {
+            ElimA.setFinalState(q1);
+         }
       }
-      foreach(state in trans(q1, a)) {
-        if(canReach(state, epsilon, q2, alreadySeenStates)) {
-          return true;
-        }
-      }
-    }
-
-    foreach(state in trans(q1, epsilon)) {
-      if(canReach(state, a, q2, alreadySeenStates)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-  
-  foreach(q1 in A.getStates()) {
-    foreach(q2 in A.getStates()) {
-      foreach(a in A.getAlphabet()) {
-        if(canReach(q1, a, q2, new Set)) {
-          ElimA.addTransition(q1, a, q2);
-        }
-      }
-
-      if(q1 != q2 && A.isFinalState(q2) && canReach(q1, epsilon, q2, new Set)) {
-        ElimA.setFinalState(q1);
-      }
-    }
-  }
-  
-  return ElimA;
+   }
+   
+   return ElimA;
 }
 
 run(epsElim, get_automaton(currentAutomaton));
