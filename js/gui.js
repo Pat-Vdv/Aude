@@ -45,8 +45,11 @@
        results,
        splitter,
        leftPane,
+       filequiz,
        open,
+       quiz,
        content,
+       startQuiz,
        toolbar,
        head,
        not,
@@ -200,6 +203,15 @@
 
       freader.readAsText(fileautomaton.files[0], 'utf-8');
       automatonFileName = fileautomaton.value;
+   }
+
+   function loadQuiz(code) {
+      try {
+         startQuiz(JSON.parse(code));
+      }
+      catch(e) {
+         notify(_("Loading the quiz failed"), (libD.format(_("The quiz seems to be malformed: {0}"), e.message, "error")));
+      }
    }
 
    function openProgram(code) {
@@ -472,8 +484,10 @@
             }
 
             libD.need(['ready', 'ws', 'wm'], function() {
-               curAlgo = document.getElementById('predef-algos');
-               open    = document.getElementById('open');
+               curAlgo  = document.getElementById('predef-algos');
+               open     = document.getElementById('open');
+               quiz     = document.getElementById('quiz');
+               filequiz = document.getElementById('filequiz');
 
                var line,fname, descr, algos = algoFile.split("\n");
                for(var i=0; i < algos.length;++i) {
@@ -626,7 +640,6 @@
           automataedit      = document.getElementById('automataedit'),
           automatoncode     = document.getElementById('automatoncode'),
           fileautomaton     = document.getElementById('fileautomaton'),
-          filequiz          = document.getElementById('filequiz'),
           drawToolbar       = document.getElementById('draw-toolbar'),
           save              = document.getElementById('save'),
           saveas            = document.getElementById('saveas'),
@@ -637,7 +650,6 @@
           automatonMinus    = document.getElementById('automaton_minus'),
           executeBtn        = document.getElementById('execute'),
           wordDiv           = document.getElementById('word'),
-          quiz              = document.getElementById('quiz'),
           divQuiz           = document.getElementById('div-quiz'),
           automataContainer = document.getElementById('automata-container'),
           exportFN          = '',
@@ -1177,14 +1189,6 @@
          return A;
       }
 
-      function loadQuiz(code) {
-         try {
-            startQuiz(JSON.parse(code));
-         }
-         catch(e) {
-            notify(_("Loading the quiz failed"), (libD.format(_("The quiz seems to be malformed: {0}"), e.message, "error")));
-         }
-      }
       function openQuiz() {
          freader.onload = function() {
             loadQuiz(freader.result);
@@ -1196,7 +1200,7 @@
       fileautomaton.onchange = openAutomaton;
       filequiz.onchange      = openQuiz;
 
-      function startQuiz(quiz) {
+      startQuiz = function(quiz) {
          if(switchmode.value === 'program') {
             switchmode.value = 'design';
             switchmode.onchange();
@@ -1568,9 +1572,11 @@
          }
       };
 
-      quiz.onclick = function() {
-         filequiz.click();
-      };
+      if(!quiz.onclick) {
+         quiz.onclick = function() {
+            filequiz.click();
+         };
+      }
 
       if(!open.onclick) {
          open.onclick = function() {
