@@ -29,6 +29,7 @@
        waitingFor        = new Set(),
        launchAfterImport = false,
        deferedResultShow = false,
+       freader           = new FileReader(),
        resultToLeft      = document.createElement('button'),
        zoom              = {svgZoom:1},
        map               = {
@@ -36,16 +37,21 @@
           'ε':epsilon
        },
        _                 = window.AutomataGuil10n = libD.l10n(),
+       automatoncodeedit,
+       automatonFileName,
+       programFileName,
        curAlgo,
        offsetError,
        results,
        splitter,
        leftPane,
+       open,
        content,
        toolbar,
        head,
        not,
-       sw;
+       sw,
+       cm;
 
    AutomataDesigner.getValueFunction = function(s) {
       try {
@@ -179,6 +185,34 @@
          zoom.svgNode = null;
          results.style.overflow = '';
       }
+   }
+
+   function openAutomaton(code) {
+      if(typeof code === 'string') {
+         automatoncodeedit.value = code;
+         AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+         return;
+      }
+
+      freader.onload = function() {
+         openAutomaton(freader.result);
+      };
+
+      freader.readAsText(fileautomaton.files[0], 'utf-8');
+      automatonFileName = fileautomaton.value;
+   }
+
+   function openProgram(code) {
+      if(typeof code === 'string') {
+         cm.setValue(code);
+         return;
+      }
+
+      freader.onload = function() {
+         openProgram(freader.result);
+      };
+      freader.readAsText(fileprogram.files[0], 'utf-8');
+      programFileName = fileprogram.value;
    }
 
    function handleError(message, line, stack, char) {
@@ -439,6 +473,8 @@
 
             libD.need(['ready', 'ws', 'wm'], function() {
                curAlgo = document.getElementById('predef-algos');
+               open    = document.getElementById('open');
+
                var line,fname, descr, algos = algoFile.split("\n");
                for(var i=0; i < algos.length;++i) {
                   if(algos[i]) {
@@ -589,11 +625,9 @@
       var codeedit          = document.getElementById('codeedit'),
           automataedit      = document.getElementById('automataedit'),
           automatoncode     = document.getElementById('automatoncode'),
-          automatoncodeedit = document.getElementById('automatoncodeedit'),
           fileautomaton     = document.getElementById('fileautomaton'),
           filequiz          = document.getElementById('filequiz'),
           drawToolbar       = document.getElementById('draw-toolbar'),
-          open              = document.getElementById('open'),
           save              = document.getElementById('save'),
           saveas            = document.getElementById('saveas'),
           exportBtn         = document.getElementById('export'),
@@ -634,6 +668,7 @@
       leftPane = document.getElementById('left-pane');
       content  = document.getElementById('content'),
       toolbar  = document.getElementById('toolbar');
+      automatoncodeedit = document.getElementById('automatoncodeedit');
 
       resultToLeft.appendChild(libD.jso2dom([
          ['img', {alt:'', src:'icons/oxygen/16x16/actions/arrow-left.png'}],
@@ -830,8 +865,6 @@
             }
          }
       };
-
-      var cm; // code mirror object
 
       splitter.onmousedown = function(e) {
          window.onmousemove = splitterMove;
@@ -1129,24 +1162,6 @@
          AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), 'svg'), index);
       };
 
-      var freader = new FileReader(), automatonFileName, programFileName;
-
-      function openAutomaton(code) {
-         if(typeof code === 'string') {
-            automatoncodeedit.value = code;
-            AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
-            return;
-         }
-
-         freader.onload = function() {
-            openAutomaton(freader.result);
-         };
-
-         freader.readAsText(fileautomaton.files[0], 'utf-8');
-         automatonFileName = fileautomaton.value;
-      }
-      
-      
       function automatonFromObj(o) {
          var A = new Automaton();
          A.setInitialState(o.states[0]);
@@ -1160,19 +1175,6 @@
             A.addTransition(o.transition[i][0], o.transition[i][1], o.transition[i][2]);
          }
          return A;
-      }
-
-      function openProgram(code) {
-         if(typeof code === 'string') {
-            cm.setValue(code);
-            return;
-         }
-
-         freader.onload = function() {
-            openProgram(freader.result);
-         };
-         freader.readAsText(fileprogram.files[0], 'utf-8');
-         programFileName = fileprogram.value;
       }
 
       function loadQuiz(code) {
@@ -1570,14 +1572,16 @@
          filequiz.click();
       };
 
-      open.onclick = function() {
-         if(switchmode.value === "program") {
-            fileprogram.click();
-         }
-         else {
-            fileautomaton.click();
-         }
-      };
+      if(!open.onclick) {
+         open.onclick = function() {
+            if(switchmode.value === "program") {
+               fileprogram.click();
+            }
+            else {
+               fileautomaton.click();
+            }
+         };
+      }
 
       function saveProgram(fname) {
          saveAs(new Blob([cm.getValue()], {type:'text/plain;charset=utf-8'}), fname);
