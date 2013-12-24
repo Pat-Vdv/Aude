@@ -43,8 +43,16 @@
 
     var _      = pkg.Automatal10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; },
         format = function (s, i) { return s.replace("{0}", i); };
+ 
+    /**
+     * epsilon: Represents epsilon to manipulate epsilon transitions.
+     * epsilon is a function to enforce equality to be true when and only when comparing explicitely with epsilon.
+     * @alias epsilon
+     */
+    pkg.epsilon = function () { return; };
 
-    var map = {
+
+    pkg.automataMap = {
         "\\e":pkg.epsilon,
         "ε":pkg.epsilon
     };
@@ -1208,7 +1216,7 @@
         for (i in T) {
             r += toString(T[i].startState) +
                             ' ' +
-                  (T[i].symbol === pkg.epsilon ? '\\e' : toString(T[i].symbol, map)) +
+                  (T[i].symbol === pkg.epsilon ? '\\e' : toString(T[i].symbol, pkg.automataMap)) +
                             ' ' +
                   toString(T[i].endState) +
                             '\n';
@@ -1217,20 +1225,13 @@
     };
 
     /**
-     * epsilon: Represents epsilon to manipulate epsilon transitions.
-     * epsilon is a function to enforce equality to be true when and only when comparing explicitely with epsilon.
-     * @alias epsilon
-     */
-    pkg.epsilon = function () { return; };
-
-    /**
      * Returns the list of symbols of a transition from its string representation
      * @alias parse_transition
      * @param {String} text The string representation of a transition
      * @returns {Array} Returns an array of symbols corresponding to the representation of the transition.
      */
     pkg.parse_transition = function (text) {
-        return Set.prototype.getValue('[' + text + ']', map);
+        return Set.prototype.getValue('[' + text + ']', pkg.automataMap);
     };
 
     /**
@@ -1249,7 +1250,7 @@
             if (symbols[i] === pkg.epsilon) {
                 res += 'ε';
             } else {
-                res += Set.prototype.elementToString(symbols[i], map);
+                res += Set.prototype.elementToString(symbols[i], pkg.automataMap);
             }
         }
         return res;
