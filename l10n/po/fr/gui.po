@@ -400,12 +400,12 @@ msgstr "Choisir et ordonner les automates paramètres"
 msgid "<h2>Welcome to {0}.</h2>
 <p>Here is the area where you can <strong>draw automata</strong>.</p>
 <ul>
-   <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>
-   <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
-   <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
-   <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
-   <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
-   <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
+    <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>
+    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
+    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
+    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
+    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
+    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
 </ul>
 <p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>
 <p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>
@@ -415,12 +415,12 @@ msgid "<h2>Welcome to {0}.</h2>
 msgstr "<h2>Bienvenue sur {0}.</h2>
 <p>Ceci est l’endroit où vous pouvez <strong>dessiner des automates</strong>.</p>
 <ul>
-   <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez le placer.</li>
-   <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>
-   <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>
-   <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>
-   <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>
-   <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>
+    <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez le placer.</li>
+    <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>
+    <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>
+    <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>
+    <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>
+    <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>
 </ul>
 <p>Vous pouvez <strong>accéder à ces instructions</strong> à tout moment en cliquant sur l’icône <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> de la barre d’outils.</p>
 <p>Quand vous exécuterez un programme ou un algorithme, le <strong>résultat</strong> apparaîtra <strong>à la droite</strong> de l’écran.</p>
