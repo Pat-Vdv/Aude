@@ -28,6 +28,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*jslint indent:4, plusplus:true, nomen:true */
+/*global Set:false, to_set:false */
+
 /**
  * @file This is a class to manipulate automata in Javascript
  * @author Raphaël Jakse
@@ -38,8 +41,13 @@
 (function (pkg, that) {
     "use strict";
 
-    var _      = pkg.Automatal10n = that.libD && that.libD.l10n ? that.libD.l10n(): function (s){return s;},
-        format = function (s, i){return s.replace("{0}", i)};
+    var _      = pkg.Automatal10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; },
+        format = function (s, i) { return s.replace("{0}", i); };
+
+    var map = {
+        "\\e":pkg.epsilon,
+        "ε":pkg.epsilon
+    };
 
     /**
      * A class to manipulate automata in Javascript.
@@ -55,17 +63,18 @@
                 this.lastTakenTransitions = states.lastTakenTransitions.copy();
                 return;
             }
-            else if (!(states instanceof Array) && !(states instanceof Set)) {
+
+            if (!(states instanceof Array) && !(states instanceof Set)) {
                 throw new Error(_("Automaton constructor takes an Automaton in argument, or nothing."));
             }
         }
 
-        this.states = new Set(states);
-        this.Sigma = new Set(Sigma);
+        this.states = to_set(states);
+        this.Sigma = to_set(Sigma);
         this.q_init = q_init;
-        this.trans =  new Set(trans);
+        this.trans =  to_set(trans);
         this.trans.setTypeConstraint(pkg.Transition);
-        this.finalStates = new Set(finalStates);
+        this.finalStates = to_set(finalStates);
         if (!this.currentStates) {
             this.currentStates = new Set();
             this.lastTakenTransitions = new Set();
@@ -137,8 +146,7 @@
         toggleFinalState: function (state) {
             if (this.finalStates.contains(state)) {
                 this.setNonFinalState(state);
-            }
-            else {
+            } else {
                 this.setFinalState(state);
             }
         },
@@ -180,7 +188,7 @@
          * @returns {Set} The Set of non final states
          */
         getNonFinalStates: function () {
-            return minus(a.getStates() - a.getFinalStates());
+            return this.getStates().minus(this.getFinalStates());
         },
 
         /**
@@ -191,7 +199,7 @@
          * @see Automaton#getNonAcceptingStates
          */
         getNonAcceptingStates: function () {
-            return minus(a.getStates() - a.getFinalStates());
+            return this.getStates().minus(this.getFinalStates());
         },
 
         /**
@@ -214,8 +222,7 @@
         setStates: function (states, dontCopy) {
             if (states instanceof Set || states instanceof Array) {
                 this.states = dontCopy ? to_set(states) : new Set(states);
-            }
-            else {
+            } else {
                 throw(new Error(_('Automaton.setStates(): The given argument is not a Set.')));
             }
         },
@@ -254,8 +261,7 @@
         setFinalStates: function (states, dontCopy) {
             if (states instanceof Set || states instanceof Array) {
                 this.finalStates = dontCopy ? to_set(states) : new Set(states);
-            }
-            else {
+            } else {
                 throw(new Error(_('Automaton.setFinalStates(): The given argument is not a Set.')));
             }
         },
@@ -344,11 +350,11 @@
          * @method
          * @memberof Automaton
          * @example
-         *    A = new Automaton();
+         *    A = new pkg.Automaton();
          *    A.setInitialState(1);
          *    A.addFinalState(2);
          *    A.addTransition(1, 'a', 2);
-         *    var t = new Transition(1, epsilon, 2);
+         *    var t = new pkg.Transition(1, epsilon, 2);
          *    A.addTransition(t);
          * @see Automaton#removeTransition
          * @see Automaton#hasTransition
@@ -356,9 +362,9 @@
          * @see Automaton#getTransitionFunction
          * @see Transition
          */
-        addTransition: function (t) {
+        addTransition: function (t, t1, t2) {
             if (arguments.length > 1) {
-                return this.addTransition(new pkg.Transition(arguments[0], arguments[1], arguments[2]));
+                return this.addTransition(new pkg.Transition(t, t1, t2));
             }
 
             this.states.add(t.startState);
@@ -381,9 +387,9 @@
          * @see Automaton#removeSymbol
          * @see Automaton#removeState
          */
-        removeTransition: function (t) {
+        removeTransition: function (t, t1, t2) {
             if (arguments.length > 1) {
-                return this.removeTransition(new pkg.Transition(arguments[0], arguments[1], arguments[2]));
+                return this.removeTransition(new pkg.Transition(t, t1, t2));
             }
 
             this.trans.remove(t);
@@ -403,9 +409,9 @@
           * @see Automaton#getTransitionFunction
           * @see Transition
           */
-        hasTransition: function (t) {
+        hasTransition: function (t, t1, t2) {
             if (arguments.length > 1) {
-                return this.hasTransition(new pkg.Transition(arguments[0], arguments[1], arguments[2]));
+                return this.hasTransition(new pkg.Transition(t, t1, t2));
             }
 
             return this.trans.contains(t);
@@ -476,8 +482,10 @@
                 endStates   = new Set(),
                 endStatesByStartStateBySymbols = {},
                 endStatesByStartStateEpsilon = {},
-                symbol;
-            for (var t in transList) {
+                symbol,
+                t;
+
+            for (t in transList) {
                 transition = transList[t];
                 startStates.add(transition.startState);
                 endStates.add(transition.endState);
@@ -486,23 +494,21 @@
                     symbolsByState[startState] = new Set();
                     endStatesByStartStateBySymbols[startState] = {};
                 }
+
                 if (transition.symbol === pkg.epsilon) {
                     if (determinizedFunction) {
                         endStatesByStartStateEpsilon[startState] = transition.endState;
-                    }
-                    else {
+                    } else {
                         if (!endStatesByStartStateEpsilon[startState]) {
                             endStatesByStartStateEpsilon[startState] = new Set();
                         }
                         endStatesByStartStateEpsilon[startState].add(transition.endState);
                     }
-                }
-                else {
+                } else {
                     symbol = Set.prototype.elementToString(transition.symbol);
                     if (determinizedFunction) {
                         endStatesByStartStateBySymbols[startState][symbol] = transition.endState;
-                    }
-                    else {
+                    } else {
                         if (!endStatesByStartStateBySymbols[startState][symbol]) {
                             endStatesByStartStateBySymbols[startState][symbol] = new Set();
                         }
@@ -518,26 +524,27 @@
                 if (getEndStates) {
                     return endStates;
                 }
+
                 switch (arguments.length) {
                     case 0:
                         return startStates;
                     case 1:
                         return symbolsByState[Set.prototype.elementToString(startState)] || new Set();
                     case 2:
+                        var s;
                         if (symbol === pkg.epsilon) {
-                            var s = endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)];
+                            s = endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)];
                             if (!determinizedFunction && s === undefined) {
                                 return new Set();
                             }
                             return s;
                         }
-                        else {
-                            var s = (endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || [])[Set.prototype.elementToString(symbol)];
-                            if (!determinizedFunction && s === undefined) {
-                                return new Set();
-                            }
-                            return s;
+
+                        s = (endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || [])[Set.prototype.elementToString(symbol)];
+                        if (!determinizedFunction && s === undefined) {
+                            return new Set();
                         }
+                        return s;
                 }
             };
         },
@@ -559,11 +566,10 @@
                     this.Sigma = alphabet;
                     return;
                 }
-                else {
-                    throw new Error(_("Automaton.setAlphabet(): The given argument is not a Set."));
-                }
+                throw new Error(_("Automaton.setAlphabet(): The given argument is not a Set."));
             }
-            this.Sigma = new_set(alphabet);
+
+            this.Sigma = new Set(alphabet);
         },
 
         /**
@@ -789,30 +795,34 @@
          * @param {Set} [visited] States that were already visited by the function.
          */
         currentStatesAddAccessiblesByEpsilon: function (transitionFunction, visited) {
+            var cs   = this.currentStates.getList(),
+                cont = false, // we continue if we added states
+                th   = this,
+                i;
+
             if (!visited) {
                 visited = new Set();
             }
+
             if (!transitionFunction) {
                 transitionFunction = this.getTransitionFunction();
             }
-            var cs   = this.currentStates.getList(),
-                cont = false, // we continue if we added states
-                that = this;
 
             function browseState(state) {
                 if (!visited.contains(state)) {
-                    that.currentStates.add(state);
-                    that.lastTakenTransitions.add(new Transition(cs[i], pkg.epsilon, state));
+                    th.currentStates.add(state);
+                    th.lastTakenTransitions.add(new pkg.Transition(cs[i], pkg.epsilon, state));
                     cont = true;
                 }
             }
 
-            for (var i in cs) {
+            for (i in cs) {
                 if (!visited.contains(cs[i])) {
                     visited.add(cs[i]);
                     transitionFunction(cs[i], pkg.epsilon).forEach(browseState);
                 }
             }
+
             if (cont) {
                 this.currentStatesAddAccessiblesByEpsilon(transitionFunction, visited);
             }
@@ -845,22 +855,25 @@
             if (!transitionFunction) {
                 transitionFunction = this.getTransitionFunction();
             }
+
             if (!dontEraseTakenTransitions) {
                 this.lastTakenTransitions.empty();
             }
 
-            var cs   = this.currentStates.getList(),
-                that = this;
+            var cs = this.currentStates.getList(),
+                th = this,
+                i;
 
             function addState(state) {
-                that.currentStates.add(state);
-                that.lastTakenTransitions.add(new Transition(cs[i], symbol, state));
+                th.currentStates.add(state);
+                th.lastTakenTransitions.add(new pkg.Transition(cs[i], symbol, state));
             }
 
-            for (var i in cs) {
+            for (i in cs) {
                 this.currentStates.remove(cs[i]);
             }
-            for (var i in cs) {
+
+            for (i in cs) {
                 transitionFunction(cs[i], symbol).forEach(addState);
             }
             this.currentStatesAddAccessiblesByEpsilon(transitionFunction);
@@ -877,8 +890,8 @@
          * @see Automaton#getCurrentStates
         */
         runWord: function (symbols) {
-            var transitionFunction = this.getTransitionFunction();
-            for (var i in symbols) {
+            var i, transitionFunction = this.getTransitionFunction();
+            for (i in symbols) {
                 this.runSymbol(symbols[i], transitionFunction);
             }
         },
@@ -893,11 +906,12 @@
          * @see Automaton#runWord
         */
         acceptedWord: function (symbols) {
-            var states = this.getCurrentStates().getList(),
-                 transitions = this.getLastTakenTransitions().copy();
+            var states      = this.getCurrentStates().getList(),
+                transitions = this.getLastTakenTransitions().copy();
+
             this.setCurrentState(this.getInitialState());
             this.runWord(symbols);
-            var accepted = !(inter(this.currentStates, this.finalStates).isEmpty());
+            var accepted = !(this.currentStates.inter(this.finalStates).isEmpty());
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;
             return accepted;
@@ -916,7 +930,7 @@
         },
 
         copy: function () {
-            return new Automaton(this);
+            return new pkg.Automaton(this);
         }
     };
 
@@ -970,8 +984,7 @@
         if (arguments.length === 2 && (startState instanceof pkg.Transition)) {
             // add_transition(a, transition)
             a.addTransition(startState); // startState is a transition
-        }
-        else {
+        } else {
             a.addTransition(startState, symbol, endState);
         }
     };
@@ -983,8 +996,7 @@
     pkg.remove_transition = function (a, startState, symbol, endState) {
         if (arguments.length === 2 && startState instanceof pkg.Transition) {
             a.removeTransition(startState); // startState is a transition
-        }
-        else {
+        } else {
             a.removeTransition(startState, symbol, endState);
         }
     };
@@ -993,9 +1005,7 @@
         if (arguments.length === 2 && startState instanceof pkg.Transition) {
             return a.hasTransition(startState); // startState is a transition
         }
-        else {
-            return a.hasTransition(startState, symbol, endState);
-        }
+        return a.hasTransition(startState, symbol, endState);
     };
 
     pkg.get_set_of_transitions = function (a) {
@@ -1175,12 +1185,13 @@
         if (q_init === undefined || q_init === null) {
             return "";
         }
-        var r = toString(q_init) + "\n";
-        var F = a.getFinalStates();
-        var Fl = F.getList();
-        var Q = a.getStates().getSortedList();
-        var T = a.getTransitions().getSortedList();
-        var i;
+
+        var r  = toString(q_init) + "\n",
+            F  = a.getFinalStates(),
+            Fl = F.getList(),
+            Q  = a.getStates().getSortedList(),
+            T  = a.getTransitions().getSortedList(),
+            i;
 
         for (i in Q) {
             if (Q[i] !== q_init && !F.contains(Q[i])) {
@@ -1195,12 +1206,12 @@
 
         r += "\n";
         for (i in T) {
-            r += toString(T[i].startState)
-                            + ' ' +
-                  (T[i].symbol === pkg.epsilon ? '\\e' : toString(T[i].symbol, map))
-                            + ' ' +
-                  toString(T[i].endState)
-                            + '\n';
+            r += toString(T[i].startState) +
+                            ' ' +
+                  (T[i].symbol === pkg.epsilon ? '\\e' : toString(T[i].symbol, map)) +
+                            ' ' +
+                  toString(T[i].endState) +
+                            '\n';
         }
         return r + '\n';
     };
@@ -1210,12 +1221,7 @@
      * epsilon is a function to enforce equality to be true when and only when comparing explicitely with epsilon.
      * @alias epsilon
      */
-    pkg.epsilon = function (){};
-
-    var map = {
-        "\\e":pkg.epsilon,
-        "ε":pkg.epsilon
-    };
+    pkg.epsilon = function () { return; };
 
     /**
      * Returns the list of symbols of a transition from its string representation
@@ -1234,18 +1240,18 @@
      * @return {String} Returns the formatted version of the string representation of the transition
      */
     pkg.format_transition = function (trans) {
-        var res='', symbols = pkg.parse_transition(trans);
-        for (var i=0, len = symbols.length; i < len; ++i) {
+        var res='', i, len, symbols = pkg.parse_transition(trans);
+        for (i=0, len = symbols.length; i < len; ++i) {
             if (res) {
                 res +=',';
             }
+
             if (symbols[i] === pkg.epsilon) {
                 res += 'ε';
-            }
-            else {
+            } else {
                 res += Set.prototype.elementToString(symbols[i], map);
             }
         }
         return res;
     };
-})(typeof exports === 'object' ? exports : this, typeof exports === 'object' ? exports : this);
+}(typeof this.exports === 'object' ? this.exports : this, typeof this.exports === 'object' ? this.exports : this));
