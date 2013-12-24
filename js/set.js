@@ -299,6 +299,18 @@
             return this;
         },
 
+        minus: function (set) {
+            return new pkg.Set(this).minusInPlace(set);
+        },
+
+        inter: function (set) {
+            return new pkg.Set(this).interInPlace(set);
+        },
+
+        union: function (set) {
+            return new pkg.Set(this).unionInPlace(set);
+        },
+
         /**
          * This method checks if the set is a subset of the set given in parameter.
          * @memberof Set
@@ -932,7 +944,7 @@
         flattenList: {
             enumerable:false,
             value: function (l) {
-                var cur = 0, that = this;
+                var cur = 0, th = this;
                 function add(e) {
                     if (e instanceof pkg.Tuple || e instanceof Array) {
                         var i, len;
@@ -940,7 +952,7 @@
                             add(e[i]);
                         }
                     } else {
-                        that.setItem(cur, e);
+                        th.setItem(cur, e);
                         ++cur;
                     }
                 }
