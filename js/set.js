@@ -575,7 +575,7 @@
         empty : function () {
             this._blockEvents = true;
             var i, len, l = this.getList();
-            for (i = 0, len = l.length; i < len; ++l) {
+            for (i = 0, len = l.length; i < len; ++i) {
                 this.remove(l[i]);
             }
             this._blockEvents = false;
