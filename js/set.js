@@ -63,14 +63,16 @@
             l = l.getList();
          }
          if(l instanceof Array || l instanceof pkg.Tuple) {
-            for(var i=0,len = l.length; i < len; ++i) {
+            for(var i = 0,len = l.length; i < len; ++i) {
                this.add(l[i]);
             }
          }
          else {
             if(l.contents) {
                for(var i in l.contents) {
-                  this.add(l.contents[i]);
+                  if(l.contents.hasOwnProperty(i)) {
+                    this.add(l.contents[i]);
+                  }
                }
             }
             else {
@@ -114,8 +116,7 @@
        */
       contains: function(element) {
          element =  this.checkConstraint(element);
-         return this.elementToString(element) in this.l;
-         // fixme: this.l[element] === element doesn't work correctly because [1,4] !== [1,4]
+         return this.l.hasOwnProperty('$' + this.elementToString(element));
       },
  
       /**
@@ -171,11 +172,11 @@
        */
       add: function(element) {
          element =  this.checkConstraint(element);
-         var rep = this.elementToString(element);
+         var rep = '$' + this.elementToString(element);
          if((element instanceof pkg.Set) && !this.contains(element)) {
             var that = this;
             var bind = function() {
-               if(rep in that.l) {
+               if(that.l.hasOwnProperty(rep)) {
                   delete that.l[rep];
                   that.l[rep] = element;
                   that.updated('elementModified');
@@ -198,7 +199,7 @@
        * @param {any} element The element to remove from the set.
        */
       remove: function(element) {
-         delete this.l[this.elementToString(element)];
+         delete this.l['$' + this.elementToString(element)];
          this.updated('remove', element);
       },
 
@@ -212,7 +213,9 @@
       card: function() {
          var s=0;
          for(var i in this.l) {
-            ++s;
+             if(this.l.hasOwnProperty(i)) {
+                ++s;
+             }
          }
          return s;
       },
@@ -232,7 +235,9 @@
          set = pkg.to_set(set);
          this._blockEvents = true;
          for(var i in set.l) {
-            this.add(set.l[i]);
+            if(set.l.hasOwnProperty(i)) {
+                this.add(set.l[i]);
+            }
          }
          this._blockEvents = false;
          this.updated('unionInPlace', set);
@@ -254,9 +259,11 @@
          set = pkg.to_set(set);
          this._blockEvents = true;
          for(var i in this.l) {
-            var e = this.l[i];
-            if(!set.contains(e)) {
-               this.remove(e);
+            if(this.l.hasOwnProperty(i)) {
+                var e = this.l[i];
+                if(!set.contains(e)) {
+                    this.remove(e);
+                }
             }
          }
          this._blockEvents = false;
@@ -278,7 +285,9 @@
          set = pkg.to_set(set);
          this._blockEvents = true;
          for(var i in set.l) {
-            this.remove(set.l[i]);
+            if(set.l.hasOwnProperty(i)) {
+                this.remove(set.l[i]);
+            }
          }
          this._blockEvents = false;
          this.updated('minusInPlace', set);
@@ -295,8 +304,8 @@
       subsetOf: function(set) {
          set = pkg.to_set(set);
          for(var i in this.l) {
-            if(!set.contains(this.l[i])) {
-               return false;
+            if(this.l.hasOwnProperty(i) && !set.contains(this.l[i])) {
+                return false;
             }
          }
          return true;
@@ -317,12 +326,12 @@
          var r = new pkg.Set();
          set = pkg.to_set(set);
          for(var i in this.l) {
-            if(!set.contains(this.l[i])) {
+            if(this.l.hasOwnProperty(i) && !set.contains(this.l[i])) {
                r.add(this.l[i]);
             }
          }
          for(var i in set.l) {
-            if(!this.contains(set.l[i])) {
+            if(this.l.hasOwnProperty(i) && !this.contains(set.l[i])) {
                r.add(set.l[i]);
             }
          }
@@ -343,9 +352,9 @@
        * @note The set isn't modified.
        */
       plus: function() {
-         var r = new pkg.Set();
+         var i, len, r = new pkg.Set();
          r.unionInPlace(this);
-         for(var i in arguments) {
+         for(i = 0, len = arguments.length; i < len; ++i) {
             r.add(arguments[i]);
          }
          return r;
@@ -365,14 +374,18 @@
             var lastE;
             var Complement = new pkg.Set();
             for(var i in this.l) {
-               lastE = this.l[i];
-               Complement.add(lastE);
+               if(this.l.hasOwnProperty(i)) {
+                lastE = this.l[i];
+                Complement.add(lastE);
+               }
             }
             Complement.remove(lastE);
             var PCompl = Complement.powerset();
             var U = new pkg.Set();
             for(var underset_i in PCompl.l) {
-               U.add(PCompl.l[underset_i].plus(lastE));
+                if(PCompl.l.hasOwnProperty(underset_i)) {
+                    U.add(PCompl.l[underset_i].plus(lastE));
+                }
             }
             return pkg.union(PCompl, U);
          }
@@ -389,7 +402,9 @@
       getList: function() {
          var r = [];
          for(var i in this.l) {
-            r.push(this.l[i]);
+            if(this.l.hasOwnProperty(i)) {
+                r.push(this.l[i]);
+            }
          }
          return r;
       },
@@ -414,11 +429,11 @@
        * @returns {string} Returns the string representation of the set.
        */
       toString: function() {
-         var res = '';
+         var res = '', i, len;
          var l = this.getSortedList();
-         for(var i in l) {
+         for(i = 0, len = l.length; i < len; ++i) {
             if(res) {
-               res += ',';
+                res += ',';
             }
             res += this.elementToString(l[i]);
          }
@@ -435,7 +450,8 @@
        */
       updated: function(event, object) {
          if(!this._blockEvents) {
-            for(var i in this.listeners) {
+            var i, len;
+            for(i = 0, len = this.listeners.length; i < len; ++i) {
                if(this.listeners[i].event === event || this.listeners[i].event === 'all') {
                   this.listeners[i].callback(event, object);
                }
@@ -464,7 +480,8 @@
        * @param {string} event The event which was tracked, or "all".
        */
       release: function(callback, event) {
-         for(var i in this.listeners) {
+         var i, len;
+         for(i = 0, len = this.listeners.length; i < len; ++i) {
             if(this.listeners[i].event === event && this.listeners[i].callback === callback) {
                this.listeners.splice(i, 1);
             }
@@ -480,7 +497,9 @@
        */
       forEach: function(callback) {
          for(var i in this.l) {
-            callback(this.l[i]);
+            if(this.l.hasOwnProperty(i)) {
+                callback(this.l[i]);
+            }
          }
       },
 
@@ -504,8 +523,10 @@
        */
       every: function(func) {
          for(var i in this.l) {
-            if(!func(this.l[i])) {
-               return false;
+            if(this.l.hasOwnProperty(i)) {
+                if(!func(this.l[i])) {
+                    return false;
+                }
             }
          }
          return true;
@@ -526,9 +547,9 @@
        * @memberof Set
       */
       empty : function() {
-         var l = this.getList();
          this._blockEvents = true;
-         for(var i in l) {
+         var i, len, l = this.getList();
+         for(i = 0, len = l.length; i < len; ++l) {
             this.remove(l[i]);
          }
          this._blockEvents = false;
@@ -543,7 +564,9 @@
       */
       isEmpty : function() {
          for(var i in this.l) {
-            return false;
+            if(this.l.hasOwnProperty(i)) {
+                return false;
+            }
          }
          return true;
       },
@@ -556,7 +579,9 @@
       */
       getItem : function() {
          for(var i in this.l) {
-            return this.l[i];
+            if(this.l.hasOwnProperty(i)) {
+                return this.l[i];
+            }
          }
       },
 
@@ -859,7 +884,7 @@
          enumerable:false,
          value: function(l) {
             this.blockCheckCoupleToTuple = true;
-            for(var i=0,len=l.length; i < len; ++i) {
+            for(var i = 0, len = l.length; i < len; ++i) {
                this.push(l[i]);
             }
             this.blockCheckCoupleToTuple = false;
