@@ -814,11 +814,11 @@
 
       function editTransitionSymbols(edge) {
          var text = edge.querySelector('text');
-         var t = pkg.prompt(
+         pkg.prompt(
             _("Transitions' symbols"),
             _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."),
             text.textContent,
-            function(t) {
+            function (t) {
                if(t !== null) {
                   text.textContent = format_transition(t || '\\e');
                }
