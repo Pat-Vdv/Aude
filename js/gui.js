@@ -17,6 +17,7 @@
 
 
 /*jslint browser: true, ass: true, indent: 4, nomen:true, vars:true, newcap:true, plusplus:true */
+/*jshint multistr:true*/
 /*global Set:false, FileReader:false, libD:false, AutomataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, Audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, CodeMirror:false, AutomataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
 
 // NEEDS : automatadesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
@@ -279,7 +280,8 @@
                 var details, i, len, stack = e.stack.split("\n");
                 for (i = 0, len = stack.length; i < len; ++i) {
                     if (stack[i].match(location.href + ':')) {
-                        if (details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/)) {
+                        details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
+                        if (details) {
                             handleError(e.message, parseInt(details[1], 10) - offsetError, e.stack, details[2]);
                         } else {
                             handleError(e.message, e.lineNumber - offsetError, e.stack);
@@ -626,7 +628,7 @@
                                 ['input', {"#": "ok", type: "button", value: _("OK")}]
                             ]]
                         ]]]
-                ]], refs);
+                    ]], refs);
 
             function close() {
                 if (func) {
@@ -1367,9 +1369,8 @@
                             if (!respA.acceptedWord(words[i])) {
                                 r.isCorrect = false;
                                 r.reasons.push(
-                                    words[i]
-                                        ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), words[i])
-                                        : _("The empty word is not accepted while it should be.")
+                                    words[i] ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), words[i])
+                                             : _("The empty word is not accepted while it should be.")
                                 );
                             }
 
@@ -1467,7 +1468,8 @@
                     ["tr", [
                         ["th", _("Instruction")],
                         ["th", _("Correct answer?")],
-                        ["th", _("Comments")]]]]);
+                        ["th", _("Comments")]
+                    ]]]);
 
                 for (i = 0, len = quiz.answers.length; i < len; ++i) {
                     question_i = quiz.questions[i];
@@ -1894,11 +1896,12 @@
                     for (i = 0, len = listOfExecutions.length; i < len; ++i) {
                         l = listOfExecutions[i];
                         startState = l[l.length - 1][0];
-
-                        for (j = 0, leng = transitionsByStartState[startState].length; j < leng; ++j) {
-                            newL = l.slice();
-                            newL.push(transitionsByStartState[startState][j]);
-                            newListOfExecutions.push(newL);
+                        if (transitionsByStartState[startState]) {
+                            for (j = 0, leng = transitionsByStartState[startState].length; j < leng; ++j) {
+                                newL = l.slice();
+                                newL.push(transitionsByStartState[startState][j]);
+                                newListOfExecutions.push(newL);
+                            }
                         }
                     }
 
@@ -1920,7 +1923,7 @@
 
                         for (j = 0, leng = listOfExecutions[i].length; j < leng; ++j) {
                             s = listOfExecutions[i][j][1];
-                            res += j ? Set.prototype.elementToString(listOfExecutions[i][j][0]) : ': ' + (s === epsilon ? 'ε' : Set.prototype.elementToString(s, automataMap)) + ' → ' + Set.prototype.elementToString(listOfExecutions[i][j][0]);
+                            res += j ? ': ' + (s === epsilon ? 'ε' : Set.prototype.elementToString(s, automataMap)) + ' → ' + Set.prototype.elementToString(listOfExecutions[i][j][0]) : Set.prototype.elementToString(listOfExecutions[i][j][0]);
                         }
 
                         results.lastChild.textContent = res;
@@ -1941,7 +1944,7 @@
 
                     if (!executionByStep) {
                         if (stepNumber && EXECUTION_STEP_TIME) {
-                            executionTimeout = setTimeout(execute, EXECUTION_STEP_TIME - (!(stepNumber % 2)) * EXECUTION_STEP_TIME / 2);
+                            executionTimeout = setTimeout(execute, EXECUTION_STEP_TIME - ((stepNumber % 2) ? 0 : 1) * EXECUTION_STEP_TIME / 2);
                         } else {
                             execute();
                         }
