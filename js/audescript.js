@@ -383,7 +383,7 @@
     }
 
     function getSymbol() {
-        var d, deb, lst;
+        var d, begin, lst;
 
         if (i >= len) {
             lastSignificantType = type = end;
@@ -426,7 +426,7 @@
         }
 
         if (!(s[i].trim())) {
-            deb = i++;
+            begin = i++;
 
             while (i < len && !(s[i].trim())) {
                 ++i;
@@ -444,7 +444,7 @@
                 type = whitespace;
             }
 
-            return s.substring(deb, i);
+            return s.substring(begin, i);
         }
 
         if (s[i] === '.') {
@@ -547,7 +547,7 @@
 
             if (s[i] === '!') {
                 ++i;
-                deb = i;
+                begin = i;
 
                 var symbol = getSymbol().toLowerCase();
 
@@ -555,7 +555,7 @@
                     return '!' + symbol;
                 }
 
-                i = deb;
+                i = begin;
                 lastSignificantType = type = operator;
 
                 if (s[i] === '=') {
@@ -590,10 +590,10 @@
                     ++i;
                 } while (i < len && s[i] !== '\n');
                 type = whitespace;
-                deb = i;
+                begin = i;
                 getSymbol();
                 if (type !== whitespace) {
-                    i = deb;
+                    i = begin;
                     type = whitespace;
                 }
             } else if (i < len && s[i] === '*') {
@@ -603,12 +603,12 @@
 
                 i   += 2;
                 type = whitespace;
-                deb  = i;
+                begin  = i;
                 lst  = lastSignificantType;
                 getSymbol();
 
                 if (type !== whitespace) {
-                    i = deb;
+                    i = begin;
                     lastSignificantType = lst;
                     type = whitespace;
                 }
@@ -716,7 +716,7 @@
     }
 
     function getConstraintString() {
-        var deb = i;
+        var begin = i;
         var symbol = getSymbol(), tmp = '';
         if (type === whitespace) {
             if (symbol !== ' ') {
@@ -732,7 +732,7 @@
                         symbol = '"number"';
                     }
                 } catch (e) {
-                    i = deb;
+                    i = begin;
                     return '';
                 }
             } else {
@@ -760,7 +760,7 @@
             return tmp + symbol;
         }
 
-        i = deb;
+        i = begin;
         return '';
     }
 
@@ -792,7 +792,7 @@
 
     function tryBrace(symbol, opts) {
         if (symbol === '{') {
-            var deb  = i;
+            var begin  = i;
             var obj = false, oneVal = true;
             var pres = '';
 
@@ -824,11 +824,11 @@
                 } while (symbol === ',');
             }
 
-            if (!opts.noset_obj && symbol === '}' && !s.substring(deb - 1, i).match(/^\{[\s]*\}$/)) {
+            if (!opts.noset_obj && symbol === '}' && !s.substring(begin - 1, i).match(/^\{[\s]*\}$/)) {
                 return (obj || (opts.noValue && oneVal)) ? '{' + pres + '}' : 'to_set([' + pres + '])';
             }
 
-            i = deb;
+            i = begin;
             lastSignificantType = type = openBracket;
             return '{' + toPureJS({
                 inForeach: opts.inForeach,
@@ -902,7 +902,7 @@
         if (symbol === ';') {
             if (opts.value) {
                 --i;
-                return '';
+                return -1;
             }
             return symbol;
         }
@@ -910,7 +910,7 @@
         if (symbol === ',') {
             if (!opts.commaAllowed) {
                 --i;
-                return '';
+                return -1;
             }
 
             return symbol + getExpression({
@@ -934,14 +934,256 @@
         return false;
     }
 
+    function tryInstructionBlock(symbol, opts, begin) {
+        var d, tmp;
+        if (symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === 'switch' || symbol === 'try' || symbol === 'catch' || symbol === 'finally') {
+            if (symbol === 'function' || symbol === 'catch') {
+                if (symbol === 'function') {
+                    d = i;
+                    var functionName = getWhite() + getSymbol();
+
+                    if (functionName.trim() === '(') {
+                        i = d;
+                        functionName = functionName.slice(0, -1);
+                    }
+
+                    return symbol + functionName + getExpression({
+                        inForeach: opts.inForeach,
+                        constraintedVariables: opts.constraintedVariables,
+                        onlyOneValue: true
+                    }) + functionBody(getExpression({
+                        inForeach: false,
+                        constraintedVariables: copy(opts.constraintedVariables),
+                        noset_obj: true
+                    }));
+                }
+
+                return symbol + getExpression({
+                    inForeach: false,
+                    constraintedVariables: opts.constraintedVariables
+                }) + functionBody(getExpression({
+                    inForeach: false,
+                    constraintedVariables: copy(opts.constraintedVariables),
+                    noset_obj: true
+                }));
+            }
+
+            if (opts.value) {
+                i = begin;
+                return -1;
+            }
+
+            if (symbol === 'try' || symbol === 'finally') {
+                return symbol + getExpression({
+                    inForeach: opts.inForeach,
+                    constraintedVariables: copy(opts.constraintedVariables),
+                    noset_obj: true
+                });
+            }
+
+            if (symbol === 'for' && !IterationsSupported && 'for' !== (tmp = parseForeach(symbol, opts))) {
+                return tmp;
+            }
+
+            return symbol + getExpression({
+                inForeach: false,
+                inForParenthesis: symbol === 'for',
+                blockComma: true,
+                constraintedVariables: opts.constraintedVariables
+            }) + getExpression({
+                inForeach: (
+                    symbol === 'while' || symbol === 'for' || symbol === 'switch'
+                )   ? false
+                    : opts.inForeach,
+                constraintedVariables: copy(opts.constraintedVariables),
+                noValue: true
+            });
+        }
+
+        if (symbol === 'do') {
+            if (opts.value) {
+                i = begin;
+                return -1;
+            }
+
+            tmp = symbol + getExpression({
+                inForeach: false,
+                constraintedVariables: copy(opts.constraintedVariables),
+                noValue: true
+            }) + getWhite();
+
+            var symbol2 = getSymbol();
+            d = i;
+
+            if (symbol2 === 'while') {
+                return tmp + symbol2 + getExpression({
+                    inForeach: opts.inForeach,
+                    constraintedVariables: copy(opts.constraintedVariables)
+                });
+            }
+
+            i = d;
+            return tmp;
+        }
+
+        if (symbol === 'else') {
+            if (opts.value) {
+                i = begin;
+                return -1;
+            }
+
+            return symbol + getExpression({
+                inForeach: opts.inForeach,
+                noValue: true,
+                constraintedVariables: copy(opts.constraintedVariables)
+            });
+        }
+        return false;
+    }
+
+    function tryVariableRelatedInstruction(symbol, opts, begin) {
+        if (type !== instruction) {
+            return false;
+        }
+
+        if (opts.value) {
+            i = begin;
+            return -1;
+        }
+
+
+        if (symbol === 'const' || symbol === 'let' || symbol === 'var') {
+            var d;
+            if (symbol === 'let') {
+                d = i;
+                getWhite();
+                symbol = getSymbol();
+                i = d;
+
+                if (symbol === '(') {
+                    if (letExpressionSupported) {
+                        return 'let' + getExpression({
+                            inForeach: opts.inForeach,
+                            constraintedVariables: opts.constraintedVariables
+                        }) + getExpression({
+                            inForeach: opts.inForeach,
+                            constraintedVariables: copy(opts.constraintedVariables)
+                        });
+                    }
+
+                    return '(function () {var ' + getExpression({
+                        inForeach: opts.inForeach,
+                        constraintedVariables: opts.constraintedVariables
+                    }).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
+                        inForeach: opts.inForeach,
+                        constraintedVariables: copy(opts.constraintedVariables)
+                    }) + '})()';
+                }
+
+                symbol = 'let'; // regulat let, handling just after this.
+            }
+
+            var listOfVals, index, leng, semicolonExpected = false, vars, keyword, val, addToConsts = symbol === 'const' && !constSupported;
+
+            var decl = '';
+
+            if (addToConsts || symbol === 'let') {
+                keyword = letDeclarationSupported ? 'let' : 'var';
+            } else {
+                keyword = symbol;
+            }
+
+            var oldType, tmp = '';
+
+            do {
+                vars = getWhite() + getExpression({
+                    onlyOneValue: true,
+                    constraintedVariables: opts.constraintedVariables
+                }) + getWhite();
+
+                d = i;
+                oldType = lastSignificantType;
+                symbol = getSymbol();
+
+                if (symbol === '=') {
+                    val = getExpression({
+                        inForeach: opts.inForeach,
+                        constraintedVariables: opts.constraintedVariables,
+                        onlyOneValue: true
+                    });
+
+                    d = i;
+                    oldType = lastSignificantType;
+                    symbol = getSymbol();
+                } else {
+                    val = '';
+                }
+
+                if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
+                    // destructuring
+                    listOfVals = [];
+                    pkg.Audescript.destruct(null, vars, listOfVals);
+
+                    if (decl) {
+                        tmp += (semicolonExpected ? ';' : '') + decl + ';';
+                        decl = '';
+                    }
+
+                    tmp += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + getWhite();
+                    semicolonExpected = true;
+
+                    if (addToConsts) {
+                        for (index = 0, leng = listOfVals.length; index < leng; ++index) {
+                            if (listOfVals.hasOwnProperty(index)) {
+                                opts.constraintedVariables.consts.add(listOfVals[index]);
+                            }
+                        }
+                    }
+                } else if (decl) {
+                    decl += ',' + vars + (val ? '=' + val : '') + getWhite();
+                } else {
+                    decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + getWhite();
+                }
+            } while (symbol === ',');
+
+            if (symbol === ';') {
+                return tmp + (semicolonExpected ? ';' : '') + decl + ';';
+            }
+
+            i = d;
+            lastSignificantType = oldType;
+            return tmp + (semicolonExpected ? ';' : '') + decl;
+        }
+
+        i = begin;
+        return -1;
+    }
+
+    function tryForeachRelatedStuffs(symbol, opts, begin) {
+        if (symbol === 'foreach') {
+            if (opts.value) {
+                i = begin;
+                return -1;
+            }
+            return parseForeach(symbol, opts);
+        }
+
+        if (opts.inForeach && (symbol === "break" || symbol === "continue" || symbol === "throw" || symbol === "return")) {
+            if (opts.value) {
+                i = begin;
+                return -1;
+            }
+            return foreachReplacements(symbol, opts);
+        }
+    }
+
     getExpression = function (opts) {
-        var deb          = i,
+        var begin        = i,
             res          = getWhite(),
             symbol       = getSymbol(),
             oldType      = lastSignificantType,
             constraint,
             symbol2,
-            decl,
             pres,
             tmp,
             d;
@@ -960,156 +1202,42 @@
             opts.endSymbols = {};
         }
 
+        // stop condition
         if (opts.endSymbols.hasOwnProperty(symbol) || ")]}".indexOf(symbol) !== -1) {
             /* case : we are at the end of an expression */
-            i = deb;
+            i = begin;
             return '';
         }
 
-        var debAfterBrace = i;
-
-        var tmpRes = tryBrace(symbol, opts)   ||
-                     tryBracket(symbol, opts) ||
+        var beginAfterBrace = i;
+        var tmpRes = tryBrace(symbol, opts)      ||
+                     tryBracket(symbol, opts)    ||
                      tryParenthesis(symbol, opts);
 
         if (tmpRes) {
+            // we parsed [...] or {...} or (...)
             res += tmpRes;
             if (opts.onlyOneValue) {
                 return res;
             }
         } else {
-            i = debAfterBrace;
+            i = beginAfterBrace;
 
-            tmpRes = tryPunct(symbol, opts);
-            if (tmpRes !== false) {
-                if (tmpRes) {
-                    return res + tmpRes;
-                }
+            tmpRes = tryPunct(symbol, opts)                       ||
+                     tryForeachRelatedStuffs(symbol, opts, begin) ||
+                     tryInstructionBlock(symbol, opts, begin);
+
+            if (tmpRes === -1) {
                 return '';
             }
 
-            if (symbol === 'foreach') {
-                if (opts.value) {
-                    --i;
-                    return res;
-                }
-                return res + parseForeach(symbol, opts);
-            }
-
-            if (opts.inForeach && (symbol === "break" || symbol === "continue" || symbol === "throw" || symbol === "return")) {
-                if (opts.value) {
-                    i = deb;
-                    return '';
-                }
-                return res + foreachReplacements(symbol, opts);
-            }
-
-            if (symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === 'switch' || symbol === 'try' || symbol === 'catch' || symbol === 'finally') {
-                if (symbol === 'function' || symbol === 'catch') {
-                    if (symbol === 'function') {
-                        d = i;
-                        var functionName = getWhite() + getSymbol();
-
-                        if (functionName.trim() === '(') {
-                            i = d;
-                            functionName = functionName.slice(0, -1);
-                        }
-
-                        return res + symbol + functionName + getExpression({
-                            inForeach: opts.inForeach,
-                            constraintedVariables: opts.constraintedVariables,
-                            onlyOneValue: true
-                        }) + functionBody(getExpression({
-                            inForeach: false,
-                            constraintedVariables: copy(opts.constraintedVariables),
-                            noset_obj: true
-                        }));
-                    }
-
-                    return res + symbol + getExpression({
-                        inForeach: false,
-                        constraintedVariables: opts.constraintedVariables
-                    }) + functionBody(getExpression({
-                        inForeach: false,
-                        constraintedVariables: copy(opts.constraintedVariables),
-                        noset_obj: true
-                    }));
-                }
-
-                if (opts.value) {
-                    i = deb;
-                    return '';
-                }
-
-                if (symbol === 'try' || symbol === 'finally') {
-                    return res + symbol + getExpression({
-                        inForeach: opts.inForeach,
-                        constraintedVariables: copy(opts.constraintedVariables),
-                        noset_obj: true
-                    });
-                }
-
-                if (symbol === 'for' && !IterationsSupported && 'for' !== (tmp = parseForeach(symbol, opts))) {
-                    return res + tmp;
-                }
-
-                return res + symbol + getExpression({
-                    inForeach: false,
-                    inForParenthesis: symbol === 'for',
-                    blockComma: true,
-                    constraintedVariables: opts.constraintedVariables
-                }) + getExpression({
-                    inForeach: (
-                        symbol === 'while' || symbol === 'for' || symbol === 'switch'
-                    )   ? false
-                        : opts.inForeach,
-                    constraintedVariables: copy(opts.constraintedVariables),
-                    noValue: true
-                });
-            }
-
-            if (symbol === 'do') {
-                if (opts.value) {
-                    i = deb;
-                    return '';
-                }
-
-                res += symbol + getExpression({
-                    inForeach: false,
-                    constraintedVariables: copy(opts.constraintedVariables),
-                    noValue: true
-                }) + getWhite();
-
-                symbol2 = getSymbol();
-                d = i;
-
-                if (symbol2 === 'while') {
-                    return res + symbol2 + getExpression({
-                        inForeach: opts.inForeach,
-                        constraintedVariables: copy(opts.constraintedVariables)
-                    });
-                }
-
-                i = d;
-                return res;
-            }
-
-            if (symbol === 'else') {
-                if (opts.value) {
-                    i = deb;
-                    return '';
-                }
-
-                return res + symbol + getExpression({
-                    inForeach: opts.inForeach,
-                    noValue: true,
-                    constraintedVariables: copy(opts.constraintedVariables)
-                });
+            if (tmpRes !== false) {
+                return res + tmpRes;
             }
 
             if (symbol === 'emptySet') {
                 res += getWhite() + 'new Set(';
-                deb = i;
+                begin = i;
                 symbol = getSymbol();
 
                 if (symbol === '(') {
@@ -1118,13 +1246,13 @@
                         if (getSymbol() === ')') {
                             res += '{typeConstraint:' + constraint + '}';
                         } else {
-                            i = deb;
+                            i = begin;
                         }
                     } else if (getSymbol() !== ')') {
-                        i = deb;
+                        i = begin;
                     }
                 } else {
-                    i = deb;
+                    i = begin;
                 }
 
                 res += ')';
@@ -1135,150 +1263,49 @@
 
                     includes.push(symbol);
                     res += getWhite();
-                    deb = i;
+                    begin = i;
                     symbol = getSymbol();
 
                     if (symbol === ';') {
                         return res + getWhite();
                     }
 
-                    i = deb;
+                    i = begin;
                     return res;
                 }
 
-                if (type === instruction) {
-                    if (symbol === 'new' || (!opts.value && symbol === 'delete') || symbol === 'typeof') {
-                        res += symbol + getExpression({
-                            inForeach: opts.inForeach,
-                            onlyOneValue: true,
-                            commaAllowed: opts.commaAllowed,
-                            constraintedVariables: opts.constraintedVariables,
-                            endSymbols: opts.endSymbols
-                        });
-                    } else {
-                        if (opts.value) {
-                            i = deb;
-                            return '';
-                        }
-
-                        if (symbol === 'const' || symbol === 'let' || symbol === 'var') {
-                            if (symbol === 'let') {
-                                d = i;
-                                pres += getWhite();
-                                symbol = getSymbol();
-                                i = d;
-
-                                if (symbol === '(') {
-                                    if (letExpressionSupported) {
-                                        return res + 'let' + getExpression({
-                                            inForeach: opts.inForeach,
-                                            constraintedVariables: opts.constraintedVariables
-                                        }) + getExpression({
-                                            inForeach: opts.inForeach,
-                                            constraintedVariables: copy(opts.constraintedVariables)
-                                        });
-                                    }
-                                    return res + '(function () {var ' + getExpression({
-                                        inForeach: opts.inForeach,
-                                        constraintedVariables: opts.constraintedVariables
-                                    }).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
-                                        inForeach: opts.inForeach,
-                                        constraintedVariables: copy(opts.constraintedVariables)
-                                    }) + '})()';
-                                }
-
-                                symbol = 'let'; // regulat let, handling just after this.
-                            }
-
-                            var listOfVals, index, leng, semicolonExpected = false, vars, keyword, val, addToConsts = symbol === 'const' && !constSupported;
-
-                            decl = '';
-
-                            if (addToConsts || symbol === 'let') {
-                                keyword = letDeclarationSupported ? 'let' : 'var';
-                            } else {
-                                keyword = symbol;
-                            }
-
-                            do {
-                                vars = getWhite() + getExpression({
-                                    onlyOneValue: true,
-                                    constraintedVariables: opts.constraintedVariables
-                                }) + getWhite();
-
-                                d = i;
-                                oldType = lastSignificantType;
-                                symbol = getSymbol();
-
-                                if (symbol === '=') {
-                                    val = getExpression({
-                                        inForeach: opts.inForeach,
-                                        constraintedVariables: opts.constraintedVariables,
-                                        onlyOneValue: true
-                                    });
-
-                                    d = i;
-                                    oldType = lastSignificantType;
-                                    symbol = getSymbol();
-                                } else {
-                                    val = '';
-                                }
-
-                                if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
-                                    // destructuring
-                                    listOfVals = [];
-                                    pkg.Audescript.destruct(null, vars, listOfVals);
-
-                                    if (decl) {
-                                        res += (semicolonExpected ? ';' : '') + decl + ';';
-                                        decl = '';
-                                    }
-
-                                    res += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + getWhite();
-                                    semicolonExpected = true;
-
-                                    if (addToConsts) {
-                                        for (index = 0, leng = listOfVals.length; index < leng; ++index) {
-                                            if (listOfVals.hasOwnProperty(index)) {
-                                                opts.constraintedVariables.consts.add(listOfVals[index]);
-                                            }
-                                        }
-                                    }
-                                } else if (decl) {
-                                    decl += ',' + vars + (val ? '=' + val : '') + getWhite();
-                                } else {
-                                    decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + getWhite();
-                                }
-                            } while (symbol === ',');
-
-                            if (symbol === ';') {
-                                return res + (semicolonExpected ? ';' : '') + decl + ';';
-                            }
-
-                            i = d;
-                            lastSignificantType = oldType;
-                            return res + (semicolonExpected ? ';' : '') + decl;
-                        }
-
-                        i = deb;
+                if (symbol === 'new' || (!opts.value && symbol === 'delete') || symbol === 'typeof') {
+                    res += symbol + getExpression({
+                        inForeach: opts.inForeach,
+                        onlyOneValue: true,
+                        commaAllowed: opts.commaAllowed,
+                        constraintedVariables: opts.constraintedVariables,
+                        endSymbols: opts.endSymbols
+                    });
+                } else {
+                    tmpRes = tryVariableRelatedInstruction(symbol, opts, begin);
+                    if (tmpRes === -1) {
                         return '';
                     }
-                } else {
+                    if (tmpRes !== false) {
+                        return res + tmpRes;
+                    }
+
                     res += symbol; // ?? (string, number, litteral, ... ?)
                 }
             }
         }
 
 
-        var white, expr, matches, varName, defaultValue, typeOfVar, trimRes, newVal, not, white2, deb2;
+        var white, expr, matches, varName, defaultValue, typeOfVar, trimRes, newVal, not, white2, begin2;
         while (true) {
             oldType = lastSignificantType;
             white = getWhite();
-            deb = i;
+            begin = i;
             symbol = getSymbol();
 
             if (opts.endSymbols.hasOwnProperty(symbol)) {
-                i = deb;
+                i = begin;
                 lastSignificantType = oldType;
                 return res + white;
             }
@@ -1293,7 +1320,7 @@
                 res += white + '.' + symbol2;
             } else if (symbol === '?') {
                 if (opts.onlyOneValue) {
-                    i = deb;
+                    i = begin;
                     lastSignificantType = oldType;
                     return res + white;
                 }
@@ -1463,7 +1490,7 @@
                                         if (constraint) {
                                             tmp += ';' + white2 + varName + '.setTypeConstraint(' + constraint + ')';
                                         } else {
-                                            i = deb;
+                                            i = begin;
                                             lastSignificantType = oldType;
                                             return res + white;
                                         }
@@ -1509,14 +1536,14 @@
                         return tmp + white;
                     }
 
-                    i = deb;
+                    i = begin;
                     lastSignificantType = oldType;
                     return res + white;
                 }
 
                 if (type === operator) {
                     if (opts.onlyOneValue && symbol !== '!') {
-                        i = deb;
+                        i = begin;
                         lastSignificantType = oldType;
                         return res + white;
                     }
@@ -1574,7 +1601,7 @@
                     }
                 } else {
                     if (")]}".indexOf(symbol) !== -1) {
-                        i = deb;
+                        i = begin;
                         return res + white;
                     }
 
@@ -1591,7 +1618,7 @@
                             not = '!';
                             symbol = symbol.substr(1);
                             if (symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'haskey') {
-                                i = deb;
+                                i = begin;
                                 return res;
                             }
                         }
@@ -1606,7 +1633,7 @@
                             symbol = 'elementof';
                         }
 
-                        deb2 = i;
+                        begin2 = i;
                         symbol2 = getSymbol();
 
                         if (type === whitespace) {
@@ -1618,7 +1645,7 @@
 
                         if (type === operator) {
                             if (symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff' || symbol === '') {
-                                i = deb;
+                                i = begin;
                                 lastSignificantType = oldType;
                                 return res + white;
                             }
@@ -1629,28 +1656,28 @@
                                 constraintedVariables: opts.constraintedVariables
                             }) + ')';
                         } else if (symbol === 'contains' || symbol === 'subset_of' || symbol === 'sym_diff') {
-                            i = deb2;
+                            i = begin2;
                             res = ' ' + not + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({
                                 inForeach: opts.inForeach,
                                 onlyOneValue: true,
                                 constraintedVariables: opts.constraintedVariables
                             }) + ')';
                         } else if (symbol === 'elementof' || symbol === 'belongsto') {
-                            i = deb2;
+                            i = begin2;
                             res = ' ' + not + 'contains(' + getExpression({
                                 inForeach: opts.inForeach,
                                 onlyOneValue: true,
                                 constraintedVariables: opts.constraintedVariables
                             }) + ','  + (white === ' ' ? '' : white) + res + ')';
                         } else if (symbol === 'haskey') {
-                            i = deb2;
+                            i = begin2;
                             res = ' ' + not + '(' + res + ').hasKey(' + getExpression({
                                 inForeach: opts.inForeach,
                                 onlyOneValue: true,
                                 constraintedVariables: opts.constraintedVariables
                             }) + ')';
                         } else {
-                            i = deb2;
+                            i = begin2;
                             res = (white || ' ') + not + symbol + '(' + res + ',' + getExpression({
                                 inForeach: opts.inForeach,
                                 onlyOneValue: true,
@@ -1658,7 +1685,7 @@
                             }) + ')';
                         }
                     } else {
-                        i = deb;
+                        i = begin;
                         lastSignificantType = oldType;
                         return res + white;
                     }
@@ -1670,7 +1697,7 @@
         return res;
     };
 
-    function comprehensiveSet(opts, declarationSymbol, deb, white, expr1) {
+    function comprehensiveSet(opts, declarationSymbol, begin, white, expr1) {
         if (s[i] === '{') {
             ++i;
 
@@ -1684,7 +1711,7 @@
             var symbol = getSymbol();
 
             if (symbol !== ',') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
@@ -1696,21 +1723,21 @@
             }
 
             if (symbol !== '.') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
             symbol = getSymbol();
 
             if (symbol !== '.') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
             symbol = getSymbol();
 
             if (symbol !== '.') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
@@ -1722,7 +1749,7 @@
             }
 
             if (symbol !== ',') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
@@ -1732,7 +1759,7 @@
             });
 
             if (getSymbol() !== '}') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
@@ -1744,7 +1771,7 @@
             }
 
             if (symbol !== ')') {
-                i = deb;
+                i = begin;
                 return '';
             }
 
@@ -1768,7 +1795,7 @@
     }
 
     parseForeach = function (keyword, opts) {
-        var deb = i;
+        var begin = i;
         var symbol = getSymbol(), beforeParenthesis = '';
 
         if (type === whitespace) {
@@ -1777,7 +1804,7 @@
         }
 
         if (symbol !== '(') {
-            i = deb;
+            i = begin;
             return keyword;
         }
 
@@ -1808,7 +1835,7 @@
         }
 
         if ((inExpr !== 'in' && inExpr !== 'of') || (inExpr === 'in' && keyword === 'for')) {
-            i = deb;
+            i = begin;
             return keyword;
         }
 
@@ -1824,7 +1851,7 @@
         });
 
         if (getSymbol() !== ')') {
-            i = deb;
+            i = begin;
             return 'for';
         }
 
