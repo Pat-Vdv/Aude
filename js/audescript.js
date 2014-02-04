@@ -816,7 +816,7 @@
                         pres += symbol + getExpression({
                             inForeach: opts.inForeach,
                             value: true,
-                            commaAllowed:false,
+                            commaAllowed: false,
                             constraintedVariables: opts.constraintedVariables
                         }) + getWhite();
                         symbol = getSymbol();
@@ -885,10 +885,10 @@
                 return false;
             }
 
-            var i, o = {};
-            for (i in opts) {
-                if (opts.hasOwnProperty(i)) {
-                    o[i] = opts[i];
+            var j, o = {};
+            for (j in opts) {
+                if (opts.hasOwnProperty(j)) {
+                    o[j] = opts[j];
                 }
             }
 
@@ -984,9 +984,8 @@
             if (tmpRes !== false) {
                 if (tmpRes) {
                     return res + tmpRes;
-                } else {
-                    return '';
                 }
+                return '';
             }
 
             if (symbol === 'foreach') {
@@ -1011,7 +1010,7 @@
                         d = i;
                         var functionName = getWhite() + getSymbol();
 
-                        if (functionName.trim() ==='(') {
+                        if (functionName.trim() === '(') {
                             i = d;
                             functionName = functionName.slice(0, -1);
                         }
@@ -1151,112 +1150,116 @@
                     if (symbol === 'new' || (!opts.value && symbol === 'delete') || symbol === 'typeof') {
                         res += symbol + getExpression({
                             inForeach: opts.inForeach,
-                            onlyOneValue:true,
-                            commaAllowed:opts.commaAllowed,
+                            onlyOneValue: true,
+                            commaAllowed: opts.commaAllowed,
                             constraintedVariables: opts.constraintedVariables,
-                            endSymbols:opts.endSymbols
+                            endSymbols: opts.endSymbols
                         });
-                    } else if (opts.value) {
-                        i = deb;
-                        return '';
-                    } else if (symbol === 'const' || symbol === 'let' || symbol === 'var') {
-                        if (symbol === 'let') {
-                            d = i;
-                            pres += getWhite();
-                            symbol = getSymbol();
-                            i = d;
+                    } else {
+                        if (opts.value) {
+                            i = deb;
+                            return '';
+                        }
 
-                            if (symbol === '(') {
-                                if (letExpressionSupported) {
-                                    return res + 'let' + getExpression({
+                        if (symbol === 'const' || symbol === 'let' || symbol === 'var') {
+                            if (symbol === 'let') {
+                                d = i;
+                                pres += getWhite();
+                                symbol = getSymbol();
+                                i = d;
+
+                                if (symbol === '(') {
+                                    if (letExpressionSupported) {
+                                        return res + 'let' + getExpression({
+                                            inForeach: opts.inForeach,
+                                            constraintedVariables: opts.constraintedVariables
+                                        }) + getExpression({
+                                            inForeach: opts.inForeach,
+                                            constraintedVariables: copy(opts.constraintedVariables)
+                                        });
+                                    }
+                                    return res + '(function () {var ' + getExpression({
                                         inForeach: opts.inForeach,
                                         constraintedVariables: opts.constraintedVariables
-                                    }) + getExpression({
+                                    }).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
                                         inForeach: opts.inForeach,
                                         constraintedVariables: copy(opts.constraintedVariables)
-                                    });
+                                    }) + '})()';
                                 }
-                                return res + '(function () {var ' + getExpression({
-                                    inForeach: opts.inForeach,
-                                    constraintedVariables: opts.constraintedVariables
-                                }).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
-                                    inForeach: opts.inForeach,
-                                    constraintedVariables: copy(opts.constraintedVariables)
-                                }) + '})()';
+
+                                symbol = 'let'; // regulat let, handling just after this.
                             }
 
-                            symbol = 'let'; // regulat let, handling just after this.
-                        }
+                            var listOfVals, index, leng, semicolonExpected = false, vars, keyword, val, addToConsts = symbol === 'const' && !constSupported;
 
-                        var listOfVals, index, leng, semicolonExpected = false, vars, keyword, val, addToConsts = symbol === 'const' && !constSupported;
+                            decl = '';
 
-                        decl = '';
+                            if (addToConsts || symbol === 'let') {
+                                keyword = letDeclarationSupported ? 'let' : 'var';
+                            } else {
+                                keyword = symbol;
+                            }
 
-                        if (addToConsts || symbol === 'let') {
-                            keyword = letDeclarationSupported ? 'let' : 'var';
-                        } else {
-                            keyword = symbol;
-                        }
-
-                        do {
-                            vars = getWhite() + getExpression({
-                                onlyOneValue: true,
-                                constraintedVariables: opts.constraintedVariables
-                            }) + getWhite();
-
-                            d = i;
-                            oldType = lastSignificantType;
-                            symbol = getSymbol();
-
-                            if (symbol === '=') {
-                                val = getExpression({
-                                    inForeach: opts.inForeach,
-                                    constraintedVariables: opts.constraintedVariables,
-                                    onlyOneValue: true
-                                });
+                            do {
+                                vars = getWhite() + getExpression({
+                                    onlyOneValue: true,
+                                    constraintedVariables: opts.constraintedVariables
+                                }) + getWhite();
 
                                 d = i;
                                 oldType = lastSignificantType;
                                 symbol = getSymbol();
-                            } else {
-                                val = '';
-                            }
 
-                            if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
-                                // destructuring
-                                listOfVals = [];
-                                pkg.Audescript.destruct(null, vars, listOfVals);
+                                if (symbol === '=') {
+                                    val = getExpression({
+                                        inForeach: opts.inForeach,
+                                        constraintedVariables: opts.constraintedVariables,
+                                        onlyOneValue: true
+                                    });
 
-                                if (decl) {
-                                    res += (semicolonExpected ? ';' : '') + decl + ';';
-                                    decl = '';
+                                    d = i;
+                                    oldType = lastSignificantType;
+                                    symbol = getSymbol();
+                                } else {
+                                    val = '';
                                 }
 
-                                res += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + getWhite();
-                                semicolonExpected = true;
+                                if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
+                                    // destructuring
+                                    listOfVals = [];
+                                    pkg.Audescript.destruct(null, vars, listOfVals);
 
-                                if (addToConsts) {
-                                    for (index = 0, leng = listOfVals.length; index < leng; ++index) {
-                                        if (listOfVals.hasOwnProperty(index)) {
-                                            opts.constraintedVariables.consts.add(listOfVals[index]);
+                                    if (decl) {
+                                        res += (semicolonExpected ? ';' : '') + decl + ';';
+                                        decl = '';
+                                    }
+
+                                    res += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + getWhite();
+                                    semicolonExpected = true;
+
+                                    if (addToConsts) {
+                                        for (index = 0, leng = listOfVals.length; index < leng; ++index) {
+                                            if (listOfVals.hasOwnProperty(index)) {
+                                                opts.constraintedVariables.consts.add(listOfVals[index]);
+                                            }
                                         }
                                     }
+                                } else if (decl) {
+                                    decl += ',' + vars + (val ? '=' + val : '') + getWhite();
+                                } else {
+                                    decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + getWhite();
                                 }
-                            } else if (decl) {
-                                decl += ',' + vars + (val ? '=' + val : '') + getWhite();
-                            } else {
-                                decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + getWhite();
-                            }
-                        } while (symbol === ',');
+                            } while (symbol === ',');
 
-                        if (symbol === ';') {
-                            return res + (semicolonExpected ? ';' : '') + decl + ';';
+                            if (symbol === ';') {
+                                return res + (semicolonExpected ? ';' : '') + decl + ';';
+                            }
+
+                            i = d;
+                            lastSignificantType = oldType;
+                            return res + (semicolonExpected ? ';' : '') + decl;
                         }
 
-                        i = d;
-                        lastSignificantType = oldType;
-                        return res + (semicolonExpected ? ';' : '') + decl;
-                    } else {
                         i = deb;
                         return '';
                     }
