@@ -576,6 +576,17 @@
                     ++i;
                     return c + '=';
                 }
+
+                if (c === '|' && s[i] === '|') {
+                   ++i;
+                   return '||';
+                }
+
+                if (c === '&' && s[i] === '&') {
+                   ++i;
+                   return '&&';
+                }
+
                 return c;
             }
 
@@ -1208,7 +1219,6 @@
             i = begin;
             return '';
         }
-
         var beginAfterBrace = i;
         var tmpRes = tryBrace(symbol, opts)      ||
                      tryBracket(symbol, opts)    ||
