@@ -1104,7 +1104,7 @@
                 keyword = symbol;
             }
 
-            var oldType, tmp = '';
+            var oldType, tmp = '', white = '';
 
             do {
                 vars = getWhite() + getExpression({
@@ -1125,6 +1125,7 @@
 
                     d = i;
                     oldType = lastSignificantType;
+                    white  = getWhite();
                     symbol = getSymbol();
                 } else {
                     val = '';
@@ -1140,7 +1141,7 @@
                         decl = '';
                     }
 
-                    tmp += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + getWhite();
+                    tmp += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + white;
                     semicolonExpected = true;
 
                     if (addToConsts) {
@@ -1151,14 +1152,14 @@
                         }
                     }
                 } else if (decl) {
-                    decl += ',' + vars + (val ? '=' + val : '') + getWhite();
+                    decl += ',' + vars + (val ? '=' + val : '') + white;
                 } else {
-                    decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + getWhite();
+                    decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + white;
                 }
             } while (symbol === ',');
 
             if (symbol === ';') {
-                return tmp + (semicolonExpected ? ';' : '') + decl + ';';
+               return tmp + (semicolonExpected ? ';' : '') + decl + ';';
             }
 
             i = d;
