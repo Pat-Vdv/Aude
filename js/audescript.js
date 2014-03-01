@@ -1289,11 +1289,13 @@
     function tryColon(symbol, opts, white, oldType, begin, varName) {
         if (symbol === ':') {
             opts.immediatlyReturn = true;
+
             if (opts.value) {
                 --i;
                 lastSignificantType = oldType;
                 return white || -1;
             }
+
             var d, tmp, white2, matches, constraint, typeOfVar, defaultValue;
 
             d = i;
@@ -1693,20 +1695,23 @@
     }
 
     getExpression = function (opts) {
-        var begin       = i,
-            res         = getWhite();
-
         if (!opts.noWhite) {
             opts.noWhite = true;
-            return res + getExpression(opts);
+            return getWhite() + getExpression(opts);
         }
-
-        var symbol      = getSymbol(),
-            oldType     = lastSignificantType;
 
         if (opts.onlyOneValue) {
             opts.value = true;
         }
+
+        if (!opts.endSymbols) {
+            opts.endSymbols = {};
+        }
+
+        var begin       = i,
+            res         = '',
+            symbol      = getSymbol(),
+            oldType     = lastSignificantType;
 
         /* Here:
          * The symbol to handle was just read in the variable symbol.
@@ -1714,16 +1719,13 @@
          * oldType is the type of the current symbol
          */
 
-        if (!opts.endSymbols) {
-            opts.endSymbols = {};
-        }
-
         // stop condition
         if (opts.endSymbols.hasOwnProperty(symbol) || ")]}".indexOf(symbol) !== -1) {
             /* case : we are at the end of an expression */
             i = begin;
             return '';
         }
+
         var beginAfterBrace = i;
         var tmpRes = tryBrace(symbol, opts)           ||
                      tryArrayLitteral(symbol, opts)   ||
@@ -1794,10 +1796,13 @@
             if (tmpRes === -1) {
                 tmpRes = '';
             }
+
             res = (opts.noRes ? '' : res) + tmpRes;
+
             if (opts.immediatlyReturn) {
                 return res;
             }
+
             opts.noRes = false;
         }
 
