@@ -1191,8 +1191,14 @@
 
     getExpression = function (opts) {
         var begin        = i,
-            res          = getWhite(),
-            symbol       = getSymbol(),
+            res          = getWhite();
+
+        if (!opts.noWhite) {
+            opts.noWhite = true;
+            return res + getExpression(opts);
+        }
+
+        var symbol       = getSymbol(),
             oldType      = lastSignificantType,
             constraint,
             symbol2,
