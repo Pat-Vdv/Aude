@@ -1592,6 +1592,103 @@
         }
         return false;
     }
+
+    function tryAlphaOperator(opts, symbol, white, oldType, begin, res) {
+        var not = '';
+        if (symbol === 'U') {
+            symbol = 'union';
+        } else if (symbol === 'M') {
+            symbol = 'minus';
+        } else if (symbol === 'N') {
+            symbol = 'inter';
+        } else {
+            symbol = symbol.toLowerCase();
+            if (symbol && symbol[0] === '!') {
+                not = '!';
+                symbol = symbol.substr(1);
+                if (symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'haskey') {
+                    i = begin;
+                    opts.immediatlyReturn = true;
+                    return -1;
+                }
+            }
+        }
+
+        if (symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'haskey' || symbol === 'symdiff' || symbol === 'element_of') {
+            if (symbol === 'symdiff') {
+                symbol = 'sym_diff';
+            } else if (symbol === 'subsetof') {
+                symbol = 'subset_of';
+            } else if (symbol === 'element_of') {
+                symbol = 'elementof';
+            }
+
+            var begin2 = i;
+            var symbol2 = getSymbol();
+            var white2;
+
+            if (type === whitespace) {
+                white2 = symbol2 === ' ' ? '' : symbol2;
+                symbol2 = getSymbol();
+            } else {
+                white2 = '';
+            }
+
+            if (type === operator) {
+                if (symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff' || symbol === '') {
+                    i = begin;
+                    lastSignificantType = oldType;
+                    opts.immediatlyReturn = true;
+                    return white || -1;
+                }
+
+                return '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({
+                    inForeach: opts.inForeach,
+                    onlyOneValue: true,
+                    constraintedVariables: opts.constraintedVariables
+                }) + ')';
+            }
+
+            opts.noRes = true;
+
+            if (symbol === 'contains' || symbol === 'subset_of' || symbol === 'sym_diff') {
+                i = begin2;
+                return ' ' + not + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({
+                    inForeach: opts.inForeach,
+                    onlyOneValue: true,
+                    constraintedVariables: opts.constraintedVariables
+                }) + ')';
+            }
+
+            if (symbol === 'elementof' || symbol === 'belongsto') {
+                i = begin2;
+                return ' ' + not + 'contains(' + getExpression({
+                    inForeach: opts.inForeach,
+                    onlyOneValue: true,
+                    constraintedVariables: opts.constraintedVariables
+                }) + ','  + (white === ' ' ? '' : white) + res + ')';
+            }
+
+            if (symbol === 'haskey') {
+                i = begin2;
+                return ' ' + not + '(' + res + ').hasKey(' + getExpression({
+                    inForeach: opts.inForeach,
+                    onlyOneValue: true,
+                    constraintedVariables: opts.constraintedVariables
+                }) + ')';
+            }
+
+            i = begin2;
+            return (white || ' ') + not + symbol + '(' + res + ',' + getExpression({
+                inForeach: opts.inForeach,
+                onlyOneValue: true,
+                constraintedVariables: opts.constraintedVariables
+            }) + ')';
+        }
+
+        return false;
+    }
+
     getExpression = function (opts) {
         var begin       = i,
             res         = getWhite();
@@ -1602,8 +1699,7 @@
         }
 
         var symbol      = getSymbol(),
-            oldType     = lastSignificantType,
-            symbol2;
+            oldType     = lastSignificantType;
 
         if (opts.onlyOneValue) {
             opts.value = true;
@@ -1659,7 +1755,8 @@
         }
 
 
-        var white, not, white2, begin2;
+        var white;
+
         while (true) {
             oldType = lastSignificantType;
             white = getWhite();
@@ -1679,108 +1776,26 @@
                      tryInterro(opts, symbol, white, oldType, begin) ||
                      tryArrowFunction(opts, symbol, oldType, res)    ||
                      tryBracketParenthesis(symbol, opts, white)      ||
-                     tryOperator(opts, type, symbol, white, begin, oldType, res);
+                     tryOperator(opts, type, symbol, white, begin, oldType, res) ||
+                     tryAlphaOperator(opts, symbol, white, oldType, begin, res);
 
-            if (tmpRes !== false) {
-                if (tmpRes === -1) {
-                    tmpRes = '';
-                }
-                res = (opts.noRes ? '' : res) + tmpRes;
-                if (opts.immediatlyReturn) {
-                    return res;
-                }
-                opts.noRes = false;
-            } else {
-                if (")]}".indexOf(symbol) !== -1) {
-                    i = begin;
-                    return res + white;
-                }
-
-                not = '';
-                if (symbol === 'U') {
-                    symbol = 'union';
-                } else if (symbol === 'M') {
-                    symbol = 'minus';
-                } else if (symbol === 'N') {
-                    symbol = 'inter';
-                } else {
-                    symbol = symbol.toLowerCase();
-                    if (symbol && symbol[0] === '!') {
-                        not = '!';
-                        symbol = symbol.substr(1);
-                        if (symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'haskey') {
-                            i = begin;
-                            return res;
-                        }
-                    }
-                }
-
-                if (symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'haskey' || symbol === 'symdiff' || symbol === 'element_of') {
-                    if (symbol === 'symdiff') {
-                        symbol = 'sym_diff';
-                    } else if (symbol === 'subsetof') {
-                        symbol = 'subset_of';
-                    } else if (symbol === 'element_of') {
-                        symbol = 'elementof';
-                    }
-
-                    begin2 = i;
-                    symbol2 = getSymbol();
-
-                    if (type === whitespace) {
-                        white2 = symbol2 === ' ' ? '' : symbol2;
-                        symbol2 = getSymbol();
-                    } else {
-                        white2 = '';
-                    }
-
-                    if (type === operator) {
-                        if (symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff' || symbol === '') {
-                            i = begin;
-                            lastSignificantType = oldType;
-                            return res + white;
-                        }
-
-                        res += '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({
-                            inForeach: opts.inForeach,
-                            onlyOneValue: true,
-                            constraintedVariables: opts.constraintedVariables
-                        }) + ')';
-                    } else if (symbol === 'contains' || symbol === 'subset_of' || symbol === 'sym_diff') {
-                        i = begin2;
-                        res = ' ' + not + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({
-                            inForeach: opts.inForeach,
-                            onlyOneValue: true,
-                            constraintedVariables: opts.constraintedVariables
-                        }) + ')';
-                    } else if (symbol === 'elementof' || symbol === 'belongsto') {
-                        i = begin2;
-                        res = ' ' + not + 'contains(' + getExpression({
-                            inForeach: opts.inForeach,
-                            onlyOneValue: true,
-                            constraintedVariables: opts.constraintedVariables
-                        }) + ','  + (white === ' ' ? '' : white) + res + ')';
-                    } else if (symbol === 'haskey') {
-                        i = begin2;
-                        res = ' ' + not + '(' + res + ').hasKey(' + getExpression({
-                            inForeach: opts.inForeach,
-                            onlyOneValue: true,
-                            constraintedVariables: opts.constraintedVariables
-                        }) + ')';
-                    } else {
-                        i = begin2;
-                        res = (white || ' ') + not + symbol + '(' + res + ',' + getExpression({
-                            inForeach: opts.inForeach,
-                            onlyOneValue: true,
-                            constraintedVariables: opts.constraintedVariables
-                        }) + ')';
-                    }
-                } else {
-                    i = begin;
+            if (tmpRes === false) {
+                if (")]}".indexOf(symbol) === -1) {
                     lastSignificantType = oldType;
-                    return res + white;
                 }
+
+                i = begin;
+                return res + white;
             }
+
+            if (tmpRes === -1) {
+                tmpRes = '';
+            }
+            res = (opts.noRes ? '' : res) + tmpRes;
+            if (opts.immediatlyReturn) {
+                return res;
+            }
+            opts.noRes = false;
         }
 
         // should never be reached
