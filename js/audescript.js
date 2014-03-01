@@ -850,7 +850,7 @@
         return false;
     }
 
-    function tryBracket(symbol, opts) {
+    function tryArrayLitteral(symbol, opts) {
         if (symbol === '[') {
             return '[' + getExpression({
                 inForeach: opts.inForeach,
@@ -1237,6 +1237,212 @@
         }
     }
 
+    function tryInclude(symbol, includes) {
+        if (symbol === 'include') {
+            var res = getWhite();
+            includes.push(getSymbol());
+            res += getWhite();
+            var begin = i;
+
+            if (getSymbol() === ';') {
+                return res + getWhite();
+            }
+
+            i = begin;
+            return res;
+        }
+        return false;
+    }
+
+    function tryComma(symbol, opts, white, oldType) {
+        if (symbol === ',') {
+            if (!opts.commaAllowed) {
+                --i;
+                lastSignificantType = oldType;
+                return white;
+            }
+
+            return white + symbol + getExpression({
+                inForeach: opts.inForeach,
+                value: opts.value,
+                commaAllowed: true,
+                endSymbols: opts.endSymbols,
+                constraintedVariables: opts.constraintedVariables
+            });
+        }
+        return false;
+    }
+
+    function trySemicolon(symbol, opts, white, oldType) {
+        if (symbol === ';') {
+            if (opts.value) {
+                --i;
+                lastSignificantType = oldType;
+                return white;
+            }
+            return white + symbol + getWhite();
+        }
+        return false;
+    }
+
+    function tryColon(symbol, opts, white, oldType, begin, varName) {
+        if (symbol === ':') {
+            var d, tmp, white2, matches, constraint, typeOfVar, defaultValue;
+            if (opts.value) {
+                --i;
+                lastSignificantType = oldType;
+                return white;
+            }
+
+            d = i;
+            matches = /([\s]*)[\S]+/g.exec();
+
+            if (matches) {
+                opts.constraintedVariables.type.add(varName);
+                tmp = matches[1] + (letDeclarationSupported ? 'let ' : 'var ') + varName + white + '=';
+                defaultValue = '';
+                symbol = getSymbol();
+
+                if (type === whitespace) {
+                    if (symbol.match("\n")) {
+                        i = d;
+                        type = lastSignificantType = operator;
+
+                        return white + ':' + getExpression({
+                            inForeach: opts.inForeach,
+                            constraintedVariables: opts.constraintedVariables
+                        });
+                    }
+                    tmp += symbol;
+                    symbol = getSymbol();
+                }
+
+                if (type === variable) {
+                    typeOfVar = symbol;
+                    symbol = getSymbol();
+                    if (type === whitespace) {
+                        white = symbol === ' ' ? '' : symbol;
+                        symbol = getSymbol();
+                    } else {
+                        white = '';
+                    }
+
+                    if (symbol === '=') {
+                        defaultValue = getExpression({
+                            inForeach: opts.inForeach,
+                            value: true,
+                            constraintedVariables: opts.constraintedVariables
+                        });
+                    } else {
+                        i -= symbol.length;
+                    }
+
+                    switch (typeOfVar.toLowerCase()) {
+                    case "integer":
+                    case "int":
+                        tmp += defaultValue ? ('Audescript.as(0,' + defaultValue + ', true)') : '0';
+                        opts.constraintedVariables.type.add('0' + varName);
+                        break;
+                    case "list":
+                    case "array":
+                    case "table":
+                        tmp += defaultValue ? ('Audescript.as([],' + defaultValue + ')') : '[]';
+                        break;
+                    case "state":
+                        opts.constraintedVariables.type.remove(varName);
+                        tmp += defaultValue || '""';
+                        break;
+                    case "string":
+                        tmp += defaultValue ? ('Audescript.as("",' + defaultValue + ')') : '""';
+                        break;
+                    case "bool":
+                    case "boolean":
+                        tmp += defaultValue ? ('Audescript.as(false,' + defaultValue + ')') : 'false';
+                        break;
+                    case "automaton":
+                        tmp += defaultValue ? 'Audescript.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
+                        break;
+                    case "function":
+                        tmp += defaultValue ? 'Audescript.as(function () {},' + defaultValue + ')' : 'function () {}';
+                        break;
+                    case "mappingfunction":
+                        tmp += defaultValue || 'getMappingFunction()';
+                        break;
+                    case "set":
+                        if (defaultValue) {
+                            tmp += (defaultValue.trim().substr(0, 7) === 'to_set(') ? defaultValue : 'to_set(' +  defaultValue + ')';
+                        } else {
+                            tmp   += 'new Set()';
+                            symbol = getSymbol();
+                            white2 = '';
+
+                            if (type === whitespace) {
+                                if (symbol !== ' ') {
+                                    white2 = symbol;
+                                }
+                                symbol = getSymbol();
+                            }
+
+                            if (symbol === 'of') {
+                                constraint = getConstraintString();
+
+                                if (constraint) {
+                                    tmp += ';' + white2 + varName + '.setTypeConstraint(' + constraint + ')';
+                                } else {
+                                    i = begin;
+                                    lastSignificantType = oldType;
+                                    return white;
+                                }
+
+                                symbol = getSymbol();
+
+                                if (type === whitespace) {
+                                    if (symbol !== ' ') {
+                                        tmp += symbol;
+                                    }
+                                    symbol = getSymbol();
+                                }
+
+                                if (symbol === '=') {
+                                    tmp += ';' + varName + '.unionInPlace(' + getExpression({
+                                        inForeach: opts.inForeach,
+                                        value: true,
+                                        constraintedVariables: opts.constraintedVariables
+                                    }) + ')';
+                                } else {
+                                    i -= symbol.length;
+                                }
+                            } else {
+                                i -= symbol.length;
+                            }
+                        }
+                        break;
+                    default:
+                        tmp += 'new ' + typeOfVar;
+                    }
+
+                    tmp += white;
+                }
+
+                white = getWhite();
+                symbol = getSymbol();
+
+                opts.noRes = true;
+                if (symbol === ';') {
+                    return tmp + white + symbol;
+                }
+
+                i -= symbol.length;
+                return tmp + white;
+            }
+
+            i = begin;
+            lastSignificantType = oldType;
+            return white;
+        }
+        return false;
+    }
+
     getExpression = function (opts) {
         var begin       = i,
             res         = getWhite();
@@ -1248,11 +1454,8 @@
 
         var symbol      = getSymbol(),
             oldType     = lastSignificantType,
-            constraint,
             symbol2,
-            pres,
-            tmp,
-            d;
+            pres;
 
         if (opts.onlyOneValue) {
             opts.value = true;
@@ -1275,9 +1478,9 @@
             return '';
         }
         var beginAfterBrace = i;
-        var tmpRes = tryBrace(symbol, opts)       ||
-                     tryBracket(symbol, opts)     ||
-                     tryParenthesis(symbol, opts) ||
+        var tmpRes = tryBrace(symbol, opts)           ||
+                     tryArrayLitteral(symbol, opts)   ||
+                     tryParenthesis(symbol, opts)     ||
                      tryNewDeleteTypeof(symbol, opts) ||
                      tryEmptySet(symbol);
 
@@ -1292,34 +1495,14 @@
 
             tmpRes = tryPunct(symbol, opts)                       ||
                      tryForeachRelatedStuffs(symbol, opts, begin) ||
-                     tryInstructionBlock(symbol, opts, begin);
+                     tryInstructionBlock(symbol, opts, begin)     ||
+                     tryInclude(symbol, includes)                 ||
+                     tryVariableRelatedInstruction(symbol, opts, begin);
 
             if (tmpRes === -1) {
                 return '';
             }
 
-            if (tmpRes !== false) {
-                return res + tmpRes;
-            }
-
-            if (symbol === 'include') {
-                res += getWhite();
-                includes.push(getSymbol());
-                res += getWhite();
-                begin = i;
-
-                if (getSymbol() === ';') {
-                    return res + getWhite();
-                }
-
-                i = begin;
-                return res;
-            }
-
-            tmpRes = tryVariableRelatedInstruction(symbol, opts, begin);
-            if (tmpRes === -1) {
-                return '';
-            }
             if (tmpRes !== false) {
                 return res + tmpRes;
             }
@@ -1328,7 +1511,7 @@
         }
 
 
-        var white, expr, matches, varName, defaultValue, typeOfVar, trimRes, newVal, not, white2, begin2;
+        var white, expr, trimRes, newVal, not, white2, begin2;
         while (true) {
             oldType = lastSignificantType;
             white = getWhite();
@@ -1339,6 +1522,14 @@
                 i = begin;
                 lastSignificantType = oldType;
                 return res + white;
+            }
+
+            tmpRes = tryComma(symbol, opts, white, oldType)     ||
+                        trySemicolon(symbol, opts, white, oldType) ||
+                        tryColon(symbol, opts, white, oldType, begin, res.trim());
+
+            if (tmpRes !== false) {
+                return (opts.noRes ? '' : res) + tmpRes;
             }
 
             if (type === dot) {
@@ -1393,185 +1584,6 @@
                     commaAllowed: true
                 }) + getSymbol(); // symbol should be ')'
             } else {
-                if (symbol === ',') {
-                    if (!opts.commaAllowed) {
-                        --i;
-                        lastSignificantType = oldType;
-                        return res + white;
-                    }
-
-                    return res + white + symbol + getExpression({
-                        inForeach: opts.inForeach,
-                        value: opts.value,
-                        commaAllowed: true,
-                        endSymbols: opts.endSymbols,
-                        constraintedVariables: opts.constraintedVariables
-                    });
-                }
-
-                if (symbol === ';') {
-                    if (opts.value) {
-                        --i;
-                        lastSignificantType = oldType;
-                        return res + white;
-                    }
-                    return res + white + symbol + getWhite();
-                }
-
-                if (symbol === ':') {
-                    if (opts.value) {
-                        --i;
-                        lastSignificantType = oldType;
-                        return res + white;
-                    }
-
-                    d = i;
-                    matches = /([\s]*)[\S]+/g.exec(res);
-
-                    if (matches) {
-                        varName = res.trim();
-                        opts.constraintedVariables.type.add(varName);
-                        tmp = matches[1] + (letDeclarationSupported ? 'let ' : 'var ') + varName + white + '=';
-                        defaultValue = '';
-                        symbol = getSymbol();
-
-                        if (type === whitespace) {
-                            if (symbol.match("\n")) {
-                                i = d;
-                                type = lastSignificantType = operator;
-
-                                return res + white + ':' + getExpression({
-                                    inForeach: opts.inForeach,
-                                    constraintedVariables: opts.constraintedVariables
-                                });
-                            }
-                            tmp += symbol;
-                            symbol = getSymbol();
-                        }
-
-                        if (type === variable) {
-                            typeOfVar = symbol;
-                            symbol = getSymbol();
-                            if (type === whitespace) {
-                                white = symbol === ' ' ? '' : symbol;
-                                symbol = getSymbol();
-                            } else {
-                                white = '';
-                            }
-
-                            if (symbol === '=') {
-                                defaultValue = getExpression({
-                                    inForeach: opts.inForeach,
-                                    value: true,
-                                    constraintedVariables: opts.constraintedVariables
-                                });
-                            } else {
-                                i -= symbol.length;
-                            }
-
-                            switch (typeOfVar.toLowerCase()) {
-                            case "integer":
-                            case "int":
-                                tmp += defaultValue ? ('Audescript.as(0,' + defaultValue + ', true)') : '0';
-                                opts.constraintedVariables.type.add('0' + varName);
-                                break;
-                            case "list":
-                            case "array":
-                            case "table":
-                                tmp += defaultValue ? ('Audescript.as([],' + defaultValue + ')') : '[]';
-                                break;
-                            case "state":
-                                opts.constraintedVariables.type.remove(varName);
-                                tmp += defaultValue || '""';
-                                break;
-                            case "string":
-                                tmp += defaultValue ? ('Audescript.as("",' + defaultValue + ')') : '""';
-                                break;
-                            case "bool":
-                            case "boolean":
-                                tmp += defaultValue ? ('Audescript.as(false,' + defaultValue + ')') : 'false';
-                                break;
-                            case "automaton":
-                                tmp += defaultValue ? 'Audescript.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
-                                break;
-                            case "function":
-                                tmp += defaultValue ? 'Audescript.as(function () {},' + defaultValue + ')' : 'function () {}';
-                                break;
-                            case "mappingfunction":
-                                tmp += defaultValue || 'getMappingFunction()';
-                                break;
-                            case "set":
-                                if (defaultValue) {
-                                    tmp += (defaultValue.trim().substr(0, 7) === 'to_set(') ? defaultValue : 'to_set(' +  defaultValue + ')';
-                                } else {
-                                    tmp   += 'new Set()';
-                                    symbol = getSymbol();
-                                    white2 = '';
-
-                                    if (type === whitespace) {
-                                        if (symbol !== ' ') {
-                                            white2 = symbol;
-                                        }
-                                        symbol = getSymbol();
-                                    }
-
-                                    if (symbol === 'of') {
-                                        constraint = getConstraintString();
-
-                                        if (constraint) {
-                                            tmp += ';' + white2 + varName + '.setTypeConstraint(' + constraint + ')';
-                                        } else {
-                                            i = begin;
-                                            lastSignificantType = oldType;
-                                            return res + white;
-                                        }
-
-                                        symbol = getSymbol();
-
-                                        if (type === whitespace) {
-                                            if (symbol !== ' ') {
-                                                tmp += symbol;
-                                            }
-                                            symbol = getSymbol();
-                                        }
-
-                                        if (symbol === '=') {
-                                            tmp += ';' + varName + '.unionInPlace(' + getExpression({
-                                                inForeach: opts.inForeach,
-                                                value: true,
-                                                constraintedVariables: opts.constraintedVariables
-                                            }) + ')';
-                                        } else {
-                                            i -= symbol.length;
-                                        }
-                                    } else {
-                                        i -= symbol.length;
-                                    }
-                                }
-                                break;
-                            default:
-                                tmp += 'new ' + typeOfVar;
-                            }
-
-                            tmp += white;
-                        }
-
-                        white = getWhite();
-                        symbol = getSymbol();
-
-                        if (symbol === ';') {
-                            return tmp + white + symbol;
-                        }
-
-                        i -= symbol.length;
-                        return tmp + white;
-                    }
-
-                    i = begin;
-                    lastSignificantType = oldType;
-                    return res + white;
-                }
-
                 if (type === operator) {
                     if (opts.onlyOneValue && symbol !== '!') {
                         i = begin;
