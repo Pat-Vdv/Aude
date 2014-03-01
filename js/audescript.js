@@ -1202,16 +1202,16 @@
     }
 
     getExpression = function (opts) {
-        var begin        = i,
-            res          = getWhite();
+        var begin       = i,
+            res         = getWhite();
 
         if (!opts.noWhite) {
             opts.noWhite = true;
             return res + getExpression(opts);
         }
 
-        var symbol       = getSymbol(),
-            oldType      = lastSignificantType,
+        var symbol      = getSymbol(),
+            oldType     = lastSignificantType,
             constraint,
             symbol2,
             pres,
@@ -1267,17 +1267,14 @@
             if (symbol === 'emptySet') {
                 res += getWhite() + 'new Set(';
                 begin = i;
-                symbol = getSymbol();
 
-                if (symbol === '(') {
+                if (getSymbol() === '(') {
                     constraint = getConstraintString();
-                    if (constraint) {
-                        if (getSymbol() === ')') {
+                    if (getSymbol() === ')') {
+                        if (constraint) {
                             res += '{typeConstraint:' + constraint + '}';
-                        } else {
-                            i = begin;
                         }
-                    } else if (getSymbol() !== ')') {
+                    } else {
                         i = begin;
                     }
                 } else {
@@ -1912,7 +1909,6 @@
     };
 
     toPureJS = function (opts) {
-
         if (!opts) {
             opts = {};
         }
