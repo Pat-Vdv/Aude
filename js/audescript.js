@@ -77,8 +77,8 @@
 
     try {
         constSupported            = eval("(function () {const a=1; try{a=2;}catch (e) {return true;} return false;})();");
-    } catch (e) {
-        if (e instanceof TypeError) {
+    } catch (ex) {
+        if (ex instanceof TypeError) {
             constSupported = true;
         }
     }
@@ -578,13 +578,13 @@
                 }
 
                 if (c === '|' && s[i] === '|') {
-                   ++i;
-                   return '||';
+                    ++i;
+                    return '||';
                 }
 
                 if (c === '&' && s[i] === '&') {
-                   ++i;
-                   return '&&';
+                    ++i;
+                    return '&&';
                 }
 
                 return c;
@@ -946,15 +946,15 @@
     }
 
     function autoTrim(s) {
-        var begin = 0, len = s.length;
-        while (begin < len && " \t".indexOf(s[begin]) !== -1) {
-            ++begin;
+        var b = 0, l = s.length;
+        while (b < l && " \t".indexOf(s[b]) !== -1) {
+            ++b;
         }
-        var end = len - 1;
-        while (end > -1 && " \t".indexOf(s[end]) !== -1) {
-            --end;
+        var e = l - 1;
+        while (e > -1 && " \t".indexOf(s[e]) !== -1) {
+            --e;
         }
-        return s.substring(begin, end + 1);
+        return s.substring(b, e + 1);
     }
 
     function tryInstructionBlock(symbol, opts, begin) {
@@ -1171,7 +1171,7 @@
             } while (symbol === ',');
 
             if (symbol === ';') {
-               return tmp + (semicolonExpected ? ';' : '') + decl + ';';
+                return tmp + (semicolonExpected ? ';' : '') + decl + ';';
             }
 
             i = d;
@@ -1817,7 +1817,7 @@
 
             declarationSymbol = declarationSymbol || (/^[\s]*(let|var)/g.exec(expr1) || ['', (letDeclarationSupported ? 'let' : 'var')])[1];
             expr1 = expr1.replace(/^([\s]*)(?:let|var) */g, '$1');
-            return 'for (' + declarationSymbol + (declarationSymbol[declarationSymbol.length-1].trim() ? ' ' : '') + expr1 + (expr1[expr1.length-1].trim() ? ' ' : '' ) + '=' + n1 + '; ' + expr1.trim() + ' <= ' + n2 + ';' + white + '++' + expr1.trim() + ')' + bf + foreachBody + ef;
+            return 'for (' + declarationSymbol + (declarationSymbol[declarationSymbol.length - 1].trim() ? ' ' : '') + expr1 + (expr1[expr1.length - 1].trim() ? ' ' : '') + '=' + n1 + '; ' + expr1.trim() + ' <= ' + n2 + ';' + white + '++' + expr1.trim() + ')' + bf + foreachBody + ef;
         }
 
         return '';
