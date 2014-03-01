@@ -945,6 +945,18 @@
         return false;
     }
 
+    function autoTrim(s) {
+        var begin = 0, len = s.length;
+        while (begin < len && " \t".indexOf(s[begin]) !== -1) {
+            ++begin;
+        }
+        var end = len - 1;
+        while (end > -1 && " \t".indexOf(s[end]) !== -1) {
+            --end;
+        }
+        return s.substring(begin, end + 1);
+    }
+
     function tryInstructionBlock(symbol, opts, begin) {
         var d, tmp;
         if (symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === 'switch' || symbol === 'try' || symbol === 'catch' || symbol === 'finally') {
@@ -1566,13 +1578,13 @@
                     }
 
                     if (symbol === '==') {
-                        res = white + " Audescript.eq(" + res + ',' + getExpression({
+                        res = white + " Audescript.eq(" + autoTrim(res) + ',' + getExpression({
                             inForeach: opts.inForeach,
                             onlyOneValue: true,
                             constraintedVariables: opts.constraintedVariables
                         }) + ')';
                     } else if (symbol === '!=') {
-                        res = white + " !Audescript.eq(" + res + ',' + getExpression({
+                        res = white + " !Audescript.eq(" + autoTrim(res) + ',' + getExpression({
                             inForeach: opts.inForeach,
                             onlyOneValue: true,
                             constraintedVariables: opts.constraintedVariables
@@ -1803,9 +1815,9 @@
                 ef = '}';
             }
 
-            declarationSymbol = declarationSymbol || (/^[\s]*(let|var)/.exec(expr1) || ['', (letDeclarationSupported ? 'let' : 'var')])[1];
-            expr1 = expr1.replace(/^([\s]*)(?:let|var)/, '$1');
-            return 'for (' + declarationSymbol + ' ' + expr1 + ' =' + n1 + '; ' + expr1.trim() + ' <= ' + n2 + ';' + white + '++' + expr1.trim() + ')' + bf + foreachBody + ef;
+            declarationSymbol = declarationSymbol || (/^[\s]*(let|var)/g.exec(expr1) || ['', (letDeclarationSupported ? 'let' : 'var')])[1];
+            expr1 = expr1.replace(/^([\s]*)(?:let|var) */g, '$1');
+            return 'for (' + declarationSymbol + (declarationSymbol[declarationSymbol.length-1].trim() ? ' ' : '') + expr1 + (expr1[expr1.length-1].trim() ? ' ' : '' ) + '=' + n1 + '; ' + expr1.trim() + ' <= ' + n2 + ';' + white + '++' + expr1.trim() + ')' + bf + foreachBody + ef;
         }
 
         return '';
@@ -1834,16 +1846,16 @@
 
         if (IterationsSupported) {
             if (keyword === 'foreach' && !expr1.match(/^[\s]*(?:let|var) ?/)) {
-                expr1 = (letDeclarationSupported ? 'let ' : 'var ') + expr1;
+                expr1 = (letDeclarationSupported ? 'let ' : 'var ') + autoTrim(expr1);
             }
         } else {
-            var key = /^[\s]*(let|var)/.exec(expr1);
+            var key = /^[\s]*(let|var) */g.exec(expr1);
 
             if (key || keyword === 'foreach') {
                 declarationSymbol = (key ? key[1] + ' ' : (letDeclarationSupported ? 'let ' : 'var '));
             }
 
-            expr1 = expr1.replace(/^[\s]*(?:let|var) ?/, '');
+            expr1 = expr1.replace(/^[\s]*(?:let|var) */g, '');
         }
 
         if (type === whitespace) {
