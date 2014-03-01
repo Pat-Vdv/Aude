@@ -10,7 +10,7 @@ What is an automaton?
     - Delta : a set of transitions, a transition being a (state, symbol, state) triplet.
     - F     : a subset of Q in which states are considered accepting / final
 
-What this program does?
+What does this program do?
 -----------------------
 
    This program let the user write, draw or represent automata, run or write automata/set-related algorithms. To write algorithms, a convenient language strongly inspired of Javascript has been designed. This language as native support for automata and sets. Sets have their own dedicated notation and the language defines common set operations as operators such as minus, inter, union and allow set iteration thanks to a foreach structure.
@@ -64,6 +64,22 @@ What is the license of the program?
 
    The GPLv3 license can be consulted in the file gpl.txt.
    The WTFPL license can be consulted in the file wtfpl.txt.
+
+Running Audescript programs outside of the browser?
+---------------------------------------------------
+
+    Sure, cd to the tests folder and run
+     $ nodejs aude.js yourprogram.ajs parameters...
+
+    Ways to install aude.js on one's system is a work in progress.
+
+Unit tests?
+-----------
+
+    cd to the tests folder and type:
+     $ nodejs aude.js test.js
+
+    See tests/README for more details.
 
 Author
 ------

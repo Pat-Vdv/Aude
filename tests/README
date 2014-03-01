@@ -5,6 +5,5 @@ Example:
 
    $ nodejs aude.js test.js
 
-  This will run unit tests for audescript and some algorithms provided in the Aude package.
-
-
+  test.js is a Javascript / Audescript program which run unit tests on
+  Audescript and on some algorithms provided in the Aude package.
