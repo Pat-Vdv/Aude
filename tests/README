@@ -1,0 +1,10 @@
+aude.js is a prgramme that takes an audescript file in argument and executes it.
+You can pass parameters to your audescript program by passing them to aude.js after your program's name.
+
+Example:
+
+   $ nodejs aude.js test.js
+
+  This will run unit tests for audescript and some algorithms provided in the Aude package.
+
+
