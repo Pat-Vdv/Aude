@@ -1593,35 +1593,38 @@
         return false;
     }
 
+    var alphaOperatorRenames = {
+        'u':          'union',
+        'm':          'minus',
+        'n':          'inter',
+        'symdiff':    'sym_diff',
+        'subsetof':   'subset_of',
+        'element_of': 'belongs_to',
+        'elementof':  'belongs_to',
+        'belongsto':  'belongs_to',
+        'haskey':     'has_key'
+    };
+
     function tryAlphaOperator(opts, symbol, white, oldType, begin, res) {
         var not = '';
-        if (symbol === 'U') {
-            symbol = 'union';
-        } else if (symbol === 'M') {
-            symbol = 'minus';
-        } else if (symbol === 'N') {
-            symbol = 'inter';
-        } else {
-            symbol = symbol.toLowerCase();
-            if (symbol && symbol[0] === '!') {
-                not = '!';
-                symbol = symbol.substr(1);
-                if (symbol !== 'contains' && symbol !== 'subsetof' && symbol !== 'elementof' && symbol !== 'belongsto' && symbol !== 'haskey') {
-                    i = begin;
-                    opts.immediatlyReturn = true;
-                    return -1;
-                }
+        symbol = symbol.toLowerCase();
+
+        if (symbol && symbol[0] === '!') {
+            not = '!';
+            symbol = symbol.substr(1);
+            if (alphaOperatorRenames.hasOwnProperty(symbol)) {
+                symbol = alphaOperatorRenames[symbol];
             }
+            if (symbol !== 'contains' && symbol !== 'subset_of' && symbol !== 'belongs_to' && symbol !== 'has_key') {
+                i = begin;
+                opts.immediatlyReturn = true;
+                return -1;
+            }
+        } else if (alphaOperatorRenames.hasOwnProperty(symbol)) {
+            symbol = alphaOperatorRenames[symbol];
         }
 
-        if (symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'haskey' || symbol === 'symdiff' || symbol === 'element_of') {
-            if (symbol === 'symdiff') {
-                symbol = 'sym_diff';
-            } else if (symbol === 'subsetof') {
-                symbol = 'subset_of';
-            } else if (symbol === 'element_of') {
-                symbol = 'elementof';
-            }
+        if (symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'belongs_to' || symbol === 'has_key' || symbol === 'sym_diff') {
 
             var begin2 = i;
             var symbol2 = getSymbol();
@@ -1635,7 +1638,7 @@
             }
 
             if (type === operator) {
-                if (symbol2 !== '=' || symbol === 'contains' || symbol === 'haskey' || symbol === 'subset_of' || symbol === 'elementof' || symbol === 'belongsto' || symbol === 'sym_diff' || symbol === '') {
+                if (symbol2 !== '=' || symbol === 'contains' || symbol === 'has_key' || symbol === 'subset_of' || symbol === 'belongs_to' || symbol === 'sym_diff' || symbol === '') {
                     i = begin;
                     lastSignificantType = oldType;
                     opts.immediatlyReturn = true;
@@ -1660,7 +1663,7 @@
                 }) + ')';
             }
 
-            if (symbol === 'elementof' || symbol === 'belongsto') {
+            if (symbol === 'belongs_to') {
                 i = begin2;
                 return ' ' + not + 'contains(' + getExpression({
                     inForeach: opts.inForeach,
@@ -1669,7 +1672,7 @@
                 }) + ','  + (white === ' ' ? '' : white) + res + ')';
             }
 
-            if (symbol === 'haskey') {
+            if (symbol === 'has_key') {
                 i = begin2;
                 return ' ' + not + '(' + res + ').hasKey(' + getExpression({
                     inForeach: opts.inForeach,
