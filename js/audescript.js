@@ -909,6 +909,42 @@
         return false;
     }
 
+    function tryNewDeleteTypeof(symbol, opts) {
+        if (symbol === 'new' || (!opts.value && symbol === 'delete') || symbol === 'typeof') {
+            return symbol + getExpression({
+                inForeach: opts.inForeach,
+                onlyOneValue: true,
+                commaAllowed: opts.commaAllowed,
+                constraintedVariables: opts.constraintedVariables,
+                endSymbols: opts.endSymbols
+            });
+        }
+        return false;
+    }
+
+    function tryEmptySet(symbol) {
+        if (symbol === 'emptySet') {
+            var res = getWhite() + 'new Set(';
+            var begin = i;
+
+            if (getSymbol() === '(') {
+                var constraint = getConstraintString();
+                if (getSymbol() === ')') {
+                    if (constraint) {
+                        res += '{typeConstraint:' + constraint + '}';
+                    }
+                } else {
+                    i = begin;
+                }
+            } else {
+                i = begin;
+            }
+
+            return res + ')';
+        }
+        return false;
+    }
+
     function tryPunct(symbol, opts) {
         if (symbol === ';') {
             if (opts.value) {
@@ -1239,9 +1275,11 @@
             return '';
         }
         var beginAfterBrace = i;
-        var tmpRes = tryBrace(symbol, opts)      ||
-                     tryBracket(symbol, opts)    ||
-                     tryParenthesis(symbol, opts);
+        var tmpRes = tryBrace(symbol, opts)       ||
+                     tryBracket(symbol, opts)     ||
+                     tryParenthesis(symbol, opts) ||
+                     tryNewDeleteTypeof(symbol, opts) ||
+                     tryEmptySet(symbol);
 
         if (tmpRes) {
             // we parsed [...] or {...} or (...)
@@ -1264,59 +1302,29 @@
                 return res + tmpRes;
             }
 
-            if (symbol === 'emptySet') {
-                res += getWhite() + 'new Set(';
+            if (symbol === 'include') {
+                res += getWhite();
+                includes.push(getSymbol());
+                res += getWhite();
                 begin = i;
 
-                if (getSymbol() === '(') {
-                    constraint = getConstraintString();
-                    if (getSymbol() === ')') {
-                        if (constraint) {
-                            res += '{typeConstraint:' + constraint + '}';
-                        }
-                    } else {
-                        i = begin;
-                    }
-                } else {
-                    i = begin;
+                if (getSymbol() === ';') {
+                    return res + getWhite();
                 }
 
-                res += ')';
-            } else {
-                if (symbol === 'include') {
-                    res += getWhite();
-                    includes.push(getSymbol());
-                    res += getWhite();
-                    begin = i;
-
-                    if (getSymbol() === ';') {
-                        return res + getWhite();
-                    }
-
-                    i = begin;
-                    return res;
-                }
-
-                if (symbol === 'new' || (!opts.value && symbol === 'delete') || symbol === 'typeof') {
-                    res += symbol + getExpression({
-                        inForeach: opts.inForeach,
-                        onlyOneValue: true,
-                        commaAllowed: opts.commaAllowed,
-                        constraintedVariables: opts.constraintedVariables,
-                        endSymbols: opts.endSymbols
-                    });
-                } else {
-                    tmpRes = tryVariableRelatedInstruction(symbol, opts, begin);
-                    if (tmpRes === -1) {
-                        return '';
-                    }
-                    if (tmpRes !== false) {
-                        return res + tmpRes;
-                    }
-
-                    res += symbol; // ?? (string, number, litteral, ... ?)
-                }
+                i = begin;
+                return res;
             }
+
+            tmpRes = tryVariableRelatedInstruction(symbol, opts, begin);
+            if (tmpRes === -1) {
+                return '';
+            }
+            if (tmpRes !== false) {
+                return res + tmpRes;
+            }
+
+            res += symbol; // ?? (string, number, litteral, ... ?)
         }
 
 
