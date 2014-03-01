@@ -1285,14 +1285,11 @@
             } else {
                 if (symbol === 'include') {
                     res += getWhite();
-                    symbol = getSymbol();
-
-                    includes.push(symbol);
+                    includes.push(getSymbol());
                     res += getWhite();
                     begin = i;
-                    symbol = getSymbol();
 
-                    if (symbol === ';') {
+                    if (getSymbol() === ';') {
                         return res + getWhite();
                     }
 
