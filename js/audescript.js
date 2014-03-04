@@ -1460,7 +1460,7 @@
         return false;
     }
 
-    function tryInterro(opts, symbol, white, oldType, begin) {
+    function tryInterro(opts, symbol, white, oldType, begin, res) {
         if (symbol === '?') {
             if (opts.onlyOneValue) {
                 i = begin;
@@ -1469,17 +1469,23 @@
                 return white || -1;
             }
 
-            var pres = getExpression({
-                inForeach: opts.inForeach,
-                value: true,
-                constraintedVariables: opts.constraintedVariables
-            });
+            opts.noRes = true;
+            opts.hasOperator = true;
 
-            return white + '?' + pres + getSymbol() /* ':' */ + getExpression({
+            var o = {
                 inForeach: opts.inForeach,
                 value: true,
                 constraintedVariables: opts.constraintedVariables
-            });
+            };
+
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: '', alphaOp: false};
+            ret.ifTrueExpression = getExpression(o);
+            ret.valueIfTrueHasOperator = o.hasOperator;
+            o.hasOperator = false;
+            ret.colon = getWhite() + getSymbol() + getWhite();
+            ret.ifFalseExpression = getExpression(o);
+            ret.valueIfFalseHasOperator = o.hasOperator;
+            return ret;
         }
         return false;
     }
@@ -1532,31 +1538,7 @@
                 return res + white;
             }
 
-            if (symbol === '==') {
-                return white + " Audescript.eq(" + autoTrim(res) + ',' + getExpression({
-                    inForeach: opts.inForeach,
-                    onlyOneValue: true,
-                    constraintedVariables: opts.constraintedVariables
-                }) + ')';
-            }
-
-            if (symbol === '!=') {
-                return white + " !Audescript.eq(" + autoTrim(res) + ',' + getExpression({
-                    inForeach: opts.inForeach,
-                    onlyOneValue: true,
-                    constraintedVariables: opts.constraintedVariables
-                }) + ')';
-            }
-
-            if (symbol === '===') {
-                return res + white + '===' + getExpression({
-                    inForeach: opts.inForeach,
-                    onlyOneValue: true,
-                    constraintedVariables: opts.constraintedVariables
-                });
-            }
-
-            if (symbol[symbol.length - 1] === '=' && symbol !== '>=' && symbol != '<=') {
+            if (symbol[symbol.length - 1] === '=' && symbol !== '>=' && symbol != '<=' && symbol !== '===' && symbol !== '==' && symbol !== '!=' && symbol !== '!==') {
                 var trimRes, newVal;
                 trimRes = res.trim();
                 newVal  = getExpression({
@@ -1586,19 +1568,31 @@
                 return res + white + symbol + newVal;
             }
 
-            return res + white + symbol + getExpression({
+            opts.hasOperator = true;
+
+            var o = {
                 inForeach: opts.inForeach,
+                acceptOperator: true,
                 value: true,
+                noWhite:true,
                 constraintedVariables: opts.constraintedVariables
-            });
+            };
+
+//             console.log("begin tryOp: ");
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: '', beforeRight:getWhite(), right: getExpression(o), alphaOp: false};
+//             console.log("in tryOp: ", JSON.stringify(ret.right));
+            ret.rightHasOperator = o.hasOperator;
+            return ret;
         }
         return false;
     }
 
+    // we normalize operators with this table
     var alphaOperatorRenames = {
         'u':          'union',
         'm':          'minus',
         'n':          'inter',
+        'x':          'cross',
         'symdiff':    'sym_diff',
         'subsetof':   'subset_of',
         'element_of': 'belongs_to',
@@ -1608,16 +1602,19 @@
     };
 
     function tryAlphaOperator(opts, symbol, white, oldType, begin, res) {
-        var not = '';
         symbol = symbol.toLowerCase();
 
+        var not = '';
         if (symbol && symbol[0] === '!') {
             not = '!';
             symbol = symbol.substr(1);
+
             if (alphaOperatorRenames.hasOwnProperty(symbol)) {
                 symbol = alphaOperatorRenames[symbol];
             }
+
             if (symbol !== 'contains' && symbol !== 'subset_of' && symbol !== 'belongs_to' && symbol !== 'has_key') {
+                // only these alpha operators can be negated
                 i = begin;
                 opts.immediatlyReturn = true;
                 return -1;
@@ -1628,7 +1625,7 @@
 
         if (symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'belongs_to' || symbol === 'has_key' || symbol === 'sym_diff') {
 
-            var begin2 = i;
+            var maybeBeforeEqualSign = i;
             var symbol2 = getSymbol();
             var white2;
 
@@ -1641,6 +1638,7 @@
 
             if (type === operator) {
                 if (symbol2 !== '=' || symbol === 'contains' || symbol === 'has_key' || symbol === 'subset_of' || symbol === 'belongs_to' || symbol === 'sym_diff' || symbol === '') {
+                    // syntax error (?)
                     i = begin;
                     lastSignificantType = oldType;
                     opts.immediatlyReturn = true;
@@ -1649,49 +1647,170 @@
 
                 return '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({
                     inForeach: opts.inForeach,
-                    onlyOneValue: true,
+                    value: true,
                     constraintedVariables: opts.constraintedVariables
                 }) + ')';
             }
+
+            i = maybeBeforeEqualSign; // white2 is not relevant anymore
 
             opts.noRes = true;
+            opts.hasOperator = true;
 
-            if (symbol === 'contains' || symbol === 'subset_of' || symbol === 'sym_diff') {
-                i = begin2;
-                return ' ' + not + symbol + '(' + res + ',' + (white === ' ' ? '' : white) + getExpression({
-                    inForeach: opts.inForeach,
-                    onlyOneValue: true,
-                    constraintedVariables: opts.constraintedVariables
-                }) + ')';
-            }
-
-            if (symbol === 'belongs_to') {
-                i = begin2;
-                return ' ' + not + 'contains(' + getExpression({
-                    inForeach: opts.inForeach,
-                    onlyOneValue: true,
-                    constraintedVariables: opts.constraintedVariables
-                }) + ','  + (white === ' ' ? '' : white) + res + ')';
-            }
-
-            if (symbol === 'has_key') {
-                i = begin2;
-                return ' ' + not + '(' + res + ').hasKey(' + getExpression({
-                    inForeach: opts.inForeach,
-                    onlyOneValue: true,
-                    constraintedVariables: opts.constraintedVariables
-                }) + ')';
-            }
-
-            i = begin2;
-            return (white || ' ') + not + symbol + '(' + res + ',' + getExpression({
+            var o = {
                 inForeach: opts.inForeach,
-                onlyOneValue: true,
+                value: true,
+                noWhite:true,
+                acceptOperator: true,
                 constraintedVariables: opts.constraintedVariables
-            }) + ')';
+            };
+
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: not, beforeRight:getWhite(), right: getExpression(o), alphaOp: true};
+            ret.rightHasOperator = o.hasOperator;
+            return ret;
         }
 
         return false;
+    }
+
+    function addOperatorParenthesis(o, opts) {
+        o.afterLeft = o.afterLeft ? o.afterLeft + opts.afterLeft : opts.afterLeft;
+        o.transformedOperator = true;
+
+        var left = o;
+        while (left.prev && (!opts.weakerThan || opts.weakerThan.indexOf(left.prev.op) === -1)) {
+            left = left.prev;
+        }
+
+        if (left.prev) {
+            left.prev.beforeRight = left.prev.beforeRight ? opts.beforeLeft + left.prev.beforeRight : opts.beforeRight;
+        } else {
+            left.beforeLeft = left.beforeLeft ? opts.beforeLeft + left.beforeLeft : opts.beforeLeft;
+        }
+
+        var right = o;
+        while (right.rightHasOperator && ((!opts.weakerThan || opts.weakerThan.indexOf(right.right.op) === -1) && (!opts.sameLevel || opts.sameLevel.indexOf(right.right.op) === -1))) {
+            right = right.right;
+        }
+
+        if (right.rightHasOperator) {
+            right.right.afterLeft  = right.right.afterLeft  ? right.right.afterLeft  + opts.afterRight : opts.afterRight;
+        } else {
+            right.afterRight = right.afterRight ? right.afterRight + opts.afterRight : opts.afterRight;
+        }
+    }
+
+    function operatorChainToString(o) {
+        if (typeof o === 'string') {
+            return o;
+        }
+
+        if (o.transformedOperator) {
+            return (o.beforeLeft || '') + o.left + o.afterLeft + (o.beforeRight || '') + operatorChainToString(o.right) + (o.afterRight || '');
+            //TODO: check correctness
+        }
+
+        if (o.op === '?') {
+            // this works because ' ? : ' is the most predecedent operator
+            return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + o.white + '?' + o.ifTrueExpression + o.colon + o.ifFalseExpression + (o.afterRight || '');
+        }
+
+//         console.log('OP: ', (o.beforeRight || ''), ' ET ', operatorChainToString(o.right), 'ET ', (o.afterRight || ''), JSON.stringify(o.right));
+        return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + o.white + o.op +  (o.beforeRight || '') + operatorChainToString(o.right) + (o.afterRight || '');
+    }
+
+    function handleOperators(o) {
+        /**
+         * priorities:
+         *  - +, -, =, *
+         *  - union, inter, cross
+         *  - minus
+         *  - contains, belongs_to, hasKey, subset_of, symdiff
+         *  - <, <=, >= ,>, ==, ===
+         *  - ||
+         *  - &&
+         *  - ? :
+         */
+        if (o.rightHasOperator) {
+            o.right.prev = o;
+        }
+
+        switch (o.op) {
+        case '==':
+            addOperatorParenthesis(o, {
+                beforeLeft: (o.white || ' ') + "Audescript.eq(",
+                afterLeft:  ',',
+                afterRight: ')',
+                weakerThan: ['||', '&&', '?'],
+                sameLevel:  ['<', '<=', '>=', '>', '==', '===', '!=', '!==']
+            });
+            break;
+        case '!=':
+            addOperatorParenthesis(o, {
+                beforeLeft: (o.white || ' ') + "!Audescript.eq(",
+                afterLeft:  ',',
+                afterRight: ')',
+                weakerThan: ['||', '&&', '?'],
+                sameLevel:  ['<', '<=', '>=', '>', '==', '===', '!=', '!==']
+            });
+            break;
+        case '?':
+            if (o.valueIfTrueHasOperator) {
+                o.ifTrueExpression = operatorChainToString(handleOperators(o.ifTrueExpression));
+            }
+            if (o.valueIfFalseHasOperator) {
+                o.ifFalseExpression = operatorChainToString(handleOperators(o.ifFalseExpression));
+            }
+            return o; // '? : ' operator is a specific case
+//             return o.left + o.white + '?' + o.ifTrueExpression + o.colon + o.ifFalseExpression;
+        case 'contains':
+        case 'subsetof':
+        case 'sym_diff':
+        case 'belongs_to':
+            addOperatorParenthesis(o, {
+                beforeLeft: ' ' + o.not + o.op  + '(',
+                afterLeft:  ',' + (o.white === ' ' ? '' : o.white),
+                afterRight: ')',
+                weakerThan: ['<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'],
+                sameLevel:  ['contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff']
+            });
+            break;
+        case 'has_key':
+            addOperatorParenthesis(o, {
+                beforeLeft: ' ' + o.not + '(',
+                afterLeft:  ').hasKey('    + (o.white === ' ' ? '' : o.white),
+                afterRight: ')',
+                weakerThan: ['<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'],
+                sameLevel:  ['contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff']
+            });
+            break;
+        default:
+            var sameLevel, weakerThan;
+            if (o.op === 'union' || o.op === 'inter' || o.op === 'cross') {
+                sameLevel  = ['union', 'inter', 'cross'];
+                weakerThan = ['minus', 'contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff', '<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'];
+            } else if (o.op === 'minus') {
+                weakerThan = ['contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff', '<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'];
+                sameLevel  = ['minus'];
+            }
+
+            if (o.alphaOp) {
+                // inter, union, cross, minus
+                addOperatorParenthesis(o, {
+                    beforeLeft: (o.white || ' ') + o.not + o.op + '(',
+                    afterLeft:  ',',
+                    afterRight: ')',
+                    weakerThan: weakerThan,
+                    sameLevel:  sameLevel
+                });
+            }
+        }
+
+        if (o.rightHasOperator) {
+            handleOperators(o.right);
+        }
+
+        return o;
     }
 
     getExpression = function (opts) {
@@ -1734,7 +1853,6 @@
                      tryEmptySet(symbol);
 
         if (tmpRes) {
-            // we parsed [...] or {...} or (...)
             res += tmpRes;
             if (opts.onlyOneValue) {
                 return res;
@@ -1774,13 +1892,13 @@
                 return res + white;
             }
 
-            tmpRes = tryComma(symbol, opts, white, oldType)     ||
-                     trySemicolon(symbol, opts, white, oldType) ||
-                     tryColon(symbol, opts, white, oldType, begin, res.trim()) ||
-                     tryDot(opts, symbol, white)                     ||
-                     tryInterro(opts, symbol, white, oldType, begin) ||
-                     tryArrowFunction(opts, symbol, oldType, res)    ||
-                     tryBracketParenthesis(symbol, opts, white)      ||
+            tmpRes = tryComma(symbol, opts, white, oldType)                      ||
+                     trySemicolon(symbol, opts, white, oldType)                  ||
+                     tryColon(symbol, opts, white, oldType, begin, res.trim())   ||
+                     tryDot(opts, symbol, white)                                 ||
+                     tryInterro(opts, symbol, white, oldType, begin, res)        ||
+                     tryArrowFunction(opts, symbol, oldType, res)                ||
+                     tryBracketParenthesis(symbol, opts, white)                  ||
                      tryOperator(opts, type, symbol, white, begin, oldType, res) ||
                      tryAlphaOperator(opts, symbol, white, oldType, begin, res);
 
@@ -1795,6 +1913,16 @@
 
             if (tmpRes === -1) {
                 tmpRes = '';
+            }
+
+            if (opts.hasOperator) {
+                if (opts.acceptOperator) {
+                    opts.acceptOperator = false;
+//                     console.log("has and accept op: ", JSON.stringify(tmpRes));
+                    return tmpRes;
+                }
+                opts.hasOperator = false;
+                tmpRes = operatorChainToString(handleOperators(tmpRes));
             }
 
             res = (opts.noRes ? '' : res) + tmpRes;
