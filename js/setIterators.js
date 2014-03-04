@@ -11,6 +11,5 @@ try {
             yield this.l[i];\
          }\
       };\
-   ")
-}
-catch(e){}
+   ");
+} catch (e){}
