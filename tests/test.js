@@ -1,3 +1,11 @@
+function evalAudeScript(s) {
+    try {
+        return eval(Audescript.toPureJS(s));
+    } catch (e) {
+        return e;
+    }
+}
+
 function doTests(testCorrect, testFailed, testFailInfo) {
    var tests = {
       "1": // test minimization
@@ -119,19 +127,20 @@ function doTests(testCorrect, testFailed, testFailInfo) {
          }))
       ),
       "4":  Audescript.toPureJS('{"a":(f)(),"b":f}') === '{"a":(f)(),"b":f}',
-      "5":  eval(Audescript.toPureJS("(function(){const [a,b,c] = [1,2,3]; return a === 1 && b === 2 && c === 3;})()")),
+      "5":  evalAudeScript("(function(){const [a,b,c] = [1,2,3]; return a === 1 && b === 2 && c === 3;})()"),
       "6":  (function(){try{eval(Audescript.toPureJS("(function(){const [a,b,c] = [1,2,3]; a =2;})()"))}catch(e){return true;} return false;})(),
-      "7":  eval(Audescript.toPureJS("(function(){let [a,,c] = [1,2,3];return [a,c]})().toString() === '1,3'")),
-      "8":  eval(Audescript.toPureJS("1+2 belongsTo {3}")),
-      "9":  eval(Audescript.toPureJS("3 belongsTo {1} union {3}")),
-      "10": eval(Audescript.toPureJS("Tuple(1,2,3) != Tuple(1,Tuple(2,3))")),
-      "11": eval(Audescript.toPureJS("Tuple(1,2,3) == Tuple(Tuple(1,2),3)")),
-      "12": eval(Audescript.toPureJS("{Tuple(1,2,3)} == {1} cross {2} cross {3}")),
-      "13": eval(Audescript.toPureJS("1 belongsTo {0,1} belongsTo {true,false}")),
-      "14": eval(Audescript.toPureJS("({3} contains 1+2) === true")),
-      "15": eval(Audescript.toPureJS("({1} union {3} contains 1) === true")),
-      "16": eval(Audescript.toPureJS("((a, b) => a + b)(10, 32) === 42")),
-      "17": eval(Audescript.toPureJS("(a => a + 10)(32) === 42")),
+      "7":  evalAudeScript("(function(){let [a,,c] = [1,2,3];return [a,c]})().toString() === '1,3'"),
+      "8":  evalAudeScript("1+2 belongsTo {3}"),
+      "9":  evalAudeScript("3 belongsTo {1} union {3}"),
+      "10": evalAudeScript("Tuple(1,2,3) != Tuple(1,Tuple(2,3))"),
+      "11": evalAudeScript("Tuple(1,2,3) == Tuple(Tuple(1,2),3)"),
+      "12": evalAudeScript("{Tuple(1,2,3)} == {1} cross {2} cross {3}"),
+      "13": evalAudeScript("1 belongsTo {0,1} belongsTo {true,false}"),
+      "14": evalAudeScript("({3} contains 1+2) === true"),
+      "15": evalAudeScript("({1} union {3} contains 1) === true"),
+      "16": evalAudeScript("((a, b) => a + b)(10, 32) === 42"),
+      "17": evalAudeScript("(a => a + 10)(32) === 42"),
+      "18": evalAudeScript("1 == 2 || 1 == 1")
    };
 
    tryParse = [
@@ -169,11 +178,11 @@ function doTests(testCorrect, testFailed, testFailInfo) {
 
    for (var i in tests) {
       if(tests.hasOwnProperty(i)) {
-         if(tests[i]) {
+         if(tests[i] === true) {
             testCorrect(i);
          }
          else {
-            testFailed(i);
+            testFailed(i, tests[i] !== false ? tests[i] : null);
          }
       }
    }
@@ -189,8 +198,8 @@ function testCorrect(i) {
    console.log("Test " + i + ": OK");
 }
 
-function testFailed(i) {
-   console.log("Test " + i + ": Failed");
+function testFailed(i, e) {
+   console.log("Test " + i + ": Failed" + (e ? ', got : ' + e : ''));
 }
 
 function testFailInfo(n, s) {
