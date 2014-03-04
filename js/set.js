@@ -1086,6 +1086,10 @@
         return pkg.to_set(set).contains(element);
     };
 
+    pkg.belongs_to = function (element, set) {
+        return pkg.to_set(set).contains(element);
+    };
+
     pkg.add = function (set, element) {
         set.add(element);
     };
