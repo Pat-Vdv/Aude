@@ -5,14 +5,14 @@ function distinguableStates(A) {
        Q     = A.getStates(),
        Sigma = A.getAlphabet(),
        delta = A.getTransitionFunction(true);
-   
+
    D     : Set of List = F cross (Q minus F); // The set of couples of differentiable states
-   // initialized with final/non final states
+                                              // initialized with final/non final states.
    D_pre : Set of List = emptySet;            // value of D during the previous iteration
    X     : Set of List;
    while(D != D_pre) {
       D_pre = D.copy();
-      
+
       X = emptySet; // we find new differentiable states
       foreach(p in Q) {
          foreach(q in Q) {
