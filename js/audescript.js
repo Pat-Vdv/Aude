@@ -76,7 +76,7 @@
     } catch (ignore) {}
 
     try {
-        constSupported            = eval("(function () {const a=1; try{a=2;}catch (e) {return true;} return false;})();");
+        constSupported          = eval("(function () {const a=1; try{a=2;} catch (e) {return true;} return false;})();");
     } catch (ex) {
         if (ex instanceof TypeError) {
             constSupported = true;
@@ -1146,6 +1146,7 @@
             var decl = '';
 
             if (addToConsts || symbol === 'let') {
+                // Here, const is not supported
                 keyword = letDeclarationSupported ? 'let' : 'var';
             } else {
                 keyword = symbol;
@@ -1178,11 +1179,13 @@
                     val = '';
                 }
 
-                if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
+                if (!destructuringSupported || addToConsts) {
                     // destructuring
                     listOfVals = [];
                     pkg.Audescript.destruct(null, vars, listOfVals);
+                }
 
+                if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
                     if (decl) {
                         tmp += (semicolonExpected ? ';' : '') + decl + ';';
                         decl = '';
@@ -1190,18 +1193,18 @@
 
                     tmp += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + white;
                     semicolonExpected = true;
-
-                    if (addToConsts) {
-                        for (index = 0, leng = listOfVals.length; index < leng; ++index) {
-                            if (listOfVals.hasOwnProperty(index)) {
-                                opts.constraintedVariables.consts.add(listOfVals[index]);
-                            }
-                        }
-                    }
                 } else if (decl) {
                     decl += ',' + vars + (val ? '=' + val : '') + white;
                 } else {
                     decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + white;
+                }
+
+                if (addToConsts) {
+                    for (index = 0, leng = listOfVals.length; index < leng; ++index) {
+                        if (listOfVals.hasOwnProperty(index)) {
+                            opts.constraintedVariables.consts.add(listOfVals[index]);
+                        }
+                    }
                 }
             } while (symbol === ',');
 
@@ -1299,7 +1302,7 @@
             var d, tmp, white2, matches, constraint, typeOfVar, defaultValue;
 
             d = i;
-            matches = /([\s]*)[\S]+/g.exec();
+            matches = /([\s]*)[\S]+/g.exec(varName);
 
             if (matches) {
                 opts.constraintedVariables.type.add(varName);
@@ -1578,9 +1581,7 @@
                 constraintedVariables: opts.constraintedVariables
             };
 
-//             console.log("begin tryOp: ");
             var ret = {op: symbol, left: autoTrim(res), white: white, not: '', beforeRight: getWhite(), right: getExpression(o), alphaOp: false};
-//             console.log("in tryOp: ", JSON.stringify(ret.right));
             ret.rightHasOperator = o.hasOperator;
             return ret;
         }
@@ -1925,7 +1926,6 @@
             if (opts.hasOperator) {
                 if (opts.acceptOperator) {
                     opts.acceptOperator = false;
-//                     console.log("has and accept op: ", JSON.stringify(tmpRes));
                     return tmpRes;
                 }
                 opts.hasOperator = false;
