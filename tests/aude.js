@@ -27,7 +27,7 @@
 
 /*jslint node:true, rhino:true, indent: 4, nomen: true, ass: true, vars: true, evil: true, plusplus: true, eqeq: true, todo: true, bitwise: true, stupid:true */
 /*jshint -W020*/
-/*global global:true, require:true, readFile:false, Packages:false, java:false, console:true, arguments:false, Audescript:false, Set:false, BufferedReader:false, InputStreamReader:false, System:false, importPackage:false */
+/*global global:true, require:true, readFile:false, Packages:false, java:false, console:true, arguments:false, Audescript:false, Set:false */
 
 (function (that) {
     "use strict";
@@ -93,11 +93,6 @@
     }
 
     if (!that.process) {
-        if (that.importPackage) {
-            importPackage(java.io);
-            importPackage(java.lang);
-        }
-
         var stdinClosedFunction = [];
 
         that.process = {
@@ -107,7 +102,7 @@
                 on: function (evt, f) {
                     switch (evt) {
                     case 'data':
-                        var reader = new BufferedReader(new InputStreamReader(System['in']));
+                        var reader = new java.io.BufferedReader(new java.io.InputStreamReader(java.lang.System['in']));
                         var s;
                         do {
                             s = reader.readLine();
