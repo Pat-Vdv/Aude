@@ -128,7 +128,7 @@ function doTests(testCorrect, testFailed, testFailInfo) {
       ),
       "4":  Audescript.toPureJS('{"a":(f)(),"b":f}') === '{"a":(f)(),"b":f}',
       "5":  evalAudeScript("(function(){const [a,b,c] = [1,2,3]; return a === 1 && b === 2 && c === 3;})()"),
-      "6":  (function(){try{eval(Audescript.toPureJS("(function(){const [a,b,c] = [1,2,3]; a =2;})()"))}catch(e){return true;} return false;})(),
+      "6":  (function(){try{eval(Audescript.toPureJS("(function(){const [a,b,c] = [1,2,3]; a = 2;})()"))}catch(e){return true;} return false;})(),
       "7":  evalAudeScript("(function(){let [a,,c] = [1,2,3];return [a,c]})().toString() === '1,3'"),
       "8":  evalAudeScript("1+2 belongsTo {3}"),
       "9":  evalAudeScript("3 belongsTo {1} union {3}"),
