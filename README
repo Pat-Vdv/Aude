@@ -73,6 +73,15 @@ Running Audescript programs outside of the browser?
 
     Ways to install aude.js on one's system is a work in progress.
 
+Any interactive shell for Audescript?
+-------------------------------------
+
+    Ya, cd to the tests folder and run
+    $ nodejs aude.js
+
+    File redirections are also supported:
+    $ nodejs aude.js < file.ajs
+
 Unit tests?
 -----------
 

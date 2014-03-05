@@ -1,4 +1,4 @@
-aude.js is a prgramme that takes an audescript file in argument and executes it.
+aude.js is a program that takes an audescript file in argument and executes it.
 You can pass parameters to your audescript program by passing them to aude.js after your program's name.
 
 Example:
@@ -7,3 +7,11 @@ Example:
 
   test.js is a Javascript / Audescript program which run unit tests on
   Audescript and on some algorithms provided in the Aude package.
+
+aude.js can also act as an interactive shell an behave somewhat like nodejs:
+
+   $ nodejs aude.js
+
+Like nodejs, aude.js support redirections:
+
+   $ nodejs aude.js < file.ajs
