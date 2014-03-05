@@ -1574,12 +1574,12 @@
                 inForeach: opts.inForeach,
                 acceptOperator: true,
                 value: true,
-                noWhite:true,
+                noWhite: true,
                 constraintedVariables: opts.constraintedVariables
             };
 
 //             console.log("begin tryOp: ");
-            var ret = {op: symbol, left: autoTrim(res), white: white, not: '', beforeRight:getWhite(), right: getExpression(o), alphaOp: false};
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: '', beforeRight: getWhite(), right: getExpression(o), alphaOp: false};
 //             console.log("in tryOp: ", JSON.stringify(ret.right));
             ret.rightHasOperator = o.hasOperator;
             return ret;
@@ -1660,12 +1660,12 @@
             var o = {
                 inForeach: opts.inForeach,
                 value: true,
-                noWhite:true,
+                noWhite: true,
                 acceptOperator: true,
                 constraintedVariables: opts.constraintedVariables
             };
 
-            var ret = {op: symbol, left: autoTrim(res), white: white, not: not, beforeRight:getWhite(), right: getExpression(o), alphaOp: true};
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: not, beforeRight: getWhite(), right: getExpression(o), alphaOp: true};
             ret.rightHasOperator = o.hasOperator;
             return ret;
         }
@@ -1705,18 +1705,25 @@
             return o;
         }
 
-        if (o.transformedOperator) {
-            return (o.beforeLeft || '') + o.left + o.afterLeft + (o.beforeRight || '') + operatorChainToString(o.right) + (o.afterRight || '');
-            //TODO: check correctness
-        }
-
         if (o.op === '?') {
             // this works because ' ? : ' is the most predecedent operator
             return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + o.white + '?' + o.ifTrueExpression + o.colon + o.ifFalseExpression + (o.afterRight || '');
         }
 
-//         console.log('OP: ', (o.beforeRight || ''), ' ET ', operatorChainToString(o.right), 'ET ', (o.afterRight || ''), JSON.stringify(o.right));
-        return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + o.white + o.op +  (o.beforeRight || '') + operatorChainToString(o.right) + (o.afterRight || '');
+        var rightTrim = operatorChainToString(o.right);
+        var rightSpaces = '';
+
+        while (rightTrim.length && !rightTrim.slice(-1).trim()) {
+            rightSpaces = rightTrim.slice(-1) + rightSpaces;
+            rightTrim   = rightTrim.substr(0, rightTrim.length - 1);
+        }
+
+        if (o.transformedOperator) {
+            return (o.beforeLeft || '') + o.left + o.afterLeft + (o.beforeRight || '') + rightTrim + (o.afterRight || '') + rightSpaces;
+            //TODO: check correctness
+        }
+
+        return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + (o.white || '') + o.op +  (o.beforeRight || '') + rightTrim + (o.afterRight || '') + rightSpaces;
     }
 
     function handleOperators(o) {
@@ -1738,7 +1745,7 @@
         switch (o.op) {
         case '==':
             addOperatorParenthesis(o, {
-                beforeLeft: (o.white || ' ') + "Audescript.eq(",
+                beforeLeft: (o.white || '') + "Audescript.eq(",
                 afterLeft:  ',',
                 afterRight: ')',
                 weakerThan: ['||', '&&', '?'],
@@ -1747,7 +1754,7 @@
             break;
         case '!=':
             addOperatorParenthesis(o, {
-                beforeLeft: (o.white || ' ') + "!Audescript.eq(",
+                beforeLeft: (o.white || '') + "!Audescript.eq(",
                 afterLeft:  ',',
                 afterRight: ')',
                 weakerThan: ['||', '&&', '?'],
@@ -1797,7 +1804,7 @@
             if (o.alphaOp) {
                 // inter, union, cross, minus
                 addOperatorParenthesis(o, {
-                    beforeLeft: (o.white || ' ') + o.not + o.op + '(',
+                    beforeLeft: (o.white || '') + o.not + o.op + '(',
                     afterLeft:  ',',
                     afterRight: ')',
                     weakerThan: weakerThan,
