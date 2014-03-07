@@ -532,7 +532,7 @@
                         };
                     }
 
-                    libD.need(['ready', 'ws', 'wm'], function () {
+                    libD.need(['ready', 'ws', 'wm', '*langPack'], function () {
                         curAlgo  = document.getElementById('predef-algos');
                         open     = document.getElementById('open');
                         quiz     = document.getElementById('quiz');
