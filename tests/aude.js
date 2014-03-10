@@ -248,6 +248,10 @@
                     case null:
                         console.log(style('null', 'bold'));
                         break;
+                    case true:
+                    case false:
+                        console.log(style(res, 'yellow'));
+                        break;
                     default:
                         if (typeof res === 'number') {
                             console.log(style(res, 'yellow'));
