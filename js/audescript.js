@@ -126,18 +126,18 @@
         return i;
     }
 
-    function destructArray(e, destructStr, res, i) {
+    function destructArray(e, destructStr, res, i, end) {
         ++i;
         var k = 0;
-        while (destructStr[i] !== ']') {
+        while (destructStr[i] !== end) {
             i = destructNext(destructStr, i, '', true);
             if (destructStr[i] !== ',') {
                 i = pkg.Audescript.destruct((e || [])[k], destructStr, res, true, i);
             }
-            i = destructNext(destructStr, i, ']');
+            i = destructNext(destructStr, i, end);
             ++k;
         }
-        if (destructStr[i] !== ']') {
+        if (destructStr[i] !== end) {
             throw new Error("Malformed destructing string");
         }
         return i + 1;
@@ -220,13 +220,13 @@
 
         i = destructNext(destructStr, i || 0, '', true);
 
-        if (destructStr[i] === '[') {
-            i = destructArray(e, destructStr, res, i);
+        if (destructStr[i] === '[' || destructStr[i] === '(') {
+            i = destructArray(e, destructStr, res, i, destructStr[i] === '[' ? ']' : ')');
         } else if (destructStr[i] === '{') {
             i = destructObject(e, destructStr, res, i);
         } else {
             var j = i++;
-            while (destructStr[i] && ",]}".indexOf(destructStr[i]) === -1) {
+            while (destructStr[i] && ",]})".indexOf(destructStr[i]) === -1) {
                 ++i;
             }
 
@@ -895,15 +895,20 @@
                 return false;
             }
 
-            var j, o = {};
+            var j, o = {commaAllowed: true};
             for (j in opts) {
                 if (opts.hasOwnProperty(j)) {
                     o[j] = opts[j];
                 }
             }
+            o.acceptOperator = false;
 
             o.endSymbols = {')': true};
-            return "(" + toPureJS(o) + getSymbol(); // ')'
+            var res = "(" + getExpression(o) + getSymbol(); // ')'
+            if (o.gotComma && !o.noTuple) {
+                res = " Tuple" + res;
+            }
+            return res;
         }
         return false;
     }
@@ -1008,6 +1013,7 @@
                     return symbol + functionName + getExpression({
                         inForeach: opts.inForeach,
                         constraintedVariables: opts.constraintedVariables,
+                        noTuple: true,
                         onlyOneValue: true
                     }) + functionBody(getExpression({
                         inForeach: false,
@@ -1018,6 +1024,7 @@
 
                 return symbol + getExpression({
                     inForeach: false,
+                    noTuple: true,
                     constraintedVariables: opts.constraintedVariables
                 }) + functionBody(getExpression({
                     inForeach: false,
@@ -1117,27 +1124,31 @@
                 getWhite();
                 symbol = getSymbol();
                 i = d;
-
                 if (symbol === '(') {
-                    if (letExpressionSupported) {
-                        return 'let' + getExpression({
-                            inForeach: opts.inForeach,
-                            constraintedVariables: opts.constraintedVariables
-                        }) + getExpression({
+                    var letVars = getExpression({
+                        inForeach: opts.inForeach,
+                        noTuple: true,
+                        onlyOneValue: true,
+                        constraintedVariables: opts.constraintedVariables
+                    }) + getSymbol();
+                    var d2 = i;
+                    getWhite();
+                    if (s[i] !== '=') {
+                        i = d2;
+                        if (letExpressionSupported) {
+                            return 'let' + letVars + getExpression({
+                                inForeach: opts.inForeach,
+                                constraintedVariables: copy(opts.constraintedVariables)
+                            });
+                        }
+
+                        return '(function () {var ' + letVars.replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
                             inForeach: opts.inForeach,
                             constraintedVariables: copy(opts.constraintedVariables)
-                        });
+                        }) + '})()';
                     }
-
-                    return '(function () {var ' + getExpression({
-                        inForeach: opts.inForeach,
-                        constraintedVariables: opts.constraintedVariables
-                    }).replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
-                        inForeach: opts.inForeach,
-                        constraintedVariables: copy(opts.constraintedVariables)
-                    }) + '})()';
                 }
-
+                i = d;
                 symbol = 'let'; // regulat let, handling just after this.
             }
 
@@ -1157,6 +1168,7 @@
             do {
                 vars = getWhite() + getExpression({
                     onlyOneValue: true,
+                    noTuple: true,
                     constraintedVariables: opts.constraintedVariables
                 }) + getWhite();
 
@@ -1185,7 +1197,7 @@
                     pkg.Audescript.destruct(null, vars, listOfVals);
                 }
 
-                if (!destructuringSupported && val && '[{'.indexOf(vars.trim()[0]) !== -1) {
+                if (val && '[{('.indexOf(vars.trim()[0]) !== -1 && (!destructuringSupported || '('.indexOf(vars.trim()[0]) !== -1)) {
                     if (decl) {
                         tmp += (semicolonExpected ? ';' : '') + decl + ';';
                         decl = '';
@@ -1265,6 +1277,7 @@
                 return white || -1;
             }
 
+            opts.gotComma = true;
             return white + symbol + getExpression({
                 inForeach: opts.inForeach,
                 value: opts.value,
@@ -1497,7 +1510,8 @@
         if (symbol === '[') {
             return white + symbol + getExpression({
                 inForeach: opts.inForeach,
-                constraintedVariables: opts.constraintedVariables
+                constraintedVariables: opts.constraintedVariables,
+                endSymbols: {']': true}
             }) + getSymbol(); // symbol should be ']'
         }
 
@@ -1505,7 +1519,8 @@
             return white + symbol + getExpression({
                 inForeach: opts.inForeach,
                 constraintedVariables: opts.constraintedVariables,
-                commaAllowed: true
+                commaAllowed: true,
+                endSymbols: {')': true},
             }) + getSymbol(); // symbol should be ')'
         }
         return false;
@@ -1550,7 +1565,7 @@
                     constraintedVariables: opts.constraintedVariables
                 });
 
-                if (!destructuringSupported && (trimRes[0] === '{' || trimRes[0] === '[')) {
+                if ((!destructuringSupported && (trimRes[0] === '{' || trimRes[0] === '[')) || trimRes[0] === '(') {
                     return res + white + destructToJS(res, newVal, null, opts.constraintedVariables);
                 }
 
