@@ -140,7 +140,8 @@ function doTests(testCorrect, testFailed, testFailInfo) {
       "15": evalAudeScript("({1} union {3} contains 1) === true"),
       "16": evalAudeScript("((a, b) => a + b)(10, 32) === 42"),
       "17": evalAudeScript("(a => a + 10)(32) === 42"),
-      "18": evalAudeScript("1 == 2 || 1 == 1")
+      "18": evalAudeScript("1 == 2 || 1 == 1"),
+      "19": evalAudeScript("{1,2,3,4} symDiff {3,4,5,6} == {1,2,5,6}")
    };
 
    tryParse = [

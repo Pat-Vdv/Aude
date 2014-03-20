@@ -351,7 +351,7 @@
             }
 
             for (i in set.l) {
-                if (this.l.hasOwnProperty(i) && !this.contains(set.l[i])) {
+                if (set.l.hasOwnProperty(i) && !this.contains(set.l[i])) {
                     r.add(set.l[i]);
                 }
             }
