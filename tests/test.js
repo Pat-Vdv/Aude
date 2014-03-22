@@ -126,7 +126,7 @@ function doTests(testCorrect, testFailed, testFailInfo) {
             ]
          }))
       ),
-      "4":  Audescript.toPureJS('{"a":(f)(),"b":f}') === '{"a":(f)(),"b":f}',
+      "4":  evalAudeScript('let go = {}, f = function(){return go;}, o = {"a":(f)(),"b":f}; o.a === go && o.b === f'),
       "5":  evalAudeScript("(function(){const [a,b,c] = [1,2,3]; return a === 1 && b === 2 && c === 3;})()"),
       "6":  (function(){try{eval(Audescript.toPureJS("(function(){const [a,b,c] = [1,2,3]; a = 2;})()"))}catch(e){return true;} return false;})(),
       "7":  evalAudeScript("(function(){let [a,,c] = [1,2,3];return [a,c]})().toString() === '1,3'"),
@@ -141,7 +141,8 @@ function doTests(testCorrect, testFailed, testFailInfo) {
       "16": evalAudeScript("((a, b) => a + b)(10, 32) === 42"),
       "17": evalAudeScript("(a => a + 10)(32) === 42"),
       "18": evalAudeScript("1 == 2 || 1 == 1"),
-      "19": evalAudeScript("{1,2,3,4} symDiff {3,4,5,6} == {1,2,5,6}")
+      "19": evalAudeScript("{1,2,3,4} symDiff {3,4,5,6} == {1,2,5,6}"),
+      "20": evalAudeScript("let (a, b) = ((0 && 1) || [2, 3]); a === 2 && b === 3")
    };
 
    tryParse = [

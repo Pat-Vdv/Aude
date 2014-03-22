@@ -1180,7 +1180,7 @@
                     val = getExpression({
                         inForeach: opts.inForeach,
                         constraintedVariables: opts.constraintedVariables,
-                        onlyOneValue: true
+                        value: true
                     });
 
                     d = i;
