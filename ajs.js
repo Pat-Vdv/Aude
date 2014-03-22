@@ -79,9 +79,22 @@
             that.fs = {
                 readFileSync: function (f) {
                     return readFile(f);
+                },
+                existsSync: function (f) {
+                    return new java.lang.io.File(f).exists();
                 }
             };
         }
+    }
+
+    try {
+        that.path = require('path');
+    } catch (e) {
+        that.path = {
+            dirname: function (f) {
+                return new java.lang.io.File(f).getParentFile();
+            }
+        };
     }
 
     if (!that.console) {
@@ -128,6 +141,8 @@
         };
     }
 
+    var audePath = that.path.dirname(that.process.argv[1]);
+
     if (typeof that.Packages === "object" && String(Packages) === "[JavaPackage ]") {
         // for Rhino
         that.global = that;
@@ -141,7 +156,7 @@
     var packages = ['set', 'automata', 'mappingfunction', 'audescript'];
     for (i in packages) {
         if (packages.hasOwnProperty(i)) {
-            p = require('../js/' + packages[i] + '.js');
+            p = require(audePath + '/js/' + packages[i] + '.js');
             for (j in p) {
                 if (p.hasOwnProperty(j)) {
                     that.global[j] = p[j];
@@ -160,10 +175,11 @@
         var needs = [];
         var code = that.fs.readFileSync(f, {encoding: 'utf8'});
         var jscode = Audescript.toPureJS(code, needs);
-        that.global.getNeeds(needs);
+        that.global.getNeeds(needs, f);
         that.global.require = require;
         that.global.process = process;
-        that.global.fs        = that.fs;
+        that.global.path    = that.path;
+        that.global.fs      = that.fs;
         that.global.arguments = process.argv.slice(2);
         eval.call(global, jscode);
     }
@@ -173,13 +189,18 @@
             needs = needs.slice();
         }
 
-        var algo;
+        var algo, pa;
 
         while (needs[0]) {
             algo = needs.shift();
             if (!gots.contains(algo)) {
                 gots.add(algo);
-                loadAJS('../algos/' + algo + '.ajs');
+                pa = that.path.dirname(keepArgument) + '/' + algo + '.ajs';
+                if (that.fs.existsSync(pa)) {
+                    loadAJS(pa);
+                } else {
+                    loadAJS(audePath + '/algos/' + algo + '.ajs');
+                }
             }
         }
     };
@@ -219,11 +240,12 @@
 
         if (process.stdin.isTTY) {
             rl.on('line', function (s) {
-                var res;
+                var res, needs = [];
                 sigIntAgain = false;
                 audeString += s + '\n';
                 try {
-                    res = eval.call(ctx, Audescript.toPureJS(audeString));
+                    res = eval.call(ctx, Audescript.toPureJS(audeString, needs));
+                    that.global.getNeeds(needs, '#interpreter');
                     rl.setPrompt("> ");
                 } catch (e) {
                     if (e instanceof SyntaxError) {

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+d=`dirname $_`
+
+if [ "$BROWSER" = "" ]; then
+    BROWSER=x-www-browser
+fi
+
+if [ -f $d/../share/aude/index.html ]; then
+    $BROWSER $d/../share/aude/index.html
+elif [ -f $d/index.html ]; then
+    $BROWSER $d/index.html
+else
+    echo "Couldn't find aude's index.html file."
+fi
+
