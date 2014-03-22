@@ -1,2 +1,21 @@
 #!/usr/bin/env sh
-nodejs `dirname $_`/../share/aude/ajs.js $@
+
+if [ "$JS" = "" ]; then
+    if [ "`which nodejs`" = "" ]; then
+        if [ "`which node`" = "" ]; then
+            if [ "`which rhino`" = "" ]; then
+                echo "Could not find any supported javascript engine (nodejs or rhino). Please install one or set the JS environment variable to such an engine."
+                exit
+            else
+                JS=rhino
+            fi
+        else
+            JS=node
+        fi
+    else
+        JS=nodejs
+    fi
+fi
+
+
+$JS `dirname $_`/../share/aude/ajs.js $@

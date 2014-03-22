@@ -81,7 +81,7 @@
                     return readFile(f);
                 },
                 existsSync: function (f) {
-                    return new java.lang.io.File(f).exists();
+                    return new java.io.File(f).exists();
                 }
             };
         }
@@ -92,7 +92,7 @@
     } catch (e) {
         that.path = {
             dirname: function (f) {
-                return new java.lang.io.File(f).getParentFile();
+                return new java.io.File(f).getParentFile();
             }
         };
     }
@@ -141,7 +141,16 @@
         };
     }
 
-    var audePath = that.path.dirname(that.process.argv[1]);
+    var audePath = that.process.argv[1] ?
+                        that.path.dirname(that.process.argv[1])
+                        : (
+                            that.fs.existsSync('/usr/local/share/aude') ? 
+                                '/usr/local/share/aude'
+                                : (that.fs.existsSync('/usr/share/aude') ?
+                                '/usr/share/aude'
+                                : '.'
+                                )
+                        );
 
     if (typeof that.Packages === "object" && String(Packages) === "[JavaPackage ]") {
         // for Rhino
