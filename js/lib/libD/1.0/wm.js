@@ -344,9 +344,8 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 
 		getDecorationArea : function (W)
 		{
-         if(!W.win) {
-            W.init();
-         }
+			if(!W.win)
+				W.init();
 
 			try {
 				W._libD_WM_tbarea.removeChild(W._libD_WM_title);
@@ -354,7 +353,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			catch(e){}
 
 			if(W._libD_WM_title)
-            libD.addClass(W._libD_WM_title, 'ddwm-title-embeded');
+				libD.addClass(W._libD_WM_title, 'ddwm-title-embeded');
 
 			return W._libD_WM_tbarea;
 		},

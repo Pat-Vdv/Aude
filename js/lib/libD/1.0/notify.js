@@ -382,9 +382,9 @@ libD.need(['fx'], function()
 				case "error":
 					this.bubble.className += " libD-not-error";
 					break;
-            case "info":
-               this.bubble.className += " libD-not-info";
-               break;
+				case "info":
+					this.bubble.className += " libD-not-info";
+					break;
 				case "ok":
 					this.bubble.className += " libD-not-ok";
 					break;

@@ -110,10 +110,10 @@ libD.error = function()
 	if(typeof console !== "undefined" && console.error && console.error.apply)
 	{
 		console.error.apply(console, argv);
-      for(var i = 0, len = argv.length; i < len; ++i)
-      {
-         if(argv[i].description)
-            console.error('-- Error is:', argv[i].name, ':', argv[i].description);
+		for(var i = 0, len = argv.length; i < len; ++i)
+		{
+			if(argv[i].description)
+				console.error('-- Error is:', argv[i].name, ':', argv[i].description);
 		}
 	}
 	else if(libD.dbg)
@@ -971,9 +971,9 @@ else
 		Defines the place libD has to hit to load javascript files (see <libD.jsLoad>.
 		Default: '/share/js/'.
 */
-if(!libD.jsPath) {
-   libD.jsPath = '/share/js/'; // default js path. Mind the '/' at the end.
-}
+if(!libD.jsPath)
+	libD.jsPath = '/share/js/'; // default js path. Mind the '/' at the end.
+
 /*
  Contant: majorVersion
 	libD's major version, as string. For the version of libD you are exploring, it is set to "1.0".
@@ -987,40 +987,38 @@ libD.majorVersion = '1.0';
 			- the actual path from where libD was loaded if libD succeeds in determining it
 			- <libD.jsPath> + 'libD/' + <libD.majorVersion> + '/' otherwise
 */
-if(!libD.path) {
-   libD.path = libD.jsPath + 'libD/1.0/'; // if libD doesn't manage to determine where it is stored, default value.
-}
+if(!libD.path)
+	libD.path = libD.jsPath + 'libD/1.0/'; // if libD doesn't manage to determine where it is stored, default value.
+
 /*
 	Value: appPath
 		Defines the place where libD Apps are located. Default: <libD.jsPath> + 'apps/'.
 */
-if(!libD.appPath) {
-   libD.appPath = libD.jsPath + 'apps/'; // default libD.app path. Mind the '/' at the end.
-}
+if(!libD.appPath)
+	libD.appPath = libD.jsPath + 'apps/'; // default libD.app path. Mind the '/' at the end.
+
 /*
 	Value: theme
 		The default theme used by concerned libD's various modules. Default: 'default'.
 		themes are usually located in <libD.path> + 'css/'
 */
-if(!libD.theme) {
-   libD.theme = 'default';
-}
+if(!libD.theme)
+	libD.theme = 'default';
 
 /*
 	Value: iconPack
 		The default icon pack to use, when needed. Third party scripts / apps using libD are encouraged to use this value for integration matters.
 */
-if(!libD.iconPack) {
-   libD.iconPack = '/share/icons/oxygen/';
-}
+if(!libD.iconPack)
+	libD.iconPack = '/share/icons/oxygen/';
 
 /*
 	Value: iconSize
 		The default icon size to use, when needed. Third party scripts / apps are encouraged to use this value as a fallback.
 */
-if(!libD.iconSize) {
-   libD.iconSize = '22x22';
-}
+if(!libD.iconSize)
+	libD.iconSize = '22x22';
+
 /*
  Contant: pathWasGuessed
  If libD actually succeeded in finding it's location, this value is set to true. False otherwise.
@@ -1654,28 +1652,29 @@ libD.l10n = function()
 			t[lang] = [];
 		t[lang][orig] = translated;
 	};
-   return f;
+	return f;
 };
 
 /*
 Function: format
-   Format arguments into a string. This function is there to ease translations.
+	Format arguments into a string. This function is there to ease translations.
 
 Usage:
-   > var actualString = libD.format("My name is {0} and I'm {1}", Roger, 42); // returns "My name is Roger and I'm 42";
+	> var actualString = libD.format("My name is {0} and I'm {1}", Roger, 42); // returns "My name is Roger and I'm 42";
 
 Notes:
-   thx http://stackoverflow.com/questions/1353408/messageformat-in-javascript-parameters-in-localized-ui-strings
+	thx http://stackoverflow.com/questions/1353408/messageformat-in-javascript-parameters-in-localized-ui-strings
 Returns:
-   The formatted string.
+	The formatted string.
 */
 
-libD.format = function(s) {
-    var args = arguments;
+libD.format = function(s)
+{
+	var args = arguments;
 
-    return s.replace(/\{(\d+)\}/g, function() {
-        return args[(parseInt(arguments[1]) || 0)+1];
-    });
+	return s.replace(/\{(\d+)\}/g, function() {
+		return args[(parseInt(arguments[1]) || 0)+1];
+	});
 };
 
 /*
