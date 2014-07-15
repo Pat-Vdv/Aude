@@ -1,3 +1,4 @@
+/*kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix; */
 /*
     Copyright (c) 2013-2014, Raphaël Jakse (Université Joseph Fourier)
     All rights reserved.
@@ -27,6 +28,7 @@
 
 /*jslint indent: 4, nomen: true, ass: true, vars: true, evil: true, plusplus: true, eqeq: true, todo: true, bitwise: true */
 /*jshint -W043 */
+/*eslint no-eval:0*/
 /*global Tuple:false, Set:false, Automaton:false, Transition:false */
 // NEEDS automata.js, set.js
 
@@ -68,11 +70,11 @@
     }
 
     try {
-        letExpressionSupported  = eval('(function () {var a=1, t; let (a=2) {if (a === 2) {t = true}}; return t && a === 1;})();');
+        letExpressionSupported  = eval("(function () {var a=1, t; let (a=2) {if (a === 2) {t = true}}; return t && a === 1;})();");
     } catch (ignore) {}
 
     try {
-        letDeclarationSupported = eval('(function () {var a=1, t; if (true) {let a = 2;t = a === 2} return t && a === 1;})();');
+        letDeclarationSupported = eval("(function () {var a=1, t; if (true) {let a = 2;t = a === 2} return t && a === 1;})();");
     } catch (ignore) {}
 
     try {
@@ -93,19 +95,19 @@
 
     try { // eval to allow parsing of the file even in browsers not supporting yield.
         eval(
-            'Object.defineProperty(Object.prototype, "iterator", {\
-                enumerable:false,\
-                writable: true,\
-                configurable: true,\
-                value: function () {\
-                    for (var i in this) {\
-                        if (this.hasOwnProperty(i)) {\
-                            yield this[i];\
-                        }\
-                    }\
-                    return;\
-                }\
-            });'
+            "Object.defineProperty(Object.prototype, 'iterator', {"
+                +     "enumerable:false,"
+                +     "writable: true,"
+                +     "configurable: true,"
+                +     "value: function () {"
+                +         "for (var i in this) {"
+                +             "if (this.hasOwnProperty(i)) {"
+                +                 "yield this[i];"
+                +             "}"
+                +         "}"
+                +         "return;"
+                +     "}"
+                + "});"
         );
     } catch (ignore) {}
 
@@ -115,11 +117,11 @@
         }
 
         if (!dontCheck) {
-            if (s[i] === ',') {
+            if (s[i] === ",") {
                 return i + 1;
             }
 
-            if (s[i] !== ',' && s[i] !== end) {
+            if (s[i] !== "," && s[i] !== end) {
                 throw new Error("Malformed destructing string");
             }
         }
@@ -130,8 +132,8 @@
         ++i;
         var k = 0;
         while (destructStr[i] !== end) {
-            i = destructNext(destructStr, i, '', true);
-            if (destructStr[i] !== ',') {
+            i = destructNext(destructStr, i, "", true);
+            if (destructStr[i] !== ",") {
                 i = pkg.Audescript.destruct((e || [])[k], destructStr, res, true, i);
             }
             i = destructNext(destructStr, i, end);
@@ -145,15 +147,15 @@
 
     function destructObject(e, destructStr, res, i) {
         ++i;
-        var key, end, start;
-        while (destructStr[i] !== '}') {
-            i = destructNext(destructStr, i, '', true);
+        var key, endObject, start;
+        while (destructStr[i] !== "}") {
+            i = destructNext(destructStr, i, "", true);
 
-            if (destructStr[i] === '"' || destructStr[i] === "'") {
-                end = destructStr[i];
+            if (destructStr[i] === "\"" || destructStr[i] === "'") {
+                endObject = destructStr[i];
                 start = i++;
-                while (destructStr[i] && destructStr[i] !== end) {
-                    if (destructStr[i] === '\\') {
+                while (destructStr[i] && destructStr[i] !== endObject) {
+                    if (destructStr[i] === "\\") {
                         ++i;
                     }
                     ++i;
@@ -164,29 +166,29 @@
                 key = eval(destructStr.substring(start, ++i));
             } else {
                 start = i;
-                while (destructStr[i] !== ':' && destructStr[i].trim()) {
+                while (destructStr[i] !== ":" && destructStr[i].trim()) {
                     ++i;
                 }
                 key = destructStr.substring(start, i);
             }
 
-            i = destructNext(destructStr, i, '', true);
-            if (destructStr[i] !== ':') {
+            i = destructNext(destructStr, i, "", true);
+            if (destructStr[i] !== ":") {
                 throw new Error("Malformed destructing string");
             }
             ++i;
-            i = destructNext(destructStr, i, '', true);
+            i = destructNext(destructStr, i, "", true);
             i = pkg.Audescript.destruct((e || {})[key], destructStr, res, true, i);
-            i = destructNext(destructStr, i, '}');
+            i = destructNext(destructStr, i, "}");
         }
-        if (destructStr[i] !== '}') {
+        if (destructStr[i] !== "}") {
             throw new Error("Malformed destructing string");
         }
         return i + 1;
     }
 
     function constError(variable) {
-        return '(function () {throw new Error("TypeError: ' + variable + ' is read-only");})()';
+        return "(function () {throw new Error('TypeError: " + variable + " is read-only');})()";
     }
 
     function destructToJS(variable, newVal, listOfVals, constraintedVariables) {
@@ -196,21 +198,21 @@
         }
 
         var resToString = "'" + variable.replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/\n/g, "\\\n") + "'";
-        var ret = '(function () {Audescript.des=Audescript.destruct(' + newVal + ',' + resToString + ');';
-        var index, len;
+        var ret = "(function () {Audescript.des=Audescript.destruct(" + newVal + "," + resToString + ");";
+        var index, lovLen;
 
-        for (index = 0, len = listOfVals.length; index < len; ++index) {
+        for (index = 0, lovLen = listOfVals.length; index < lovLen; ++index) {
             if (listOfVals.hasOwnProperty(index)) {
                 if (constraintedVariables.consts.contains(listOfVals[index])) {
-                    ret += constError(listOfVals[index]) + ';';
+                    ret += constError(listOfVals[index]) + ";";
                 } else if (constraintedVariables.type.contains(listOfVals[index])) {
-                    ret += listOfVals[index] + '=Audescript.as(' + listOfVals[index] + ', Audescript.des.' + listOfVals[index] + ');';
+                    ret += listOfVals[index] + "=Audescript.as(" + listOfVals[index] + ", Audescript.des." + listOfVals[index] + ");";
                 } else {
-                    ret += listOfVals[index] + '=Audescript.des.' + listOfVals[index] + ';';
+                    ret += listOfVals[index] + "=Audescript.des." + listOfVals[index] + ";";
                 }
             }
         }
-        return ret + 'Audescript.des=null;})()';
+        return ret + "Audescript.des=null;})()";
     }
 
     pkg.Audescript.destruct = function (e, destructStr, res, returnCurrentIndex, i) {
@@ -218,11 +220,11 @@
             res = {};
         }
 
-        i = destructNext(destructStr, i || 0, '', true);
+        i = destructNext(destructStr, i || 0, "", true);
 
-        if (destructStr[i] === '[' || destructStr[i] === '(') {
-            i = destructArray(e, destructStr, res, i, destructStr[i] === '[' ? ']' : ')');
-        } else if (destructStr[i] === '{') {
+        if (destructStr[i] === "[" || destructStr[i] === "(") {
+            i = destructArray(e, destructStr, res, i, destructStr[i] === "[" ? "]" : ")");
+        } else if (destructStr[i] === "{") {
             i = destructObject(e, destructStr, res, i);
         } else {
             var j = i++;
@@ -244,14 +246,14 @@
         return res;
     };
 
-    function tuples_eq(t1, t2) {
+    function tuplesEq(t1, t2) {
         if (t1.length !== t2.length) {
             return false;
         }
 
-        var i;
-        for (i = 0; i < t1.length; ++i) {
-            if (!pkg.Audescript.eq(t1[i], t2[i])) {
+        var j;
+        for (j = 0; j < t1.length; ++j) {
+            if (!pkg.Audescript.eq(t1[j], t2[j])) {
                 return false;
             }
         }
@@ -264,6 +266,8 @@
         if (v1 instanceof Tuple && v1.length === 1) {
             return pkg.Audescript.eq(v2, v1[0]);
         }
+
+        /*eslint-disable eqeqeq */
 
         return v1 == v2 || (
             typeof v1 === typeof v2
@@ -279,12 +283,14 @@
                                 && pkg.Audescript.eq(v1.trans, v2.trans)
                                 && pkg.Audescript.eq(v1.q_init, v2.q_init)
                         : (v1 instanceof Tuple && v2 instanceof Tuple)
-                            ? tuples_eq(v1, v2)
+                            ? tuplesEq(v1, v2)
                             : JSON.stringify(v1) === JSON.stringify(v2)
                             )
                         )
                     )
         );
+
+        /*eslint-enable eqeqeq */
     };
 
     // checks if value can be assigned to variable and return the right value. integerCheck enforce value being an integer.
@@ -314,7 +320,7 @@
         return value;
     };
 
-    Object.defineProperty(Object.prototype, 'forEach', {
+    Object.defineProperty(Object.prototype, "forEach", {
         enumerable: false,
         writable:   true,
         value: function (callback) {
@@ -335,7 +341,7 @@
         regEx           = 32,
         number          = 64,
         operator        = 128,
-        comma_semicolon = 256,
+        commaSemicolon = 256,
         closeParen      = 1024,
         closeCurly      = 2048,
         openBracket     = 4096,
@@ -349,32 +355,32 @@
 
     function parseUnsignedNumber() {
         var dotEncountered = false, d = i;
-        if (i < len && s[i] === '0') {
+        if (i < len && s[i] === "0") {
             ++i;
-            if (i < len && (s[i] === 'x' || s[i] === 'X')) {
+            if (i < len && (s[i] === "x" || s[i] === "X")) {
                 do {
                     ++i;
-                } while ('0123456789ABCDEF'.indexOf(s[i].toUpperCase()) !== -1);
+                } while ("0123456789ABCDEF".indexOf(s[i].toUpperCase()) !== -1);
                 return s.substring(d, i);
             }
         }
 
-        while (i < len && ('0123456789'.indexOf(s[i]) !== -1 || (!dotEncountered && s[i] === '.'))) {
+        while (i < len && ("0123456789".indexOf(s[i]) !== -1 || (!dotEncountered && s[i] === "."))) {
             if (!dotEncountered) {
-                dotEncountered =  s[i] === '.';
+                dotEncountered =  s[i] === ".";
             }
             ++i;
         }
 
         // TODO: checking if the number is correct (e.g: doesn't end with a dot)
-        if (i < len && (s[i] === 'e' || s[i] === 'E')) {
+        if (i < len && (s[i] === "e" || s[i] === "E")) {
             ++i;
-            if (i < len && (s[i] === '+' || s[i] === '-')) {
+            if (i < len && (s[i] === "+" || s[i] === "-")) {
                 ++i;
             }
         }
 
-        while (i < len && '0123456789'.indexOf(s[i]) !== -1) {
+        while (i < len && "0123456789".indexOf(s[i]) !== -1) {
             ++i;
         }
 
@@ -387,7 +393,7 @@
 
         if (i >= len) {
             lastSignificantType = type = end;
-            return '';
+            return "";
         }
 
         if (s[i] === ")") {
@@ -405,17 +411,17 @@
             return s[i++];
         }
 
-        if ('{[('.indexOf(s[i]) !== -1) {
+        if ("{[(".indexOf(s[i]) !== -1) {
             lastSignificantType = type = openBracket;
             return s[i++];
         }
 
-        if (s[i] === '"' || s[i] === "'") {
+        if (s[i] === "\"" || s[i] === "'") {
             d = i;
             var endChar = s[i++];
 
             while (i < len && s[i] !== endChar) {
-                if (s[i] === '\\') {
+                if (s[i] === "\\") {
                     ++i;
                 }
                 ++i;
@@ -447,18 +453,18 @@
             return s.substring(begin, i);
         }
 
-        if (s[i] === '.') {
-            if (i + 1 < len && '0123456789'.indexOf(s[i + 1]) !== -1) {
+        if (s[i] === ".") {
+            if (i + 1 < len && "0123456789".indexOf(s[i + 1]) !== -1) {
                 lastSignificantType = type = number;
                 return parseUnsignedNumber();
             }
 
             lastSignificantType = type = dot;
             ++i;
-            return '.';
+            return ".";
         }
 
-        if (type !== variable &&  '0123456789'.indexOf(s[i]) !== -1) {
+        if (type !== variable &&  "0123456789".indexOf(s[i]) !== -1) {
             lastSignificantType = type = number;
             return parseUnsignedNumber();
         }
@@ -466,125 +472,125 @@
         if ("*=!%<>&|?:^+-~\\".indexOf(s[i]) !== -1) { //TODO : simplify this bunch of crappy code
             lastSignificantType = type = operator;
 
-            if (s[i] === '+') {
+            if (s[i] === "+") {
                 ++i;
-                if (s[i] === '+' || s[i] === '=') {
+                if (s[i] === "+" || s[i] === "=") {
                     return "+" + s[i++];
                 }
                 return "+";
             }
 
-            if (s[i] === '-') {
+            if (s[i] === "-") {
                 ++i;
-                if (s[i] === '-' || s[i] === '=') {
+                if (s[i] === "-" || s[i] === "=") {
                     return "-" + s[i++];
                 }
                 return "-";
             }
 
-            if (s[i] === '=') {
+            if (s[i] === "=") {
                 ++i;
-                if (s[i] === '=') {
+                if (s[i] === "=") {
                     ++i;
-                    if (s[i] === '=') {
+                    if (s[i] === "=") {
                         ++i;
-                        return '===';
+                        return "===";
                     }
-                    return '==';
+                    return "==";
                 }
-                if (s[i] === '>') {
+                if (s[i] === ">") {
                     ++i;
-                    return '=>';
+                    return "=>";
                 }
-                return '=';
+                return "=";
             }
 
-            if (s[i] === '<') {
+            if (s[i] === "<") {
                 ++i;
-                if (s[i] === '=') {
+                if (s[i] === "=") {
                     ++i;
-                    return '<=';
+                    return "<=";
                 }
-                if (s[i] === '<') {
+                if (s[i] === "<") {
                     ++i;
-                    if (s[i] === '<') {
+                    if (s[i] === "<") {
                         ++i;
-                        return '<<<';
+                        return "<<<";
                     }
-                    if (s[i] === '=') {
+                    if (s[i] === "=") {
                         ++i;
-                        return '<<=';
+                        return "<<=";
                     }
-                    return '<<';
+                    return "<<";
                 }
-                return '<';
+                return "<";
             }
 
-            if (s[i] === '>') {
+            if (s[i] === ">") {
                 ++i;
-                if (s[i] === '=') {
+                if (s[i] === "=") {
                     ++i;
-                    return '>=';
+                    return ">=";
                 }
-                if (s[i] === '>') {
+                if (s[i] === ">") {
                     ++i;
-                    if (s[i] === '>') {
+                    if (s[i] === ">") {
                         ++i;
-                        if (s[i] === '=') {
+                        if (s[i] === "=") {
                             ++i;
-                            return '>>>=';
+                            return ">>>=";
                         }
-                        return '>>>';
+                        return ">>>";
                     }
-                    if (s[i] === '=') {
+                    if (s[i] === "=") {
                         ++i;
-                        return '>>=';
+                        return ">>=";
                     }
-                    return '>>';
+                    return ">>";
                 }
-                return '>';
+                return ">";
             }
 
-            if (s[i] === '!') {
+            if (s[i] === "!") {
                 ++i;
                 begin = i;
 
                 var symbol = getSymbol().toLowerCase();
 
-                if (symbol === 'contains' || symbol === 'subsetof' || symbol === 'elementof' || symbol === 'belongsto') {
-                    return '!' + symbol;
+                if (symbol === "contains" || symbol === "subsetof" || symbol === "elementof" || symbol === "belongsto") {
+                    return "!" + symbol;
                 }
 
                 i = begin;
                 lastSignificantType = type = operator;
 
-                if (s[i] === '=') {
+                if (s[i] === "=") {
                     ++i;
-                    if (s[i] === '=') {
+                    if (s[i] === "=") {
                         ++i;
-                        return '!==';
+                        return "!==";
                     }
-                    return '!=';
+                    return "!=";
                 }
-                return '!';
+                return "!";
             }
 
-            if ('&|*%^'.indexOf(s[i]) !== -1) {
+            if ("&|*%^".indexOf(s[i]) !== -1) {
                 var c = s[i];
                 ++i;
-                if (s[i] === '=') {
+                if (s[i] === "=") {
                     ++i;
-                    return c + '=';
+                    return c + "=";
                 }
 
-                if (c === '|' && s[i] === '|') {
+                if (c === "|" && s[i] === "|") {
                     ++i;
-                    return '||';
+                    return "||";
                 }
 
-                if (c === '&' && s[i] === '&') {
+                if (c === "&" && s[i] === "&") {
                     ++i;
-                    return '&&';
+                    return "&&";
                 }
 
                 return c;
@@ -593,13 +599,13 @@
             return s[i++];
         }
 
-        if (s[i] === '/') {
+        if (s[i] === "/") {
             d = i++;
 
-            if (i < len && s[i] === '/') {
+            if (i < len && s[i] === "/") {
                 do {
                     ++i;
-                } while (i < len && s[i] !== '\n');
+                } while (i < len && s[i] !== "\n");
                 type = whitespace;
                 begin = i;
                 getSymbol();
@@ -607,10 +613,10 @@
                     i = begin;
                     type = whitespace;
                 }
-            } else if (i < len && s[i] === '*') {
+            } else if (i < len && s[i] === "*") {
                 do {
                     ++i;
-                } while (i + 1 < len && !(s[i] === '*' && s[i + 1] === '/'));
+                } while (i + 1 < len && !(s[i] === "*" && s[i + 1] === "/"));
 
                 i   += 2;
                 type = whitespace;
@@ -626,21 +632,21 @@
             } else {
                 if (lastSignificantType & (number | variable | closeParen | closeBracket)) {
                     lastSignificantType = type = operator;
-                    if (s[i] === '=') {
+                    if (s[i] === "=") {
                         ++i;
-                        return '/=';
+                        return "/=";
                     }
-                    return '/';
+                    return "/";
                 }
 
-                while (i < len && s[i] !== '/') {
-                    if (s[i] === '\\') {
+                while (i < len && s[i] !== "/") {
+                    if (s[i] === "\\") {
                         ++i;
                     }
                     ++i;
                 }
                 ++i;
-                while (i < len && 'azertyuiopqsdfghjklmwxcvbn'.indexOf(s[i].toLowerCase()) !== -1) {
+                while (i < len && "azertyuiopqsdfghjklmwxcvbn".indexOf(s[i].toLowerCase()) !== -1) {
                     ++i;
                 }
                 lastSignificantType = type = regEx;
@@ -649,8 +655,8 @@
             return s.substring(d, i);
         }
 
-        if (s[i] === ',' || s[i] === ';') {
-            lastSignificantType = type = comma_semicolon;
+        if (s[i] === "," || s[i] === ";") {
+            lastSignificantType = type = commaSemicolon;
             return s[i++];
         }
 
@@ -660,7 +666,7 @@
 
         if (type === variable || type === instruction) {
             var v = s[d] + bufferSymbol;
-            if (v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === 'in' || v === 'if' || v === 'else' || v === 'do' || v === 'while' || v === 'function' || v === 'instanceof' || v === 'typeof' || v === 'include' || v === 'let' || v === 'const' || v === 'try' || v === 'catch' || v === 'finally') {
+            if (v === "var" || v === "new" || v === "delete" || v === "return" || v === "throw" || v === "break" || v === "continue" || v === "in" || v === "if" || v === "else" || v === "do" || v === "while" || v === "function" || v === "instanceof" || v === "typeof" || v === "include" || v === "let" || v === "const" || v === "try" || v === "catch" || v === "finally") {
                 lastSignificantType = type = instruction;
             }
             return v;
@@ -683,11 +689,11 @@
             var symb = getSymbol();
 
             if (type === whitespace) {
-                if (symb.indexOf('\n') !== -1) {
+                if (symb.indexOf("\n") !== -1) {
                     i = d;
 
-                    if (symbol === 'throw') {
-                        return 'throw'; // Syntax error
+                    if (symbol === "throw") {
+                        return "throw"; // Syntax error
                     }
 
                     return "throw new Audescript.ReturnValue(undefined)";
@@ -697,8 +703,8 @@
 
             i = d;
 
-            if (symb === ';') {
-                if (symbol === 'throw') {
+            if (symb === ";") {
+                if (symbol === "throw") {
                     return "throw"; // Syntax error
                 }
                 return "throw new Audescript.ReturnValue(undefined)";
@@ -728,9 +734,9 @@
 
     function getConstraintString() {
         var begin = i;
-        var symbol = getSymbol(), tmp = '';
+        var symbol = getSymbol(), tmp = "";
         if (type === whitespace) {
-            if (symbol !== ' ') {
+            if (symbol !== " ") {
                 tmp = symbol;
             }
             symbol = getSymbol();
@@ -739,32 +745,32 @@
             if (type === string) {
                 try {
                     var typeConstraint = JSON.parse(symbol);
-                    if (typeConstraint === 'float' || typeConstraint === 'double') {
-                        symbol = '"number"';
+                    if (typeConstraint === "float" || typeConstraint === "double") {
+                        symbol = "'number'";
                     }
                 } catch (e) {
                     i = begin;
-                    return '';
+                    return "";
                 }
             } else {
                 var lowerType = symbol.toLowerCase();
 
                 if (lowerType === "integer" || lowerType === "int") {
-                    symbol = '"integer"';
+                    symbol = "'integer'";
                 } else if (lowerType === "number" || lowerType === "float") {
-                    symbol = '"number"';
+                    symbol = "'number'";
                 } else if (lowerType === "list" || lowerType === "array") {
                     symbol = "Array";
-                } else if (lowerType === 'automata') {
-                    symbol = 'Automata';
-                } else if (lowerType === 'set') {
-                    symbol = 'Set';
+                } else if (lowerType === "automata") {
+                    symbol = "Automata";
+                } else if (lowerType === "set") {
+                    symbol = "Set";
                 } else if (lowerType === "bool" || lowerType === "boolean" ||  lowerType === "string" || lowerType === "object" || lowerType === "undefined") {
-                    symbol = '"' + lowerType + '"';
-                } else if (lowerType === 'function') {
-                    symbol = '"function"';
-                } else if (lowerType === 'state') {
-                    symbol = 'null'; // FIXME: no constraint for states
+                    symbol = "'" + lowerType + "'";
+                } else if (lowerType === "function") {
+                    symbol = "'function'";
+                } else if (lowerType === "state") {
+                    symbol = "null"; // FIXME: no constraint for states
                 }
             }
 
@@ -772,12 +778,12 @@
         }
 
         i = begin;
-        return '';
+        return "";
     }
 
     function functionBody(s) {
-        if (!abbreviatedFunctionSupported && s.trim()[0] !== '{') {
-            return '{return ' + s + '}';
+        if (!abbreviatedFunctionSupported && s.trim()[0] !== "{") {
+            return "{return " + s + "}";
         }
         return s;
     }
@@ -796,21 +802,21 @@
         type = t;
         lastSignificantType = l;
 
-        return '';
+        return "";
     }
 
     var toPureJS, parseForeach;
 
     function tryBrace(symbol, opts) {
-        if (symbol === '{') {
+        if (symbol === "{") {
             var begin  = i;
             var obj = false, oneVal = true;
-            var pres = '';
+            var pres = "";
 
-            if (!opts.noset_obj) {
+            if (!opts.noSetOrObj) {
                 do {
                     if (pres) {
-                        pres += ',';
+                        pres += ",";
                         oneVal = false;
                     }
 
@@ -821,7 +827,7 @@
                     }) + getWhite();
                     symbol = getSymbol();
 
-                    if (symbol === ':') {
+                    if (symbol === ":") {
                         obj = true;
                         pres += symbol + getExpression({
                             inForeach: opts.inForeach,
@@ -831,42 +837,42 @@
                         }) + getWhite();
                         symbol = getSymbol();
                     }
-                } while (symbol === ',');
+                } while (symbol === ",");
             }
 
-            if (!opts.noset_obj && symbol === '}' && !s.substring(begin - 1, i).match(/^\{[\s]*\}$/)) {
-                return (obj || (opts.noValue && oneVal)) ? '{' + pres + '}' : 'to_set([' + pres + '])';
+            if (!opts.noSetOrObj && symbol === "}" && !s.substring(begin - 1, i).match(/^\{[\s]*\}$/)) {
+                return (obj || (opts.noValue && oneVal)) ? "{" + pres + "}" : "to_set([" + pres + "])";
             }
 
             i = begin;
             lastSignificantType = type = openBracket;
-            return '{' + toPureJS({
+            return "{" + toPureJS({
                 inForeach: opts.inForeach,
                 constraintedVariables: copy(opts.constraintedVariables),
-                endSymbols: { '}': true }
-            })  + getSymbol(); // '}'
+                endSymbols: { "}": true }
+            })  + getSymbol(); // "}"
         }
         return false;
     }
 
     function tryArrayLitteral(symbol, opts) {
-        if (symbol === '[') {
-            return '[' + getExpression({
+        if (symbol === "[") {
+            return "[" + getExpression({
                 inForeach: opts.inForeach,
                 commaAllowed: true,
                 constraintedVariables: opts.constraintedVariables,
                 endSymbols: {
-                    ']': true
+                    "]": true
                 }
-            }) + getSymbol(); // ']'
+            }) + getSymbol(); // "]"
         }
         return false;
     }
 
     function tryParenthesis(symbol, opts) {
-        if (symbol === '(') {
+        if (symbol === "(") {
             if (opts.inForParenthesis) {
-                var iter = '', comp = '';
+                var iter = "", comp = "";
 
                 var decl = getExpression({
                     inForeach: false,
@@ -889,8 +895,8 @@
                     }
                 }
 
-                if (getSymbol() === ')') {
-                    return '(' + decl + comp + iter + ')';
+                if (getSymbol() === ")") {
+                    return "(" + decl + comp + iter + ")";
                 }
                 return false;
             }
@@ -903,8 +909,8 @@
             }
             o.acceptOperator = false;
 
-            o.endSymbols = {')': true};
-            var res = "(" + getExpression(o) + getSymbol(); // ')'
+            o.endSymbols = {")": true};
+            var res = "(" + getExpression(o) + getSymbol(); // ")"
             if (o.gotComma && !o.noTuple) {
                 res = " Tuple" + res;
             }
@@ -914,7 +920,7 @@
     }
 
     function tryNewDeleteTypeof(symbol, opts) {
-        if (symbol === 'new' || (!opts.value && symbol === 'delete') || symbol === 'typeof') {
+        if (symbol === "new" || (!opts.value && symbol === "delete") || symbol === "typeof") {
             return symbol + getExpression({
                 inForeach: opts.inForeach,
                 onlyOneValue: true,
@@ -927,15 +933,15 @@
     }
 
     function tryEmptySet(symbol) {
-        if (symbol === 'emptySet') {
-            var res = getWhite() + 'new Set(';
+        if (symbol === "emptySet") {
+            var res = getWhite() + "new Set(";
             var begin = i;
 
-            if (getSymbol() === '(') {
+            if (getSymbol() === "(") {
                 var constraint = getConstraintString();
-                if (getSymbol() === ')') {
+                if (getSymbol() === ")") {
                     if (constraint) {
-                        res += '{typeConstraint:' + constraint + '}';
+                        res += "{typeConstraint:" + constraint + "}";
                     }
                 } else {
                     i = begin;
@@ -944,13 +950,13 @@
                 i = begin;
             }
 
-            return res + ')';
+            return res + ")";
         }
         return false;
     }
 
     function tryPunct(symbol, opts) {
-        if (symbol === ';') {
+        if (symbol === ";") {
             if (opts.value) {
                 --i;
                 return -1;
@@ -958,7 +964,7 @@
             return symbol;
         }
 
-        if (symbol === ',') {
+        if (symbol === ",") {
             if (!opts.commaAllowed) {
                 --i;
                 return -1;
@@ -973,7 +979,7 @@
             });
         }
 
-        if (symbol === '!') {
+        if (symbol === "!") {
             return symbol + getExpression({
                 inForeach: opts.inForeach,
                 value: opts.value,
@@ -999,13 +1005,13 @@
 
     function tryInstructionBlock(symbol, opts, begin) {
         var d, tmp;
-        if (symbol === 'if' || symbol === 'while' || symbol === 'for' || symbol === 'function' || symbol === 'switch' || symbol === 'try' || symbol === 'catch' || symbol === 'finally') {
-            if (symbol === 'function' || symbol === 'catch') {
-                if (symbol === 'function') {
+        if (symbol === "if" || symbol === "while" || symbol === "for" || symbol === "function" || symbol === "switch" || symbol === "try" || symbol === "catch" || symbol === "finally") {
+            if (symbol === "function" || symbol === "catch") {
+                if (symbol === "function") {
                     d = i;
                     var functionName = getWhite() + getSymbol();
 
-                    if (functionName.trim() === '(') {
+                    if (functionName.trim() === "(") {
                         i = d;
                         functionName = functionName.slice(0, -1);
                     }
@@ -1018,7 +1024,7 @@
                     }) + functionBody(getExpression({
                         inForeach: false,
                         constraintedVariables: copy(opts.constraintedVariables),
-                        noset_obj: true
+                        noSetOrObj: true
                     }));
                 }
 
@@ -1029,7 +1035,7 @@
                 }) + functionBody(getExpression({
                     inForeach: false,
                     constraintedVariables: copy(opts.constraintedVariables),
-                    noset_obj: true
+                    noSetOrObj: true
                 }));
             }
 
@@ -1038,26 +1044,26 @@
                 return -1;
             }
 
-            if (symbol === 'try' || symbol === 'finally') {
+            if (symbol === "try" || symbol === "finally") {
                 return symbol + getExpression({
                     inForeach: opts.inForeach,
                     constraintedVariables: copy(opts.constraintedVariables),
-                    noset_obj: true
+                    noSetOrObj: true
                 });
             }
 
-            if (symbol === 'for' && !IterationsSupported && 'for' !== (tmp = parseForeach(symbol, opts))) {
+            if (symbol === "for" && !IterationsSupported && (tmp = parseForeach(symbol, opts)) !== "for") {
                 return tmp;
             }
 
             return symbol + getExpression({
                 inForeach: false,
-                inForParenthesis: symbol === 'for',
+                inForParenthesis: symbol === "for",
                 blockComma: true,
                 constraintedVariables: opts.constraintedVariables
             }) + getExpression({
                 inForeach: (
-                    symbol === 'while' || symbol === 'for' || symbol === 'switch'
+                    symbol === "while" || symbol === "for" || symbol === "switch"
                 )   ? false
                     : opts.inForeach,
                 constraintedVariables: copy(opts.constraintedVariables),
@@ -1065,7 +1071,7 @@
             });
         }
 
-        if (symbol === 'do') {
+        if (symbol === "do") {
             if (opts.value) {
                 i = begin;
                 return -1;
@@ -1080,7 +1086,7 @@
             var symbol2 = getSymbol();
             d = i;
 
-            if (symbol2 === 'while') {
+            if (symbol2 === "while") {
                 return tmp + symbol2 + getExpression({
                     inForeach: opts.inForeach,
                     constraintedVariables: copy(opts.constraintedVariables)
@@ -1091,7 +1097,7 @@
             return tmp;
         }
 
-        if (symbol === 'else') {
+        if (symbol === "else") {
             if (opts.value) {
                 i = begin;
                 return -1;
@@ -1117,14 +1123,14 @@
         }
 
 
-        if (symbol === 'const' || symbol === 'let' || symbol === 'var') {
+        if (symbol === "const" || symbol === "let" || symbol === "var") {
             var d;
-            if (symbol === 'let') {
+            if (symbol === "let") {
                 d = i;
                 getWhite();
                 symbol = getSymbol();
                 i = d;
-                if (symbol === '(') {
+                if (symbol === "(") {
                     var letVars = getExpression({
                         inForeach: opts.inForeach,
                         noTuple: true,
@@ -1133,37 +1139,37 @@
                     }) + getSymbol();
                     var d2 = i;
                     getWhite();
-                    if (s[i] !== '=') {
+                    if (s[i] !== "=") {
                         i = d2;
                         if (letExpressionSupported) {
-                            return 'let' + letVars + getExpression({
+                            return "let" + letVars + getExpression({
                                 inForeach: opts.inForeach,
                                 constraintedVariables: copy(opts.constraintedVariables)
                             });
                         }
 
-                        return '(function () {var ' + letVars.replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, '$1$2$3') + ';' + getExpression({
+                        return "(function () {var " + letVars.replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, "$1$2$3") + ";" + getExpression({
                             inForeach: opts.inForeach,
                             constraintedVariables: copy(opts.constraintedVariables)
-                        }) + '})()';
+                        }) + "})()";
                     }
                 }
                 i = d;
-                symbol = 'let'; // regulat let, handling just after this.
+                symbol = "let"; // regulat let, handling just after this.
             }
 
-            var listOfVals, index, leng, semicolonExpected = false, vars, keyword, val, addToConsts = symbol === 'const' && !constSupported;
+            var listOfVals, index, leng, semicolonExpected = false, vars, keyword, val, addToConsts = symbol === "const" && !constSupported;
 
-            var decl = '';
+            var decl = "";
 
-            if (addToConsts || symbol === 'let') {
+            if (addToConsts || symbol === "let") {
                 // Here, const is not supported
-                keyword = letDeclarationSupported ? 'let' : 'var';
+                keyword = letDeclarationSupported ? "let" : "var";
             } else {
                 keyword = symbol;
             }
 
-            var oldType, tmp = '', white = '';
+            var oldType, tmp = "", white = "";
 
             do {
                 vars = getWhite() + getExpression({
@@ -1176,7 +1182,7 @@
                 oldType = lastSignificantType;
                 symbol = getSymbol();
 
-                if (symbol === '=') {
+                if (symbol === "=") {
                     val = getExpression({
                         inForeach: opts.inForeach,
                         constraintedVariables: opts.constraintedVariables,
@@ -1188,7 +1194,7 @@
                     white  = getWhite();
                     symbol = getSymbol();
                 } else {
-                    val = '';
+                    val = "";
                 }
 
                 if (!destructuringSupported || addToConsts) {
@@ -1197,18 +1203,18 @@
                     pkg.Audescript.destruct(null, vars, listOfVals);
                 }
 
-                if (val && '[{('.indexOf(vars.trim()[0]) !== -1 && (!destructuringSupported || '('.indexOf(vars.trim()[0]) !== -1)) {
+                if (val && "[{(".indexOf(vars.trim()[0]) !== -1 && (!destructuringSupported || "(".indexOf(vars.trim()[0]) !== -1)) {
                     if (decl) {
-                        tmp += (semicolonExpected ? ';' : '') + decl + ';';
-                        decl = '';
+                        tmp += (semicolonExpected ? ";" : "") + decl + ";";
+                        decl = "";
                     }
 
-                    tmp += keyword + ' ' + listOfVals.toString() + ';' + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + white;
+                    tmp += keyword + " " + listOfVals.toString() + ";" + destructToJS(vars, val, listOfVals, opts.constraintedVariables) + white;
                     semicolonExpected = true;
                 } else if (decl) {
-                    decl += ',' + vars + (val ? '=' + val : '') + white;
+                    decl += "," + vars + (val ? "=" + val : "") + white;
                 } else {
-                    decl = keyword + (vars[0].trim() ? ' ' : '') + vars + (val ? '=' + val : '') + white;
+                    decl = keyword + (vars[0].trim() ? " " : "") + vars + (val ? "=" + val : "") + white;
                 }
 
                 if (addToConsts) {
@@ -1218,15 +1224,15 @@
                         }
                     }
                 }
-            } while (symbol === ',');
+            } while (symbol === ",");
 
-            if (symbol === ';') {
-                return tmp + (semicolonExpected ? ';' : '') + decl + ';';
+            if (symbol === ";") {
+                return tmp + (semicolonExpected ? ";" : "") + decl + ";";
             }
 
             i = d;
             lastSignificantType = oldType;
-            return tmp + (semicolonExpected ? ';' : '') + decl;
+            return tmp + (semicolonExpected ? ";" : "") + decl;
         }
 
         i = begin;
@@ -1234,7 +1240,7 @@
     }
 
     function tryForeachRelatedStuffs(symbol, opts, begin) {
-        if (symbol === 'foreach') {
+        if (symbol === "foreach") {
             if (opts.value) {
                 i = begin;
                 return -1;
@@ -1252,13 +1258,13 @@
     }
 
     function tryInclude(symbol, includes) {
-        if (symbol === 'include') {
+        if (symbol === "include") {
             var res = getWhite();
             includes.push(getSymbol());
             res += getWhite();
             var begin = i;
 
-            if (getSymbol() === ';') {
+            if (getSymbol() === ";") {
                 return res + getWhite();
             }
 
@@ -1269,7 +1275,7 @@
     }
 
     function tryComma(symbol, opts, white, oldType) {
-        if (symbol === ',') {
+        if (symbol === ",") {
             opts.immediatlyReturn = true;
             if (!opts.commaAllowed) {
                 --i;
@@ -1290,7 +1296,7 @@
     }
 
     function trySemicolon(symbol, opts, white, oldType) {
-        if (symbol === ';') {
+        if (symbol === ";") {
             opts.immediatlyReturn = true;
             if (opts.value) {
                 --i;
@@ -1303,7 +1309,7 @@
     }
 
     function tryColon(symbol, opts, white, oldType, begin, varName) {
-        if (symbol === ':') {
+        if (symbol === ":") {
             opts.immediatlyReturn = true;
 
             if (opts.value) {
@@ -1319,8 +1325,8 @@
 
             if (matches) {
                 opts.constraintedVariables.type.add(varName);
-                tmp = matches[1] + (letDeclarationSupported ? 'let ' : 'var ') + varName + white + '=';
-                defaultValue = '';
+                tmp = matches[1] + (letDeclarationSupported ? "let " : "var ") + varName + white + "=";
+                defaultValue = "";
                 symbol = getSymbol();
 
                 if (type === whitespace) {
@@ -1328,7 +1334,7 @@
                         i = d;
                         type = lastSignificantType = operator;
 
-                        return white + ':' + getExpression({
+                        return white + ":" + getExpression({
                             inForeach: opts.inForeach,
                             constraintedVariables: opts.constraintedVariables
                         });
@@ -1341,13 +1347,13 @@
                     typeOfVar = symbol;
                     symbol = getSymbol();
                     if (type === whitespace) {
-                        white = symbol === ' ' ? '' : symbol;
+                        white = symbol === " " ? "" : symbol;
                         symbol = getSymbol();
                     } else {
-                        white = '';
+                        white = "";
                     }
 
-                    if (symbol === '=') {
+                    if (symbol === "=") {
                         defaultValue = getExpression({
                             inForeach: opts.inForeach,
                             value: true,
@@ -1360,54 +1366,54 @@
                     switch (typeOfVar.toLowerCase()) {
                     case "integer":
                     case "int":
-                        tmp += defaultValue ? ('Audescript.as(0,' + defaultValue + ', true)') : '0';
-                        opts.constraintedVariables.type.add('0' + varName);
+                        tmp += defaultValue ? ("Audescript.as(0," + defaultValue + ", true)") : "0";
+                        opts.constraintedVariables.type.add("0" + varName);
                         break;
                     case "list":
                     case "array":
                     case "table":
-                        tmp += defaultValue ? ('Audescript.as([],' + defaultValue + ')') : '[]';
+                        tmp += defaultValue ? ("Audescript.as([]," + defaultValue + ")") : "[]";
                         break;
                     case "state":
                         opts.constraintedVariables.type.remove(varName);
-                        tmp += defaultValue || '""';
+                        tmp += defaultValue || "''";
                         break;
                     case "string":
-                        tmp += defaultValue ? ('Audescript.as("",' + defaultValue + ')') : '""';
+                        tmp += defaultValue ? ("Audescript.as(''," + defaultValue + ")") : "''";
                         break;
                     case "bool":
                     case "boolean":
-                        tmp += defaultValue ? ('Audescript.as(false,' + defaultValue + ')') : 'false';
+                        tmp += defaultValue ? ("Audescript.as(false," + defaultValue + ")") : "false";
                         break;
                     case "automaton":
-                        tmp += defaultValue ? 'Audescript.as(new Automaton,' + defaultValue + ')' : 'new Automaton';
+                        tmp += defaultValue ? "Audescript.as(new Automaton," + defaultValue + ")" : "new Automaton";
                         break;
                     case "function":
-                        tmp += defaultValue ? 'Audescript.as(function () {},' + defaultValue + ')' : 'function () {}';
+                        tmp += defaultValue ? "Audescript.as(function () {}," + defaultValue + ")" : "function () {}";
                         break;
                     case "mappingfunction":
-                        tmp += defaultValue || 'getMappingFunction()';
+                        tmp += defaultValue || "getMappingFunction()";
                         break;
                     case "set":
                         if (defaultValue) {
-                            tmp += (defaultValue.trim().substr(0, 7) === 'to_set(') ? defaultValue : 'to_set(' +  defaultValue + ')';
+                            tmp += (defaultValue.trim().substr(0, 7) === "to_set(") ? defaultValue : "to_set(" +  defaultValue + ")";
                         } else {
-                            tmp   += 'new Set()';
+                            tmp   += "new Set()";
                             symbol = getSymbol();
-                            white2 = '';
+                            white2 = "";
 
                             if (type === whitespace) {
-                                if (symbol !== ' ') {
+                                if (symbol !== " ") {
                                     white2 = symbol;
                                 }
                                 symbol = getSymbol();
                             }
 
-                            if (symbol === 'of') {
+                            if (symbol === "of") {
                                 constraint = getConstraintString();
 
                                 if (constraint) {
-                                    tmp += ';' + white2 + varName + '.setTypeConstraint(' + constraint + ')';
+                                    tmp += ";" + white2 + varName + ".setTypeConstraint(" + constraint + ")";
                                 } else {
                                     i = begin;
                                     lastSignificantType = oldType;
@@ -1417,18 +1423,18 @@
                                 symbol = getSymbol();
 
                                 if (type === whitespace) {
-                                    if (symbol !== ' ') {
+                                    if (symbol !== " ") {
                                         tmp += symbol;
                                     }
                                     symbol = getSymbol();
                                 }
 
-                                if (symbol === '=') {
-                                    tmp += ';' + varName + '.unionInPlace(' + getExpression({
+                                if (symbol === "=") {
+                                    tmp += ";" + varName + ".unionInPlace(" + getExpression({
                                         inForeach: opts.inForeach,
                                         value: true,
                                         constraintedVariables: opts.constraintedVariables
-                                    }) + ')';
+                                    }) + ")";
                                 } else {
                                     i -= symbol.length;
                                 }
@@ -1438,7 +1444,7 @@
                         }
                         break;
                     default:
-                        tmp += 'new ' + typeOfVar;
+                        tmp += "new " + typeOfVar;
                     }
 
                     tmp += white;
@@ -1448,7 +1454,7 @@
                 symbol = getSymbol();
 
                 opts.noRes = true;
-                if (symbol === ';') {
+                if (symbol === ";") {
                     return tmp + white + symbol;
                 }
 
@@ -1464,20 +1470,20 @@
     }
 
     function tryDot(opts, symbol, white) {
-        if (symbol === '.') {
+        if (symbol === ".") {
             symbol = getWhite() + getSymbol();
 
             if (type !== variable) {// Syntax error ?
                 opts.immediatlyReturn = true;
             }
 
-            return white + '.' + symbol;
+            return white + "." + symbol;
         }
         return false;
     }
 
     function tryInterro(opts, symbol, white, oldType, begin, res) {
-        if (symbol === '?') {
+        if (symbol === "?") {
             if (opts.onlyOneValue) {
                 i = begin;
                 lastSignificantType = oldType;
@@ -1494,7 +1500,7 @@
                 constraintedVariables: opts.constraintedVariables
             };
 
-            var ret = {op: symbol, left: autoTrim(res), white: white, not: '', alphaOp: false};
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: "", alphaOp: false};
             ret.ifTrueExpression = getExpression(o);
             ret.valueIfTrueHasOperator = o.hasOperator;
             o.hasOperator = false;
@@ -1507,27 +1513,27 @@
     }
 
     function tryBracketParenthesis(symbol, opts, white) {
-        if (symbol === '[') {
+        if (symbol === "[") {
             return white + symbol + getExpression({
                 inForeach: opts.inForeach,
                 constraintedVariables: opts.constraintedVariables,
-                endSymbols: {']': true}
-            }) + getSymbol(); // symbol should be ']'
+                endSymbols: {"]": true}
+            }) + getSymbol(); // symbol should be "]"
         }
 
-        if (symbol === '(') {
+        if (symbol === "(") {
             return white + symbol + getExpression({
                 inForeach: opts.inForeach,
                 constraintedVariables: opts.constraintedVariables,
                 commaAllowed: true,
-                endSymbols: {')': true},
-            }) + getSymbol(); // symbol should be ')'
+                endSymbols: {")": true}
+            }) + getSymbol(); // symbol should be ")"
         }
         return false;
     }
 
     function tryArrowFunction(opts, symbol, oldType, args) {
-        if (symbol === '=>'  && (oldType & (variable | closeParen))) {
+        if (symbol === "=>"  && (oldType & (variable | closeParen))) {
             ++i;
             var expr = getExpression({
                 inForeach: opts.inForeach,
@@ -1535,13 +1541,13 @@
             });
 
             if (arrowFunctionSupported) {
-                return '=>' + expr;
+                return "=>" + expr;
             }
 
             opts.noRes = true;
-            return 'function' +
-                    (oldType === closeParen ? args : '(' + args + ')') +
-                    (expr.trim()[0] === '{' ? expr : '{return ' + expr + '}');
+            return "function" +
+                    (oldType === closeParen ? args : "(" + args + ")") +
+                    (expr.trim()[0] === "{" ? expr : "{return " + expr + "}");
         }
         return false;
     }
@@ -1549,14 +1555,14 @@
     function tryOperator(opts, type, symbol, white, begin, oldType, res) {
         if (type === operator) {
             opts.noRes = true;
-            if (opts.onlyOneValue && symbol !== '!') {
+            if (opts.onlyOneValue && symbol !== "!") {
                 opts.immediatlyReturn = true;
                 i = begin;
                 lastSignificantType = oldType;
                 return res + white;
             }
 
-            if (symbol[symbol.length - 1] === '=' && symbol !== '>=' && symbol != '<=' && symbol !== '===' && symbol !== '==' && symbol !== '!=' && symbol !== '!==') {
+            if (symbol[symbol.length - 1] === "=" && symbol !== ">=" && symbol !== "<=" && symbol !== "===" && symbol !== "==" && symbol !== "!=" && symbol !== "!==") {
                 var trimRes, newVal;
                 trimRes = res.trim();
                 newVal  = getExpression({
@@ -1565,22 +1571,22 @@
                     constraintedVariables: opts.constraintedVariables
                 });
 
-                if ((!destructuringSupported && (trimRes[0] === '{' || trimRes[0] === '[')) || trimRes[0] === '(') {
+                if ((!destructuringSupported && (trimRes[0] === "{" || trimRes[0] === "[")) || trimRes[0] === "(") {
                     return res + white + destructToJS(res, newVal, null, opts.constraintedVariables);
                 }
 
                 if (opts.constraintedVariables.type.contains(trimRes)) {
                     opts.immediatlyReturn = true;
                     if (symbol.length > 1) {
-                        return white + res + '=Audescript.as(' + trimRes + ',' +  trimRes + symbol.substr(0, symbol.length - 1) + newVal + ',' + (opts.constraintedVariables.type.contains('0' + trimRes) ? 'true' : 'false') + ')';
+                        return white + res + "=Audescript.as(" + trimRes + "," +  trimRes + symbol.substr(0, symbol.length - 1) + newVal + "," + (opts.constraintedVariables.type.contains("0" + trimRes) ? "true" : "false") + ")";
                     }
 
-                    return white + res + '=Audescript.as(' + trimRes + ',' +  newVal + ',' + (opts.constraintedVariables.type.contains('0' + trimRes) ? 'true' : 'false') + ')';
+                    return white + res + "=Audescript.as(" + trimRes + "," +  newVal + "," + (opts.constraintedVariables.type.contains("0" + trimRes) ? "true" : "false") + ")";
                 }
 
                 if (!constSupported && opts.constraintedVariables.consts.contains(trimRes)) {
                     opts.immediatlyReturn = true;
-                    return white + res.replace(/[\S]+/g, '') + constError(trimRes) + newVal.replace(/[\S]+/g, '');
+                    return white + res.replace(/[\S]+/g, "") + constError(trimRes) + newVal.replace(/[\S]+/g, "");
                 }
 
                 return res + white + symbol + newVal;
@@ -1596,7 +1602,7 @@
                 constraintedVariables: opts.constraintedVariables
             };
 
-            var ret = {op: symbol, left: autoTrim(res), white: white, not: '', beforeRight: getWhite(), right: getExpression(o), alphaOp: false};
+            var ret = {op: symbol, left: autoTrim(res), white: white, not: "", beforeRight: getWhite(), right: getExpression(o), alphaOp: false};
             ret.rightHasOperator = o.hasOperator;
             return ret;
         }
@@ -1605,31 +1611,31 @@
 
     // we normalize operators with this table
     var alphaOperatorRenames = {
-        'u':          'union',
-        'm':          'minus',
-        'n':          'inter',
-        'x':          'cross',
-        'symdiff':    'sym_diff',
-        'subsetof':   'subset_of',
-        'element_of': 'belongs_to',
-        'elementof':  'belongs_to',
-        'belongsto':  'belongs_to',
-        'haskey':     'has_key'
+        "u":          "union",
+        "m":          "minus",
+        "n":          "inter",
+        "x":          "cross",
+        "symdiff":    "sym_diff",
+        "subsetof":   "subset_of",
+        "element_of": "belongs_to",
+        "elementof":  "belongs_to",
+        "belongsto":  "belongs_to",
+        "haskey":     "has_key"
     };
 
     function tryAlphaOperator(opts, symbol, white, oldType, begin, res) {
         symbol = symbol.toLowerCase();
 
-        var not = '';
-        if (symbol && symbol[0] === '!') {
-            not = '!';
+        var not = "";
+        if (symbol && symbol[0] === "!") {
+            not = "!";
             symbol = symbol.substr(1);
 
             if (alphaOperatorRenames.hasOwnProperty(symbol)) {
                 symbol = alphaOperatorRenames[symbol];
             }
 
-            if (symbol !== 'contains' && symbol !== 'subset_of' && symbol !== 'belongs_to' && symbol !== 'has_key') {
+            if (symbol !== "contains" && symbol !== "subset_of" && symbol !== "belongs_to" && symbol !== "has_key") {
                 // only these alpha operators can be negated
                 i = begin;
                 opts.immediatlyReturn = true;
@@ -1639,21 +1645,21 @@
             symbol = alphaOperatorRenames[symbol];
         }
 
-        if (symbol === 'inter' || symbol === 'union' || symbol === 'cross' || symbol === 'minus' || symbol === 'contains' || symbol === 'subsetof' || symbol === 'belongs_to' || symbol === 'has_key' || symbol === 'sym_diff') {
+        if (symbol === "inter" || symbol === "union" || symbol === "cross" || symbol === "minus" || symbol === "contains" || symbol === "subsetof" || symbol === "belongs_to" || symbol === "has_key" || symbol === "sym_diff") {
 
             var maybeBeforeEqualSign = i;
             var symbol2 = getSymbol();
             var white2;
 
             if (type === whitespace) {
-                white2 = symbol2 === ' ' ? '' : symbol2;
+                white2 = symbol2 === " " ? "" : symbol2;
                 symbol2 = getSymbol();
             } else {
-                white2 = '';
+                white2 = "";
             }
 
             if (type === operator) {
-                if (symbol2 !== '=' || symbol === 'contains' || symbol === 'has_key' || symbol === 'subset_of' || symbol === 'belongs_to' || symbol === 'sym_diff' || symbol === '') {
+                if (symbol2 !== "=" || symbol === "contains" || symbol === "has_key" || symbol === "subset_of" || symbol === "belongs_to" || symbol === "sym_diff" || symbol === "") {
                     // syntax error (?)
                     i = begin;
                     lastSignificantType = oldType;
@@ -1661,11 +1667,11 @@
                     return white || -1;
                 }
 
-                return '.' + symbol + 'InPlace(' + (white === ' ' ? '' : white) + white2 + getExpression({
+                return "." + symbol + "InPlace(" + (white === " " ? "" : white) + white2 + getExpression({
                     inForeach: opts.inForeach,
                     value: true,
                     constraintedVariables: opts.constraintedVariables
-                }) + ')';
+                }) + ")";
             }
 
             i = maybeBeforeEqualSign; // white2 is not relevant anymore
@@ -1717,17 +1723,17 @@
     }
 
     function operatorChainToString(o) {
-        if (typeof o === 'string') {
+        if (typeof o === "string") {
             return o;
         }
 
-        if (o.op === '?') {
-            // this works because ' ? : ' is the most predecedent operator
-            return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + o.white + '?' + o.ifTrueExpression + o.colon + o.ifFalseExpression + (o.afterRight || '');
+        if (o.op === "?") {
+            // this works because " ? : " is the most predecedent operator
+            return (o.beforeLeft || "") + o.left + (o.afterLeft || "") + o.white + "?" + o.ifTrueExpression + o.colon + o.ifFalseExpression + (o.afterRight || "");
         }
 
         var rightTrim = operatorChainToString(o.right);
-        var rightSpaces = '';
+        var rightSpaces = "";
 
         while (rightTrim.length && !rightTrim.slice(-1).trim()) {
             rightSpaces = rightTrim.slice(-1) + rightSpaces;
@@ -1735,11 +1741,11 @@
         }
 
         if (o.transformedOperator) {
-            return (o.beforeLeft || '') + o.left + o.afterLeft + (o.beforeRight || '') + rightTrim + (o.afterRight || '') + rightSpaces;
+            return (o.beforeLeft || "") + o.left + o.afterLeft + (o.beforeRight || "") + rightTrim + (o.afterRight || "") + rightSpaces;
             //TODO: check correctness
         }
 
-        return (o.beforeLeft || '') + o.left + (o.afterLeft || '') + (o.white || '') + o.op +  (o.beforeRight || '') + rightTrim + (o.afterRight || '') + rightSpaces;
+        return (o.beforeLeft || "") + o.left + (o.afterLeft || "") + (o.white || "") + o.op +  (o.beforeRight || "") + rightTrim + (o.afterRight || "") + rightSpaces;
     }
 
     function handleOperators(o) {
@@ -1759,70 +1765,70 @@
         }
 
         switch (o.op) {
-        case '==':
+        case "==":
             addOperatorParenthesis(o, {
-                beforeLeft: (o.white || '') + "Audescript.eq(",
-                afterLeft:  ',',
-                afterRight: ')',
-                weakerThan: ['||', '&&', '?'],
-                sameLevel:  ['<', '<=', '>=', '>', '==', '===', '!=', '!==']
+                beforeLeft: (o.white || "") + "Audescript.eq(",
+                afterLeft:  ",",
+                afterRight: ")",
+                weakerThan: ["||", "&&", "?"],
+                sameLevel:  ["<", "<=", ">=", ">", "==", "===", "!=", "!=="]
             });
             break;
-        case '!=':
+        case "!=":
             addOperatorParenthesis(o, {
-                beforeLeft: (o.white || '') + "!Audescript.eq(",
-                afterLeft:  ',',
-                afterRight: ')',
-                weakerThan: ['||', '&&', '?'],
-                sameLevel:  ['<', '<=', '>=', '>', '==', '===', '!=', '!==']
+                beforeLeft: (o.white || "") + "!Audescript.eq(",
+                afterLeft:  ",",
+                afterRight: ")",
+                weakerThan: ["||", "&&", "?"],
+                sameLevel:  ["<", "<=", ">=", ">", "==", "===", "!=", "!=="]
             });
             break;
-        case '?':
+        case "?":
             if (o.valueIfTrueHasOperator) {
                 o.ifTrueExpression = operatorChainToString(handleOperators(o.ifTrueExpression));
             }
             if (o.valueIfFalseHasOperator) {
                 o.ifFalseExpression = operatorChainToString(handleOperators(o.ifFalseExpression));
             }
-            return o; // '? : ' operator is a specific case
-//             return o.left + o.white + '?' + o.ifTrueExpression + o.colon + o.ifFalseExpression;
-        case 'contains':
-        case 'subsetof':
-        case 'sym_diff':
-        case 'belongs_to':
+            return o; // "? : " operator is a specific case
+//             return o.left + o.white + "?" + o.ifTrueExpression + o.colon + o.ifFalseExpression;
+        case "contains":
+        case "subsetof":
+        case "sym_diff":
+        case "belongs_to":
             addOperatorParenthesis(o, {
-                beforeLeft: ' ' + o.not + o.op  + '(',
-                afterLeft:  ',' + (o.white === ' ' ? '' : o.white),
-                afterRight: ')',
-                weakerThan: ['<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'],
-                sameLevel:  ['contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff']
+                beforeLeft: " " + o.not + o.op  + "(",
+                afterLeft:  "," + (o.white === " " ? "" : o.white),
+                afterRight: ")",
+                weakerThan: ["<", "<=", ">=", ">", "==", "===", "!=", "!==", "||", "&&", "?"],
+                sameLevel:  ["contains", "belongs_to", "has_key", "subset_of", "symdiff"]
             });
             break;
-        case 'has_key':
+        case "has_key":
             addOperatorParenthesis(o, {
-                beforeLeft: ' ' + o.not + '(',
-                afterLeft:  ').hasKey('    + (o.white === ' ' ? '' : o.white),
-                afterRight: ')',
-                weakerThan: ['<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'],
-                sameLevel:  ['contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff']
+                beforeLeft: " " + o.not + "(",
+                afterLeft:  ").hasKey("    + (o.white === " " ? "" : o.white),
+                afterRight: ")",
+                weakerThan: ["<", "<=", ">=", ">", "==", "===", "!=", "!==", "||", "&&", "?"],
+                sameLevel:  ["contains", "belongs_to", "has_key", "subset_of", "symdiff"]
             });
             break;
         default:
             var sameLevel, weakerThan;
-            if (o.op === 'union' || o.op === 'inter' || o.op === 'cross') {
-                sameLevel  = ['union', 'inter', 'cross'];
-                weakerThan = ['minus', 'contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff', '<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'];
-            } else if (o.op === 'minus') {
-                weakerThan = ['contains', 'belongs_to', 'has_key', 'subset_of', 'symdiff', '<', '<=', '>=', '>', '==', '===', '!=', '!==', '||', '&&', '?'];
-                sameLevel  = ['minus'];
+            if (o.op === "union" || o.op === "inter" || o.op === "cross") {
+                sameLevel  = ["union", "inter", "cross"];
+                weakerThan = ["minus", "contains", "belongs_to", "has_key", "subset_of", "symdiff", "<", "<=", ">=", ">", "==", "===", "!=", "!==", "||", "&&", "?"];
+            } else if (o.op === "minus") {
+                weakerThan = ["contains", "belongs_to", "has_key", "subset_of", "symdiff", "<", "<=", ">=", ">", "==", "===", "!=", "!==", "||", "&&", "?"];
+                sameLevel  = ["minus"];
             }
 
             if (o.alphaOp) {
                 // inter, union, cross, minus
                 addOperatorParenthesis(o, {
-                    beforeLeft: (o.white || '') + o.not + o.op + '(',
-                    afterLeft:  ',',
-                    afterRight: ')',
+                    beforeLeft: (o.white || "") + o.not + o.op + "(",
+                    afterLeft:  ",",
+                    afterRight: ")",
                     weakerThan: weakerThan,
                     sameLevel:  sameLevel
                 });
@@ -1851,7 +1857,7 @@
         }
 
         var begin       = i,
-            res         = '',
+            res         = "",
             symbol      = getSymbol(),
             oldType     = lastSignificantType;
 
@@ -1865,7 +1871,7 @@
         if (opts.endSymbols.hasOwnProperty(symbol) || ")]}".indexOf(symbol) !== -1) {
             /* case : we are at the end of an expression */
             i = begin;
-            return '';
+            return "";
         }
 
         var beginAfterBrace = i;
@@ -1890,7 +1896,7 @@
                      tryVariableRelatedInstruction(symbol, opts, begin);
 
             if (tmpRes === -1) {
-                return '';
+                return "";
             }
 
             if (tmpRes !== false) {
@@ -1903,7 +1909,7 @@
 
         var white;
 
-        while (true) {
+        for (;;) {
             oldType = lastSignificantType;
             white = getWhite();
             begin = i;
@@ -1935,7 +1941,7 @@
             }
 
             if (tmpRes === -1) {
-                tmpRes = '';
+                tmpRes = "";
             }
 
             if (opts.hasOperator) {
@@ -1947,7 +1953,7 @@
                 tmpRes = operatorChainToString(handleOperators(tmpRes));
             }
 
-            res = (opts.noRes ? '' : res) + tmpRes;
+            res = (opts.noRes ? "" : res) + tmpRes;
 
             if (opts.immediatlyReturn) {
                 return res;
@@ -1961,21 +1967,21 @@
     };
 
     function comprehensiveSet(opts, declarationSymbol, begin, white, expr1) {
-        if (s[i] === '{') {
+        if (s[i] === "{") {
             ++i;
 
             var n1 = white + getExpression({
                 inForeach: opts.inForeach,
                 value: true,
-                endSymbols: {',' : true},
+                endSymbols: {"," : true},
                 constraintedVariables: opts.constraintedVariables
             });
 
             var symbol = getSymbol();
 
-            if (symbol !== ',') {
+            if (symbol !== ",") {
                 i = begin;
-                return '';
+                return "";
             }
 
             symbol = getSymbol();
@@ -1985,23 +1991,23 @@
                 symbol = getSymbol();
             }
 
-            if (symbol !== '.') {
+            if (symbol !== ".") {
                 i = begin;
-                return '';
+                return "";
             }
 
             symbol = getSymbol();
 
-            if (symbol !== '.') {
+            if (symbol !== ".") {
                 i = begin;
-                return '';
+                return "";
             }
 
             symbol = getSymbol();
 
-            if (symbol !== '.') {
+            if (symbol !== ".") {
                 i = begin;
-                return '';
+                return "";
             }
 
             symbol = getSymbol();
@@ -2011,9 +2017,9 @@
                 symbol = getSymbol();
             }
 
-            if (symbol !== ',') {
+            if (symbol !== ",") {
                 i = begin;
-                return '';
+                return "";
             }
 
             var n2 = getExpression({
@@ -2021,9 +2027,9 @@
                 constraintedVariables: opts.constraintedVariables
             });
 
-            if (getSymbol() !== '}') {
+            if (getSymbol() !== "}") {
                 i = begin;
-                return '';
+                return "";
             }
 
             symbol = getSymbol();
@@ -2033,40 +2039,40 @@
                 symbol = getSymbol();
             }
 
-            if (symbol !== ')') {
+            if (symbol !== ")") {
                 i = begin;
-                return '';
+                return "";
             }
 
-            var bf = '', ef = '', foreachBody = getExpression({
+            var bf = "", ef = "", foreachBody = getExpression({
                 inForeach: opts.inForeach,
                 noValue: true,
                 constraintedVariables: copy(opts.constraintedVariables)
             });
 
-            if (foreachBody.trim()[0] !== '{') {
-                bf = '{';
-                ef = '}';
+            if (foreachBody.trim()[0] !== "{") {
+                bf = "{";
+                ef = "}";
             }
 
-            declarationSymbol = declarationSymbol || (/^[\s]*(let|var)/g.exec(expr1) || ['', (letDeclarationSupported ? 'let' : 'var')])[1];
-            expr1 = expr1.replace(/^([\s]*)(?:let|var) */g, '$1');
-            return 'for (' + declarationSymbol + (declarationSymbol[declarationSymbol.length - 1].trim() ? ' ' : '') + expr1 + (expr1[expr1.length - 1].trim() ? ' ' : '') + '=' + n1 + '; ' + expr1.trim() + ' <= ' + n2 + ';' + white + '++' + expr1.trim() + ')' + bf + foreachBody + ef;
+            declarationSymbol = declarationSymbol || (/^[\s]*(let|var)/g.exec(expr1) || ["", (letDeclarationSupported ? "let" : "var")])[1];
+            expr1 = expr1.replace(/^([\s]*)(?:let|var) */g, "$1");
+            return "for (" + declarationSymbol + (declarationSymbol[declarationSymbol.length - 1].trim() ? " " : "") + expr1 + (expr1[expr1.length - 1].trim() ? " " : "") + "=" + n1 + "; " + expr1.trim() + " <= " + n2 + ";" + white + "++" + expr1.trim() + ")" + bf + foreachBody + ef;
         }
 
-        return '';
+        return "";
     }
 
     parseForeach = function (keyword, opts) {
         var begin = i;
-        var symbol = getSymbol(), beforeParenthesis = '';
+        var symbol = getSymbol(), beforeParenthesis = "";
 
         if (type === whitespace) {
             beforeParenthesis = symbol;
             symbol = getSymbol();
         }
 
-        if (symbol !== '(') {
+        if (symbol !== "(") {
             i = begin;
             return keyword;
         }
@@ -2076,20 +2082,20 @@
             constraintedVariables: opts.constraintedVariables
         });
 
-        var inExpr = getSymbol(), declarationSymbol = '';
+        var inExpr = getSymbol(), declarationSymbol = "";
 
         if (IterationsSupported) {
-            if (keyword === 'foreach' && !expr1.match(/^[\s]*(?:let|var) ?/)) {
-                expr1 = (letDeclarationSupported ? 'let ' : 'var ') + autoTrim(expr1);
+            if (keyword === "foreach" && !expr1.match(/^[\s]*(?:let|var) ?/)) {
+                expr1 = (letDeclarationSupported ? "let " : "var ") + autoTrim(expr1);
             }
         } else {
             var key = /^[\s]*(let|var) */g.exec(expr1);
 
-            if (key || keyword === 'foreach') {
-                declarationSymbol = (key ? key[1] + ' ' : (letDeclarationSupported ? 'let ' : 'var '));
+            if (key || keyword === "foreach") {
+                declarationSymbol = (key ? key[1] + " " : (letDeclarationSupported ? "let " : "var "));
             }
 
-            expr1 = expr1.replace(/^[\s]*(?:let|var) */g, '');
+            expr1 = expr1.replace(/^[\s]*(?:let|var) */g, "");
         }
 
         if (type === whitespace) {
@@ -2097,7 +2103,7 @@
             inExpr = getSymbol();
         }
 
-        if ((inExpr !== 'in' && inExpr !== 'of') || (inExpr === 'in' && keyword === 'for')) {
+        if ((inExpr !== "in" && inExpr !== "of") || (inExpr === "in" && keyword === "for")) {
             i = begin;
             return keyword;
         }
@@ -2113,9 +2119,9 @@
             constraintedVariables: opts.constraintedVariables
         });
 
-        if (getSymbol() !== ')') {
+        if (getSymbol() !== ")") {
             i = begin;
-            return 'for';
+            return "for";
         }
 
         var foreachBody = getExpression({
@@ -2125,24 +2131,24 @@
         });
 
         if (IterationsSupported) {
-            return 'for' + beforeParenthesis + '(' + declarationSymbol + expr1 + ' of ' + expr2 + ')' + foreachBody;
+            return "for" + beforeParenthesis + "(" + declarationSymbol + expr1 + " of " + expr2 + ")" + foreachBody;
         }
 
-        var  bf = '', ef = '';
-        if (foreachBody.trim()[0] === '{') {
-            if (!declarationSymbol && keyword !== 'foreach') {
-                foreachBody = foreachBody.replace(/([\s]*)\{/, '$1{' + expr1.replace(/\$/g, '$$$$') + '=arguments[0];');
+        var  bf = "", ef = "";
+        if (foreachBody.trim()[0] === "{") {
+            if (!declarationSymbol && keyword !== "foreach") {
+                foreachBody = foreachBody.replace(/([\s]*)\{/, "$1{" + expr1.replace(/\$/g, "$$$$") + "=arguments[0];");
             }
         } else {
-            if (!declarationSymbol && keyword !== 'foreach') {
-                bf = '{' + expr1 + '=arguments[0];';
+            if (!declarationSymbol && keyword !== "foreach") {
+                bf = "{" + expr1 + "=arguments[0];";
             } else {
-                bf = '{';
+                bf = "{";
             }
-            ef = '}';
+            ef = "}";
         }
 
-        return 'try{(' + expr2 + ').forEach' + beforeParenthesis + '(function (' + ((declarationSymbol || keyword === 'foreach') ? expr1 : '') + ')' + bf + foreachBody + ef + ')}catch (e) {if (e instanceof Audescript.ThrowValue) {throw ' + (opts.inForeach ? 'e' : 'e.v') + ';}else if (e instanceof Audescript.ReturnValue) {' + (opts.inForeach ? 'throw e' : 'return e.v') + ';}}';
+        return "try{(" + expr2 + ").forEach" + beforeParenthesis + "(function (" + ((declarationSymbol || keyword === "foreach") ? expr1 : "") + ")" + bf + foreachBody + ef + ")}catch (e) {if (e instanceof Audescript.ThrowValue) {throw " + (opts.inForeach ? "e" : "e.v") + ";}else if (e instanceof Audescript.ReturnValue) {" + (opts.inForeach ? "throw e" : "return e.v") + ";}}";
     };
 
     toPureJS = function (opts) {
@@ -2158,7 +2164,7 @@
             opts.constraintedVariables = {type: new Set(), consts: new Set()};
         }
 
-        var res = '', symbol, beforeSymbol = i;
+        var res = "", symbol, beforeSymbol = i;
 
         do {
             // we browse the code, expression by expression
@@ -2224,4 +2230,4 @@
     pkg.map = function (l, func) {
         return l.map(function (e) { func(e); });
     };
-}(typeof this.exports === 'object' ? this.exports : this, typeof this.exports === 'object' ? this.exports : this));
+}(typeof this.exports === "object" ? this.exports : this, typeof this.exports === "object" ? this.exports : this));

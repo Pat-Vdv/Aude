@@ -1,3 +1,4 @@
+/*kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix; */
 /*
     Copyright (c) Raphaël Jakse (Université Joseph Fourier), 2013
 
@@ -16,8 +17,10 @@
 */
 
 
-/*jslint browser: true, ass: true, indent: 4, nomen:true, vars:true, newcap:true, plusplus:true */
+/*jslint browser: true, ass: true, indent: 4, nomen:true, vars:true, newcap:true, plusplus:true, regexp: true */
 /*jshint multistr:true*/
+/*eslint-env browser*/
+/*eslint no-underscore-dangle:0, no-alert:0*/
 /*global Set:false, FileReader:false, libD:false, AutomataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, Audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, CodeMirror:false, AutomataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
 
 // NEEDS : automatadesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
@@ -32,7 +35,7 @@
         launchAfterImport       = false,
         deferedResultShow       = false,
         freader                 = new FileReader(),
-        resultToLeft            = document.createElement('button'),
+        resultToLeft            = document.createElement("button"),
         zoom                    = {svgZoom: 1},
         automatoncodeedit,
         automatonFileName,
@@ -88,9 +91,9 @@
 
     function splitterMove(e) {
         var width = document.body.offsetWidth;
-        splitter.style.left = (e.clientX * 100 / width) + '%';
-        leftPane.style.right = ((width - e.clientX) * 100 / width) + '%';
-        results.style.left =  ((e.clientX + sw) * 100 / width) + '%';
+        splitter.style.left = (e.clientX * 100 / width) + "%";
+        leftPane.style.right = ((width - e.clientX) * 100 / width) + "%";
+        results.style.left =  ((e.clientX + sw) * 100 / width) + "%";
         AutomataDesigner.redraw();
         if (zoom.redraw) {
             zoom.redraw();
@@ -101,10 +104,10 @@
         var width = document.body.offsetWidth;
 
         if (sw) {
-            results.style.left =  ((splitter.offsetLeft + sw) * 100 / width) + '%';
+            results.style.left =  ((splitter.offsetLeft + sw) * 100 / width) + "%";
         }
 
-        content.style.top  = toolbar.offsetHeight + 'px';
+        content.style.top  = toolbar.offsetHeight + "px";
         AutomataDesigner.redraw();
 
         if (zoom.redraw) {
@@ -114,12 +117,12 @@
 
     function enableResults() {
         if (!sw) {
-            if (switchmode.value === 'program') {
+            if (switchmode.value === "program") {
                 deferedResultShow = true;
                 return;
             }
-            results.classList.remove('disabled');
-            splitter.classList.remove('disabled');
+            results.classList.remove("disabled");
+            splitter.classList.remove("disabled");
             sw = splitter.offsetWidth;
             splitterMove({clientX: splitter.offsetLeft});
             AutomataDesigner.userZoom(zoom);
@@ -129,9 +132,9 @@
 
     function textFormat(text, node, html) {
         if (!node) {
-            node = document.createElement('span');
+            node = document.createElement("span");
         }
-        node[html ? 'innerHTML' : 'textContent'] = text instanceof Array ? text.join("") : text;
+        node[html ? "innerHTML" : "textContent"] = text instanceof Array ? text.join("") : text;
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, node]);
         return node;
     }
@@ -139,13 +142,13 @@
     function setTextResult(t, dontNotify) {
         automatonResult = null;
         enableResults();
-        var res = document.createElement('pre');
+        var res = document.createElement("pre");
         res.textContent = t;
-        results.textContent = '';
+        results.textContent = "";
         results.appendChild(res);
         if (!dontNotify) {
-            if ((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-                notify(_("Program Result"), res.cloneNode(true), 'normal');
+            if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
+                notify(_("Program Result"), res.cloneNode(true), "normal");
             }
         }
     }
@@ -153,17 +156,17 @@
     function setNodeResult(n, dontNotify) {
         automatonResult = null;
         enableResults();
-        results.textContent = '';
+        results.textContent = "";
         results.appendChild(n);
         if (!dontNotify) {
-            if ((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-                notify(_("Program Result"), n.cloneNode(true), 'normal');
+            if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
+                notify(_("Program Result"), n.cloneNode(true), "normal");
             }
         }
     }
 
     function automaton2svg(A) {
-        return Viz(automaton2dot(A), 'svg').replace(/<\?[\s\S]*?\?>/g, '').replace(/<![\s\S]*?>/g, '');
+        return Viz(automaton2dot(A), "svg").replace(/<\?[\s\S]*?\?>/g, "").replace(/<![\s\S]*?>/g, "");
     }
 
     function setAutomatonResult(A) {
@@ -171,12 +174,12 @@
         automatonResult = A;
         var svgCode = automaton2svg(A);
 
-        results.innerHTML = '<div id="results-tb"></div>' + svgCode;
+        results.innerHTML = "<div id='results-tb'></div>" + svgCode;
         results.firstChild.appendChild(resultToLeft);
-        if ((not && not.displayed) || !codeedit.classList.contains('disabled')) {
-            notify(_("Program Result"), svgCode, 'normal');
+        if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
+            notify(_("Program Result"), svgCode, "normal");
         }
-        zoom.svgNode = results.querySelector('svg');
+        zoom.svgNode = results.querySelector("svg");
         if (zoom.redraw) {
             zoom.redraw();
         }
@@ -199,21 +202,21 @@
             }
         }
 
-        var svg = results.querySelector('svg');
+        var svg = results.querySelector("svg");
         if (svg) {
             zoom.svgNode = svg;
-            results.style.overflow = 'hidden';
+            results.style.overflow = "hidden";
             if (zoom.redraw) {
                 zoom.redraw();
             }
         } else {
             zoom.svgNode = null;
-            results.style.overflow = '';
+            results.style.overflow = "";
         }
     }
 
     function openAutomaton(code) {
-        if (typeof code === 'string') {
+        if (typeof code === "string") {
             automatoncodeedit.value = code;
             AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
             return;
@@ -223,7 +226,7 @@
             openAutomaton(freader.result);
         };
 
-        freader.readAsText(fileautomaton.files[0], 'utf-8');
+        freader.readAsText(fileautomaton.files[0], "utf-8");
         automatonFileName = fileautomaton.value;
     }
 
@@ -237,7 +240,7 @@
     }
 
     function openProgram(code) {
-        if (typeof code === 'string') {
+        if (typeof code === "string") {
             cm.setValue(code);
             return;
         }
@@ -245,14 +248,14 @@
         freader.onload = function () {
             openProgram(freader.result);
         };
-        freader.readAsText(fileprogram.files[0], 'utf-8');
+        freader.readAsText(fileprogram.files[0], "utf-8");
         programFileName = fileprogram.value;
     }
 
     function handleError(message, line, stack, char) {
         var errorText  = message + (
-                stack ? _('\nStack trace: \n') + stack
-                      : ''
+                stack ? _("\nStack trace: \n") + stack
+                      : ""
             ),
             errorTitle;
 
@@ -262,7 +265,7 @@
             errorTitle = libD.format(_("Error on line {0}"), line);
         }
 
-        notify(errorTitle, errorText.replace(/\n/g, '<br />').replace(/ {2}/g, '  '), "error");
+        notify(errorTitle, errorText.replace(/\n/g, "<br />").replace(/ {2}/g, "  "), "error");
         setTextResult(errorTitle + "\n" + errorText, true);
     }
 
@@ -279,7 +282,7 @@
             if (e instanceof Error && e.stack) {
                 var details, i, len, stack = e.stack.split("\n");
                 for (i = 0, len = stack.length; i < len; ++i) {
-                    if (stack[i].match(location.href + ':')) {
+                    if (stack[i].match(location.href + ":")) {
                         details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
                         if (details) {
                             handleError(e.message, parseInt(details[1], 10) - offsetError, e.stack, details[2]);
@@ -313,13 +316,13 @@
                 handleError(libD.format(_("Error: import: absolute paths are not supported in this version (in '{0}')'"), includer));
             } else {
                 window.getFile(
-                    'algos/' + includeName,
+                    "algos/" + includeName,
                     function (data) {
                         window.gotScript(includeName, data);
                     },
                     function (message, status) {
-                        if (message === 'status') {
-                            message = libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})'), status);
+                        if (message === "status") {
+                            message = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
                         }
 
                         window.getScriptFailed(includeName, includer, message);
@@ -336,10 +339,10 @@
         }
 
         if (includeName[0] === "'") {
-            includeName = includeName.replace(/"/g, '\\"');
+            includeName = includeName.replace(/"/g, "\\\"");
             includeName = includeName.substr(1, includeName.length - 1);
         }
-        if (includeName[0] === '"') {
+        if (includeName[0] === "\"") {
             try {
                 includeName = JSON.parse(includeName); // should not happen
             } catch (e) {
@@ -347,8 +350,8 @@
                 return;
             }
         }
-        if (includeName.length < 4 || includeName.substr(includeName.length - 4) !== '.ajs') {
-            includeName += '.ajs';
+        if (includeName.length < 4 || includeName.substr(includeName.length - 4) !== ".ajs") {
+            includeName += ".ajs";
         }
         waitingFor.add(includeName);
         window.AutomatonGlue.getScript(includeName, includer);
@@ -362,7 +365,7 @@
     }
 
     function loadProgram(code) {
-        var script   = document.getElementById('useralgo'),
+        var script   = document.getElementById("useralgo"),
             includes = [];
 
         if (script) {
@@ -371,14 +374,14 @@
 
         waitingFor.empty();
         window.userProgram = null;
-        script = document.createElement('script');
-        script.id = 'useralgo';
+        script = document.createElement("script");
+        script.id = "useralgo";
 
         if (js18Supported) {
-            script.type = 'text/javascript;version=1.8';
+            script.type = "text/javascript;version=1.8";
         }
 
-        script.textContent = 'function userProgram(run) {"use strict";\n' + Audescript.toPureJS(code, includes) + '\n}';
+        script.textContent = "function userProgram(run) {'use strict';\n" + Audescript.toPureJS(code, includes) + "\n}";
         enableAutoHandlingError = "user's program";
         head.appendChild(script);
         enableAutoHandlingError = false;
@@ -403,9 +406,9 @@
     };
 
     if (!window.Viz && window.Module) { // Viz glue
-        var gv = window.Module.cwrap('graphvizjs', 'string', ['string', 'string', 'string']);
+        var gv = window.Module.cwrap("graphvizjs", "string", ["string", "string", "string"]);
         window.Viz = function (inputDot, outputFormat) {
-            return gv(inputDot, 'dot', outputFormat);
+            return gv(inputDot, "dot", outputFormat);
         };
     }
 
@@ -415,9 +418,10 @@
 
     function automatonJSLoaded() {
         window.onerror = function (message, url, lineNumber) {
+            /*jslint unparam:true*/
             if (enableAutoHandlingError) {
                 if (offsetError > -1) {
-                    handleError(message + (typeof enableAutoHandlingError === 'string' ? '(in ' + enableAutoHandlingError + ')' : ''), lineNumber - offsetError);
+                    handleError(message + (typeof enableAutoHandlingError === "string" ? "(in " + enableAutoHandlingError + ")" : ""), lineNumber - offsetError);
                 } else {
                     offsetError = lineNumber - 1;
                 }
@@ -425,13 +429,13 @@
             }
         };
         offsetError = -1;
-        loadProgram(':');
+        loadProgram(":");
     }
 
-    getFile('algos/list.txt',
+    getFile("algos/list.txt",
         function (algoFile) {
             getFile(
-                'dirlist.txt',
+                "dirlist.txt",
                 function (dirlist) {
 
                     dirlist = dirlist.split("\n");
@@ -446,8 +450,8 @@
 
                     for (i = 0, len = dirlist.length; i < len; ++i) {
                         if (dirlist[i]) {
-                            if (dirlist[i][0] === 'l') { // l10n
-                                if (libD.lang === dirlist[i].split('/')[2].split('.')[0]) {
+                            if (dirlist[i][0] === "l") { // l10n
+                                if (libD.lang === dirlist[i].split("/")[2].split(".")[0]) {
                                     langFound = true;
                                     break;
                                 }
@@ -461,13 +465,13 @@
 
                     if (langFound) {
                         libD.jsLoad(
-                            'l10n/js/' + libD.lang + '.js',
+                            "l10n/js/" + libD.lang + ".js",
                             function () {
-                                libD.moduleLoaded('*langPack');
+                                libD.moduleLoaded("*langPack");
                             }
                         );
                     } else {
-                        libD.moduleLoaded('*langPack');
+                        libD.moduleLoaded("*langPack");
                     }
 
                     function makeWindow(title, textList, funList, btnText, letter, folder, ext, fileelem) {
@@ -479,31 +483,31 @@
 
                         win = libD.newWin({
                             title:   title,
-                            height:  '80%',
-                            width:   '75%',
-                            left:    '12.5%',
-                            top:     '12.5%',
+                            height:  "80%",
+                            width:   "75%",
+                            left:    "12.5%",
+                            top:     "12.5%",
                             show:    true,
-                            content: libD.jso2dom(['div#loaddistantfile.libD-ws-colors-auto', [
-                                ['div#pane-localfile', [
+                            content: libD.jso2dom(["div#loaddistantfile.libD-ws-colors-auto", [
+                                ["div#pane-localfile", [
                                     ["p.title", _("From your computer")],
                                     ["p", ["button", {"#": "btn"}, btnText]]
                                 ]],
-                                ['div#pane-distantfile', [
+                                ["div#pane-distantfile", [
                                     ["p.title", textList],
-                                    ["ul", {"#": "list"}],
+                                    ["ul", {"#": "list"}]
                                 ]]
                             ]], refs)
                         });
 
                         for (j = 0, leng = files[letter].length; j < leng; ++j) {
-                            li = document.createElement('li');
-                            a  = document.createElement('a');
+                            li = document.createElement("li");
+                            a  = document.createElement("a");
 
-                            a.href        = '#';
+                            a.href        = "#";
                             a.onclick     = funList;
                             a._file       = files[letter][j];
-                            a.textContent = files[letter][j].replace(folder, '').replace(new RegExp('\\.' + ext + '$'), '');
+                            a.textContent = files[letter][j].replace(folder, "").replace(new RegExp("\\." + ext + "$"), "");
 
                             li.appendChild(a);
                             refs.list.appendChild(li);
@@ -532,11 +536,11 @@
                         };
                     }
 
-                    libD.need(['ready', 'ws', 'wm', '*langPack'], function () {
-                        curAlgo  = document.getElementById('predef-algos');
-                        open     = document.getElementById('open');
-                        quiz     = document.getElementById('quiz');
-                        filequiz = document.getElementById('filequiz');
+                    libD.need(["ready", "ws", "wm", "*langPack"], function () {
+                        curAlgo  = document.getElementById("predef-algos");
+                        open     = document.getElementById("open");
+                        quiz     = document.getElementById("quiz");
+                        filequiz = document.getElementById("filequiz");
 
                         var j, line, fname, descr, algos = algoFile.split("\n");
 
@@ -545,7 +549,7 @@
                                 line = algos[j].split("/");
                                 fname = line[0].trim();
                                 descr = line[1].trim();
-                                line = document.createElement('option');
+                                line = document.createElement("option");
                                 line.value = fname;
                                 line.textContent = _(descr);
                                 curAlgo.appendChild(line);
@@ -561,9 +565,9 @@
                                     _("Ready to use quizzes"),
                                     lfile(loadQuiz, _("Loading quiz failed.")),
                                     _("Load a quiz"),
-                                    'q',
-                                    'quiz/',
-                                    'json',
+                                    "q",
+                                    "quiz/",
+                                    "json",
                                     filequiz
                                 );
                             };
@@ -578,9 +582,9 @@
                                             _("Built-in algorithms"),
                                             lfile(openProgram, _("Loading program failed.")),
                                             _("Load a program"),
-                                            'a',
-                                            'algos/',
-                                            'ajs',
+                                            "a",
+                                            "algos/",
+                                            "ajs",
                                             fileprogram
                                         );
                                     } else {
@@ -592,9 +596,9 @@
                                         _("Examples of automaton"),
                                         lfile(openAutomaton, _("Loading automaton failed.")),
                                         _("Load an automaton"),
-                                        'e',
-                                        'examples-automata/',
-                                        'txt',
+                                        "e",
+                                        "examples-automata/",
+                                        "txt",
                                         fileautomaton
                                     );
                                 } else {
@@ -607,28 +611,32 @@
             );
         },
         function (message, status) {
-            if (message === 'status') {
-                message = libD.format(_('The file was not found or you don\'t have enough permissions to read it. (HTTP status: {0})'), status);
+            if (message === "status") {
+                message = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
             }
             notify(_("Unable to get the list of predefined algorithms"), message);
         });
 
-    libD.need(['ready', 'notify', 'wm', 'ws', 'jso2dom', '*langPack'], function () {
+    libD.need(["ready", "notify", "wm", "ws", "jso2dom", "*langPack"], function () {
         AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
         AutomataDesigner.prompt = (function () {
             var refs = {},
                 win,
                 func,
-                winContent = libD.jso2dom(['div.libD-ws-colors-auto', [
-                    ['div', ['label', {"#": "descr", "for": "window.prompt-input", "style": "white-space:pre-wrap"}]],
-                    ['div', {style: "display:table;width:100%"},
-                        ['div', {style: "display:table-row"}, [
-                            ['div', {style: "display:table-cell;width:100%"}, ['input#window.prompt-input', {"#": "input", type: "text", style: "width:100%"}]],
-                            ['div',  {style: "display:table-cell"}, [
-                                ['input', {"#": "ok", type: "button", value: _("OK")}]
-                            ]]
-                        ]]]
-                    ]], refs);
+                winContent = libD.jso2dom(
+                    ["div.libD-ws-colors-auto",
+                        [
+                            ["div", ["label", {"#": "descr", "for": "window.prompt-input", "style": "white-space:pre-wrap"}]],
+                            ["div", {style: "display:table;width:100%"},
+                                ["div", {style: "display:table-row"},
+                                    [
+                                        ["div", {style: "display:table-cell;width:100%"}, ["input#window.prompt-input", {"#": "input", type: "text", style: "width:100%"}]],
+                                        ["div",  {style: "display:table-cell"},
+                                            [
+                                                ["input", {"#": "ok", type: "button", value: _("OK")}]
+                                            ]]]]]]],
+                    refs
+                );
 
             function close() {
                 if (func) {
@@ -664,7 +672,7 @@
                         center:      true
                     });
 
-                    win.addEvent('close', close);
+                    win.addEvent("close", close);
                     win.ws.wm.handleSurface(win, winContent);
                 }
 
@@ -676,47 +684,47 @@
             };
         }());
 
-        head = document.querySelector('head');
+        head = document.querySelector("head");
 
         if (window.js18Supported) {
-            libD.jsLoad('js/setIterators.js', automatonJSLoaded, "application/javascript;version=1.8");
+            libD.jsLoad("js/setIterators.js", automatonJSLoaded, "application/javascript;version=1.8");
         } else {
             automatonJSLoaded();
         }
 
         AutomataDesigner.load();
-        var automataListClose = document.getElementById('automata-list-chooser-close'),
-            automataListIntro = document.getElementById('automata-list-chooser-intro'),
-            automataListDiv   = document.getElementById('automata-list-chooser'),
-            automataListBtn   = document.getElementById('automata-list-chooser-btn'),
-            automataListUL    = document.getElementById('automata-list-chooser-content'),
-            automataContainer = document.getElementById('automata-container'),
-            automatonMinus    = document.getElementById('automaton_minus'),
-            automataNumber    = document.getElementById('n_automaton'),
-            automatoncode     = document.getElementById('automatoncode'),
-            automatonPlus     = document.getElementById('automaton_plus'),
-            automataedit      = document.getElementById('automataedit'),
-            exportResult      = document.getElementById('export_result'),
-            drawToolbar       = document.getElementById('draw-toolbar'),
-            executeBtn        = document.getElementById('execute'),
-            exportBtn         = document.getElementById('export'),
-            wordDiv           = document.getElementById('word'),
-            divQuiz           = document.getElementById('div-quiz'),
-            saveas            = document.getElementById('saveas'),
-            save              = document.getElementById('save'),
+        var automataListClose = document.getElementById("automata-list-chooser-close"),
+            automataListIntro = document.getElementById("automata-list-chooser-intro"),
+            automataListDiv   = document.getElementById("automata-list-chooser"),
+            automataListBtn   = document.getElementById("automata-list-chooser-btn"),
+            automataListUL    = document.getElementById("automata-list-chooser-content"),
+            automataContainer = document.getElementById("automata-container"),
+            automatonMinus    = document.getElementById("automaton_minus"),
+            automataNumber    = document.getElementById("n_automaton"),
+            automatoncode     = document.getElementById("automatoncode"),
+            automatonPlus     = document.getElementById("automaton_plus"),
+            automataedit      = document.getElementById("automataedit"),
+            exportResult      = document.getElementById("export_result"),
+            drawToolbar       = document.getElementById("draw-toolbar"),
+            executeBtn        = document.getElementById("execute"),
+            exportBtn         = document.getElementById("export"),
+            wordDiv           = document.getElementById("word"),
+            divQuiz           = document.getElementById("div-quiz"),
+            saveas            = document.getElementById("saveas"),
+            save              = document.getElementById("save"),
             localStorage      = window.localStorage || {},
             salc_cur_automaton  = -1,
             executionTimeout    = 0,
             automatonCount      = 0,
             automataList        = [],
-            exportFN            = '',
+            exportFN            = "",
             predefAlgoFunctions = [],
             nextLoadIsPrefefAlgo,
             loadPredefAlgoAfterImport = null,
-            CURRENT_FINAL_STATE_COLOR            = localStorage.CURRENT_FINAL_STATE_COLOR || 'rgba(90, 160, 0, 0.5)',
-            CURRENT_TRANSITION_COLOR             = localStorage.CURRENT_TRANSITION_COLOR  || '#BD5504',
-            CURRENT_STATE_COLOR                  = localStorage.CURRENT_STATE_COLOR       || '#FFFF7B',
-            STATE_REFUSED                        = localStorage.STATE_REFUSED             || 'rgba(255, 50, 50, 0.5)',
+            CURRENT_FINAL_STATE_COLOR            = localStorage.CURRENT_FINAL_STATE_COLOR || "rgba(90, 160, 0, 0.5)",
+            CURRENT_TRANSITION_COLOR             = localStorage.CURRENT_TRANSITION_COLOR  || "#BD5504",
+            CURRENT_STATE_COLOR                  = localStorage.CURRENT_STATE_COLOR       || "#FFFF7B",
+            STATE_REFUSED                        = localStorage.STATE_REFUSED             || "rgba(255, 50, 50, 0.5)",
             CURRENT_TRANSITION_PULSE_TIME_FACTOR = parseFloat(localStorage.CURRENT_TRANSITION_PULSE_TIME_FACTOR) || 0.6,
             EXECUTION_STEP_TIME                  = parseInt(localStorage.EXECUTION_STEP_TIME, 10),
             CURRENT_TRANSITION_PULSE_TIME_STEP   = 600,
@@ -728,44 +736,44 @@
             EXECUTION_STEP_TIME = 1200;
         }
 
-        automatoncodeedit = document.getElementById('automatoncodeedit');
-        results           = zoom.svgContainer = document.getElementById('results');
-        splitter          = document.getElementById('splitter');
-        leftPane          = document.getElementById('left-pane');
-        content           = document.getElementById('content');
-        toolbar           = document.getElementById('toolbar');
+        automatoncodeedit = document.getElementById("automatoncodeedit");
+        results           = zoom.svgContainer = document.getElementById("results");
+        splitter          = document.getElementById("splitter");
+        leftPane          = document.getElementById("left-pane");
+        content           = document.getElementById("content");
+        toolbar           = document.getElementById("toolbar");
         switchmode        = document.getElementById("switchmode");
-        codeedit          = document.getElementById('codeedit');
-        fileautomaton     = document.getElementById('fileautomaton');
-        fileprogram       = document.getElementById('fileprogram');
+        codeedit          = document.getElementById("codeedit");
+        fileautomaton     = document.getElementById("fileautomaton");
+        fileprogram       = document.getElementById("fileprogram");
 
-        var exportResultFN     = _('automaton.txt'),
-            exportResultTextFN = _('result.txt');
+        var exportResultFN     = _("automaton.txt"),
+            exportResultTextFN = _("result.txt");
 
         resultToLeft.appendChild(libD.jso2dom([
-            ['img', {alt: '', src: 'icons/oxygen/16x16/actions/arrow-left.png'}],
-            ['span', _('This automaton into the editor')]
+            ["img", {alt: "", src: "icons/oxygen/16x16/actions/arrow-left.png"}],
+            ["span", _("This automaton into the editor")]
         ]));
 
         (function () {
-            var divWelcome = document.createElement('div');
+            var divWelcome = document.createElement("div");
             divWelcome.id = "welcome";
             divWelcome.innerHTML = libD.format(_(
-                "<h2>Welcome to {0}.</h2>\
-<p>Here is the area where you can <strong>draw automata</strong>.</p>\
-<ul>\
-    <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>\
-    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>\
-    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>\
-    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>\
-    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>\
-    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>\
-</ul>\
-<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>\
-<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>\
-<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>\
-<p>To hide this text, click on it.</p>\
-<p> Enjoy yourself!</p>"
+                "<h2>Welcome to {0}.</h2>" +
+                    "<p>Here is the area where you can <strong>draw automata</strong>.</p>" +
+                    "<ul>" +
+                    "    <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>" +
+                    "    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>" +
+                    "    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>" +
+                    "    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>" +
+                    "    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>" +
+                    "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>" +
+                    "</ul>" +
+                    "<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>" +
+                    "<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>" +
+                    "<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>" +
+                    "<p>To hide this text, click on it.</p>" +
+                    "<p> Enjoy yourself!</p>"
             ), "Aude");
 
             AutomataDesigner.svgContainer.parentNode.appendChild(divWelcome);
@@ -780,12 +788,12 @@
             if (executionTimeout) {
                 clearTimeout(executionTimeout);
                 executionTimeout = 0;
-                wordDiv.textContent = '';
+                wordDiv.textContent = "";
                 AutomataDesigner.cleanSVG(index);
             }
         }
 
-        window.addEventListener('keydown', function (e) {
+        window.addEventListener("keydown", function (e) {
             if (e.ctrlKey || e.metaKey) {
                 if (e.keyCode === 83) {
                     save.onclick();
@@ -813,22 +821,22 @@
                     title:       _("Execute the current automaton with a word"),
                     right:       results.offsetWidth  + 10,
                     top:         toolbar.offsetHeight + 5,
-                    content:     libD.jso2dom(['div.libD-ws-colors-auto', {'style': 'height:100%'}, [
-                        ['div', {'#': 'root'}, ['label', [
-                            ['#', _('Word: ')],
-                            ['input', {type: 'text', '#': 'word'}],
-                            ['input', {type: 'button', value: _('Run'),  '#': 'run'}],
-                            ['input', {type: 'button', value: _('Step'), '#': 'step'}]
+                    content:     libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                        ["div", {"#": "root"}, ["label", [
+                            ["#", _("Word: ")],
+                            ["input", {type: "text", "#": "word"}],
+                            ["input", {type: "button", value: _("Run"),  "#": "run"}],
+                            ["input", {type: "button", value: _("Step"), "#": "step"}]
                         ]]],
-                        ['div', ['label', [
-                            ['#', _('Delay between steps (ms): ')],
-                            ['input', {type: 'text', '#': 'delay', value: EXECUTION_STEP_TIME}]
+                        ["div", ["label", [
+                            ["#", _("Delay between steps (ms): ")],
+                            ["input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}]
                         ]]]
-                    ]], refs),
+                    ]], refs)
                 });
                 executeWin.__refs = refs;
-                executeWin.addEvent('close', function () {
-                    wordDiv.textContent = '';
+                executeWin.addEvent("close", function () {
+                    wordDiv.textContent = "";
                     AutomataDesigner.cleanSVG(AutomataDesigner.currentIndex);
                 });
                 libD.wm.handleSurface(executeWin, refs.root);
@@ -872,18 +880,18 @@
             if (fn) {
                 exportFN = fn;
 
-                if (switchmode.value === 'design') {
+                if (switchmode.value === "design") {
                     automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
                 } else {
                     AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
                 }
 
-                if (fn.length > 4 && fn.substr(fn.length - 4) === '.svg') {
-                    saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type: 'text/plain;charset=utf-8'}), fn);
+                if (fn.length > 4 && fn.substr(fn.length - 4) === ".svg") {
+                    saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
                 } else {
                     var A = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
                     if (A) {
-                        saveAs(new Blob([automaton2dot(A)], {type: 'text/plain;charset=utf-8'}), fn);
+                        saveAs(new Blob([automaton2dot(A)], {type: "text/plain;charset=utf-8"}), fn);
                     } else {
                         notify(_("There is no automaton to save."));
                     }
@@ -891,25 +899,25 @@
             }
         };
 
-        document.getElementById('draw-toolbar-btn').onclick = function () {
-            drawToolbar.classList.toggle('disabled');
+        document.getElementById("draw-toolbar-btn").onclick = function () {
+            drawToolbar.classList.toggle("disabled");
             onResize();
         };
 
 
         (function () {
-            function buttonClick() {
-                notify(this.textContent, _(this.value), 'info');
+            function buttonClick(e) {
+                notify(e.currentTarget.textContent, _(e.currentTarget.value), "info");
             }
 
-            var i, len, drawToolbarButtons = drawToolbar.querySelectorAll('button');
+            var i, len, drawToolbarButtons = drawToolbar.querySelectorAll("button");
 
             for (i = 0, len = drawToolbarButtons.length; i < len; ++i) {
                 drawToolbarButtons[i].onclick = buttonClick;
             }
         }());
 
-        document.getElementById('redraw').onclick = function () {
+        document.getElementById("redraw").onclick = function () {
             automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, true);
             if (automatoncodeedit.value) {
                 AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
@@ -923,20 +931,20 @@
 
                 if (fn) {
                     exportResultFN = fn;
-                    var format = '.txt';
+                    var format = ".txt";
                     if (fn.length > 4) {
                         format = fn.substr(fn.length - 4);
                     }
 
                     switch (format) {
-                    case '.svg':
-                        saveAs(new Blob([AutomataDesigner.outerHTML(results.querySelector('svg'))], {type: 'text/plain;charset=utf-8'}), fn);
+                    case ".svg":
+                        saveAs(new Blob([AutomataDesigner.outerHTML(results.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
                         break;
-                    case '.dot':
-                        saveAs(new Blob([automaton2dot(automatonResult)], {type: 'text/plain;charset=utf-8'}), fn);
+                    case ".dot":
+                        saveAs(new Blob([automaton2dot(automatonResult)], {type: "text/plain;charset=utf-8"}), fn);
                         break;
                     default:
-                        saveAs(new Blob([automaton_code(automatonResult)], {type: 'text/plain;charset=utf-8'}), fn);
+                        saveAs(new Blob([automaton_code(automatonResult)], {type: "text/plain;charset=utf-8"}), fn);
                     }
                 }
             } else {
@@ -944,7 +952,7 @@
 
                 if (fn) {
                     exportResultTextFN = fn;
-                    saveAs(new Blob([results.textContent], {type: 'text/plain;charset=utf-8'}), fn);
+                    saveAs(new Blob([results.textContent], {type: "text/plain;charset=utf-8"}), fn);
                 }
             }
         };
@@ -956,15 +964,16 @@
             };
         };
 
-        window.addEventListener('resize', onResize, false);
+        window.addEventListener("resize", onResize, false);
 
         function callWithList(count, callback) {
-            var i, automata = [];
+            var k, automata = [];
 
-            for (i = 0; i < count; ++i) {
-                automata.push(window.get_automaton(automataList[i]));
+            for (k = 0; k < count; ++k) {
+                automata.push(window.get_automaton(automataList[k]));
             }
 
+            /*jshint validthis: true */
             callback.apply(this, automata);
         }
 
@@ -974,10 +983,10 @@
             }
         };
 
-        function automataListClick() {
-            if (this.lastChild.textContent) {
-                var j = parseInt(this.lastChild.textContent, 10);
-                this.lastChild.textContent = '';
+        function automataListClick(e) {
+            if (e.currentTarget.lastChild.textContent) {
+                var j = parseInt(e.currentTarget.lastChild.textContent, 10);
+                e.currentTarget.lastChild.textContent = "";
                 automataList.splice(j, 1);
 
                 var k, lastChild, l;
@@ -991,22 +1000,22 @@
                     }
                 }
             } else {
-                this.lastChild.textContent = automataList.length;
-                automataList.push(this._index);
+                e.currentTarget.lastChild.textContent = automataList.length;
+                automataList.push(e.currentTarget._index);
             }
         }
 
-        function automataListMouseOver() {
+        function automataListMouseOver(e) {
             if (salc_cur_automaton !== -1) {
-                AutomataDesigner.setCurrentIndex(this._index);
+                AutomataDesigner.setCurrentIndex(e.currentTarget._index);
             }
         }
 
         function showAutomataListChooser(count, callback) {
             if (callback || automataListBtn.onclick) {
-                automataListBtn.classList.remove('disabled');
+                automataListBtn.classList.remove("disabled");
                 if (callback) {
-                    automataListIntro.innerHTML = libD.format(_('The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click "Continue execution" when you are ready.'), count);
+                    automataListIntro.innerHTML = libD.format(_("The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."), count);
                     automataListBtn.onclick = function () {
                         if (automataList.length < count) {
                             window.alert(libD.format(_("You didn’t select enough automata. Please select {0} automata."), count));
@@ -1018,22 +1027,22 @@
                     };
                 }
             } else {
-                automataListBtn.classList.add('disabled');
+                automataListBtn.classList.add("disabled");
                 automataListIntro.textContent = _("You can choose the order in which automata will be used in algorithms.");
                 count = 0;
             }
 
-            automataListUL.textContent = '';
-            var i, li, a, number, indexInList;
+            automataListUL.textContent = "";
+            var k, li, a, number, indexInList;
 
-            for (i = 0; i < automatonCount; ++i) {
-                li = document.createElement('li');
-                a  = document.createElement('a');
-                a.href = '#';
-                a._index = i;
-                indexInList = automataList.indexOf(i);
-                number = document.createElement('span');
-                number.className = 'automaton-number';
+            for (k = 0; k < automatonCount; ++k) {
+                li = document.createElement("li");
+                a  = document.createElement("a");
+                a.href = "#";
+                a._index = k;
+                indexInList = automataList.indexOf(k);
+                number = document.createElement("span");
+                number.className = "automaton-number";
 
                 if (indexInList !== -1) {
                     number.textContent = indexInList;
@@ -1043,19 +1052,19 @@
 
                 a.onmouseover = automataListMouseOver;
 
-                a.appendChild(document.createElement('span'));
-                a.lastChild.textContent = libD.format(_("Automaton #{0}"), i);
+                a.appendChild(document.createElement("span"));
+                a.lastChild.textContent = libD.format(_("Automaton #{0}"), k);
                 a.appendChild(number);
                 li.appendChild(a);
                 automataListUL.appendChild(li);
             }
 
-            automataListDiv.classList.remove('disabled');
+            automataListDiv.classList.remove("disabled");
         }
 
         window.get_automaton = function (i) {
             if (isNaN(i)) {
-                return;
+                return undefined;
             }
 
             var A = AutomataDesigner.getAutomaton(i);
@@ -1083,9 +1092,9 @@
         switchmode.onchange = function () {
             switch (this.value) {
             case "program":
-                toolbar.className = 'algomode';
-                codeedit.classList.remove('disabled');
-                automataedit.classList.add('disabled');
+                toolbar.className = "algomode";
+                codeedit.classList.remove("disabled");
+                automataedit.classList.add("disabled");
 
                 if (!cm) {
                     cm = CodeMirror(codeedit, {
@@ -1101,7 +1110,7 @@
                     listenMouseWheel(function (e, delta) {
                         if (e.ctrlKey || e.metaKey) {
                             var fs = parseFloat(window.getComputedStyle(codemirrorNode, null).fontSize);
-                            codemirrorNode.style.fontSize = (fs + 2 * delta) + 'px';
+                            codemirrorNode.style.fontSize = (fs + 2 * delta) + "px";
                             cm.refresh();
                             e.preventDefault();
                             e.stopPropagation();
@@ -1119,15 +1128,15 @@
                 }
 
                 if (cm && cm.getValue()) {
-                    toolbar.className = 'designmode';
+                    toolbar.className = "designmode";
                 } else {
-                    toolbar.className = 'designmode launch-disabled';
+                    toolbar.className = "designmode launch-disabled";
                 }
 
-                codeedit.classList.add('disabled');
-                automataedit.classList.remove('disabled');
-                automatoncode.classList.add('disabled');
-                AutomataDesigner.svgContainer.classList.remove('disabled');
+                codeedit.classList.add("disabled");
+                automataedit.classList.remove("disabled");
+                automatoncode.classList.add("disabled");
+                AutomataDesigner.svgContainer.classList.remove("disabled");
                 onResize();
                 break;
             case "automatoncode":
@@ -1139,15 +1148,15 @@
                 automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
 
                 if (cm && cm.getValue()) {
-                    toolbar.className = 'designmode codemode';
+                    toolbar.className = "designmode codemode";
                 } else {
-                    toolbar.className = 'designmode codemode launch-disabled';
+                    toolbar.className = "designmode codemode launch-disabled";
                 }
 
-                codeedit.classList.add('disabled');
-                automataedit.classList.remove('disabled');
-                automatoncode.classList.remove('disabled');
-                AutomataDesigner.svgContainer.classList.add('disabled');
+                codeedit.classList.add("disabled");
+                automataedit.classList.remove("disabled");
+                automatoncode.classList.remove("disabled");
+                AutomataDesigner.svgContainer.classList.add("disabled");
                 onResize();
                 break;
             }
@@ -1160,7 +1169,7 @@
         };
 
         automatonPlus.onclick = function () {
-            var o = document.createElement('option');
+            var o = document.createElement("option");
             o.textContent = automatonCount;
             o.id = "automaton_n" + automatonCount;
             automataNumber.appendChild(o);
@@ -1168,7 +1177,7 @@
             AutomataDesigner.newAutomaton(automatonCount);
             automatonSetNumber(automatonCount++);
 
-            if (!automataListDiv.classList.contains('disabled')) {
+            if (!automataListDiv.classList.contains("disabled")) {
                 showAutomataListChooser();
             }
         };
@@ -1176,7 +1185,7 @@
         automatonMinus.onclick = function () {
             if (automatonCount > 1) {
                 var curAutomaton = parseInt(automataNumber.value, 10);
-                automataNumber.removeChild(document.getElementById('automaton_n' + (automatonCount - 1)));
+                automataNumber.removeChild(document.getElementById("automaton_n" + (automatonCount - 1)));
                 AutomataDesigner.removeAutomaton(curAutomaton);
 
                 if (curAutomaton === automatonCount - 1) {
@@ -1197,7 +1206,7 @@
                     }
                 }
 
-                if (!automataListDiv.classList.contains('disabled')) {
+                if (!automataListDiv.classList.contains("disabled")) {
                     showAutomataListChooser();
                 }
             }
@@ -1206,7 +1215,7 @@
         resultToLeft.onclick = function () {
             if (automatonResult) {
                 automatonPlus.onclick();
-                AutomataDesigner.setSVG(results.querySelector('svg'), AutomataDesigner.currentIndex);
+                AutomataDesigner.setSVG(results.querySelector("svg"), AutomataDesigner.currentIndex);
                 automatoncodeedit.value = automaton_code(automatonResult);
             }
         };
@@ -1215,9 +1224,9 @@
             automatonSetNumber(parseInt(automataNumber.value, 10));
         };
 
-        document.getElementById('automaton_plus').onclick();
+        document.getElementById("automaton_plus").onclick();
 
-        document.getElementById('algo-exec').onclick = function () {
+        document.getElementById("algo-exec").onclick = function () {
             if (cm) {
                 execProgram(cm.getValue());
             }
@@ -1241,7 +1250,7 @@
             }
         };
 
-        automataListDiv.querySelector('p:last-child').innerHTML = libD.format(_('This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src="{0}" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering.'), "icons/oxygen/16x16/actions/format-list-ordered.png");
+        automataListDiv.querySelector("p:last-child").innerHTML = libD.format(_("This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."), "icons/oxygen/16x16/actions/format-list-ordered.png");
 
         automataListUL.onmouseout = function (e) {
             e = e.toElement || e.relatedTarget;
@@ -1251,31 +1260,31 @@
             }
         };
 
-        document.getElementById('automata-list').onclick = function () { showAutomataListChooser(); };
+        document.getElementById("automata-list").onclick = function () { showAutomataListChooser(); };
 
-        document.getElementById('automata-list-chooser-close').onclick = function () {
-            automataListDiv.classList.add('disabled');
+        document.getElementById("automata-list-chooser-close").onclick = function () {
+            automataListDiv.classList.add("disabled");
         };
 
         AutomataDesignerGlue.requestSVG = function (index) {
-            AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), 'svg'), index);
+            AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), "svg"), index);
         };
 
         function automatonFromObj(o) {
-            var i, A = new Automaton();
+            var k, A = new Automaton();
 
             A.setInitialState(o.states[0]);
 
-            for (i = 1; i < o.states.length; ++i) {
-                A.addState(o.states[i]);
+            for (k = 1; k < o.states.length; ++k) {
+                A.addState(o.states[k]);
             }
 
-            for (i = 0; i < o.finalStates.length; ++i) {
-                A.addFinalState(o.states[i]);
+            for (k = 0; k < o.finalStates.length; ++k) {
+                A.addFinalState(o.states[k]);
             }
 
-            for (i = 0; i < o.transitions.length; ++i) {
-                A.addTransition(o.transition[i][0], o.transition[i][1], o.transition[i][2]);
+            for (k = 0; k < o.transitions.length; ++k) {
+                A.addTransition(o.transition[k][0], o.transition[k][1], o.transition[k][2]);
             }
 
             return A;
@@ -1285,7 +1294,7 @@
             freader.onload = function () {
                 loadQuiz(freader.result);
             };
-            freader.readAsText(filequiz.files[0], 'utf-8');
+            freader.readAsText(filequiz.files[0], "utf-8");
         }
 
         fileprogram.onchange   = openProgram;
@@ -1294,10 +1303,10 @@
 
         function closeQuiz() {
             automatonMinus.onclick();
-            automataContainer.style.display = '';
-            automataContainer.style.top     = '';
-            divQuiz.textContent = '';
-            divQuiz.classList.remove('enabled');
+            automataContainer.style.display = "";
+            automataContainer.style.top     = "";
+            divQuiz.textContent = "";
+            divQuiz.classList.remove("enabled");
             AutomataDesigner.redraw();
             zoom.redraw();
         }
@@ -1313,7 +1322,7 @@
                 try {
                     nextQuizQuestion(quiz, previous);
                 } catch (e) {
-                    if (typeof e === 'string') {
+                    if (typeof e === "string") {
                         notify(_("Error in the Quiz"), libD.format(_("There is an error in the Quiz: {0}"), e), "error");
                     } else {
                         throw e;
@@ -1324,13 +1333,13 @@
         }
 
         nextQuizQuestion = function (quiz, previousQuestion) {
-            divQuiz.classList.remove('intro');
-            divQuiz.classList.add('started');
-            automataContainer.style.display = 'none';
+            divQuiz.classList.remove("intro");
+            divQuiz.classList.add("started");
+            automataContainer.style.display = "none";
 
             var q, refs, answers, respA, i, len, possibilities, j, leng;
 
-            if (typeof previousQuestion === 'number' && previousQuestion >= 0) {
+            if (typeof previousQuestion === "number" && previousQuestion >= 0) {
                 q = quiz.questions[previousQuestion];
                 var r = quiz.answers[previousQuestion];
 
@@ -1344,8 +1353,8 @@
                     possibilities = q.possibilities;
 
                     for (j = 0, leng = possibilities.length; j < leng; ++j) {
-                        if (quiz.currentAnswersRefs['answer-' + j].checked) {
-                            answers.add(possibilities[j].hasOwnProperty('id') ? possibilities[j].id : parseInt(j, 10) + 1);
+                        if (quiz.currentAnswersRefs["answer-" + j].checked) {
+                            answers.add(possibilities[j].hasOwnProperty("id") ? possibilities[j].id : parseInt(j, 10) + 1);
                         }
                     }
 
@@ -1360,7 +1369,7 @@
                 case "word":
                     respA = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
                     var words = q.words,
-                        regex = '';
+                        regex = "";
 
                     r.userResponse = AutomataDesigner.getSVG(AutomataDesigner.currentIndex);
 
@@ -1375,7 +1384,7 @@
                             }
 
                             if (regex) {
-                                regex += '+';
+                                regex += "+";
                             }
 
                             regex += words[i].replace(/([^0-9a-zA-Z])/g, "\\$1");
@@ -1457,14 +1466,14 @@
             ++quiz.currentQuestion;
 
             if (quiz.currentQuestion >= quiz.questions.length) {
-                quiz.refs.content.textContent = '';
-                quiz.refs.content.appendChild(libD.jso2dom(['p', _("The Quiz is finished! Here are the details of the correction.")]));
+                quiz.refs.content.textContent = "";
+                quiz.refs.content.appendChild(libD.jso2dom(["p", _("The Quiz is finished! Here are the details of the correction.")]));
 
                 var question_i, reasons, li, ul;
 
                 refs = {};
 
-                answers = libD.jso2dom(['table#correction-table',
+                answers = libD.jso2dom(["table#correction-table",
                     ["tr", [
                         ["th", _("Instruction")],
                         ["th", _("Correct answer?")],
@@ -1474,29 +1483,29 @@
                 for (i = 0, len = quiz.answers.length; i < len; ++i) {
                     question_i = quiz.questions[i];
 
-                    answers.appendChild(libD.jso2dom(['tr', [
-                        ['td.qinst', {'#': 'answerInstr'}, [
-                            ['span.qid', (question_i.hasOwnProperty('id') ? question_i.id : (parseInt(i, 10) + 1)) + '. '],
-                            ['div.qinstr-content']
+                    answers.appendChild(libD.jso2dom(["tr", [
+                        ["td.qinst", {"#": "answerInstr"}, [
+                            ["span.qid", (question_i.hasOwnProperty("id") ? question_i.id : (parseInt(i, 10) + 1)) + ". "],
+                            ["div.qinstr-content"]
                         ]],
-                        ['td.qstate', quiz.answers[i].isCorrect ? _("Yes") : _("No")],
-                        ['td.qcmt', {'#': 'answerCmt'}]
+                        ["td.qstate", quiz.answers[i].isCorrect ? _("Yes") : _("No")],
+                        ["td.qcmt", {"#": "answerCmt"}]
                     ]], refs));
 
                     reasons = quiz.answers[i].reasons;
 
                     if (reasons[1]) {
-                        ul = document.createElement('ul');
+                        ul = document.createElement("ul");
 
                         for (j = 0, leng = reasons.length; j < leng; ++j) {
-                            li = document.createElement('li');
+                            li = document.createElement("li");
                             li.innerHTML = reasons[j];
                             ul.appendChild(li);
                         }
 
                         refs.answerCmt.appendChild(ul);
                     } else {
-                        refs.answerCmt.innerHTML = reasons[0] || '';
+                        refs.answerCmt.innerHTML = reasons[0] || "";
                     }
 
                     if (question_i.instructionHTML) {
@@ -1505,26 +1514,26 @@
                         textFormat(question_i.instruction, refs.answerInstr.lastChild);
                     }
 
-                    refs.answerInstr.appendChild(document.createElement('ul'));
-                    refs.answerInstr.lastChild.className = 'possibilities';
+                    refs.answerInstr.appendChild(document.createElement("ul"));
+                    refs.answerInstr.lastChild.className = "possibilities";
 
                     possibilities = question_i.possibilities;
 
                     if (possibilities) {
                         for (j = 0, leng = possibilities.length; j < leng; ++j) {
                             refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
-                                ["span.quiz-answer-id", (possibilities[j].hasOwnProperty('id') ? possibilities[j].id : (parseInt(i, 10) + 1)) + '. '],
-                                ["span", {"#": i + 'content'}]
+                                ["span.quiz-answer-id", (possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (parseInt(i, 10) + 1)) + ". "],
+                                ["span", {"#": i + "content"}]
                             ]], refs));
 
                             if (possibilities[j].automaton) {
-                                refs[i + 'content'].innerHTML = automaton2svg(automatonFromObj(possibilities[j].automaton));
+                                refs[i + "content"].innerHTML = automaton2svg(automatonFromObj(possibilities[j].automaton));
                             } else if (possibilities[j].html) {
-                                refs[i + 'content'].innerHTML = possibilities[j].html;
+                                refs[i + "content"].innerHTML = possibilities[j].html;
                             } else if (possibilities[j].text) {
-                                textFormat(possibilities[j].text, refs[i + 'content']);
+                                textFormat(possibilities[j].text, refs[i + "content"]);
                             } else if (possibilities[j].html) {
-                                textFormat(possibilities[j].html, refs[i + 'content'], true);
+                                textFormat(possibilities[j].html, refs[i + "content"], true);
                             }
                         }
                     }
@@ -1532,8 +1541,8 @@
 
                 quiz.refs.content.appendChild(answers);
                 quiz.refs.content.appendChild(libD.jso2dom([
-                    ['p', _("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
-                    ['div.button-container', ['button', {"#": "prev"}, _("Previous page")]]
+                    ["p", _("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
+                    ["div.button-container", ["button", {"#": "prev"}, _("Previous page")]]
                 ], refs));
                 refs.prev.onclick = nextQuestion(quiz, null, true);
                 return;
@@ -1541,12 +1550,12 @@
 
             q = quiz.questions[quiz.currentQuestion];
 
-            var qid = q.hasOwnProperty('id') ? q.id : (quiz.currentQuestion + 1);
+            var qid = q.hasOwnProperty("id") ? q.id : (quiz.currentQuestion + 1);
 
             refs = {};
 
             quiz.currentAnswersRefs = refs;
-            quiz.refs.content.textContent = '';
+            quiz.refs.content.textContent = "";
 
             quiz.refs.content.appendChild(
                 libD.jso2dom([
@@ -1555,7 +1564,7 @@
                             _("Question {0}: "),
                             qid
                         )],
-                        ['span', {'#': 'questionContent'}]
+                        ["span", {"#": "questionContent"}]
                     ]],
                     ["div#quiz-answers", {"#": "answers"}],
                     ["div.button-container", [
@@ -1579,24 +1588,24 @@
                     throw libD.format(_("Question {0} has no answers."), qid);
                 }
 
-                refs.answers.appendChild(document.createElement('ul'));
+                refs.answers.appendChild(document.createElement("ul"));
 
                 for (j = 0, leng = possibilities.length; j < leng; ++j) {
-                    qid = possibilities[j].hasOwnProperty('id') ? possibilities[j].id : (parseInt(i, 10) + 1);
+                    qid = possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (parseInt(i, 10) + 1);
                     refs.answers.firstChild.appendChild(libD.jso2dom(["li", ["label", [
                         ["input", {"type": "checkbox", "#": "answer-" + j}],
-                        ["span.quiz-answer-id", qid + '. '],
-                        ["span", {"#": j + 'content'}]
+                        ["span.quiz-answer-id", qid + ". "],
+                        ["span", {"#": j + "content"}]
                     ]]], refs));
 
                     if (possibilities[j].automaton) {
-                        refs[j + 'content'].innerHTML = automaton2svg(automatonFromObj(possibilities[j].automaton));
+                        refs[j + "content"].innerHTML = automaton2svg(automatonFromObj(possibilities[j].automaton));
                     } else if (possibilities[j].html) {
-                        refs[j + 'content'].innerHTML = possibilities[j].html;
+                        refs[j + "content"].innerHTML = possibilities[j].html;
                     } else if (possibilities[j].text) {
-                        textFormat(possibilities[j].text, refs[j + 'content']);
+                        textFormat(possibilities[j].text, refs[j + "content"]);
                     } else if (possibilities[j].html) {
-                        textFormat(possibilities[j].html, refs[j + 'content'], true);
+                        textFormat(possibilities[j].html, refs[j + "content"], true);
                     }
 
                     if (quiz.answers[quiz.currentQuestion].userResponse instanceof Set && quiz.answers[quiz.currentQuestion].userResponse.contains(qid)) {
@@ -1605,24 +1614,24 @@
                 }
                 break;
             case "word":
-                refs.answers.innerHTML = '<p>' +  _("You can draw the automaton bellow.") + '</p>';
+                refs.answers.innerHTML = "<p>" +  _("You can draw the automaton bellow.") + "</p>";
                 AutomataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AutomataDesigner.currentIndex);
 
                 setTimeout(function () {
-                    automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
-                    automataContainer.style.display = '';
+                    automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + "px";
+                    automataContainer.style.display = "";
                     AutomataDesigner.redraw();
                     zoom.redraw();
                 }, 0);
 
                 break;
             case "automatonEquiv":
-                refs.answers.innerHTML = '<p>' +  _("You can draw the automaton bellow.") + '</p>';
+                refs.answers.innerHTML = "<p>" +  _("You can draw the automaton bellow.") + "</p>";
                 AutomataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AutomataDesigner.currentIndex);
 
                 setTimeout(function () {
-                    automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + 'px';
-                    automataContainer.style.display = '';
+                    automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + "px";
+                    automataContainer.style.display = "";
                     AutomataDesigner.redraw();
                     zoom.redraw();
                 }, 0);
@@ -1633,7 +1642,7 @@
             case "algo":
                 break;
             default:
-                notify(_("Question type not known"), libD.format(_('Type of question {0} is not known. Known types are: <ul><li>"mcq" for multiple choices question,</li><li>"word" (to draw an automaton which accepts a given list of words).</li></ul>')), "error");
+                notify(_("Question type not known"), libD.format(_("Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>")), "error");
             }
 
             refs.ok.onclick = nextQuestion(quiz, quiz.currentQuestion);
@@ -1641,18 +1650,18 @@
             if (quiz.currentQuestion) {
                 refs.prev.onclick = nextQuestion(quiz, quiz.currentQuestion, true);
             } else {
-                refs.prev.style.display = 'none';
+                refs.prev.style.display = "none";
             }
         };
 
         startQuiz = function (quiz) {
-            if (switchmode.value === 'program') {
-                switchmode.value = 'design';
+            if (switchmode.value === "program") {
+                switchmode.value = "design";
                 switchmode.onchange();
             }
 
-            automataContainer.style.display = 'none';
-            handleImports(['equivalence', 'regex2automaton', "automaton2json"], 'Quiz');
+            automataContainer.style.display = "none";
+            handleImports(["equivalence", "regex2automaton", "automaton2json"], "Quiz");
             automatonPlus.onclick();
 
             if (!(quiz.questions && quiz.questions instanceof Array)) {
@@ -1672,28 +1681,28 @@
                 };
             }
 
-            divQuiz.classList.add('intro');
-            divQuiz.classList.remove('started');
-            divQuiz.textContent = '';
-            divQuiz.classList.add('enabled');
+            divQuiz.classList.add("intro");
+            divQuiz.classList.remove("started");
+            divQuiz.textContent = "";
+            divQuiz.classList.add("enabled");
 
             var refs = {};
             divQuiz.appendChild(libD.jso2dom([
-                ['h1#quiz-title', [
-                    ["#", quiz.title ? _("Quiz: ") : _('Quiz')],
-                    ["span", {'#': "quizTitleContent"}, ]
+                ["h1#quiz-title", [
+                    ["#", quiz.title ? _("Quiz: ") : _("Quiz")],
+                    ["span", {"#": "quizTitleContent"}]
                 ]],
-                ['h2#quiz-author', {"#": 'author'}],
-                ['div#quiz-descr', {"#": "descr"}],
-                ['a#close-quiz', {"#": 'closeQuiz', "href": "#"}, _("Close the Quiz")],
-                ['div#quiz-content', {"#": "content"},
+                ["h2#quiz-author", {"#": "author"}],
+                ["div#quiz-descr", {"#": "descr"}],
+                ["a#close-quiz", {"#": "closeQuiz", "href": "#"}, _("Close the Quiz")],
+                ["div#quiz-content", {"#": "content"},
                     ["div.button-container",
-                        ["button", {'#': "startQuiz"}, _("Start the Quiz")]]]
+                        ["button", {"#": "startQuiz"}, _("Start the Quiz")]]]
             ], refs));
 
-            textFormat(quiz.title || '', refs.quizTitleContent);
-            textFormat((quiz.author || '') + (quiz.date ? ' - ' + quiz.date : ''), refs.author);
-            textFormat(quiz.description || '', refs.descr);
+            textFormat(quiz.title || "", refs.quizTitleContent);
+            textFormat((quiz.author || "") + (quiz.date ? " - " + quiz.date : ""), refs.author);
+            textFormat(quiz.description || "", refs.descr);
 
             quiz.refs = refs;
             refs.closeQuiz.onclick = closeQuiz;
@@ -1717,11 +1726,11 @@
         }
 
         function saveProgram(fname) {
-            saveAs(new Blob([cm.getValue()], {type: 'text/plain;charset=utf-8'}), fname);
+            saveAs(new Blob([cm.getValue()], {type: "text/plain;charset=utf-8"}), fname);
         }
 
         function saveAutomaton(fname) {
-            saveAs(new Blob([AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false)], {type: 'text/plain'}), fname);
+            saveAs(new Blob([AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false)], {type: "text/plain"}), fname);
         }
 
         saveas.onclick = function () {
@@ -1751,7 +1760,7 @@
                     saveProgram(programFileName);
                 }
             } else {
-                if (switchmode.value === 'automatoncode') {
+                if (switchmode.value === "automatoncode") {
                     AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
                 }
 
@@ -1767,7 +1776,7 @@
             var accepting, word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep;
 
             execute = function (byStep, w, ind) {
-                if (typeof w === 'string') {
+                if (typeof w === "string") {
                     word  = w;
                     index = ind;
                     currentSymbolNumber = 0;
@@ -1809,7 +1818,7 @@
                         } else {
                             currentStates = currentAutomaton.getCurrentStates().getList();
                             currentAutomaton.runSymbol(word[0]);
-                            wordDiv.firstChild.childNodes[currentSymbolNumber++].className = 'eaten';
+                            wordDiv.firstChild.childNodes[currentSymbolNumber++].className = "eaten";
                             word = word.substr(1);
                             currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
 
@@ -1829,15 +1838,15 @@
                         index = AutomataDesigner.currentIndex;
                     }
 
-                    wordDiv.textContent = '';
+                    wordDiv.textContent = "";
 
-                    var layer1 = document.createElement('div');
+                    var layer1 = document.createElement("div");
                     layer1.id = "word-layer1";
 
                     var span;
 
                     for (i = 0, len = word.length; i < len; ++i) {
-                        span = document.createElement('span');
+                        span = document.createElement("span");
                         span.textContent = word[i];
                         layer1.appendChild(span);
                     }
@@ -1913,17 +1922,17 @@
                 }
 
                 if ((currentTransitions && EXECUTION_STEP_TIME) || stepNumber === -1) {
-                    results.textContent = '';
+                    results.textContent = "";
                     var res, s;
 
                     for (i = 0, len = listOfExecutions.length; i < len; ++i) {
-                        results.appendChild(document.createElement('div'));
-                        results.lastChild.className = 'execution';
-                        res = '';
+                        results.appendChild(document.createElement("div"));
+                        results.lastChild.className = "execution";
+                        res = "";
 
                         for (j = 0, leng = listOfExecutions[i].length; j < leng; ++j) {
                             s = listOfExecutions[i][j][1];
-                            res += j ? ': ' + (s === epsilon ? 'ε' : Set.prototype.elementToString(s, automataMap)) + ' → ' + Set.prototype.elementToString(listOfExecutions[i][j][0]) : Set.prototype.elementToString(listOfExecutions[i][j][0]);
+                            res += j ? ": " + (s === epsilon ? "ε" : Set.prototype.elementToString(s, automataMap)) + " → " + Set.prototype.elementToString(listOfExecutions[i][j][0]) : Set.prototype.elementToString(listOfExecutions[i][j][0]);
                         }
 
                         results.lastChild.textContent = res;
@@ -1956,28 +1965,28 @@
         }());
 
         function launchPredefAlgo() {
-            if (curAlgo.value === 'id') {
+            if (curAlgo.value === "id") {
                 setAutomatonResult(AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex));
                 return;
             }
 
             if (predefAlgoFunctions[curAlgo.value]) {
                 window.currentAutomaton = AutomataDesigner.currentIndex;
-                if (typeof predefAlgoFunctions[curAlgo.value] === 'string') {
-                    var id      = 'predef-algo-' + curAlgo.value,
+                if (typeof predefAlgoFunctions[curAlgo.value] === "string") {
+                    var id      = "predef-algo-" + curAlgo.value,
                         script  = document.getElementById(id);
 
                     if (script) {
                         head.removeChild(script);
                     }
 
-                    script = document.createElement('script');
+                    script = document.createElement("script");
 
                     if (js18Supported) {
-                        script.type = 'text/javascript;version=1.8';
+                        script.type = "text/javascript;version=1.8";
                     }
 
-                    script.textContent = 'window.run(function (run){"use strict";\n' + predefAlgoFunctions[curAlgo.value] + '\n});';
+                    script.textContent = "window.run(function (run){'use strict';\n" + predefAlgoFunctions[curAlgo.value] + "\n});";
                     predefAlgoFunctions[curAlgo.value] = null;
                     script.id = id;
                     loadPredefAlgoAfterImport = true;
@@ -1989,11 +1998,11 @@
                 }
             } else {
                 nextLoadIsPrefefAlgo = true;
-                window.AutomatonGlue.getScript(curAlgo.value, '?');
+                window.AutomatonGlue.getScript(curAlgo.value, "?");
             }
         }
 
-        document.getElementById('algorun').onclick = launchPredefAlgo;
+        document.getElementById("algorun").onclick = launchPredefAlgo;
 
 
         window.gotScript = function (includeName, code) {
@@ -2007,18 +2016,18 @@
                 loadPredefAlgoAfterImport = 1;
                 nextLoadIsPrefefAlgo = false;
             } else {
-                var id      = 'useralgo-include-' + includeName,
+                var id      = "useralgo-include-" + includeName,
                     script  = document.getElementById(id);
 
                 if (script) {
                     head.removeChild(script);
                 }
 
-                script = document.createElement('script');
+                script = document.createElement("script");
                 script.id = id;
 
                 if (js18Supported) {
-                    script.type = 'text/javascript;version=1.8';
+                    script.type = "text/javascript;version=1.8";
                 }
 
                 script.textContent = code;
@@ -2047,7 +2056,7 @@
 
         window.helpSymbols = function (e) {
             if (e === "show") {
-                notify(_("Howto: input symbols"), '<div style="max-width:80ex">' + _("<p>In the window which will invit you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surrond them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quuotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>") + '</div>', "info");
+                notify(_("Howto: input symbols"), "<div style='max-width:80ex'>" + _("<p>In the window which will invit you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surrond them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quuotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>") + "</div>", "info");
             } else {
                 setTimeout(window.helpSymbols, 0, "show");
             }
@@ -2055,13 +2064,13 @@
 
         switchmode.onchange();
 
-        var i, len, translatedNodes = document.querySelectorAll('[data-translated-content]');
+        var i, len, translatedNodes = document.querySelectorAll("[data-translated-content]");
 
         for (i = 0, len = translatedNodes.length; i < len; ++i) {
             translatedNodes[i].textContent = _(translatedNodes[i].textContent);
         }
 
-        translatedNodes = document.querySelectorAll('[data-translated-title]');
+        translatedNodes = document.querySelectorAll("[data-translated-title]");
 
         for (i = 0, len = translatedNodes.length; i < len; ++i) {
             if (translatedNodes[i].title) {

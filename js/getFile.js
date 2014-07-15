@@ -25,6 +25,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*eslint-env browser*/
 /*jslint browser: true, ass: true, indent:4 */
 
 (function (pkg) {
@@ -39,7 +40,7 @@
         try {
             var xhr = new XMLHttpRequest();
             //workaround chromium issue #45702
-            xhr.open('get', fname + (location.protocol === 'file:' ? '?' + (new Date().toString()) : ''), false);
+            xhr.open("get", fname + (location.protocol === "file:" ? "?" + (new Date().toString()) : ""), false);
             xhr.setRequestHeader("Cache-Control", "no-cache");
 
             xhr.onreadystatechange = function () {
@@ -50,12 +51,12 @@
                         }
                         success(xhr.responseText);
                     } else if (failure) {
-                        failure('status', xhr.status);
+                        failure("status", xhr.status);
                     }
                 }
             };
 
-            xhr.overrideMimeType('text/plain');
+            xhr.overrideMimeType("text/plain");
             xhr.send();
         } catch (e) {
             if (failure) {

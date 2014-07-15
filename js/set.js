@@ -41,7 +41,7 @@
 
 (function (pkg, that) {
     "use strict";
-    var _ = pkg.Setl10n = that.libD && that.libD.l10n ? that.libD.l10n(): function (s){return s;};
+    var _ = pkg.Setl10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; };
 
     /**
      * A class to manipulate sets in Javascript.
@@ -92,10 +92,10 @@
     };
 
     function listToString(l) {
-        var res = '', i, len;
+        var res = "", i, len;
         for (i = 0, len = l.length; i < len; ++i) {
             if (res) {
-                res += ',';
+                res += ",";
             }
             res += pkg.Set.prototype.elementToString(l[i]);
         }
@@ -104,9 +104,9 @@
             if (l.length === 1) {
                 return res;
             }
-            return '(' + res + ')';
+            return "(" + res + ")";
         }
-        return '[' + res + ']';
+        return "[" + res + "]";
     }
 
     pkg.Set.prototype = {
@@ -120,7 +120,7 @@
          */
         contains: function (element) {
             element =  this.checkConstraint(element);
-            return this.l.hasOwnProperty('$' + this.elementToString(element));
+            return this.l.hasOwnProperty("$" + this.elementToString(element));
         },
 
         /**
@@ -147,17 +147,17 @@
             if (this.typeConstraint) {
                 if (typeof this.typeConstraint === "string") {
                     if (this.typeConstraint === "integer") {
-                        if (!(typeof element === 'number' && element % 1 === 0)) {
-                            throw(new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint.")));
+                        if (!(typeof element === "number" && element % 1 === 0)) {
+                            throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
                         }
                     } else if (typeof element !== this.typeConstraint) {
-                        throw(new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint.")));
+                        throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
                     }
                 } else if (!(element instanceof this.typeConstraint)) {
                     if (this.typeConstraint === pkg.Set && (element instanceof Array || element instanceof pkg.Tuple)) {
                         element = pkg.to_set(element); // this is ok to implicitely convert lists to sets
                     } else {
-                        throw(new Error(_("Set.checkConstraint(element): Tthe element does not satisfies the type constraint.")));
+                        throw new Error(_("Set.checkConstraint(element): Tthe element does not satisfies the type constraint."));
                     }
                 }
             }
@@ -173,24 +173,24 @@
          */
         add: function (element) {
             element =  this.checkConstraint(element);
-            var rep = '$' + this.elementToString(element);
+            var rep = "$" + this.elementToString(element);
             if ((element instanceof pkg.Set) && !this.contains(element)) {
                 var th = this;
                 var bind = function () {
                     if (th.l.hasOwnProperty(rep)) {
                         delete th.l[rep];
                         th.l[rep] = element;
-                        th.updated('elementModified');
+                        th.updated("elementModified");
                     }
                     else {
-                        element.release(bind, 'all');
+                        element.release(bind, "all");
                     }
                 };
 
-                element.listen(bind, 'all');
+                element.listen(bind, "all");
             }
             this.l[rep] = element;
-            this.updated('add', element);
+            this.updated("add", element);
         },
 
         /**
@@ -200,8 +200,8 @@
          * @param {any} element The element to remove from the set.
          */
         remove: function (element) {
-            delete this.l['$' + this.elementToString(element)];
-            this.updated('remove', element);
+            delete this.l["$" + this.elementToString(element)];
+            this.updated("remove", element);
         },
 
         /**
@@ -243,7 +243,7 @@
                 }
             }
             this._blockEvents = false;
-            this.updated('unionInPlace', set);
+            this.updated("unionInPlace", set);
             return this;
         },
 
@@ -271,7 +271,7 @@
                 }
             }
             this._blockEvents = false;
-            this.updated('interInPlace', set);
+            this.updated("interInPlace", set);
             return this;
         },
 
@@ -295,7 +295,7 @@
                 }
             }
             this._blockEvents = false;
-            this.updated('minusInPlace', set);
+            this.updated("minusInPlace", set);
             return this;
         },
 
@@ -453,15 +453,15 @@
          * @returns {string} Returns the string representation of the set.
          */
         toString: function () {
-            var res = '', i, len;
+            var res = "", i, len;
             var l = this.getSortedList();
             for (i = 0, len = l.length; i < len; ++i) {
                 if (res) {
-                    res += ',';
+                    res += ",";
                 }
                 res += this.elementToString(l[i]);
             }
-            return '{' + res + '}';
+            return "{" + res + "}";
         },
 
         /**
@@ -476,7 +476,7 @@
             if (!this._blockEvents) {
                 var i, len;
                 for (i = 0, len = this.listeners.length; i < len; ++i) {
-                    if (this.listeners[i].event === event || this.listeners[i].event === 'all') {
+                    if (this.listeners[i].event === event || this.listeners[i].event === "all") {
                         this.listeners[i].callback(event, object);
                     }
                 }
@@ -579,7 +579,7 @@
                 this.remove(l[i]);
             }
             this._blockEvents = false;
-            this.updated('empty');
+            this.updated("empty");
         },
 
         /**
@@ -614,32 +614,32 @@
         },
 
         elementToString : function (e, map) {
-            if (typeof e === 'number' && isNaN(e)) {
-                return 'NaN';
+            if (typeof e === "number" && isNaN(e)) {
+                return "NaN";
             }
             switch (e) {
             case undefined:
-                return 'undefined';
+                return "undefined";
             case null:
-                return 'null';
+                return "null";
             case -Infinity:
-                return '-Infinity';
+                return "-Infinity";
             case Infinity:
-                return 'Infinity';
+                return "Infinity";
             default:
                 if (e instanceof Array || e instanceof pkg.Tuple) {
                     return listToString(e);
                 }
 
-                if (typeof e === 'string') {
-                    if (!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e).toString() === e || (typeof map === 'object' && map.hasOwnProperty(e))) {
+                if (typeof e === "string") {
+                    if (!e.length || /["'\\{\[\]}\(\),\s]/.test(e) || parseFloat(e).toString() === e || (typeof map === "object" && map.hasOwnProperty(e))) {
                         e = JSON.stringify(e);
                     }
                     return e.toString();
                 }
 
                 if (e instanceof Date) {
-                    return 'Date("' + e.toString() + '")';
+                    return "Date(\"" + e.toString() + "\")";
                 }
 
                 if (typeof e === "object" && e.serializeElement) {
@@ -651,17 +651,17 @@
                         return JSON.stringify(e);
                     }
 
-                    var i, res = '', keys = Object.keys(e).sort();
+                    var i, res = "", keys = Object.keys(e).sort();
                     for (i in keys) {
                         if (res) {
-                            res += ',';
+                            res += ",";
                         } else {
-                            res = '{';
+                            res = "{";
                         }
 
-                        res += JSON.stringify(keys[i]) + ':' + pkg.Set.prototype.elementToString(e[keys[i]]);
+                        res += JSON.stringify(keys[i]) + ":" + pkg.Set.prototype.elementToString(e[keys[i]]);
                     }
-                    return res ? res + '}' : 'Object()';
+                    return res ? res + "}" : "Object()";
                 }
 
                 return e.toString();
@@ -673,24 +673,28 @@
                 len = s.length;
             }
 
-            while(j < len && (!s[j].trim() || s[j] === ',')) {
+            while (j < len && (!s[j].trim() || s[j] === ",")) {
                 ++j;
             }
 
             var j0 = j, lastIndex, end, closed, nextValue;
 
-            if (s[j] === '"' || s[j] === "'") {
+            if (s[j] === "\"" || s[j] === "'") {
                 end = s[j++];
-                while(j < len && s[j] !== end) {
-                    if (s[j] === '\\') {
+                while (j < len && s[j] !== end) {
+                    if (s[j] === "\\") {
                         ++j;
                     }
                     ++j;
                 }
-                lastIndex = j+1;
+
+                lastIndex = j + 1;
                 return {
-                    value:JSON.parse(end === "'" ?  '"' + s.substring(j0+1,j).replace(/"/g, '\\"') + '"': s.substring(j0,j+1)),
-                    lastIndex:lastIndex
+                    value: JSON.parse(
+						end === "\""
+							? "\"" + s.substring(j0 + 1,j).replace(/"/g, "\\\"") + "\""
+							: s.substring(j0, j + 1)),
+                    lastIndex: lastIndex
                 };
             }
 
@@ -698,13 +702,13 @@
                 var key, set = new pkg.Set();
                 ++j;
                 closed = false;
-                while(j < len) {
-                    while(j < len && (!s[j].trim() || s[j] === ',')) {
+                while (j < len) {
+                    while (j < len && (!s[j].trim() || s[j] === ",")) {
                         ++j;
                     }
 
                     if (s[j] === "}") {
-                        lastIndex = j+1;
+                        lastIndex = j + 1;
                         closed = true;
                         j = lastIndex;
                         break;
@@ -713,17 +717,17 @@
                     nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
 
                     if (j === nextValue.lastIndex) {
-                        throw(new Error(_("Value is malformed.")));
+                        throw new Error(_("Value is malformed."));
                     }
 
                     j = nextValue.lastIndex;
 
-                    if (s[j] === ':') {
+                    if (s[j] === ":") {
                         if (set instanceof pkg.Set) {
                             if (set.isEmpty()) {
                                 set = {};
                             } else {
-                                throw(new Error(_("Value is malformed.")));
+                                throw new Error(_("Value is malformed."));
                             }
                         }
                         ++j;
@@ -734,14 +738,14 @@
                     } else if (set instanceof pkg.Set) {
                         set.add(nextValue.value);
                     } else {
-                        throw(new Error(_("Value is malformed.")));
+                        throw new Error(_("Value is malformed."));
                     }
 
                     j = nextValue.lastIndex;
                 }
 
                 if (!closed) {
-                    throw(new Error(_("Value is malformed.")));
+                    throw new Error(_("Value is malformed."));
                 }
 
                 return {
@@ -750,18 +754,18 @@
                 };
             }
 
-            if (s[j] === "(" || s[j] === '[') {
-                end = s[j] === '(' ? ')' : ']';
-                var tuple = (end === ')') ? new pkg.Tuple() : [];
+            if (s[j] === "(" || s[j] === "[") {
+                end = s[j] === "(" ? ")" : "]";
+                var tuple = (end === ")") ? new pkg.Tuple() : [];
                 ++j;
                 closed = false;
-                while(j < len) {
-                    while(j < len && (!s[j].trim() || s[j] === ',')) {
+                while (j < len) {
+                    while (j < len && (!s[j].trim() || s[j] === ",")) {
                         ++j;
                     }
 
                     if (s[j] === end) {
-                        lastIndex = j+1;
+                        lastIndex = j + 1;
                         j = lastIndex;
                         closed = true;
                         break;
@@ -770,7 +774,7 @@
                     nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
 
                     if (j === nextValue.lastIndex) {
-                        throw(new Error(_("Value is malformed.")));
+                        throw new Error(_("Value is malformed."));
                     }
 
                     tuple.push(nextValue.value);
@@ -778,7 +782,7 @@
                 }
 
                 if (!closed) {
-                    throw(new Error(_("Value is malformed.")));
+                    throw new Error(_("Value is malformed."));
                 }
 
                 return {
@@ -787,38 +791,38 @@
                 };
             }
 
-            while(j < len && s[j].trim() && ':(,})]'.indexOf(s[j]) === -1) {
+            while (j < len && s[j].trim() && ":(,})]".indexOf(s[j]) === -1) {
                 ++j;
             }
 
             var valName = s.substring(j0,j).trim();
 
-            if (s[j] === '(') {
+            if (s[j] === "(") {
                 var values = [];
 
                 if (/^[a-zA-Z]+$/.test(valName)) {
-                    if (typeof that[valName] !== 'function') {
+                    if (typeof that[valName] !== "function") {
                         throw new Error(_("Constructor name in value refers to unkown class."));
                     }
                     ++j;
-                    while(j < len && s[j] !== ')') {
+                    while (j < len && s[j] !== ")") {
                         nextValue = pkg.Set.prototype.getNextValue(s,j,len, map);
                         j = nextValue.lastIndex;
                         values.push(nextValue.value);
                     }
                 }
 
-                if (valName === 'Date') {
+                if (valName === "Date") {
                     return {
                         value : new Date(values[0] || null),
-                        lastIndex:j+1
+                        lastIndex: j + 1
                     };
                 }
 
-                if (valName === 'Object') {
+                if (valName === "Object") {
                     return {
                         value : values[0] || null, // FIXME check correction
-                        lastIndex:j+1
+                        lastIndex: j + 1
                     };
                 }
 
@@ -830,43 +834,43 @@
 
                 return {
                     value:v,
-                    lastIndex:j+1
+                    lastIndex:j + 1
                 };
             }
 
             switch (valName) {
-            case 'true':
+            case "true":
                 return {
                     value:true,
                     lastIndex:j
                 };
-            case 'false':
+            case "false":
                 return {
                     value:false,
                     lastIndex:j
                 };
-            case 'null':
+            case "null":
                 return {
                     value:null,
                     lastIndex:j
                 };
-            case 'undefined':
+            case "undefined":
                 return {
                     value:undefined,
                     lastIndex:j
                 };
-            case 'NaN':
+            case "NaN":
                 return {
                     value:NaN,
                     lastIndex:j
                 };
-            case 'Infinity':
-            case '+Infinity':
+            case "Infinity":
+            case "+Infinity":
                 return {
                     value:Infinity,
                     lastIndex:j
                 };
-            case '-Infinity':
+            case "-Infinity":
                 return {
                     value:-Infinity,
                     lastIndex:j
@@ -882,7 +886,7 @@
             }
 
             return {
-                value:typeof map === 'object' && map.hasOwnProperty(valName) ? map[valName] : valName,
+                value:typeof map === "object" && map.hasOwnProperty(valName) ? map[valName] : valName,
                 lastIndex:j
             };
         },
@@ -894,7 +898,7 @@
             if (nextValue.lastIndex === len) {
                 return nextValue.value;
             }
-            throw new Error(_('Value is malformed.'));
+            throw new Error(_("Value is malformed."));
         }
     };
 
@@ -912,8 +916,8 @@
             },
             set : function (v) {
                 if (v < length) {
-                    while(length > v) {
-                        delete this[length-1];
+                    while (length > v) {
+                        delete this[length - 1];
                         --length;
                     }
                 } else if (v > length) {
@@ -972,7 +976,7 @@
             enumerable:false,
             value: function (i, e, noCheckLength) {
                 if (!noCheckLength && this.length <= i) {
-                    while(this.length <= i) {
+                    while (this.length <= i) {
                         this.length = i + 1;
                     }
                 }
@@ -1011,7 +1015,7 @@
                         return;
                     }
 
-                    var lastItem = this[1], t=this[0];
+                    var lastItem = this[1], t = this[0];
                     this.length = 0;
                     
                     var i, len;
@@ -1043,8 +1047,8 @@
                     ];
                 default:
                     return [
-                        pkg.Tuple(Array.prototype.slice.call(this, 0, this.length-1)),
-                        this[this.length-1]
+                        pkg.Tuple(Array.prototype.slice.call(this, 0, this.length - 1)),
+                        this[this.length - 1]
                     ];
                 }
             }
@@ -1191,4 +1195,4 @@
         return set.isEmpty();
     };
 
-}(typeof this.exports === 'object' ? this.exports : this, typeof this.exports === 'object' ? this.exports : this));
+}(typeof this.exports === "object" ? this.exports : this, typeof this.exports === "object" ? this.exports : this));

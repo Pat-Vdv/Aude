@@ -44,14 +44,14 @@
                 return f.getKey(a1);
             case 2:
                 f.setKey(a1, a2);
-                return;
+                return undefined;
             case 3:
                 if (a2 === null && a3 === null) {
                     f.removeKey(a1);
                 }
-                return;
+                return undefined;
             default:
-                throw new Error('Bad arguments number.');
+                throw new Error("Bad arguments number.");
             }
         };
 
@@ -64,7 +64,7 @@
             if (m.hasOwnProperty(key)) {
                 return m[key];
             }
-            throw new Error('This key is not mapped to anything.');
+            throw new Error("This key is not mapped to anything.");
         };
 
         f.setKey = function (k, v) {
@@ -76,7 +76,7 @@
                 m[Set.prototype.elementToString(k)] = v;
                 return;
             default:
-                throw new Error('Bad arguments number.');
+                throw new Error("Bad arguments number.");
             }
         };
 
@@ -86,4 +86,4 @@
 
         return f;
     };
-}(typeof this.exports === 'object' ? this.exports : this));
+}(typeof this.exports === "object" ? this.exports : this));

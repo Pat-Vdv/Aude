@@ -63,10 +63,10 @@
      * @class
      * @alias Automaton
      */
-    pkg.Automaton = function (states, Sigma, q_init, trans, finalStates) {
+    pkg.Automaton = function (states, Sigma, qInit, trans, finalStates) {
         if (states) {
             if (states instanceof pkg.Automaton) {
-                pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.q_init, states.trans.copy(), states.finalStates.copy());
+                pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.qInit, states.trans.copy(), states.finalStates.copy());
                 this.currentStates = states.currentStates.copy();
                 this.lastTakenTransitions = states.lastTakenTransitions.copy();
                 return;
@@ -79,7 +79,7 @@
 
         this.states = to_set(states);
         this.Sigma = to_set(Sigma);
-        this.q_init = q_init;
+        this.qInit = qInit;
         this.trans =  to_set(trans);
         this.trans.setTypeConstraint(pkg.Transition);
         this.finalStates = to_set(finalStates);
@@ -231,7 +231,7 @@
             if (states instanceof Set || states instanceof Array) {
                 this.states = dontCopy ? to_set(states) : new Set(states);
             } else {
-                throw(new Error(_('Automaton.setStates(): The given argument is not a Set.')));
+                throw new Error(_("Automaton.setStates(): The given argument is not a Set."));
             }
         },
 
@@ -270,7 +270,7 @@
             if (states instanceof Set || states instanceof Array) {
                 this.finalStates = dontCopy ? to_set(states) : new Set(states);
             } else {
-                throw(new Error(_('Automaton.setFinalStates(): The given argument is not a Set.')));
+                throw new Error(_("Automaton.setFinalStates(): The given argument is not a Set."));
             }
         },
 
@@ -293,7 +293,7 @@
          */
         setInitialState: function (state) {
             this.states.add(state);
-            this.q_init = state;
+            this.qInit = state;
         },
 
         /**
@@ -304,7 +304,7 @@
          * @see Automaton#setInitialState
          */
         getInitialState: function () {
-            return this.q_init;
+            return this.qInit;
         },
 
         /**
@@ -361,7 +361,7 @@
          *    A = new pkg.Automaton();
          *    A.setInitialState(1);
          *    A.addFinalState(2);
-         *    A.addTransition(1, 'a', 2);
+         *    A.addTransition(1, "a", 2);
          *    var t = new pkg.Transition(1, epsilon, 2);
          *    A.addTransition(t);
          * @see Automaton#removeTransition
@@ -666,7 +666,7 @@
          * @returns {string} Returns the string representation of the Set.
          */
         toString: function () {
-            return "Automaton(" + Set.prototype.elementToString(this.states) + ", " + Set.prototype.elementToString(this.Sigma) + ", " + Set.prototype.elementToString(this.q_init) + ", " + Set.prototype.elementToString(this.trans) + "," + Set.prototype.elementToString(this.finalStates) + ")";
+            return "Automaton(" + Set.prototype.elementToString(this.states) + ", " + Set.prototype.elementToString(this.Sigma) + ", " + Set.prototype.elementToString(this.qInit) + ", " + Set.prototype.elementToString(this.trans) + "," + Set.prototype.elementToString(this.finalStates) + ")";
         },
 
         /**
@@ -805,8 +805,7 @@
         currentStatesAddAccessiblesByEpsilon: function (transitionFunction, visited) {
             var cs   = this.currentStates.getList(),
                 cont = false, // we continue if we added states
-                th   = this,
-                i;
+                th   = this;
 
             if (!visited) {
                 visited = new Set();
@@ -816,6 +815,8 @@
                 transitionFunction = this.getTransitionFunction();
             }
 
+            var i;
+
             function browseState(state) {
                 if (!visited.contains(state)) {
                     th.currentStates.add(state);
@@ -824,7 +825,7 @@
                 }
             }
 
-            for (i in cs) {
+            for (i = 0; i < cs.length; ++i) {
                 if (!visited.contains(cs[i])) {
                     visited.add(cs[i]);
                     transitionFunction(cs[i], pkg.epsilon).forEach(browseState);
@@ -851,7 +852,7 @@
          */
         runSymbol: function (symbol, transitionFunction, dontEraseTakenTransitions) {
             if (symbol === pkg.epsilon) {
-                throw(new Error(_("Automaton.runSymbol(): epsilon is forbidden.")));
+                throw new Error(_("Automaton.runSymbol(): epsilon is forbidden."));
             }
 
             if (!this.Sigma.contains(symbol)) {
@@ -869,21 +870,23 @@
             }
 
             var cs = this.currentStates.getList(),
-                th = this,
-                i;
+                th = this;
+
+            var i;
 
             function addState(state) {
                 th.currentStates.add(state);
                 th.lastTakenTransitions.add(new pkg.Transition(cs[i], symbol, state));
             }
 
-            for (i in cs) {
+            for (i = 0; i < cs.length; ++i) {
                 this.currentStates.remove(cs[i]);
             }
 
-            for (i in cs) {
+            for (i = 0; i < cs.length; ++i) {
                 transitionFunction(cs[i], symbol).forEach(addState);
             }
+
             this.currentStatesAddAccessiblesByEpsilon(transitionFunction);
         },
 
@@ -1089,23 +1092,23 @@
     };
 
 
-    pkg.set_current_state= function (A, state) {
+    pkg.set_current_state = function (A, state) {
         A.setCurrentState(state);
     };
 
-    pkg.set_current_states= function (A, states) {
+    pkg.set_current_states = function (A, states) {
         A.setCurrentStates(states);
     };
 
-    pkg.add_current_state= function (A, state) {
+    pkg.add_current_state = function (A, state) {
         A.addCurrentState(state);
     };
 
-    pkg.remove_current_states= function (A, state) {
+    pkg.remove_current_states = function (A, state) {
         A.removeCurrentState(state);
     };
 
-    pkg.remove_current_states= function (A, states) {
+    pkg.remove_current_states = function (A, states) {
         A.removeCurrentStates(states);
     };
 
@@ -1148,11 +1151,11 @@
 
         var c = code.split("\n");
         var a = new pkg.Automaton();
-        var i=1, len = c.length;
+        var i = 1, len = c.length;
         try {
             a.setInitialState(getNextValue(c[0], 0, c[0].length).value);
 
-            for (i=1; i < len && c[i].trim(); ++i) {
+            for (i = 1; i < len && c[i].trim(); ++i) {
                 a.addState(getNextValue(c[i], 0, c[i].length).value);
             }
 
@@ -1165,7 +1168,7 @@
                 leng = c[i].length;
                 startState = (nextValue = getNextValue(c[i], 0, leng)).value;
                 symbol = (nextValue = getNextValue(c[i], nextValue.lastIndex, leng)).value;
-                if (symbol === '\\e') {
+                if (symbol === "\\e") {
                     symbol = pkg.epsilon;
                 }
                 j = nextValue.lastIndex;
@@ -1176,7 +1179,7 @@
             return a;
         }
         catch(e) {
-            throw new Error(format(_("read_automaton: Line {0} is malformed."), i+1));
+            throw new Error(format(_("read_automaton: Line {0} is malformed."), i + 1));
         }
     };
 
@@ -1187,14 +1190,14 @@
      * @returns {String} The string representation of the Automaton. The empty string is returned if the Automaton is not correct, e.g. no initial state is Set.
      */
     pkg.automaton_code = function (a) {
-        var q_init   = a.getInitialState(),
+        var qInit   = a.getInitialState(),
             toString = Set.prototype.elementToString;
 
-        if (q_init === undefined || q_init === null) {
+        if (qInit === undefined || qInit === null) {
             return "";
         }
 
-        var r  = toString(q_init) + "\n",
+        var r  = toString(qInit) + "\n",
             F  = a.getFinalStates(),
             Fl = F.getList(),
             Q  = a.getStates().getSortedList(),
@@ -1202,7 +1205,7 @@
             i;
 
         for (i in Q) {
-            if (Q[i] !== q_init && !F.contains(Q[i])) {
+            if (Q[i] !== qInit && !F.contains(Q[i])) {
                 r += toString(Q[i]) + "\n";
             }
         }
@@ -1215,13 +1218,13 @@
         r += "\n";
         for (i in T) {
             r += toString(T[i].startState) +
-                            ' ' +
-                  (T[i].symbol === pkg.epsilon ? '\\e' : toString(T[i].symbol, pkg.automataMap)) +
-                            ' ' +
+                            " " +
+                  (T[i].symbol === pkg.epsilon ? "\\e" : toString(T[i].symbol, pkg.automataMap)) +
+                            " " +
                   toString(T[i].endState) +
-                            '\n';
+                            "\n";
         }
-        return r + '\n';
+        return r + "\n";
     };
 
     /**
@@ -1231,7 +1234,7 @@
      * @returns {Array} Returns an array of symbols corresponding to the representation of the transition.
      */
     pkg.parse_transition = function (text) {
-        return Set.prototype.getValue('[' + text + ']', pkg.automataMap);
+        return Set.prototype.getValue("[" + text + "]", pkg.automataMap);
     };
 
     /**
@@ -1241,18 +1244,18 @@
      * @return {String} Returns the formatted version of the string representation of the transition
      */
     pkg.format_transition = function (trans) {
-        var res='', i, len, symbols = pkg.parse_transition(trans);
-        for (i=0, len = symbols.length; i < len; ++i) {
+        var res = "", i, len, symbols = pkg.parse_transition(trans);
+        for (i = 0, len = symbols.length; i < len; ++i) {
             if (res) {
-                res +=',';
+                res += ",";
             }
 
             if (symbols[i] === pkg.epsilon) {
-                res += 'ε';
+                res += "ε";
             } else {
                 res += Set.prototype.elementToString(symbols[i], pkg.automataMap);
             }
         }
         return res;
     };
-}(typeof this.exports === 'object' ? this.exports : this, typeof this.exports === 'object' ? this.exports : this));
+}(typeof this.exports === "object" ? this.exports : this, typeof this.exports === "object" ? this.exports : this));

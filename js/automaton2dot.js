@@ -35,28 +35,28 @@
 
     function toString(q, trans) {
         if (q === epsilon) {
-            return 'ε';
+            return "ε";
         }
         return pkg.automaton2dot_standardizedString(q, trans).replace(/\\\\/g, "\\");
     }
 
     function dotState(q) {
         var s = toString(q);
-        return JSON.stringify(s).replace(/&/g, '&amp;') + "[id=\"" + btoa(s) + "\"]";
+        return JSON.stringify(s).replace(/&/g, "&amp;") + "[id=\"" + btoa(s) + "\"]";
     }
 
     function catln() {
-        var i, len, r = '';
+        var i, len, r = "";
 
         for (i = 0, len = arguments.length; i < len; ++i) {
             r += arguments[i];
         }
 
-        return r + '\n';
+        return r + "\n";
     }
 
     function cat() {
-        var i, len, r = '';
+        var i, len, r = "";
 
         for (i = 0, len = arguments.length; i < len; ++i) {
             r += arguments[i];
@@ -66,11 +66,11 @@
     }
 
     pkg.automaton2dot_standardizedString = function (s, trans) {
-        if (!trans && typeof s === 'string') {
+        if (!trans && typeof s === "string") {
             s = s.trim();
             try {
                 var v = Set.prototype.getValue(s);
-                if (typeof v === 'string' && s[0] === s[s.length - 1] && (s[0] === '"' || s[0] === "'")) {
+                if (typeof v === "string" && s[0] === s[s.length - 1] && (s[0] === "\"" || s[0] === "'")) {
                     return s.substring(1, s.length - 1);
                 }
 
@@ -164,7 +164,7 @@
             throw new Error("Initial state is not set.");
         }
 
-        res += cat("\t_begin -> ", JSON.stringify(toString(initialState).replace(/&/g, '&amp;')), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
+        res += cat("\t_begin -> ", JSON.stringify(toString(initialState).replace(/&/g, "&amp;")), " [label = \"\" arrowhead=vee id=initialStateArrow]\n");
 
         for (sS = 0; sS < leng; ++sS) {
             startState = states[sS];
@@ -175,7 +175,7 @@
                 for (eS = 0; eS < leng; ++eS) {
 
                     if (trans[endState = states[eS]]) {
-                        res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, '&amp;'), " -> ", JSON.stringify(toString(endState)).replace(/&/g, '&amp;'), " [label = ");
+                        res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, "&amp;"), " -> ", JSON.stringify(toString(endState)).replace(/&/g, "&amp;"), " [label = ");
 
                         symbols = table[startState][endState].getSortedList();
                         comma   = "";
@@ -191,7 +191,7 @@
                             }
                         }
 
-                        res += JSON.stringify(tmp).replace(/&/g, '&amp;') + catln(", id=\"", btoa(toString(startState)), " ", btoa(toString(endState)), "\"]");
+                        res += JSON.stringify(tmp).replace(/&/g, "&amp;") + catln(", id=\"", btoa(toString(startState)), " ", btoa(toString(endState)), "\"]");
                     }
                 }
             }

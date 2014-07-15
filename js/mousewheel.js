@@ -1,6 +1,8 @@
 /** @license WTFPL <http://www.wtfpl.net/txt/copying/> */
 
 /*jslint indent:4, plusplus:true, browser:true*/
+/*eslint-env browser*/
+
 // thx http://www.adomas.org/javascript-mouse-wheel/ for explanations
 
 var listenMouseWheel;
@@ -32,12 +34,12 @@ var listenMouseWheel;
         }
     }
 
-    if ('onmouseweel' in window) {
+    if ("onmousewheel" in window) {
         window.onmousewheel = handleWheel;
-    } else if ('onmousewheel' in document) {
+    } else if ("onmousewheel" in document) {
         document.onmousewheel = handleWheel;
     } else {
-        window.addEventListener('DOMMouseScroll', handleWheel, false);
+        window.addEventListener("DOMMouseScroll", handleWheel, false);
     }
 
     listenMouseWheel = function (f, target) {
