@@ -13,4 +13,3 @@ elif [ -f $d/index.html ]; then
 else
     echo "Couldn't find aude's index.html file."
 fi
-

@@ -68,25 +68,30 @@ What is the license of the program?
 Running Audescript programs outside of the browser?
 ---------------------------------------------------
 
-    Sure, cd to the tests folder and run
-     $ nodejs aude.js yourprogram.ajs parameters...
+	Run:
 
-    Ways to install aude.js on one's system is a work in progress.
+    $ ./audescript yourprogram.ajs parameters...
+
+    If you installed aude in your system (with make install for example), you can run
+
+    $ yourprogram.ajs parameters...
 
 Any interactive shell for Audescript?
 -------------------------------------
 
-    Ya, cd to the tests folder and run
-    $ nodejs aude.js
+    Run:
+     $ ./audescript
 
     File redirections are also supported:
-    $ nodejs aude.js < file.ajs
+     $ ./audescript < file.ajs
+
+    If you installed aude in your system (with make install for example), you can leave the "./" part.
 
 Unit tests?
 -----------
 
-    cd to the tests folder and type:
-     $ nodejs aude.js test.js
+    Run:
+     $ ./audescript tests/test.js
 
     See tests/README for more details.
 
@@ -96,4 +101,4 @@ Author
    Supervised by Yliès Falcone : ylies dot falcone at ujf-grenoble dot fr
 
    This program was started as a personal project around November 2012. The main goal was to get to know automata and related algorithms, and also help friends in their revisions, in the hope more people, teachers included, would find it useful.
-   As of July of 2013, however, most of the development was done during a stage at Verimag supervised by Yliès Falcone (from the LIG Laboratory) and paid by the Université Joseph Fourier, Grenoble. 
+   As of July of 2013, however, most of the development was done during a stage at Verimag supervised by Yliès Falcone (from the LIG Laboratory) and paid by the Université Joseph Fourier, Grenoble.

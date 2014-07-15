@@ -46,3 +46,7 @@ install:
 
 clean:
 	rm -rf js/boot.js dirlist.txt
+
+.PHONY:
+count-lines:
+	echo "  lines\t size" && cat `find | grep -E '(\.html|\.js|\.ajs|\.css|Makefile)$$' | grep -v ./js/lib/ | grep -v ./node_modules/ | grep -v ./doc/` | wc -l -c
