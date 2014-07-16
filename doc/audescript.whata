@@ -150,7 +150,7 @@
             alert(g); // g is not defined in Chromium, but is equal to 2 in Firefox.
          >>>]
 
-         Anyway, don't use the [c var] keyword. Use [c let] and don't define variable inside a block to have it define outside. Instead, write:
+         Anyway, don't use the [c var] keyword. Use [c let] and don't define variable inside a block to have it defined outside. Instead, write:
 
          [code=javascript <<<
             let f = 5;

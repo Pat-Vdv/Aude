@@ -1,0 +1,1046 @@
+\documentclass{article}
+\usepackage{soul}
+\usepackage{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{moreverb}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{alltt}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{wrapfig}
+\usepackage{fancyvrb}
+\usepackage{verbatimbox}
+\usepackage{amsfonts}
+\usepackage{textcomp}
+\usepackage{ifxetex,ifluatex}
+\ifxetex
+   \usepackage{xunicode}
+   \usepackage{fontspec}
+\else\ifluatex
+   \usepackage{fontspec}
+\else
+   \usepackage[utf8x]{inputenc}
+   \usepackage[T1]{fontenc}
+   \usepackage{lmodern}
+\fi\fi
+\let\subsubsubsection\paragraph
+\let\subsubsubsubsection\subparagraph
+\usepackage[english]{babel}
+\ifxetex
+   \usepackage{listings}
+   \lstset{breaklines=true, breakatwhitespace=true, captionpos=b, tabsize=3, showtabs=false,numbers=left,frame=single,firstnumber=1,extendedchars=true,
+    inputencoding=utf8}
+\else\ifluatex
+   \usepackage{listings}
+   \lstset{breaklines=true, breakatwhitespace=true, captionpos=b, tabsize=3, showtabs=false,numbers=left,frame=single,firstnumber=1,extendedchars=true,
+    inputencoding=utf8}
+\else
+   \usepackage{listingsutf8}
+   \lstset{breaklines=true, breakatwhitespace=true, captionpos=b, tabsize=3, showtabs=false,numbers=left,frame=single,firstnumber=1,extendedchars=true,
+    inputencoding=utf8/latin1}
+\fi\fi
+\author{Raphaël Jakse (raphael dot jakse at gmail dot com)}\title{Audescript — Programming Language for automata}
+\begin{document}
+\maketitle
+\begin{sloppypar}
+\DefineShortVerb{\!}
+\SaveVerb{v1}!a + b!
+\SaveVerb{v2}!a!
+\SaveVerb{v3}!b!
+\SaveVerb{v4}!a - b!
+\SaveVerb{v5}!a!
+\SaveVerb{v6}!b!
+\SaveVerb{v7}!a / b!
+\SaveVerb{v8}!a!
+\SaveVerb{v9}!b!
+\SaveVerb{v10}!a * b!
+\SaveVerb{v11}!a!
+\SaveVerb{v12}!b!
+\SaveVerb{v13}!a % b!
+\SaveVerb{v14}!a!
+\SaveVerb{v15}!b!
+\SaveVerb{v16}!a!
+\SaveVerb{v17}!b!
+\SaveVerb{v18}!~a!
+\SaveVerb{v19}!a!
+\SaveVerb{v20}!a  & b!
+\SaveVerb{v21}!a!
+\SaveVerb{v22}!b!
+\SaveVerb{v23}!a | b!
+\SaveVerb{v24}!a!
+\SaveVerb{v25}!b!
+\SaveVerb{v26}!a ^ b!
+\SaveVerb{v27}!a!
+\SaveVerb{v28}!b!
+\SaveVerb{v29}! a  << n!
+\SaveVerb{v30}!a!
+\SaveVerb{v31}!n!
+\SaveVerb{v32}! a  >> n!
+\SaveVerb{v33}!a!
+\SaveVerb{v34}!n!
+\SaveVerb{v35}! a >>> n!
+\SaveVerb{v36}!a!
+\SaveVerb{v37}!n!
+\SaveVerb{v38}!a <  b!
+\SaveVerb{v39}!a!
+\SaveVerb{v40}!b!
+\SaveVerb{v41}!a <= b!
+\SaveVerb{v42}!a!
+\SaveVerb{v43}!b!
+\SaveVerb{v44}!a >  b!
+\SaveVerb{v45}!a!
+\SaveVerb{v46}!b!
+\SaveVerb{v47}!a === b!
+\SaveVerb{v48}!true!
+\SaveVerb{v49}!a!
+\SaveVerb{v50}!b!
+\UndefineShortVerb{\!}
+\DefineShortVerb{\"}
+\SaveVerb{v51}"a !== b"
+\UndefineShortVerb{\"}
+\DefineShortVerb{\!}
+\SaveVerb{v52}!false!
+\SaveVerb{v53}!a!
+\SaveVerb{v54}!b!
+\UndefineShortVerb{\!}
+\DefineShortVerb{\"}
+\SaveVerb{v55}"!a"
+\UndefineShortVerb{\"}
+\DefineShortVerb{\!}
+\SaveVerb{v56}!a!
+\SaveVerb{v57}!true!
+\SaveVerb{v58}!false!
+\SaveVerb{v59}!true!
+\SaveVerb{v60}! b!
+\SaveVerb{v61}!a!
+\SaveVerb{v62}!a!
+\SaveVerb{v63}!b!
+\SaveVerb{v64}!a!
+\SaveVerb{v65}!true!
+\SaveVerb{v66}!true!
+\SaveVerb{v67}!b!
+\SaveVerb{v68}!a!
+\SaveVerb{v69}!true!
+\SaveVerb{v70}!b!
+\SaveVerb{v71}!a && b!
+\SaveVerb{v72}!a!
+\SaveVerb{v73}!b!
+\SaveVerb{v74}!true!
+\SaveVerb{v75}!true!
+\SaveVerb{v76}!false!
+\SaveVerb{v77}!false!
+\SaveVerb{v78}!false!
+\SaveVerb{v79}!""!
+\SaveVerb{v80}!false!
+\SaveVerb{v81}!0!
+\SaveVerb{v82}!false!
+\SaveVerb{v83}!NaN!
+\SaveVerb{v84}!false!
+\SaveVerb{v85}!{}!
+\SaveVerb{v86}!true!
+\SaveVerb{v87}!true!
+\SaveVerb{v88}!true!
+\SaveVerb{v89}!true!
+\SaveVerb{v90}!true!
+\SaveVerb{v91}!true!
+\SaveVerb{v92}!A contains e!
+\SaveVerb{v93}!A    has   e!
+\SaveVerb{v94}!e belongsTo A!
+\SaveVerb{v95}!true!
+\SaveVerb{v96}!e!
+\SaveVerb{v97}!A!
+\SaveVerb{v98}!A union = B!
+\SaveVerb{v99}!A = A union B!
+\SaveVerb{v100}!A.unionInPlace(B);!
+\SaveVerb{v101}!A inter = B!
+\SaveVerb{v102}!A = A  inter  B!
+\SaveVerb{v103}!A.interInPlace(B);!
+\SaveVerb{v104}!A minus = B!
+\SaveVerb{v105}!A = A  minus  B!
+\SaveVerb{v106}!A.minusInPlace(B);!
+\UndefineShortVerb{\!}
+
+
+
+
+\section*{ Introduction}
+
+
+\paragraph{}
+Audescript is a dedicated language. Its goal is easing the task of writing algorithms working on automata in a pedagogic and intuitive way. Of course, intuition is a rather personal element and two different persons can have different feelings on what they find intuitive or not, so trying to design an intuitive language that will please everybody might be a waste of time. Therefore, instead of just being intuitive, defining more precise directions to follow when designing the language should be a good start.
+
+   
+\paragraph{}
+So far, these directions were considered:
+    
+\begin{enumerate}
+	\item{ Do not reinvent everything. Instead, try to aggregate wonderful ideas to conceive a wonderful language. This has several advantage:
+\begin{enumerate}
+	\item{ With a good probability, what exists was already deeply though by other people we can probably trust, so the idea is well-tried, ready for usage. By using other people ideas when they exist give them credit on their work and save your time for completely new, unexplored ideas.}
+	\item{ If a way of doing things is already spread, people don't have to learn something new. While learning new things is great, be forced to learn a new programming language to do a specific task can make people give up the usage of the tool.}
+\end{enumerate}
+}
+	\item{ Close to the mathematics. Scientific students and scientists are in the target of the language and math is (should be, at least!) a familiar language through these people. Mathematical language is precise, clear and concise and algorithms on automaton are often described with mathematical notation.}
+	\item{ Be explicit. No weird symbols, no weird idioms. Unfortunately, mathematical symbols can be difficult to handle while programming. However, ASCII art to represent them is not desirable. The code should be readable for newcomers and gessing sense of expressions of the language should be easy and reliable. \verb!|_|! and \verb! /\! for the union and the intersection operators can be hard to understand. "union" and "inter" are more likely to be understood at the first glance.}
+\end{enumerate}
+
+\paragraph{}
+In "do not reinvent everything", we have "do not reinvent a new language". More precisely, Audescript is not really a new language: choice to base Audescript on a already existant language was made, with these advantages in mind:
+    
+\begin{itemize}
+	\item{ Real dedicated languages, by design, are limited. They have features their authors thought of and as time flies, successful dedicated languages tend to be generalist. Lets have a full-featured language which already has its community and its ecosystem.}
+	\item{ Less work for more. An already existent language already has well-tried tools like interpreters, (JIT-)compilers, debuggers, editors, etc. and these tools have been made powerful by years.}
+	\item{ If the community of the base language is already large, people will find documentation and help more easily and less people will have to learn a new language.}
+\end{itemize}
+
+\paragraph{}
+The choice of the base language was taken with these points in mind:
+    
+\begin{itemize}
+	\item{ relatively familiar syntax (close to C's) for most people}
+	\item{ Great community}
+	\item{ Great tools}
+	\item{ Web-compatible, that is to say, easy to run in a browser.}
+	\item{ Strong type handling, which is better for both pedagogic and debugging concerns.}
+\end{itemize}
+
+\paragraph{}
+Based of these points, a language comes rapidly in mind: Javascript. Javascript is the only one language to run in browser natively and present browsers competitions imply constant enhancement of the language and the tools running it (engines, interpreters, JIT compilers, debuggers), their speed included. Its C-like syntax is also a great point.
+
+   
+\paragraph{}
+In fact, pure Javascript in its ECMAScript 6 version (still to be released) is very close to what seems to be needed to play with automata comfortably. What is still to add to the language is an Automaton class, a decent set handling and a better type handling: that's what is Audescript for. Learning Audescript is learning pure Javascript plus the few additions of Audescript to Javascript. The base language of Audescript is Javascript in its \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode}{strict mode}\footnote{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions\_and\_function\_scope/Strict\_mode}.
+
+   
+\paragraph{}
+Given that, the goal is to stay very close to Javascript and to add just what we need. However, except Firefox, browsers of nowadays still don't support ECMAScript 6. Unfortunately, unlike ECMAScript 6, older versions of ECMAScript are really lacking things. As a result, work has been done to support some ECMAScript 6 points even in non-ecmascript 6 browsers.
+
+   
+\paragraph{}
+In this documentation, differences between what is done when coding in pure Javascript and what should be done in Audescript instead will be highlighted. This includes usage of some ECMAScript 6 subtleties. This documentation is not there to learn how to program. It is here to present the most important features of Javascript that should be known to program in Audescript and to cover additions of Audescript to Javascript and best practices to follow when programming in Audescript.
+
+   
+\paragraph{}
+Let's go.
+
+
+
+\newpage
+
+
+
+\section{ Statements in Javascript}
+
+
+\paragraph{}
+Statements, in Javascript, are instructions or expression ended by a semicolon, or control flow statements (which don't end with a semicolon). Empty statements are also allowed, so e.g. writing a semicolon right after an \verb!if! statement is valid.
+   
+   
+\paragraph{}
+The semicolon is often optional, so a end of line can replace entirely a semicolon. To see when the semicolon can be omitted, you can look at the \href{http://www.ecma-international.org/ecma-262/5.1/#sec-7.9}{Section 7.9 of the ECMAScript 5.1 language specification}\footnote{http://www.ecma-international.org/ecma-262/5.1/\#sec-7.9}.
+
+   
+\paragraph{}
+Statements can be grouped at any time with curly brackets. Thus, this is valid :
+   {\lstinputlisting[language={}]{./latexListings/6C4AA0C8FA1D5375883345C49AA93E9646B6124B.tex}}
+
+   
+\paragraph{}
+Curly brackets introducing a new scope, in browsers that support the \verb!let! keyword natively, these two following codes are equivalent:
+
+   {\lstinputlisting[language={}]{./latexListings/63A0AE756650E211DCD297E404FF6C011B10B6EF.tex}}
+
+   {\lstinputlisting[language={}]{./latexListings/DE262F3E44DC90B04D5D7B476F4D7F5B619961EF.tex}}
+
+   
+\paragraph{}
+Although the semicolon can be optional, I strongly advise you to always write it unless you really know what you are doing. This is particularly true in Audescript, which sometimes rely on semicolons to make the difference between a set literal and a block of instructions.
+
+
+
+
+\section{ Declaring variables}
+
+
+
+\subsection{ The var statement}
+
+
+\paragraph{}
+In Javascript, declaring variables is done with the \verb!var! keyword :
+      {\lstinputlisting[language={}]{./latexListings/97CB026241995BC67D90BF8A5D8FC0CFD7A3A1CA.tex}}
+
+      
+\paragraph{}
+While this is possible is Audescript, this is not advised. The \verb!let! keyword is preferred.
+   
+   
+
+\subsection{ The let statement}
+
+{\lstinputlisting[language={}]{./latexListings/ACA3E2CED8534014CB0838EBE7ADF36A8581E023.tex}}
+
+      
+\paragraph{}
+The \verb!let! keyword, when natively supported by the browser, acts differently than \verb!var!. The \verb!var! keyword define the variable at the function level :
+      
+      {\lstinputlisting[language={}]{./latexListings/8CC4723ED6627A221F0EDEA06418B9AE220C3E0C.tex}}
+ 
+      
+\paragraph{}
+On the contrary, \verb!let! works at block-level:
+      {\lstinputlisting[language={}]{./latexListings/84D6CE0280C98414F64B34B1A2C227565E61EE5E.tex}}
+
+      
+
+\subsubsection{ Current limitation}
+
+
+\paragraph{}
+In browsers that not support \verb!let! natively, \verb!let! acts like \verb!var!. That is to say, the previous code shows "albert" instead of issuing an error. As of Jully 2013, Firefox is the only browser to show the right behavior.
+      
+   
+   
+   
+
+\subsection{ The let expression}
+
+
+\paragraph{}
+The \verb!let! expression allows you to declare a variable inside a block.
+      {\lstinputlisting[language={}]{./latexListings/CB4A3759265C95F1BF53E3104E1E34CE2C66CACB.tex}}
+
+      
+
+\subsubsection{ Current limitation}
+
+
+\paragraph{}
+In browsers that don't support the let expression natively, you cannot define things inside the \verb!let! expression and have it defined outside when going out the let block :
+         {\lstinputlisting[language={}]{./latexListings/AF5F03746656BE2AE2B4B6359BAEADCEA1AA1974.tex}}
+
+         
+\paragraph{}
+Anyway, don't use the \verb!var! keyword. Use \verb!let! and don't define variable inside a block to have it defined outside. Instead, write:
+
+         {\lstinputlisting[language={}]{./latexListings/8EC144DAD64454BDD6A7AD6E62EC139DADF2BFEB.tex}}
+      
+   
+   
+   
+
+\subsection{ Typed declaration}
+
+
+\paragraph{}
+This is a Audescript specific way of defining variables and is the recommended way of doing things as it forces the developer not to change the type of variables.
+      
+      
+\paragraph{}
+The syntax is the following :
+      
+      {\lstinputlisting[language={}]{./latexListings/9F8D2990FA7520FC3E72E2280F8157A51C7B8E15.tex}}
+      
+      
+\paragraph{}
+Where Type is one of these case-insensitive keywords (keyword inside the same item list are equivalent):
+       
+\begin{itemize}
+	\item{ String}
+	\item{ Integer or int}
+	\item{ Number or float}
+	\item{ Boolean or bool}
+	\item{ Set}
+	\item{ Automaton}
+	\item{ Object (native Javascript Object)}
+	\item{ List, Table, Array}
+	\item{ Function}
+\end{itemize}
+
+\paragraph{}
+Additionally, Type can be any defined Javascript class. In this case, Type is case-sensitive.
+
+      
+
+\subsubsection{ Examples :}
+
+{\lstinputlisting[language={}]{./latexListings/EA3D620EFA57158E44BEFB8C7CC50159F415E844.tex}}
+      
+
+      
+\paragraph{}
+Typed declarations define variable in the block, not in the function, when let is natively supported by the browser. They behave exactly like the Audescript \verb!let! keyword.
+
+      
+
+\subsubsection{ Current limitations}
+
+
+\paragraph{}
+The limitations are the same as for \verb!let! : the scope of definition is wrong in browsers which don't support the \verb!let! keyword natively.
+
+         
+\paragraph{}
+Moreover, constraint on sets of sets can't be fully writen with a typed declaration:
+         {\lstinputlisting[language={}]{./latexListings/042E89FE0E9879C0127892CFA3C10003DE44674E.tex}}
+      
+   
+
+   
+
+\subsection{ The const statement}
+
+
+\paragraph{}
+The \verb!const! statement lets you define constants. It does exactly the same as the \verb!let! keyword, but forbids the modification of the defined variable.
+      
+      {\lstinputlisting[language={}]{./latexListings/3091F67E9F5DA69AFBE9A65744DC3CE50FF87B87.tex}}
+      
+      
+
+\subsubsection{ Current limitations}
+
+
+\paragraph{}
+\verb!const! defines constants at function level, like \verb!var!, where it should define them at block level, like \verb!let!:
+         {\lstinputlisting[language={}]{./latexListings/C5707014D7027A26B249EC7794A9334623351EC5.tex}}
+      
+   
+
+
+
+
+\section{ Control flow statements}
+
+
+\paragraph{}
+Control flow statements let you structure your programs. They allow the execution or the repetition of a set of instructions under certain conditions and change the order of execution of the code in a logical way.
+
+   
+\paragraph{}
+In Audescript, like in Javascript, conditions are surrounded by parenthesis and instructions can be grouped with curly brackets.
+   Like in C, curly brackets can be omitted when a block of instructions is reduced to one instruction.
+
+   
+
+\subsection{ The if / else statement}
+
+
+\paragraph{}
+The \verb!if! statement look like the following:
+      {\lstinputlisting[language={}]{./latexListings/B43B9B359ACC8DA07CBC2BAAADDF765B5489B744.tex}}
+      With the \verb!else! part:
+      {\lstinputlisting[language={}]{./latexListings/9A0F61CDBDFDCB8B09877AEE6EA2571C50E39CEE.tex}}
+
+      
+\paragraph{}
+There is no \verb!elseif! keyword. However, Javascript's syntax let you write things like:
+      {\lstinputlisting[language={}]{./latexListings/2A58C52C06883C43A78862DF4EBA8D2A1553F6D3.tex}}
+   
+   
+   
+
+\subsection{ Loop statements}
+
+
+
+\subsubsection{ The while statement}
+
+
+\paragraph{}
+The \verb!while! statement looks like the following:
+         {\lstinputlisting[language={}]{./latexListings/2B64CA9EFB22530A2A49C58ACC445C2DBD3389D7.tex}}
+      
+      
+      
+
+\subsubsection{ The do...while statement}
+
+
+\paragraph{}
+The \verb!do...while! statement looks like the following:
+         {\lstinputlisting[language={}]{./latexListings/36088BA309857DA654C9B06D933EE8F598BE336C.tex}}
+      
+      
+      
+
+\subsubsection{ The for statement}
+
+
+\paragraph{}
+The \verb!for! statement looks like this:
+         {\lstinputlisting[language={}]{./latexListings/06FD8B325E9C616058BC0D7C8EA486537437ABCD.tex}}
+         
+         
+\paragraph{}
+Example:
+         {\lstinputlisting[language={}]{./latexListings/F6E5F8D43A32B91874AC8120A57D451C4A7FFA7E.tex}}
+      
+      
+      
+
+\subsubsection{ The foreach statement}
+
+
+\paragraph{}
+This is an Audescript-specific structure. It let you iterate over sets and lists in a natural way.
+
+         {\lstinputlisting[language={}]{./latexListings/2FDD705273CBEF94758D68E70EF2D5CA4784CFA1.tex}}
+         
+         {\lstinputlisting[language={}]{./latexListings/02628432E154C4ABC1252443424378F96B880A94.tex}}
+
+         
+
+\subsubsubsection{ Warning: do not modify the element of iteration\\}
+\paragraph{}
+Do not do that, it will break things or result in unexpected behaviors:
+            {\lstinputlisting[language={}]{./latexListings/D9A66B314EAA2B77E43E50D2B40A2740E17C559C.tex}}
+
+            
+\paragraph{}
+This code returns a couple : the string representation of the set and a boolean indicating whether \verb! [1,2,3] ! belongs to the set.
+            
+            
+\paragraph{}
+\verb! [1,2,3] ! is present in the string representation of the set (and is indeed present in the set), but cannot be found.
+
+            {\lstinputlisting[language={}]{./latexListings/20963EECB31EE4B26EBCF1340851D3493998BEAA.tex}}
+
+            
+\paragraph{}
+Here, the set remains unchanged, as e was a {\itshape reference} to the successive elements of s and the assignation operator scratches this references instead of modifying the actual element of the set. This is also true for simple elements as numbers, strings, regular expressions, ... modifying them by an assignation breaks the reference and do not affect the parent.
+
+            
+\paragraph{}
+This works:
+            {\lstinputlisting[language={}]{./latexListings/E7FA2AED24FF1F816E13B5F93834DB58EB61BB2D.tex}}
+
+            
+\paragraph{}
+Because sets inside sets tell their parents about their modifications. But be very careful with this, as habits of modifying the element of iteration can rapidly be taken, even when this hurts.
+
+            
+\paragraph{}
+Please, don't modify the set or the list you are iterating on during the loop, this results in undefined behaviors, as in many languages:
+
+            {\lstinputlisting[language={}]{./latexListings/ABC9BA073FBF5571EE4E4C729EC5D15A04B070DF.tex}}
+            
+\paragraph{}
+Why should this loop be infinite...
+
+            {\lstinputlisting[language={}]{./latexListings/A56B1D37C39E9FEB6EACA7972C2D8D996302D6B3.tex}}
+            
+\paragraph{}
+...whereas this one should end ?
+         
+         
+         
+
+\subsubsubsection{ A mathematical way of writing some for loops\\}
+\paragraph{}
+You can use \verb!foreach! to write some \verb!for! loops with a syntax closer to mathematics :
+            
+            {\lstinputlisting[language={}]{./latexListings/13B337D0501330CCBCE965A92047465AA5564B88.tex}}
+
+            
+\paragraph{}
+is exactly equivalent to, and is the generated code for:
+
+            {\lstinputlisting[language={}]{./latexListings/778748428BC0EFAC404034376D810862EB8B4B7A.tex}}
+            
+            
+
+\subsubsubsubsection{ Note\\}
+\paragraph{}
+As comprehensive sets are still not supported by Audescript, \verb!{1,...,10}! is not a real set literal. As a result, you cannot write things like:
+               {\lstinputlisting[language={}]{./latexListings/1CDE42F1C243488910E35D61724ACB4EDF3DCD24.tex}}
+               You can only write \verb!{a,...,b}! sets in \verb!foreach! loops, with \verb!a! and \verb!b! being any number or integer variables.
+            
+         
+         
+         
+
+\subsubsubsection{ Note\\}
+\paragraph{}
+If you prefer using \verb!of! instead of \verb!in!, is  the \verb!foreach! construct it's up to you.
+         
+         
+         
+
+\subsubsubsection{ Current limitation\\}
+\paragraph{}
+Breaking to a specified label doesn't work in browser not natively supporting the \verb!for...of! structure. simple \verb!break! will however work as expected.
+         
+      
+      
+      
+
+\subsubsection{ The for...in statement}
+
+
+\paragraph{}
+The \verb!for...in! statement is a Javascript construction to iterate over indexes of lists or enumerable properties of objects.
+         {\lstinputlisting[language={}]{./latexListings/D18DE1893A2AC4973BCF91EF6C7DECA95C141871.tex}}
+         
+
+\subsubsubsection{ Note\\}
+\begin{itemize}
+	\item{ \verb!for...in! has not much sense on sets, as their elements have no indexes. Use \verb!foreach! or \verb!for...of! instead.}
+	\item{                if you need the index corresponding to the last iteration, declare the iteration variable before the loop :
+               
+               {\lstinputlisting[language={}]{./latexListings/7AC760268A7A9303FA0FF94A8F1A362C910E7617.tex}}
+            }
+\end{itemize}
+
+      
+
+      
+
+\subsubsection{ The for...of statement}
+
+
+\paragraph{}
+The \verb!for...of! statement is a more complicated yet more flexible way to do what \verb!foreach! does. It is an ECMAScript 6 structure handled by Audescript when browsers do not handle it themselves.
+         The real difference between foreach and \verb!for...of! if that the iteration variable must be explicitly declared :
+         {\lstinputlisting[language={}]{./latexListings/77AA6595F8FAE32F0493B490FE1C9135C329325A.tex}}
+
+         
+\paragraph{}
+If you need to know what was the last iterated element in the loop, \verb!foreach! does not really help you. On the contrary, \verb!for...of!, while probably less intuitive, let you do this in an elegant way:
+
+         {\lstinputlisting[language={}]{./latexListings/140FDAC4EA45CE6FA46B3C49F146BC3A0D36883D.tex}}
+
+         
+\paragraph{}
+If you want to stay compatible with pure ECMAScript, use \verb!for..of! instead of \verb!foreach!.
+
+         
+
+\subsubsubsection{ Current limitation\\}
+\paragraph{}
+Breaking to a specified label doesn't work in browser not natively supporting the \verb!for...of! structure. simple \verb!break! will however work as expected.
+         
+
+      
+   
+   
+
+\subsection{ The break statement}
+
+
+\paragraph{}
+\verb!break! lets you immediately get out of a loop even if the condition is true / if there are still instructions to execute:
+      
+      {\lstinputlisting[language={}]{./latexListings/8F506A79B2B6E2DFFBDB421DCB5D83743D561B70.tex}}
+   
+   
+   
+
+\subsection{ The continue statement}
+
+
+\paragraph{}
+\verb!continue! lets you jump to the next iteration, or get out of the current loop if no iterations remain, without executing the rest of the current iteration's instructions:
+
+      {\lstinputlisting[language={}]{./latexListings/7A12A9FBF9B2989AB99F70CDD5EAF982E99356BD.tex}}
+   
+   
+   
+
+\subsection{ The return statement}
+
+
+\paragraph{}
+\verb!return! lets you leave the current function, or program, leaving a value at the same time. You can return everywhere in your program or your function, even in a loop.
+      
+      {\lstinputlisting[language={}]{./latexListings/B71CC553FC5D95E863258F59B702ADA775C16233.tex}}
+   
+
+
+
+
+\section{ function statements}
+
+
+\paragraph{}
+Functions are fundamental to write and structure good non trivial programs. In Javascript, you can define functions at anytime (e.g. functions can be nested and can be defined in loops or if-else statements). They can take arguments and can call themselves.
+   
+   
+\paragraph{}
+Here is an implementation of the factorial:
+   {\lstinputlisting[language={}]{./latexListings/1506AC38D7BF77FA8B663CDBCCD3EB967C2B436B.tex}}
+
+   
+\paragraph{}
+If a function takes more than one arguments, they are separated with commas.
+
+   {\lstinputlisting[language={}]{./latexListings/BBB32CD135AAE5E1B9E7AA9F38295A4BCD9B209C.tex}}
+
+   
+\paragraph{}
+Functions have access to the variable of the scope in which they were defined:
+   
+   {\lstinputlisting[language={}]{./latexListings/A6771320687D8A6FA1BF9CF4C34FF95E069E7CFF.tex}}
+
+
+
+
+\section{ Literals}
+
+
+\paragraph{}
+In Audescript, literals are the same as Javascript, plus sets.
+   Briefly, we have numbers, strings, objects, arrays, regular expressions and functions.
+
+   
+\paragraph{}
+An important thing to notice is that Audescript supports abbreviated Javascript 1.8 functions.
+   
+
+\subsection{ Javascript literals}
+
+{\lstinputlisting[language={}]{./latexListings/849E580B317F8A13D6207F405776083E26A32EA3.tex}}
+      
+\paragraph{}
+For more information about Javascript literals, you can look at \href{MDN's%20Values+%20variables+%20and%20literals}{MDN's Values, variables, and literals}\footnote{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Values,\_variables,\_and\_literals} or the ECMAScript documentation.
+      For regular expressions, you can refer to \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular\_Expressions}{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular\_Expressions}\footnote{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular\_Expressions}.
+   
+
+   
+
+\subsection{ Set literals}
+
+
+\paragraph{}
+Audescript has built-in support for sets and has a dedicated a dedicated literal to represent it.
+
+      
+\paragraph{}
+A set literal starts with a open curly bracket (\verb!{!), ends with a close curly bracket (\verb!}!) and contains one or more values separated with commas.
+
+      
+\paragraph{}
+We could have represented the empty set by something like \verb!{}! but it would have been ambiguous with empty Javascript objects. Instead, the \verb!emptySet! keyword represent an empty set.
+
+      
+\paragraph{}
+Examples:
+
+      {\lstinputlisting[language={}]{./latexListings/ABE711B93CB8B020695E72B586090A192F03B9CC.tex}}
+   
+
+
+
+
+\section{ Operators}
+
+
+\paragraph{}
+Audescript understands every Javascript operator and adds several operators on sets.
+   
+   \paragraph{Important Note. } Audescript changes the signification of the \verb! == ! equality operator. See hereinafter.
+
+   
+
+\subsection{ JavaScript operators}
+
+
+
+\subsubsection{ Arithmetic operators    }
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression  } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v1}     &  The sum of \UseVerb{v2} and \UseVerb{v3}\tabularnewline
+\hline
+ \UseVerb{v4}     &  The difference of \UseVerb{v5} by \UseVerb{v6}\tabularnewline
+\hline
+ \UseVerb{v7}     &  The division of \UseVerb{v8} by \UseVerb{v9}\tabularnewline
+\hline
+ \UseVerb{v10}     &  The multiplication of \UseVerb{v11} and \UseVerb{v12}\tabularnewline
+\hline
+ \UseVerb{v13}     &  \UseVerb{v14} modulo \UseVerb{v15} (the reminder of the integer division of \UseVerb{v16} by \UseVerb{v17})\tabularnewline
+\hline
+\end{tabularx}
+      
+
+      
+
+\subsubsection{ Bitwise operators}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression    } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v18}         &  NOT \UseVerb{v19}\tabularnewline
+\hline
+ \UseVerb{v20}      &  \UseVerb{v21} AND \UseVerb{v22}\tabularnewline
+\hline
+ \UseVerb{v23}      &  \UseVerb{v24} OR  \UseVerb{v25}\tabularnewline
+\hline
+ \UseVerb{v26}       &  \UseVerb{v27} XOR \UseVerb{v28}\tabularnewline
+\hline
+ \UseVerb{v29}   &  Left shift. Shifts \UseVerb{v30} in binary representation \UseVerb{v31} (< 32) bits to the left, shifting in zeros from the right.\tabularnewline
+\hline
+ \UseVerb{v32}   &  Right shift. Shifts \UseVerb{v33} in binary representation \UseVerb{v34} (< 32) bits to the left, shifting in zeros from the right.\tabularnewline
+\hline
+ \UseVerb{v35}   &  Shifts \UseVerb{v36} in binary representation \UseVerb{v37} (< 32) bits to the right, discarding bits shifted off, and shifting in zeros from the left.\tabularnewline
+\hline
+\end{tabularx}
+
+         
+\paragraph{}
+For more information about bitwise operators, you might want to read the Bitwise Operators page of MDN where the last three lines of this table come from: (\href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise\_Operators}{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise\_Operators}).
+      
+
+      
+
+\subsubsection{ Assigning counterparts of these operators}
+
+
+\paragraph{}
+Let \verb!op! be one of the operators hereinbefore. \verb!a op= b! means \verb!a = a op b!.
+
+         
+\paragraph{}
+Example:
+
+            {\lstinputlisting[language={}]{./latexListings/10E715DD4EE85234568D200A7E5D39EBA3C9B13D.tex}}
+
+         
+\paragraph{}
+Moreover, if a is a number,
+         
+\begin{itemize}
+	\item{ \verb!++a! increments \verb!a! by 1 and returns the new value of \verb!a!;}
+	\item{ \verb!a++! increments \verb!a! by 1 and returns the old value of \verb!a!.}
+\end{itemize}
+
+
+      
+
+\subsubsection{ Comparison operators}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression  } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v38}    &  true iff \UseVerb{v39} greater than and not equal to \UseVerb{v40}\tabularnewline
+\hline
+ \UseVerb{v41}    &  true iff \UseVerb{v42} greater than or equal to \UseVerb{v43}\tabularnewline
+\hline
+ \UseVerb{v44}    &  true iff \UseVerb{v45} lower than and not equal to \UseVerb{v46}\tabularnewline
+\hline
+ \UseVerb{v47}   &  \UseVerb{v48}  iff \UseVerb{v49} is exactly the same object than \UseVerb{v50}\tabularnewline
+\hline
+ \UseVerb{v51}   &  \UseVerb{v52} iff \UseVerb{v53} is exactly the same object than \UseVerb{v54}\tabularnewline
+\hline
+\end{tabularx}
+
+         
+\paragraph{}
+In Audescript, the meaning of the operators \verb! ==! and \verb" !=" has been changed. The meaning of equality operator is discussed hereinafter.
+      
+      
+      
+
+\subsubsection{ Boolean operators}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression  } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v55}      &  if the boolean evaluation of \UseVerb{v56} is \UseVerb{v57}, then \UseVerb{v58}, otherwise \UseVerb{v59}.\tabularnewline
+\hline
+ \UseVerb{v60}  &  if the boolean evaluation of \UseVerb{v61} is true, then \UseVerb{v62}, otherwise \UseVerb{v63}\footnote{This different in C, where the meaning of the operator is the following: if the boolean evaluation of \UseVerb{v64} is \UseVerb{v65}, then \UseVerb{v66}, otherwise the boolean expression of \UseVerb{v67}.}. This operator is lazy, that is to say if \UseVerb{v68} evaluates to \UseVerb{v69}, \UseVerb{v70} is not evaluated.\tabularnewline
+\hline
+ \UseVerb{v71}  &  if the boolean evaluations of \UseVerb{v72} and \UseVerb{v73} are both \UseVerb{v74}, then \UseVerb{v75}, otherwise \UseVerb{v76}.\tabularnewline
+\hline
+\end{tabularx}
+         
+         
+
+\subsubsubsection{ Which expressions evaluates to true / false ?\\}\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression               } & {\bfseries  Boolean evaluation}\tabularnewline
+\hline
+ \UseVerb{v77}                  &  \UseVerb{v78}\tabularnewline
+\hline
+ \UseVerb{v79}                     &  \UseVerb{v80}\tabularnewline
+\hline
+ \UseVerb{v81}                      &  \UseVerb{v82}\tabularnewline
+\hline
+ \UseVerb{v83}                    &  \UseVerb{v84}\tabularnewline
+\hline
+ \UseVerb{v85}                     &  \UseVerb{v86}\tabularnewline
+\hline
+ Any non empty string       &  \UseVerb{v87}\tabularnewline
+\hline
+ Any number not equal to 0  &  \UseVerb{v88}\tabularnewline
+\hline
+ Any set, even empty        &  \UseVerb{v89}\tabularnewline
+\hline
+ Infinity, -Infinity        &  \UseVerb{v90}\tabularnewline
+\hline
+ Any other object           &  \UseVerb{v91}\tabularnewline
+\hline
+\end{tabularx}
+         
+      
+   
+
+   
+
+\subsection{ Meaning of the equality operators}
+
+
+\paragraph{}
+In Javascript, there are to equality operator: \verb! ==! and \verb! ===! (and their negative variant, \verb" !=" and \verb" !==").
+
+      
+\paragraph{}
+Both operators act the same way, except for comparisons between string and numbers. Let \verb!a! be a string and \verb!b! a number.
+       
+\begin{itemize}
+	\item{ \verb! a === b! and \verb! b === a! both evaluate to \verb!false!, for any \verb!a! and \verb!b!.}
+	\item{ \verb! a == b! and \verb! b == a!   evaluate to true if the string representation of \verb!b! is \verb!a!.}
+\end{itemize}
+
+\paragraph{}
+For the other cases, these operators are equivalent:
+       
+\begin{itemize}
+	\item{ if \verb!a! and \verb!b! are the same string, \verb!a == b!}
+	\item{ if \verb!a! and \verb!b! are the same number, \verb!a == b!}
+	\item{ if \verb!a! and \verb!b! are the same regular expression, \verb!a == b!.}
+	\item{ \verb!null  == null!}
+	\item{ \verb!true  == true!}
+	\item{ \verb!false == false!}
+	\item{ \verb"NaN   != NaN"}
+	\item{ if \verb!a! and \verb!b! {\bfseries point} to the same object, \verb!a == b!.}
+\end{itemize}
+
+\paragraph{}
+However, if \verb!a! and \verb!b! are point to distinct objects, \verb"a !== b" even if \verb!a! and \verb!b! are equivalent. For example:
+       {\lstinputlisting[language={}]{./latexListings/A763D03499CDE1DFE6A93A0BFEACC4BEB4F4DAA6.tex}}
+
+       
+\paragraph{}
+This is an important concern in Javascript, as we need to be able to check the equality between objects, in particular sets. Audescript, as a consequence, changes the meaning of the \verb! ==! operator, to be able to check equality between to distincts objects.
+
+       
+\paragraph{}
+In Audescript, we have:
+       {\lstinputlisting[language={}]{./latexListings/BED708F576D7D221602810F4BB3D1A15A80A95CB.tex}}
+
+       
+\paragraph{}
+Whereas \verb"new Objet != new Object" in pure Javascript.
+
+       \paragraph{Note. } The \verb! ===! and \verb" !==" operators remain unchanged.
+   
+
+   
+
+\subsection{ Set operators}
+
+
+\paragraph{}
+In addition to the modified \verb!==! and \verb"!=" operators, Audescript defines new operators. In the following table, \verb!A! and \verb!B! refer to two sets, or objects that can be turned into sets like objects or lists. \verb!e ! is any possible value.
+      
+      \noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression } &  =Signification\tabularnewline
+\hline
+  union  B          &  The union of A and B\tabularnewline
+\hline
+  inter  B          &  The intersection of A and B\tabularnewline
+\hline
+  minus  B          &  The difference of A by B\tabularnewline
+\hline
+ symDiff B          &  The symmetric difference of A and B\tabularnewline
+\hline
+ \UseVerb{v92}
+          \UseVerb{v93}
+          \UseVerb{v94}   &  \UseVerb{v95} iff \UseVerb{v96} is inside \UseVerb{v97}\tabularnewline
+\hline
+\end{tabularx}
+
+      
+
+\subsubsection{ Assigning counterparts of union, inter and minus}
+
+\noindent\begin{tabularx}{\linewidth}{|*{2}{X|}}
+\hline
+{\bfseries  Expression     } & {\bfseries  Signification}\tabularnewline
+\hline
+ \UseVerb{v98}  &                                 
+\begin{itemize}
+	\item{ Assign the union of A and B to A.}
+	\item{ More efficient than \UseVerb{v99}.}
+	\item{ Strictly equivalent to \UseVerb{v100}.}
+\end{itemize}
+\tabularnewline
+\hline
+ \UseVerb{v101}  &                                 
+\begin{itemize}
+	\item{ Assign the intersection of A and B to A}
+	\item{ More efficient than \UseVerb{v102}.}
+	\item{ Strictly equivalent to \UseVerb{v103}.}
+\end{itemize}
+\tabularnewline
+\hline
+ \UseVerb{v104}  &                                 
+\begin{itemize}
+	\item{ Assign the difference of A by B to A}
+	\item{ More efficient than \UseVerb{v105}.}
+	\item{ Strictly equivalent to \UseVerb{v106}.}
+\end{itemize}
+\tabularnewline
+\hline
+\end{tabularx}
+
+         \paragraph{Warning. } These operator exist for the sake of consistence with Javascript-native assigning operators. Before using assigning counterparts of set operators, please double check you visually prefer them to there equivalent expression. Triple check that your audience won't be lost with these operators if your code targets a particular audience (e.g. students).
+      
+   
+
+
+
+
+\section*{ Conclusion}
+
+
+\paragraph{}
+This document tries to remain complete on additions of and differences between Audescript to / and Javascript. This is far from covering all the language. For more information, you might want to read things on Javascript keeping differences covered here in mind.
+
+   
+
+\subsection*{ Ideas for the future}
+
+
+\begin{itemize}
+	\item{ comprehensive sets like \verb!{2k+1 | k in N}! would be awesome.}
+	\item{ Great ideas can be found here :
+\begin{itemize}
+	\item{ \href{http://koush.com/post/yield-await-v8}{http://koush.com/post/yield-await-v8}}
+	\item{ \href{http://mdn.beonex.com/en/JavaScript/New\_in\_JavaScript/1.7.html}{http://mdn.beonex.com/en/JavaScript/New\_in\_JavaScript/1.7.html}, in particular :
+\begin{itemize}
+	\item{ \verb!yeld!, to make generators}
+	\item{ the destructuring assignment}
+	\item{ array comprehensions (Python-lovers will appreciate)}
+	\item{ The \verb!let! statement: \href{http://mdn.beonex.com/en/JavaScript/Reference/Statements/let.html}{http://mdn.beonex.com/en/JavaScript/Reference/Statements/let.html}.}
+\end{itemize}
+}
+\end{itemize}
+}
+\end{itemize}
+
+\end{sloppypar}
+\end{document}
