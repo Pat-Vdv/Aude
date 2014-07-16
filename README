@@ -73,7 +73,7 @@ Installing
     
      $ DESTDIR=somewhere/else sudo make install
 
-    make install will then put things in somewhere/else/bin and somewhere/else/share/aude. Be sure somewhere/else/bin and somewhere/else/share exist and are folders.
+    make install will then put things in somewhere/else/bin and somewhere/else/share/aude.
 
     - To launch aude in firefox:
         $ BROWSER=firefox aude

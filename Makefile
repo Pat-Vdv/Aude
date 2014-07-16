@@ -1,4 +1,4 @@
-DESTDIR=/usr/local
+DESTDIR?=/usr/local
 
 all: dirlist.txt js/boot.js
 
@@ -39,7 +39,7 @@ minify-html:
 	echo "$$html" > index.html
 
 install:
-	mkdir -p ${DESTDIR}/share/aude
+	mkdir -p ${DESTDIR}/share/aude ${DESTDIR}/bin
 	cp -r ajs.js dirlist.txt algos icons index.html js l10n quiz style ${DESTDIR}/share/aude
 	cp aude audescript ${DESTDIR}/bin/
 	chmod +x ${DESTDIR}/bin/aude ${DESTDIR}/bin/audescript
