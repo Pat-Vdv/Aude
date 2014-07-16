@@ -118,7 +118,7 @@ let <span class="br0">&#40;</span>i<span class="sy0">=</span><span class="nu0">2
   <span class="kw1">var</span> g <span class="sy0">=</span> <span class="nu0">2</span><span class="sy0">;</span>
 <span class="br0">&#125;</span>
  
-alert<span class="br0">&#40;</span>g<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// g is not defined in Chromium, but is equal to 2 in Firefox.</span></pre></td></tr></tbody></table></div><p>Anyway, don't use the <code>var</code> keyword. Use <code>let</code> and don't define variable inside a block to have it define outside. Instead, write:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
+alert<span class="br0">&#40;</span>g<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// g is not defined in Chromium, but is equal to 2 in Firefox.</span></pre></td></tr></tbody></table></div><p>Anyway, don't use the <code>var</code> keyword. Use <code>let</code> and don't define variable inside a block to have it defined outside. Instead, write:</p><div class="whata-code-block whata-geshi"><table class="javascript"><tbody><tr class="li1"><td class="ln"><pre class="de1">1
 2
 3
 4
