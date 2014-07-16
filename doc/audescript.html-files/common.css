@@ -1,0 +1,158 @@
+body {
+	text-align:justify;
+    -moz-tab-size:4;
+    -webkit-tab-size:4;
+    tab-size:4;
+}
+
+pre {
+	margin:0;
+}
+
+pre.illustr {
+	margin-top:0.5ex;
+	margin-bottom:0.5ex;	
+}
+
+.whata p {text-indent:2ex}
+
+.whata li
+{
+        margin-top:0.25ex;
+        margin-bottom:0.25ex
+}
+
+.whata li p {
+       line-height:150%;
+}
+
+.whata ul>li {
+   list-style:none;
+   position:relative;
+   margin-left:4ex;
+}
+
+.whata ul {
+      padding-left:1ex
+}
+
+.whata ol {
+    padding-left:2em;
+}
+
+.whata ul>li:before {
+   position:absolute;
+   content:"–";
+   top:0;
+   left:-2ex;
+   line-height:150%;
+}
+
+.whata ul>li.whata-custom-list-item:before {
+    content:""
+}
+
+.whata ul>li.whata-custom-list-item {
+    margin-left:1ex
+}
+
+.whata-custom-list-item-content>:first-child,.whata-custom-list-item-content>:first-child>li {
+    margin-left:0;
+    text-indent:0
+}
+
+.whata-custom-list-item-content>ul:first-child>li {
+    margin-left:1.5ex
+}
+
+.whata-footnote {
+   clear:both;
+   font-size:small;
+}
+
+.whata-footnotes>p:first-child {
+    margin-bottom:0;
+    padding-bottom:0;
+    font-weight:bold;
+    border-top:1px solid gray
+}
+
+.whata-footnotes p {
+    text-indent:0
+}
+
+.whata-footnote-link {
+    font-size:small;
+    color:gray
+}
+
+.whata-footnotes>ul {
+    padding-left:2ex
+}
+
+
+.whata-table td, .whata-table th
+{
+    border:1px solid #555;
+    padding:3px;
+    background:#EEE;
+    background:rgba(255,255,255,0.6)
+}
+
+.whata-table th
+{
+    background:#EEE;
+    background:rgba(220,220,220,0.7)
+}
+
+.whata-geshi .ln
+{
+    background:#E7E7E7;
+    color:gray;
+}
+
+.whata-geshi td.de1
+{
+    padding-left:0.5ex
+}
+
+.whata-code-block, .whata-output
+{
+    background:white;
+    background:rgba(255,255,255,0.8);
+    margin-left:2em;
+    border:1px solid silver;
+    border-left:2px solid gray;
+    margin-right:1em;
+    overflow:auto
+}
+
+.whata blockquote
+{
+    padding-top:0.5ex;
+    padding-bottom:0.5ex;
+    padding-left:1ex;
+    padding-right:1ex;
+    margin-top:1ex;
+    margin-left:2.5em;
+    margin-bottom:0.5em;
+    background:#E4EEF3;
+    background:rgba(255,255,255,0.4);
+    border:1px solid #DDD
+}
+
+.whata-quote-header
+{
+    text-align:right;
+    font-style:italic;
+    margin-left:1em;
+    margin-top:0;
+    margin-bottom:0;
+    font-size:0.8em;
+    font-weight:bold;
+    color:#555
+}
+
+.whata-presentation-enabled p {
+    text-indent:0;
+}

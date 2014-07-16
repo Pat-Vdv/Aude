@@ -17,7 +17,7 @@
 ._4cs .sy0 {color: #000080;}
 ._4cs .st0 {color: #800080;}
 ._4cs .nu0 {color: #cc66cc;}
-._4cs .me1 {color: #66cc66;}
+._4cs .me1 {color: black;}
 ._4cs .ln-xtra, ._4cs li.ln-xtra, ._4cs div.ln-xtra {background-color: #ffc;}
 ._4cs span.xtra { display:block; }
 
@@ -170,11 +170,11 @@
 .actionscript .co2 {color: #808080; font-style: italic;}
 .actionscript .coMULTI {color: #808080; font-style: italic;}
 .actionscript .es0 {color: #000099; font-weight: bold;}
-.actionscript .br0 {color: #66cc66;}
-.actionscript .sy0 {color: #66cc66;}
-.actionscript .st0 {color: #ff0000;}
+.actionscript .br0 {color: black;}
+.actionscript .sy0 {color: black;}
+.actionscript .st0 {color: #BF0303;}
 .actionscript .nu0 {color: #cc66cc;}
-.actionscript .me1 {color: #006600;}
+.actionscript .me1 {color: black;}
 .actionscript .ln-xtra, .actionscript li.ln-xtra, .actionscript div.ln-xtra {background-color: #ffc;}
 .actionscript span.xtra { display:block; }
 
@@ -215,10 +215,10 @@
 .ada .co1 {color: #adadad; font-style: italic;}
 .ada .coMULTI {color: #808080; font-style: italic;}
 .ada .es0 {color: #000099; font-weight: bold;}
-.ada .br0 {color: #66cc66;}
-.ada .sy0 {color: #66cc66;}
+.ada .br0 {color: black;}
+.ada .sy0 {color: black;}
 .ada .st0 {color: #7f007f;}
-.ada .nu0 {color: #ff0000;}
+.ada .nu0 {color: #BF0303;}
 .ada .me1 {color: #202020;}
 .ada .ln-xtra, .ada li.ln-xtra, .ada div.ln-xtra {background-color: #ffc;}
 .ada span.xtra { display:block; }
@@ -229,11 +229,11 @@
 .algol68 li, .algol68 .li1 {font-weight: normal; vertical-align:top;}
 .algol68 .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .algol68 .li2 {font-weight: bold; vertical-align:top;}
-.algol68 .kw1 {color: #FF0000; font-weight: bold;}
+.algol68 .kw1 {color: #BF0303; font-weight: bold;}
 .algol68 .kw2 {color: #b1b100; font-weight: bold;}
 .algol68 .kw3 {color: #b1b100; font-weight: bold;}
 .algol68 .kw4 {color: #b1b100; font-weight: bold;}
-.algol68 .kw5 {color: #FF0000; font-weight: bold;}
+.algol68 .kw5 {color: #BF0303; font-weight: bold;}
 .algol68 .kw6 {color: #b1b100; font-weight: bold;}
 .algol68 .kw7 {color: #b1b100; font-weight: bold;}
 .algol68 .kw8 {color: #b1b100; font-weight: bold;}
@@ -244,8 +244,8 @@
 .algol68 .kw15 {color: #b1b100; font-weight: bold;}
 .algol68 .kw16 {color: #b1b100; font-weight: bold;}
 .algol68 .kw17 {color: #b1b100; font-weight: bold;}
-.algol68 .kw18 {color: #FF0000; font-weight: bold;}
-.algol68 .kw19 {color: #FF0000; font-weight: bold;}
+.algol68 .kw18 {color: #BF0303; font-weight: bold;}
+.algol68 .kw19 {color: #BF0303; font-weight: bold;}
 .algol68 .kw20 {color: #b1b100;}
 .algol68 .kw21 {color: #b1b100;}
 .algol68 .kw22 {color: #b1b100;}
@@ -287,7 +287,7 @@
 .apache .br0 {color: #339933;}
 .apache .sy0 {color: #008000;}
 .apache .st0 {color: #7f007f;}
-.apache .nu0 {color: #ff0000;}
+.apache .nu0 {color: #BF0303;}
 .apache .ln-xtra, .apache li.ln-xtra, .apache div.ln-xtra {background-color: #ffc;}
 .apache span.xtra { display:block; }
 
@@ -301,15 +301,15 @@
 .applescript .kw2 {color: #ff0033;}
 .applescript .kw3 {color: #ff0033; font-weight: bold;}
 .applescript .co1 {color: #808080; font-style: italic;}
-.applescript .co3 {color: #ff0000;}
+.applescript .co3 {color: #BF0303;}
 .applescript .coMULTI {color: #808080; font-style: italic;}
 .applescript .es0 {color: #000000; font-weight: bold;}
 .applescript .br0 {color: #000000;}
 .applescript .sy0 {color: #000000;}
 .applescript .st0 {color: #009900;}
 .applescript .nu0 {color: #000000;}
-.applescript .me1 {color: #006600;}
-.applescript .me2 {color: #006600;}
+.applescript .me1 {color: black;}
+.applescript .me2 {color: black;}
 .applescript .re0 {color: #339933;}
 .applescript .re4 {color: #0066ff;}
 .applescript .ln-xtra, .applescript li.ln-xtra, .applescript div.ln-xtra {background-color: #ffc;}
@@ -376,7 +376,7 @@
 .arm .br0 {color: #009900; font-weight: bold;}
 .arm .sy0 {color: #339933;}
 .arm .st0 {color: #7f007f;}
-.arm .nu0 {color: #ff0000;}
+.arm .nu0 {color: #BF0303;}
 .arm .ln-xtra, .arm li.ln-xtra, .arm div.ln-xtra {background-color: #ffc;}
 .arm span.xtra { display:block; }
 
@@ -399,7 +399,7 @@
 .asm .sy1 {color: #339933;}
 .asm .sy2 {color: #0000ff; font-weight: bold;}
 .asm .st0 {color: #7f007f;}
-.asm .nu0 {color: #ff0000;}
+.asm .nu0 {color: #BF0303;}
 .asm .ln-xtra, .asm li.ln-xtra, .asm div.ln-xtra {background-color: #ffc;}
 .asm span.xtra { display:block; }
 
@@ -416,8 +416,8 @@
 .asp .co2 {color: #ff6600;}
 .asp .coMULTI {color: #008000;}
 .asp .es0 {color: #000099; font-weight: bold;}
-.asp .br0 {color: #006600; font-weight:bold;}
-.asp .sy0 {color: #006600; font-weight: bold;}
+.asp .br0 {color: black; font-weight:bold;}
+.asp .sy0 {color: black; font-weight: bold;}
 .asp .sy1 {color: #000000; font-weight: bold;}
 .asp .st0 {color: #cc0000;}
 .asp .nu0 {color: #800000;}
@@ -437,7 +437,7 @@
 .asymptote .kw4 {color: #009900; font-weight: bold;}
 .asymptote .co1 {color: #666666;}
 .asymptote .co2 {color: #339900;}
-.asymptote .coMULTI {color: #ff0000; font-style: italic;}
+.asymptote .coMULTI {color: #BF0303; font-style: italic;}
 .asymptote .es0 {color: #000099; font-weight: bold;}
 .asymptote .es1 {color: #000099; font-weight: bold;}
 .asymptote .es2 {color: #660099; font-weight: bold;}
@@ -451,8 +451,8 @@
 .asymptote .sy3 {color: #000040;}
 .asymptote .sy4 {color: #008080;}
 .asymptote .sy5 {color: #009080;}
-.asymptote .st0 {color: #FF0000;}
-.asymptote .nu0 {color: #0000dd;}
+.asymptote .st0 {color: #BF0303;}
+.asymptote .nu0 {color: #B08000;}
 .asymptote .nu6 {color: #208080;}
 .asymptote .nu8 {color: #208080;}
 .asymptote .nu12 {color: #208080;}
@@ -475,7 +475,7 @@
 .autoconf .co1 {color: #666666;}
 .autoconf .co2 {color: #339900;}
 .autoconf .co3 {color: #666666;}
-.autoconf .coMULTI {color: #ff0000; font-style: italic;}
+.autoconf .coMULTI {color: #BF0303; font-style: italic;}
 .autoconf .es0 {color: #000099;}
 .autoconf .es1 {color: #000099;}
 .autoconf .es2 {color: #660099;}
@@ -489,7 +489,7 @@
 .autoconf .sy3 {color: #000040;}
 .autoconf .sy4 {color: #008080;}
 .autoconf .st0 {color: #996600;}
-.autoconf .nu0 {color: #0000dd;}
+.autoconf .nu0 {color: #B08000;}
 .autoconf .nu6 {color: #208080;}
 .autoconf .nu8 {color: #208080;}
 .autoconf .nu12 {color: #208080;}
@@ -513,7 +513,7 @@
 .autohotkey .kw3 {color: #FF00FF; font-style: italic;}
 .autohotkey .kw4 {color: #888844; font-weight: bold;}
 .autohotkey .kw5 {color: #000000; font-style: italic;}
-.autohotkey .kw6 {color: #FF0000; font-style: italic;}
+.autohotkey .kw6 {color: #BF0303; font-style: italic;}
 .autohotkey .kw7 {color: #000000; font-style: italic;}
 .autohotkey .kw8 {color: #000000; font-style: italic;}
 .autohotkey .coMULTI {font-style: italic; color: #669900;}
@@ -521,7 +521,7 @@
 .autohotkey .br0 {color: #00FF00; font-weight: bold;}
 .autohotkey .sy0 {color: #000000; font-weight: italic;}
 .autohotkey .st0 {font-weight: bold; color: #008080;}
-.autohotkey .nu0 {color: #0000dd;}
+.autohotkey .nu0 {color: #B08000;}
 .autohotkey .me1 {color: #0000FF; font-style: italic; font-weight: italic;}
 .autohotkey .re0 {font-weight: italic; color: #A00A0;}
 .autohotkey .re1 {color: #CC0000; font-style: italic;}
@@ -545,8 +545,8 @@
 .autoit .coMULTI {font-style: italic; color: #669900;}
 .autoit .co0 {font-style: italic; color: #009933;}
 .autoit .co1 {font-style: italic; color: #9977BB;}
-.autoit .br0 {color: #FF0000; font-weight: bold;}
-.autoit .sy0 {color: #FF0000; font-weight: bold;}
+.autoit .br0 {color: #BF0303; font-weight: bold;}
+.autoit .sy0 {color: #BF0303; font-weight: bold;}
 .autoit .st0 {font-weight: bold; color: #9977BB;}
 .autoit .nu0 {color: #AC00A9; font-style: italic; font-weight: bold;}
 .autoit .me1 {color: #0000FF; font-style: italic; font-weight: bold;}
@@ -567,8 +567,8 @@
 .avisynth .co1 {color:#008000; font-style:italic;}
 .avisynth .coMULTI {color:#000080; font-style:italic;}
 .avisynth .es0 {color:#000099;}
-.avisynth .br0 {color:#006600; font-weight:bold;}
-.avisynth .sy0 {color:#006600; font-weight:bold;}
+.avisynth .br0 {color:black; font-weight:bold;}
+.avisynth .sy0 {color:black; font-weight:bold;}
 .avisynth .st0 {color:#996600;}
 .avisynth .nu0 {color:#006666;}
 .avisynth .me1 {color:#9900CC;}
@@ -596,7 +596,7 @@
 .awk .sy3 {color:black;}
 .awk .sy4 {color:#C4C364;}
 .awk .sy5 {color:black;font-weight:bold;}
-.awk .st0 {color: #ff0000;}
+.awk .st0 {color: #BF0303;}
 .awk .nu0 {color: #000000;}
 .awk .re0 {color:#000088;}
 .awk .ln-xtra, .awk li.ln-xtra, .awk div.ln-xtra {background-color: #ffc;}
@@ -609,7 +609,7 @@
 .bascomavr .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .bascomavr .li2 {font-weight: bold; vertical-align:top;}
 .bascomavr .kw1 {color: #000080; font-weight: bold;}
-.bascomavr .kw2 {color: #FF0000;}
+.bascomavr .kw2 {color: #BF0303;}
 .bascomavr .kw3 {color: #0000FF;}
 .bascomavr .kw4 {color: #0080FF;}
 .bascomavr .co1 {color: #657CC4; font-style: italic;}
@@ -642,8 +642,8 @@
 .bash .es_h {color: #000099; font-weight: bold;}
 .bash .br0 {color: #7a0874; font-weight: bold;}
 .bash .sy0 {color: #000000; font-weight: bold;}
-.bash .st0 {color: #ff0000;}
-.bash .st_h {color: #ff0000;}
+.bash .st0 {color: #BF0303;}
+.bash .st_h {color: #BF0303;}
 .bash .nu0 {color: #000000;}
 .bash .re0 {color: #007800;}
 .bash .re1 {color: #007800;}
@@ -660,7 +660,7 @@
 .basic4gl .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .basic4gl .li2 {font-weight: bold; vertical-align:top;}
 .basic4gl .kw1 {color: #000080; font-weight: bold;}
-.basic4gl .kw2 {color: #FF0000;}
+.basic4gl .kw2 {color: #BF0303;}
 .basic4gl .kw3 {color: #0000FF;}
 .basic4gl .co1 {color: #657CC4; font-style: italic;}
 .basic4gl .br0 {color: #000080;}
@@ -678,12 +678,12 @@
 .bf .li2 {font-weight: bold; vertical-align:top;}
 .bf .co1 {color: #666666; font-style: italic;}
 .bf .br0 {color: #660000;}
-.bf .sy0 {color: #006600;}
+.bf .sy0 {color: black;}
 .bf .sy1 {color: #660000;}
 .bf .sy2 {color: #000066;}
 .bf .sy3 {color: #666600;}
 .bf .sy4 {color: #660066;}
-.bf .st0 {color: #ff0000;}
+.bf .st0 {color: #BF0303;}
 .bf .ln-xtra, .bf li.ln-xtra, .bf div.ln-xtra {background-color: #ffc;}
 .bf span.xtra { display:block; }
 
@@ -722,7 +722,7 @@
 .blitzbasic .sy0 {color: #000066;}
 .blitzbasic .st0 {color: #009900;}
 .blitzbasic .nu0 {color: #CC0000;}
-.blitzbasic .me1 {color: #006600;}
+.blitzbasic .me1 {color: black;}
 .blitzbasic .ln-xtra, .blitzbasic li.ln-xtra, .blitzbasic div.ln-xtra {background-color: #ffc;}
 .blitzbasic span.xtra { display:block; }
 
@@ -737,7 +737,7 @@
 .bnf .sy1 {color: #000066; font-weight: bold;}
 .bnf .sy2 {color: #000066; font-weight: bold;}
 .bnf .sy3 {color: #000066; font-weight: bold;}
-.bnf .sy4 {color: #006600; font-weight: bold;}
+.bnf .sy4 {color: black; font-weight: bold;}
 .bnf .st0 {color: #a00;}
 .bnf .st1 {color: #a00;}
 .bnf .re0 {color: #007;}
@@ -791,7 +791,7 @@
 .c .kw1 {color: #b1b100;}
 .c .kw2 {color: #000000; font-weight: bold;}
 .c .kw3 {color: #000066;}
-.c .kw4 {color: #993333;}
+.c .kw4 {color: #0057AE;}
 .c .co1 {color: #666666; font-style: italic;}
 .c .co2 {color: #339933;}
 .c .coMULTI {color: #808080; font-style: italic;}
@@ -803,8 +803,8 @@
 .c .es5 {color: #006699; font-weight: bold;}
 .c .br0 {color: #009900;}
 .c .sy0 {color: #339933;}
-.c .st0 {color: #ff0000;}
-.c .nu0 {color: #0000dd;}
+.c .st0 {color: #BF0303;}
+.c .nu0 {color: #B08000;}
 .c .nu6 {color: #208080;}
 .c .nu8 {color: #208080;}
 .c .nu12 {color: #208080;}
@@ -859,11 +859,11 @@
 .c_mac .li2 {font-weight: bold; vertical-align:top;}
 .c_mac .kw1 {color: #0000ff;}
 .c_mac .kw2 {color: #0000ff;}
-.c_mac .kw3 {color: #0000dd;}
+.c_mac .kw3 {color: #B08000;}
 .c_mac .kw4 {color: #0000ff;}
-.c_mac .co1 {color: #ff0000;}
+.c_mac .co1 {color: #BF0303;}
 .c_mac .co2 {color: #339900;}
-.c_mac .coMULTI {color: #ff0000; font-style: italic;}
+.c_mac .coMULTI {color: #BF0303; font-style: italic;}
 .c_mac .es0 {color: #000099; font-weight: bold;}
 .c_mac .es1 {color: #000099; font-weight: bold;}
 .c_mac .es2 {color: #660099; font-weight: bold;}
@@ -873,7 +873,7 @@
 .c_mac .br0 {color: #000000;}
 .c_mac .sy0 {color: #000000;}
 .c_mac .st0 {color: #666666;}
-.c_mac .nu0 {color: #0000dd;}
+.c_mac .nu0 {color: #B08000;}
 .c_mac .nu6 {color: #208080;}
 .c_mac .nu8 {color: #208080;}
 .c_mac .nu12 {color: #208080;}
@@ -896,9 +896,9 @@
 .caddcl .co1 {color: #808080; font-style: italic;}
 .caddcl .coMULTI {color: #808080; font-style: italic;}
 .caddcl .es0 {color: #000099; font-weight: bold;}
-.caddcl .br0 {color: #66cc66;}
-.caddcl .sy0 {color: #66cc66;}
-.caddcl .st0 {color: #ff0000;}
+.caddcl .br0 {color: black;}
+.caddcl .sy0 {color: black;}
+.caddcl .st0 {color: #BF0303;}
 .caddcl .nu0 {color: #cc66cc;}
 .caddcl .ln-xtra, .caddcl li.ln-xtra, .caddcl div.ln-xtra {background-color: #ffc;}
 .caddcl span.xtra { display:block; }
@@ -913,9 +913,9 @@
 .cadlisp .co1 {color: #808080; font-style: italic;}
 .cadlisp .coMULTI {color: #808080; font-style: italic;}
 .cadlisp .es0 {color: #000099; font-weight: bold;}
-.cadlisp .br0 {color: #66cc66;}
-.cadlisp .sy0 {color: #66cc66;}
-.cadlisp .st0 {color: #ff0000;}
+.cadlisp .br0 {color: black;}
+.cadlisp .sy0 {color: black;}
+.cadlisp .st0 {color: #BF0303;}
 .cadlisp .nu0 {color: #cc66cc;}
 .cadlisp .ln-xtra, .cadlisp li.ln-xtra, .cadlisp div.ln-xtra {background-color: #ffc;}
 .cadlisp span.xtra { display:block; }
@@ -933,12 +933,12 @@
 .cfdg .co2 {color: #808080; font-style: italic;}
 .cfdg .coMULTI {color: #808080; font-style: italic;}
 .cfdg .es0 {color: #000099; font-weight: bold;}
-.cfdg .br0 {color: #66cc66;}
-.cfdg .sy0 {color: #66cc66;}
-.cfdg .st0 {color: #ff0000;}
+.cfdg .br0 {color: black;}
+.cfdg .sy0 {color: black;}
+.cfdg .st0 {color: #BF0303;}
 .cfdg .nu0 {color: #cc66cc;}
-.cfdg .me1 {color: #006600;}
-.cfdg .me2 {color: #006600;}
+.cfdg .me1 {color: black;}
+.cfdg .me2 {color: black;}
 .cfdg .ln-xtra, .cfdg li.ln-xtra, .cfdg div.ln-xtra {background-color: #ffc;}
 .cfdg span.xtra { display:block; }
 
@@ -961,7 +961,7 @@
 .cfm .br0 {color: #0000FF;}
 .cfm .sy0 {color: #0000FF;}
 .cfm .st0 {color: #009900;}
-.cfm .nu0 {color: #FF0000;}
+.cfm .nu0 {color: #BF0303;}
 .cfm .sc0 {color: #808080; font-style: italic;}
 .cfm .sc1 {color: #00bbdd;}
 .cfm .sc2 {color: #0000FF;}
@@ -980,9 +980,9 @@
 .chaiscript .kw1 {color: #000066; font-weight: bold;}
 .chaiscript .kw2 {color: #003366; font-weight: bold;}
 .chaiscript .kw3 {color: #000066;}
-.chaiscript .co1 {color: #006600; font-style: italic;}
+.chaiscript .co1 {color: black; font-style: italic;}
 .chaiscript .co2 {color: #009966; font-style: italic;}
-.chaiscript .coMULTI {color: #006600; font-style: italic;}
+.chaiscript .coMULTI {color: black; font-style: italic;}
 .chaiscript .es0 {color: #000099; font-weight: bold;}
 .chaiscript .br0 {color: #009900;}
 .chaiscript .sy0 {color: #339933;}
@@ -1029,9 +1029,9 @@
 .clojure .co1 {color: #808080; font-style: italic;}
 .clojure .coMULTI {color: #808080; font-style: italic;}
 .clojure .es0 {color: #000099; font-weight: bold;}
-.clojure .br0 {color: #66cc66;}
-.clojure .sy0 {color: #66cc66;}
-.clojure .st0 {color: #ff0000;}
+.clojure .br0 {color: black;}
+.clojure .sy0 {color: black;}
+.clojure .st0 {color: #BF0303;}
 .clojure .nu0 {color: #cc66cc;}
 .clojure .me0 {color: #555;}
 .clojure .me1 {color: #555;}
@@ -1074,7 +1074,7 @@
 .cobol .es0 {color: #000099; font-weight: bold;}
 .cobol .br0 {color: #339933;}
 .cobol .sy0 {color: #000066;}
-.cobol .st0 {color: #ff0000;}
+.cobol .st0 {color: #BF0303;}
 .cobol .nu0 {color: #993399;}
 .cobol .me1 {color: #202020;}
 .cobol .ln-xtra, .cobol li.ln-xtra, .cobol div.ln-xtra {background-color: #ffc;}
@@ -1094,7 +1094,7 @@
 .coffeescript .coMULTI {color: #808080; font-style: italic;}
 .coffeescript .es0 {color: #000099; font-weight: bold;}
 .coffeescript .br0 {color: black;}
-.coffeescript .sy0 {color: #66cc66;}
+.coffeescript .sy0 {color: black;}
 .coffeescript .st0 {color: #483d8b;}
 .coffeescript .nu0 {color: #ff4500;}
 .coffeescript .me1 {color: black;}
@@ -1109,11 +1109,11 @@
 .cpp .li2 {font-weight: bold; vertical-align:top;}
 .cpp .kw1 {color: #0000ff;}
 .cpp .kw2 {color: #0000ff;}
-.cpp .kw3 {color: #0000dd;}
+.cpp .kw3 {color: #B08000;}
 .cpp .kw4 {color: #0000ff;}
 .cpp .co1 {color: #666666;}
 .cpp .co2 {color: #339900;}
-.cpp .coMULTI {color: #ff0000; font-style: italic;}
+.cpp .coMULTI {color: #BF0303; font-style: italic;}
 .cpp .es0 {color: #000099; font-weight: bold;}
 .cpp .es1 {color: #000099; font-weight: bold;}
 .cpp .es2 {color: #660099; font-weight: bold;}
@@ -1126,8 +1126,8 @@
 .cpp .sy2 {color: #000040;}
 .cpp .sy3 {color: #000040;}
 .cpp .sy4 {color: #008080;}
-.cpp .st0 {color: #FF0000;}
-.cpp .nu0 {color: #0000dd;}
+.cpp .st0 {color: #BF0303;}
+.cpp .nu0 {color: #B08000;}
 .cpp .nu6 {color: #208080;}
 .cpp .nu8 {color: #208080;}
 .cpp .nu12 {color: #208080;}
@@ -1198,7 +1198,7 @@
 .csharp .sy0 {color: #008000;}
 .csharp .st0 {color: #666666;}
 .csharp .st_h {color: #666666;}
-.csharp .nu0 {color: #FF0000;}
+.csharp .nu0 {color: #BF0303;}
 .csharp .me1 {color: #0000FF;}
 .csharp .me2 {color: #0000FF;}
 .csharp .ln-xtra, .csharp li.ln-xtra, .csharp div.ln-xtra {background-color: #ffc;}
@@ -1211,15 +1211,15 @@
 .css .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .css .li2 {font-weight: bold; vertical-align:top;}
 .css .kw1 {color: #000000; font-weight: bold;}
-.css .kw2 {color: #993333;}
+.css .kw2 {color: #0057AE;}
 .css .co1 {color: #a1a100;}
-.css .co2 {color: #ff0000; font-style: italic;}
+.css .co2 {color: #BF0303; font-style: italic;}
 .css .coMULTI {color: #808080; font-style: italic;}
 .css .es0 {color: #000099; font-weight: bold;}
 .css .es2 {color: #000099; font-weight: bold;}
 .css .br0 {color: #00AA00;}
 .css .sy0 {color: #00AA00;}
-.css .st0 {color: #ff0000;}
+.css .st0 {color: #BF0303;}
 .css .nu0 {color: #cc66cc;}
 .css .re0 {color: #cc00cc;}
 .css .re1 {color: #6666ff;}
@@ -1243,7 +1243,7 @@
 .cuesheet .br0 {color: #0000ff;}
 .cuesheet .sy0 {color: #000066;}
 .cuesheet .st0 {color: #0000ff;}
-.cuesheet .nu0 {color: #006600;}
+.cuesheet .nu0 {color: black;}
 .cuesheet .re1 {color: #000099;}
 .cuesheet .re2 {color: #009900;}
 .cuesheet .ln-xtra, .cuesheet li.ln-xtra, .cuesheet div.ln-xtra {background-color: #ffc;}
@@ -1255,37 +1255,37 @@
 .d li, .d .li1 {font-weight: normal; vertical-align:top;}
 .d .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .d .li2 {font-weight: bold; vertical-align:top;}
-.d .kw1 {color: #b1b100;}
-.d .kw2 {color: #000000; font-weight: bold;}
+.d .kw1 {color: black; font-weight:bold;}
+.d .kw2 {color: black; font-weight: bold;}
 .d .kw3 {color: #aaaadd; font-weight: bold;}
-.d .kw4 {color: #993333;}
-.d .co1 {color: #808080; font-style: italic;}
+.d .kw4 {color: #0057AE;}
+.d .co1 {color: #8C8887;}
 .d .co2 {color: #009933; font-style: italic;}
 .d .co3 {color: #009933; font-style: italic;}
-.d .co4 {color: #ff0000;}
+.d .co4 {color: #BF0303;}
 .d .co5 {color: #0040ff;}
-.d .coMULTI {color: #808080; font-style: italic;}
+.d .coMULTI {color: #8C8887;}
 .d .es0 {color: #000099; font-weight: bold;}
-.d .es1 {color: #000099; font-weight: bold;}
+.d .es1 {color: #0BAA88; font-weight: bold;}
 .d .es2 {color: #660099; font-weight: bold;}
-.d .es3 {color: #660099; font-weight: bold;}
+/* .d .es3 {color: #660099; font-weight: bold;} */
 .d .es4 {color: #660099; font-weight: bold;}
 .d .es5 {color: #006699; font-weight: bold;}
 .d .es6 {color: #666699; font-weight: bold; font-style: italic;}
-.d .br0 {color: #66cc66;}
-.d .sy0 {color: #66cc66;}
-.d .st0 {color: #ff0000;}
-.d .st_h {color: #ff0000;}
-.d .nu0 {color: #0000dd;}
+.d .br0 {color: black;}
+.d .sy0 {color: black;}
+.d .st0 {color: #BF0303;}
+.d .st_h {color: #BF0303;}
+.d .nu0 {color: #B08000;}
 .d .nu6 {color: #208080;}
 .d .nu8 {color: #208080;}
 .d .nu12 {color: #208080;}
-.d .nu16 {color:#800080;}
+.d .nu16 {color:#800080;} /**/
 .d .nu17 {color:#800080;}
 .d .nu18 {color:#800080;}
 .d .nu19 {color:#800080;}
-.d .me1 {color: #006600;}
-.d .me2 {color: #006600;}
+.d .me1 {color: black;}
+.d .me2 {color: black;}
 .d .ln-xtra, .d li.ln-xtra, .d div.ln-xtra {background-color: #ffc;}
 .d span.xtra { display:block; }
 
@@ -1331,7 +1331,7 @@
 .dcpu16 .sy0 {color: #008000;}
 .dcpu16 .st0 {color: #7f007f;}
 .dcpu16 .nu0 {color: #880000;}
-.dcpu16 .re2 {color: #993333;}
+.dcpu16 .re2 {color: #0057AE;}
 .dcpu16 .ln-xtra, .dcpu16 li.ln-xtra, .dcpu16 div.ln-xtra {background-color: #ffc;}
 .dcpu16 span.xtra { display:block; }
 
@@ -1366,17 +1366,17 @@
 .delphi .co1 {color: #808080; font-style: italic;}
 .delphi .co2 {color: #008000; font-style: italic;}
 .delphi .coMULTI {color: #808080; font-style: italic;}
-.delphi .es0 {color: #ff0000; font-weight: bold;}
+.delphi .es0 {color: #BF0303; font-weight: bold;}
 .delphi .br0 {color: #000066;}
 .delphi .sy0 {color: #000066;}
 .delphi .sy1 {color: #000066;}
 .delphi .sy2 {color: #000066;}
 .delphi .sy3 {color: #000066;}
-.delphi .st0 {color: #ff0000;}
+.delphi .st0 {color: #BF0303;}
 .delphi .nu0 {color: #0000ff;}
-.delphi .me1 {color: #006600;}
+.delphi .me1 {color: black;}
 .delphi .re0 {color: #0000cc;}
-.delphi .re1 {color: #ff0000;}
+.delphi .re1 {color: #BF0303;}
 .delphi .ln-xtra, .delphi li.ln-xtra, .delphi div.ln-xtra {background-color: #ffc;}
 .delphi span.xtra { display:block; }
 
@@ -1409,12 +1409,12 @@
 .div .kw1 {color: #0040b1;}
 .div .kw2 {color: #000000;}
 .div .kw3 {color: #000066; font-weight: bold;}
-.div .kw4 {color: #993333;}
+.div .kw4 {color: #0057AE;}
 .div .co1 {color: #808080; font-style: italic;}
 .div .coMULTI {color: #808080; font-style: italic;}
 .div .br0 {color: #44aa44;}
 .div .sy0 {color: #44aa44;}
-.div .st0 {color: #ff0000;}
+.div .st0 {color: #BF0303;}
 .div .nu0 {color: #cc66cc;}
 .div .me0 {color: #202020;}
 .div .ln-xtra, .div li.ln-xtra, .div div.ln-xtra {background-color: #ffc;}
@@ -1433,11 +1433,11 @@
 .dos .co1 {color: #808080; font-style: italic;}
 .dos .co2 {color: #b100b1; font-style: italic;}
 .dos .co3 {color: #33cc33;}
-.dos .es0 {color: #ff0000; font-weight: bold;}
-.dos .br0 {color: #66cc66;}
+.dos .es0 {color: #BF0303; font-weight: bold;}
+.dos .br0 {color: black;}
 .dos .sy0 {color: #33cc33;}
 .dos .sy1 {color: #33cc33;}
-.dos .st0 {color: #ff0000;}
+.dos .st0 {color: #BF0303;}
 .dos .nu0 {color: #cc66cc;}
 .dos .re0 {color: #b100b1; font-weight: bold;}
 .dos .re1 {color: #448844;}
@@ -1454,15 +1454,15 @@
 .dot .li2 {font-weight: bold; vertical-align:top;}
 .dot .kw1 {color: #000066;}
 .dot .kw2 {color: #000000; font-weight: bold;}
-.dot .kw3 {color: #993333;}
+.dot .kw3 {color: #0057AE;}
 .dot .kw4 {color: #b1b100;}
 .dot .co1 {color: #808080; font-style: italic;}
 .dot .co2 {color: #339933;}
 .dot .coMULTI {color: #808080; font-style: italic;}
 .dot .es0 {color: #af624d; font-weight: bold;}
-.dot .br0 {color: #66cc66;}
-.dot .sy0 {color: #66cc66;}
-.dot .st0 {color: #ff0000;}
+.dot .br0 {color: black;}
+.dot .sy0 {color: black;}
+.dot .st0 {color: #BF0303;}
 .dot .nu0 {color: #cc66cc;}
 .dot .ln-xtra, .dot li.ln-xtra, .dot div.ln-xtra {background-color: #ffc;}
 .dot span.xtra { display:block; }
@@ -1543,10 +1543,10 @@
 .eiffel .kw5 {color: #603000;}
 .eiffel .co1 {color: #008000; font-style: italic;}
 .eiffel .es0 {color: #005070; font-weight: bold;}
-.eiffel .br0 {color: #FF0000;}
+.eiffel .br0 {color: #BF0303;}
 .eiffel .sy0 {color: #600000;}
 .eiffel .st0 {color: #0080A0;}
-.eiffel .nu0 {color: #FF0000;}
+.eiffel .nu0 {color: #BF0303;}
 .eiffel .me1 {color: #000060;}
 .eiffel .me2 {color: #000050;}
 .eiffel .ln-xtra, .eiffel li.ln-xtra, .eiffel div.ln-xtra {background-color: #ffc;}
@@ -1563,9 +1563,9 @@
 .email .kw3 {color: #800000; font-weight: bold;}
 .email .kw4 {font-weight: bold;}
 .email .es0 {color: #000099; font-weight: bold;}
-.email .br0 {color: #66cc66;}
-.email .sy0 {color: #66cc66;}
-.email .st0 {color: #ff0000;}
+.email .br0 {color: black;}
+.email .sy0 {color: black;}
+.email .st0 {color: #BF0303;}
 .email .nu0 {color: #cc66cc;}
 .email .sc0 {color: #000040;}
 .email .re1 {color: #000000; font-weight: bold;}
@@ -1620,8 +1620,8 @@
 .erlang .sy3 {color: #014ea4;}
 .erlang .st0 {color: #ff7800;}
 .erlang .nu0 {color: #ff9600;}
-.erlang .me1 {color: #006600;}
-.erlang .me2 {color: #006600;}
+.erlang .me1 {color: black;}
+.erlang .me2 {color: black;}
 .erlang .re0 {color: #6941fd;}
 .erlang .re1 {color: #d400ed;}
 .erlang .re2 {color: #5400b3;}
@@ -1642,7 +1642,7 @@
 .euphoria .li2 {font-weight: bold; vertical-align:top;}
 .euphoria .kw1 {color: #0000ff; font-weight: bold;}
 .euphoria .kw2 {color: #cc33ff; font-weight: bold;}
-.euphoria .co1 {color: #ff0000; font-style: italic;}
+.euphoria .co1 {color: #BF0303; font-style: italic;}
 .euphoria .es0 {color: #009900; font-weight: bold;}
 .euphoria .br0 {color: #999900; font-weight: bold;}
 .euphoria .sy0 {color: #999900;}
@@ -1674,7 +1674,7 @@
 .f1 .sy2 {color: #000000;}
 .f1 .sy3 {color: #000000;}
 .f1 .sy4 {color: #000000;}
-.f1 .st0 {color: #ff0000;}
+.f1 .st0 {color: #BF0303;}
 .f1 .nu0 {color: #800000;}
 .f1 .me1 {color: #202020;}
 .f1 .ln-xtra, .f1 li.ln-xtra, .f1 div.ln-xtra {background-color: #ffc;}
@@ -1714,8 +1714,8 @@
 .fo .li2 {font-weight: bold; vertical-align:top;}
 .fo .kw1 {color: #000000; font-weight: bold;}
 .fo .kw2 {color: #000000; font-weight: bold;}
-.fo .kw3 {color: #006600; font-weight: bold;}
-.fo .kw4 {color: #006600; font-weight: bold;}
+.fo .kw3 {color: black; font-weight: bold;}
+.fo .kw4 {color: black; font-weight: bold;}
 .fo .kw5 {color: #003399; font-weight: bold;}
 .fo .kw6 {color: #003399; font-weight: bold;}
 .fo .kw7 {color: #003399; font-weight: bold;}
@@ -1746,14 +1746,14 @@
 .fortran .kw1 {color: #b1b100;}
 .fortran .kw2 {color: #000000; font-weight: bold;}
 .fortran .kw3 {color: #000066;}
-.fortran .kw4 {color: #993333;}
+.fortran .kw4 {color: #0057AE;}
 .fortran .co1 {color: #666666; font-style: italic;}
 .fortran .co2 {color: #339933;}
 .fortran .coMULTI {color: #808080; font-style: italic;}
 .fortran .es0 {color: #000099; font-weight: bold;}
 .fortran .br0 {color: #009900;}
 .fortran .sy0 {color: #339933;}
-.fortran .st0 {color: #ff0000;}
+.fortran .st0 {color: #BF0303;}
 .fortran .nu0 {color: #cc66cc;}
 .fortran .me1 {color: #202020;}
 .fortran .me2 {color: #202020;}
@@ -1770,11 +1770,11 @@
 .freebasic .co1 {color: #808080;}
 .freebasic .co2 {color: #339933;}
 .freebasic .es0 {color: #000099;}
-.freebasic .br0 {color: #66cc66;}
-.freebasic .sy0 {color: #66cc66;}
-.freebasic .st0 {color: #ff0000;}
+.freebasic .br0 {color: black;}
+.freebasic .sy0 {color: black;}
+.freebasic .st0 {color: #BF0303;}
 .freebasic .nu0 {color: #cc66cc;}
-.freebasic .me0 {color: #66cc66;}
+.freebasic .me0 {color: black;}
 .freebasic .ln-xtra, .freebasic li.ln-xtra, .freebasic div.ln-xtra {background-color: #ffc;}
 .freebasic span.xtra { display:block; }
 
@@ -1842,7 +1842,7 @@
 .gambas .br0 {color: #612188;}
 .gambas .sy0 {color: #6132B2;}
 .gambas .st0 {color: #7E4B05;}
-.gambas .nu0 {color: #FF0000;}
+.gambas .nu0 {color: #BF0303;}
 .gambas .me1 {color: #0000FF;}
 .gambas .ln-xtra, .gambas li.ln-xtra, .gambas div.ln-xtra {background-color: #ffc;}
 .gambas span.xtra { display:block; }
@@ -1854,17 +1854,17 @@
 .gdb .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .gdb .li2 {font-weight: bold; vertical-align:top;}
 .gdb .kw0 {font-weight:bold;}
-.gdb .kw1 {font-weight:bold; color: #ff0000;}
+.gdb .kw1 {font-weight:bold; color: #BF0303;}
 .gdb .br0 {font-weight:bold;}
 .gdb .st0 {color: #933;}
 .gdb .re0 {color: #000066; font-weight:bold;}
-.gdb .re1 {color: #006600;}
+.gdb .re1 {color: black;}
 .gdb .re2 {color: #B07E00;}
 .gdb .re3 {color: #0057AE; text-style:italic;}
 .gdb .re4 {color: #0057AE; text-style:italic;}
 .gdb .re5 {color: #442886;}
 .gdb .re6 {color: #442886; font-weight:bold;}
-.gdb .re7 {color: #FF0000; font-weight:bold;}
+.gdb .re7 {color: #BF0303; font-weight:bold;}
 .gdb .re8 {color: #006E26;}
 .gdb .re9 {color: #555;}
 .gdb .ln-xtra, .gdb li.ln-xtra, .gdb div.ln-xtra {background-color: #ffc;}
@@ -1879,7 +1879,7 @@
 .genero .kw1 {color: #0600FF;}
 .genero .kw2 {color: #0000FF; font-weight: bold;}
 .genero .kw3 {color: #008000;}
-.genero .kw4 {color: #FF0000;}
+.genero .kw4 {color: #BF0303;}
 .genero .co1 {color: #008080; font-style: italic;}
 .genero .co2 {color: #008080;}
 .genero .coMULTI {color: #008080; font-style: italic;}
@@ -1887,7 +1887,7 @@
 .genero .br0 {color: #000000;}
 .genero .sy0 {color: #008000;}
 .genero .st0 {color: #808080;}
-.genero .nu0 {color: #FF0000;}
+.genero .nu0 {color: #BF0303;}
 .genero .me1 {color: #0000FF;}
 .genero .me2 {color: #0000FF;}
 .genero .ln-xtra, .genero li.ln-xtra, .genero div.ln-xtra {background-color: #ffc;}
@@ -1901,7 +1901,7 @@
 .genie .li2 {font-weight: bold; vertical-align:top;}
 .genie .kw1 {color: #0600FF;}
 .genie .kw3 {color: #008000;}
-.genie .kw4 {color: #FF0000;}
+.genie .kw4 {color: #BF0303;}
 .genie .co1 {color: #008080; font-style: italic;}
 .genie .co3 {color: #008080;}
 .genie .coMULTI {color: #008080; font-style: italic;}
@@ -1911,7 +1911,7 @@
 .genie .sy0 {color: #008000;}
 .genie .st0 {color: #666666;}
 .genie .st_h {color: #666666;}
-.genie .nu0 {color: #FF0000;}
+.genie .nu0 {color: #BF0303;}
 .genie .me1 {color: #0000FF;}
 .genie .me2 {color: #0000FF;}
 .genie .ln-xtra, .genie li.ln-xtra, .genie div.ln-xtra {background-color: #ffc;}
@@ -1931,7 +1931,7 @@
 .gettext .co4 {color: #666666; font-style: italic;}
 .gettext .es0 {color: #000099; font-weight: bold;}
 .gettext .br0 {color: #000099;}
-.gettext .st0 {color: #ff0000;}
+.gettext .st0 {color: #BF0303;}
 .gettext .nu0 {color: #000099;}
 .gettext .ln-xtra, .gettext li.ln-xtra, .gettext div.ln-xtra {background-color: #ffc;}
 .gettext span.xtra { display:block; }
@@ -1946,7 +1946,7 @@
 .glsl .kw2 {color: #333399; font-weight: bold;}
 .glsl .kw3 {color: #000066; font-weight: bold;}
 .glsl .kw4 {color: #333399; font-weight: bold;}
-.glsl .kw5 {color: #993333; font-weight: bold;}
+.glsl .kw5 {color: #0057AE; font-weight: bold;}
 .glsl .kw6 {color: #551111;}
 .glsl .co1 {color: #666666; font-style: italic;}
 .glsl .co2 {color: #009900;}
@@ -1954,9 +1954,9 @@
 .glsl .es0 {color: #000099; font-weight: bold;}
 .glsl .br0 {color: #000066;}
 .glsl .sy0 {color: #000066;}
-.glsl .st0 {color: #ff0000;}
+.glsl .st0 {color: #BF0303;}
 .glsl .nu0 {color: #0000ff;}
-.glsl .me1 {color: #006600;}
+.glsl .me1 {color: black;}
 .glsl .ln-xtra, .glsl li.ln-xtra, .glsl div.ln-xtra {background-color: #ffc;}
 .glsl span.xtra { display:block; }
 
@@ -1974,8 +1974,8 @@
 .gml .coMULTI {font-style: italic; color: green;}
 .gml .es0 {color: #000099; font-weight: bold;}
 .gml .br0 {color: #000000;}
-.gml .sy0 {color: #66cc66; font-weight: bold;}
-.gml .st0 {color: #ff0000;}
+.gml .sy0 {color: black; font-weight: bold;}
+.gml .st0 {color: #BF0303;}
 .gml .nu0 {color: #cc66cc;}
 .gml .me1 {color: #202020;}
 .gml .ln-xtra, .gml li.ln-xtra, .gml div.ln-xtra {background-color: #ffc;}
@@ -2012,7 +2012,7 @@
 .go .kw1 {color: #b1b100; font-weight: bold;}
 .go .kw2 {color: #000000; font-weight: bold;}
 .go .kw3 {color: #000066;}
-.go .kw4 {color: #993333;}
+.go .kw4 {color: #0057AE;}
 .go .kw5 {color: #003399;}
 .go .co1 {color: #666666; font-style: italic;}
 .go .co2 {color: #0000ff;}
@@ -2041,7 +2041,7 @@
 .groovy .kw1 {color: #b1b100;}
 .groovy .kw2 {color: #000000; font-weight: bold;}
 .groovy .kw3 {color: #aaaadd; font-weight: bold;}
-.groovy .kw4 {color: #993333;}
+.groovy .kw4 {color: #0057AE;}
 .groovy .kw5 {color: #663399;}
 .groovy .kw6 {color: #CC0099;}
 .groovy .kw7 {color: #FFCC33;}
@@ -2052,12 +2052,12 @@
 .groovy .co3 {color: #808080; font-style: italic;}
 .groovy .coMULTI {color: #808080; font-style: italic;}
 .groovy .es0 {color: #000099; font-weight: bold;}
-.groovy .br0 {color: #66cc66;}
-.groovy .sy0 {color: #66cc66;}
-.groovy .st0 {color: #ff0000;}
+.groovy .br0 {color: black;}
+.groovy .sy0 {color: black;}
+.groovy .st0 {color: #BF0303;}
 .groovy .nu0 {color: #cc66cc;}
-.groovy .me1 {color: #006600;}
-.groovy .me2 {color: #006600;}
+.groovy .me1 {color: black;}
+.groovy .me2 {color: black;}
 .groovy .re0 {color: #0000ff;}
 .groovy .ln-xtra, .groovy li.ln-xtra, .groovy div.ln-xtra {background-color: #ffc;}
 .groovy span.xtra { display:block; }
@@ -2075,10 +2075,10 @@
 .gwbasic .co1 {color: #808080;}
 .gwbasic .co2 {color: #808080;}
 .gwbasic .es0 {color: #000099;}
-.gwbasic .br0 {color: #66cc66;}
+.gwbasic .br0 {color: black;}
 .gwbasic .sy0 {color: #00a166;font-weight: bold}
 .gwbasic .sy1 {color: #00a1a1;font-weight: bold}
-.gwbasic .st0 {color: #ff0000;}
+.gwbasic .st0 {color: #BF0303;}
 .gwbasic .nu0 {color: #cc66cc;}
 .gwbasic .re1 {color: #708090}
 .gwbasic .ln-xtra, .gwbasic li.ln-xtra, .gwbasic div.ln-xtra {background-color: #ffc;}
@@ -2126,7 +2126,7 @@
 .haxe .es0 {color: #000099; font-weight: bold;}
 .haxe .br0 {color: #000000;}
 .haxe .sy0 {color: #339933;}
-.haxe .st0 {color: #FF0000;}
+.haxe .st0 {color: #BF0303;}
 .haxe .nu0 {color: #cc66cc;}
 .haxe .me1 {color: #006633;}
 .haxe .me2 {color: #006633;}
@@ -2139,13 +2139,13 @@
 .hicest li, .hicest .li1 {font-weight: normal; vertical-align:top;}
 .hicest .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .hicest .li2 {font-weight: bold; vertical-align:top;}
-.hicest .kw1 {color: #ff0000;}
+.hicest .kw1 {color: #BF0303;}
 .hicest .co1 {color: #666666; font-style: italic;}
 .hicest .coMULTI {color: #666666; font-style: italic;}
 .hicest .es0 {color: #000099; font-weight: bold;}
 .hicest .br0 {color: #009900;}
 .hicest .sy1 {color: #339933;}
-.hicest .sy2 {color: #ff0000;}
+.hicest .sy2 {color: #BF0303;}
 .hicest .st0 {color: #0000ff;}
 .hicest .nu0 {color: #cc66cc;}
 .hicest .me0 {color: #004000;}
@@ -2158,9 +2158,9 @@
 .hq9plus li, .hq9plus .li1 {font-weight: normal; vertical-align:top;}
 .hq9plus .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .hq9plus .li2 {font-weight: bold; vertical-align:top;}
-.hq9plus .br0 {color: #66cc66;}
+.hq9plus .br0 {color: black;}
 .hq9plus .sy0 {color: #a16000;}
-.hq9plus .st0 {color: #ff0000;}
+.hq9plus .st0 {color: #BF0303;}
 .hq9plus .ln-xtra, .hq9plus li.ln-xtra, .hq9plus div.ln-xtra {background-color: #ffc;}
 .hq9plus span.xtra { display:block; }
 
@@ -2173,9 +2173,9 @@
 .html4strict .kw2 {color: #000000; font-weight: bold;}
 .html4strict .kw3 {color: #000066;}
 .html4strict .es0 {color: #000099; font-weight: bold;}
-.html4strict .br0 {color: #66cc66;}
-.html4strict .sy0 {color: #66cc66;}
-.html4strict .st0 {color: #ff0000;}
+.html4strict .br0 {color: black;}
+.html4strict .sy0 {color: black;}
+.html4strict .st0 {color: #BF0303;}
 .html4strict .nu0 {color: #cc66cc;}
 .html4strict .sc-2 {color: #404040;}
 .html4strict .sc-1 {color: #808080; font-style: italic;}
@@ -2194,9 +2194,9 @@
 .html5 .kw2 {color: #000000; font-weight: bold;}
 .html5 .kw3 {color: #000066;}
 .html5 .es0 {color: #000099; font-weight: bold;}
-.html5 .br0 {color: #66cc66;}
-.html5 .sy0 {color: #66cc66;}
-.html5 .st0 {color: #ff0000;}
+.html5 .br0 {color: black;}
+.html5 .sy0 {color: black;}
+.html5 .st0 {color: #BF0303;}
 .html5 .nu0 {color: #cc66cc;}
 .html5 .sc-2 {color: #404040;}
 .html5 .sc-1 {color: #808080; font-style: italic;}
@@ -2247,9 +2247,9 @@
 .idl .coMULTI {color: #4080ff; font-style: italic;}
 .idl .es0 {color: #666666; font-weight: bold;}
 .idl .br0 {color: #808080;}
-.idl .sy0 {color: #66cc66;}
-.idl .st0 {color: #ff0000;}
-.idl .nu0 {color: #0000dd;}
+.idl .sy0 {color: black;}
+.idl .st0 {color: #BF0303;}
+.idl .nu0 {color: #B08000;}
 .idl .ln-xtra, .idl li.ln-xtra, .idl div.ln-xtra {background-color: #ffc;}
 .idl span.xtra { display:block; }
 
@@ -2280,11 +2280,11 @@
 .inno .kw4 {color: #CC0000;}
 .inno .co1 {color: #33FF00; font-style: italic;}
 .inno .coMULTI {color: #33FF00; font-style: italic;}
-.inno .br0 {color: #66cc66;}
+.inno .br0 {color: black;}
 .inno .sy0 {color: #000000; font-weight: bold;}
-.inno .st0 {color: #ff0000;}
+.inno .st0 {color: #BF0303;}
 .inno .nu0 {color: #cc66cc;}
-.inno .me1 {color: #006600;}
+.inno .me1 {color: black;}
 .inno .ln-xtra, .inno li.ln-xtra, .inno div.ln-xtra {background-color: #ffc;}
 .inno span.xtra { display:block; }
 
@@ -2296,9 +2296,9 @@
 .intercal .li2 {font-weight: bold; vertical-align:top;}
 .intercal .kw1 {color: #000080; font-weight: bold;}
 .intercal .kw2 {color: #000080; font-weight: bold;}
-.intercal .br0 {color: #66cc66;}
-.intercal .sy0 {color: #66cc66;}
-.intercal .st0 {color: #ff0000;}
+.intercal .br0 {color: black;}
+.intercal .sy0 {color: black;}
+.intercal .st0 {color: #BF0303;}
 .intercal .re1 {color: #808080; font-style: italic;}
 .intercal .ln-xtra, .intercal li.ln-xtra, .intercal div.ln-xtra {background-color: #ffc;}
 .intercal span.xtra { display:block; }
@@ -2316,12 +2316,12 @@
 .io .co2 {color: #808080; font-style: italic;}
 .io .coMULTI {color: #808080; font-style: italic;}
 .io .es0 {color: #000099; font-weight: bold;}
-.io .br0 {color: #66cc66;}
-.io .sy0 {color: #66cc66;}
-.io .st0 {color: #ff0000;}
+.io .br0 {color: black;}
+.io .sy0 {color: black;}
+.io .st0 {color: #BF0303;}
 .io .nu0 {color: #cc66cc;}
-.io .me1 {color: #006600;}
-.io .me2 {color: #006600;}
+.io .me1 {color: black;}
+.io .me2 {color: black;}
 .io .ln-xtra, .io li.ln-xtra, .io div.ln-xtra {background-color: #ffc;}
 .io span.xtra { display:block; }
 
@@ -2340,8 +2340,8 @@
 .j .es_h {font-weight: bold;}
 .j .br0 {color: #009900;}
 .j .sy0 {color: #009900; font-weight: bold;}
-.j .st_h {color: #ff0000;}
-.j .st0 {color: #ff0000;}
+.j .st_h {color: #BF0303;}
+.j .st0 {color: #BF0303;}
 .j .nu0 {color: #009999; font-weight: bold;}
 .j .re0 {color: #0000ff; font-weight: bold;}
 .j .ln-xtra, .j li.ln-xtra, .j div.ln-xtra {background-color: #ffc;}
@@ -2379,8 +2379,8 @@
 .java5 .li2 {font-weight: bold; vertical-align:top;}
 .java5 .kw1 {color: #000000;  font-weight: bold;}
 .java5 .kw2 {color: #000000; font-weight: bold;}
-.java5 .kw3 {color: #006600; font-weight: bold;}
-.java5 .kw4 {color: #006600; font-weight: bold;}
+.java5 .kw3 {color: black; font-weight: bold;}
+.java5 .kw4 {color: black; font-weight: bold;}
 .java5 .kw5 {color: #003399; font-weight: bold;}
 .java5 .kw6 {color: #003399; font-weight: bold;}
 .java5 .kw7 {color: #003399; font-weight: bold;}
@@ -2566,10 +2566,10 @@
 .javascript .kw1 {color: #000066; font-weight: bold;}
 .javascript .kw2 {color: #003366; font-weight: bold;}
 .javascript .kw3 {color: #000066;}
-.javascript .kw5 {color: #FF0000;}
-.javascript .co1 {color: #006600; font-style: italic;}
+.javascript .kw5 {color: #BF0303;}
+.javascript .co1 {color: black; font-style: italic;}
 .javascript .co2 {color: #009966; font-style: italic;}
-.javascript .coMULTI {color: #006600; font-style: italic;}
+.javascript .coMULTI {color: black; font-style: italic;}
 .javascript .es0 {color: #000099; font-weight: bold;}
 .javascript .br0 {color: #009900;}
 .javascript .sy0 {color: #339933;}
@@ -2597,9 +2597,9 @@
 .jquery .kw10 {color: #000066;}
 .jquery .kw11 {color: #000066;}
 .jquery .kw12 {color: #000066;}
-.jquery .co1 {color: #006600; font-style: italic;}
+.jquery .co1 {color: black; font-style: italic;}
 .jquery .co2 {color: #009966; font-style: italic;}
-.jquery .coMULTI {color: #006600; font-style: italic;}
+.jquery .coMULTI {color: black; font-style: italic;}
 .jquery .es0 {color: #000099; font-weight: bold;}
 .jquery .br0 {color: #009900;}
 .jquery .sy0 {color: #339933;}
@@ -2622,12 +2622,12 @@
 .kixtart .co1 {color: #808080; font-style: italic;}
 .kixtart .coMULTI {color: #808080; font-style: italic;}
 .kixtart .es0 {color: #000099; font-weight: bold;}
-.kixtart .br0 {color: #66cc66;}
-.kixtart .sy0 {color: #66cc66;}
-.kixtart .st0 {color: #ff0000;}
+.kixtart .br0 {color: black;}
+.kixtart .sy0 {color: black;}
+.kixtart .st0 {color: #BF0303;}
 .kixtart .nu0 {color: #cc66cc;}
-.kixtart .me1 {color: #006600;}
-.kixtart .me2 {color: #006600;}
+.kixtart .me1 {color: black;}
+.kixtart .me2 {color: black;}
 .kixtart .ln-xtra, .kixtart li.ln-xtra, .kixtart div.ln-xtra {background-color: #ffc;}
 .kixtart span.xtra { display:block; }
 
@@ -2651,10 +2651,10 @@
 .klonec .br0 {color: #000000;}
 .klonec .sy0 {color: #000000;}
 .klonec .sy1 {color: #000000; font-weight: bold;}
-.klonec .st0 {color: #ff0000;}
+.klonec .st0 {color: #BF0303;}
 .klonec .nu0 {color: #cc66cc;}
-.klonec .me1 {color: #006600;}
-.klonec .me2 {color: #006600;}
+.klonec .me1 {color: black;}
+.klonec .me2 {color: black;}
 .klonec .sc0 {background-color:#ffccff; font-weight: bold; color:#000000;}
 .klonec .sc3 {color: #00bbdd; font-weight: bold;}
 .klonec .sc4 {color: #ddbb00;}
@@ -2682,10 +2682,10 @@
 .klonecpp .br0 {color: #000000;}
 .klonecpp .sy0 {color: #000000;}
 .klonecpp .sy1 {color: #000000; font-weight: bold;}
-.klonecpp .st0 {color: #ff0000;}
+.klonecpp .st0 {color: #BF0303;}
 .klonecpp .nu0 {color: #cc66cc;}
-.klonecpp .me1 {color: #006600;}
-.klonecpp .me2 {color: #006600;}
+.klonecpp .me1 {color: black;}
+.klonecpp .me2 {color: black;}
 .klonecpp .sc0 {background-color:#ffccff; font-weight: bold; color:#000000;}
 .klonecpp .sc3 {color: #00bbdd; font-weight: bold;}
 .klonecpp .sc4 {color: #ddbb00;}
@@ -2734,7 +2734,7 @@
 .lb .br0 {color: #009900;}
 .lb .sy1 {color: #339933;}
 .lb .st0 {color: #008000;}
-.lb .nu0 {color: #FF0000;}
+.lb .nu0 {color: #BF0303;}
 .lb .me0 {color: #004000;}
 .lb .ln-xtra, .lb li.ln-xtra, .lb div.ln-xtra {background-color: #ffc;}
 .lb span.xtra { display:block; }
@@ -2748,7 +2748,7 @@
 .ldif .co1 {color: #666666; font-style: italic;}
 .ldif .st0 {color: #933;}
 .ldif .re0 {color: #000066; font-weight: bold;}
-.ldif .re1 {color: #FF0000;}
+.ldif .re1 {color: #BF0303;}
 .ldif .ln-xtra, .ldif li.ln-xtra, .ldif div.ln-xtra {background-color: #ffc;}
 .ldif span.xtra { display:block; }
 
@@ -2762,9 +2762,9 @@
 .lisp .co1 {color: #808080; font-style: italic;}
 .lisp .coMULTI {color: #808080; font-style: italic;}
 .lisp .es0 {color: #000099; font-weight: bold;}
-.lisp .br0 {color: #66cc66;}
-.lisp .sy0 {color: #66cc66;}
-.lisp .st0 {color: #ff0000;}
+.lisp .br0 {color: black;}
+.lisp .sy0 {color: black;}
+.lisp .st0 {color: #BF0303;}
 .lisp .nu0 {color: #cc66cc;}
 .lisp .me0 {color: #555;}
 .lisp .me1 {color: #555;}
@@ -2843,11 +2843,11 @@
 .locobasic .co1 {color: #808080;}
 .locobasic .co2 {color: #808080;}
 .locobasic .es0 {color: #000099;}
-.locobasic .br0 {color: #ff0000;}
-.locobasic .sy0 {color: #66cc66;}
+.locobasic .br0 {color: #BF0303;}
+.locobasic .sy0 {color: black;}
 .locobasic .st0 {color: #008800;}
 .locobasic .nu0 {color: #0044ff;}
-.locobasic .me0 {color: #66cc66;}
+.locobasic .me0 {color: black;}
 .locobasic .ln-xtra, .locobasic li.ln-xtra, .locobasic div.ln-xtra {background-color: #ffc;}
 .locobasic span.xtra { display:block; }
 
@@ -2894,9 +2894,9 @@
 .lolcode .kw4 {color: #800000;}
 .lolcode .co1 {color: #666666; style: italic;}
 .lolcode .co2 {color: #666666; style: italic;}
-.lolcode .br0 {color: #66cc66;}
-.lolcode .sy0 {color: #66cc66;}
-.lolcode .st0 {color: #ff0000;}
+.lolcode .br0 {color: black;}
+.lolcode .sy0 {color: black;}
+.lolcode .st0 {color: #BF0303;}
 .lolcode .ln-xtra, .lolcode li.ln-xtra, .lolcode div.ln-xtra {background-color: #ffc;}
 .lolcode span.xtra { display:block; }
 
@@ -2911,7 +2911,7 @@
 .lotusformulas .co1 {color: #008000;}
 .lotusformulas .es0 {color: #000099;}
 .lotusformulas .br0 {color: #000000;}
-.lotusformulas .sy0 {color: #66cc66;}
+.lotusformulas .sy0 {color: black;}
 .lotusformulas .st0 {color: #FF00FF;}
 .lotusformulas .nu0 {color: #FF00FF;}
 .lotusformulas .me1 {color: #0000AA;}
@@ -2929,7 +2929,7 @@
 .lotusscript .co1 {color: #008000;}
 .lotusscript .es0 {color: #000099;}
 .lotusscript .br0 {color: #000000;}
-.lotusscript .sy0 {color: #006600;}
+.lotusscript .sy0 {color: black;}
 .lotusscript .st0 {color: #000000;}
 .lotusscript .nu0 {color: #FF00FF;}
 .lotusscript .me1 {color: #0000AA;}
@@ -2993,13 +2993,13 @@
 .lua .kw4 {color: #aa9900;}
 .lua .kw5 {color: #aa9900;}
 .lua .co1 {color: #808080; font-style: italic;}
-.lua .co2 {color: #ff0000;}
+.lua .co2 {color: #BF0303;}
 .lua .coMULTI {color: #808080; font-style: italic;}
 .lua .es0 {color: #000099; font-weight: bold;}
 .lua .es1 {color: #000099; font-weight: bold;}
 .lua .es2 {color: #000099; font-weight: bold;}
-.lua .br0 {color: #66cc66;}
-.lua .sy0 {color: #66cc66;}
+.lua .br0 {color: black;}
+.lua .sy0 {color: black;}
 .lua .st0 {color: #ff6666;}
 .lua .nu0 {color: #cc66cc;}
 .lua .me0 {color: #aa9900;}
@@ -3023,7 +3023,7 @@
 .m68k .nu0 {color: #dd22dd;}
 .m68k .re0 {color: #22bbff;}
 .m68k .re1 {color: #22bbff;}
-.m68k .re2 {color: #993333;}
+.m68k .re2 {color: #0057AE;}
 .m68k .ln-xtra, .m68k li.ln-xtra, .m68k div.ln-xtra {background-color: #ffc;}
 .m68k span.xtra { display:block; }
 
@@ -3040,13 +3040,13 @@
 .magiksf .kw5 {color: #ff3fff; font-weight: bold;}
 .magiksf .kw6 {font-weight: bold;}
 .magiksf .co1 {color: #339933; font-weight: bold;}
-.magiksf .co2 {color: #993333;}
+.magiksf .co2 {color: #0057AE;}
 .magiksf .co3 {color: #339933;}
 .magiksf .coMULTI {color: #7f7f7f; font-style: italic}
 .magiksf .es0 {color: #000099; font-weight: bold;}
 .magiksf .br0 {color: #ff3f3f;}
 .magiksf .sy0 {color: #ff3f3f;}
-.magiksf .st0 {color: #ff0000;}
+.magiksf .st0 {color: #BF0303;}
 .magiksf .nu0 {color: #cc66cc;}
 .magiksf .me1 {color: #202020;}
 .magiksf .me2 {color: #202020;}
@@ -3127,8 +3127,8 @@
 .mirc .kw2 {color: #000000; font-weight: bold;}
 .mirc .kw3 {color: #990000; font-weight: bold;}
 .mirc .co1 {color: #808080; font-style: italic;}
-.mirc .br0 {color: #FF0000;}
-.mirc .sy0 {color: #FF0000;}
+.mirc .br0 {color: #BF0303;}
+.mirc .sy0 {color: #BF0303;}
 .mirc .me0 {color: #008000;}
 .mirc .re0 {color: #000099;}
 .mirc .re1 {color: #990000;}
@@ -3180,8 +3180,8 @@
 .modula2 .es_h {color: #000099; font-weight: bold;}
 .modula2 .br0 {color: #009900;}
 .modula2 .sy0 {color: #339933;}
-.modula2 .st0 {color: #ff0000;}
-.modula2 .st_h {color: #ff0000;}
+.modula2 .st0 {color: #BF0303;}
+.modula2 .st_h {color: #BF0303;}
 .modula2 .nu0 {color: #cc66cc;}
 .modula2 .me1 {color: #0066ee;}
 .modula2 .ln-xtra, .modula2 li.ln-xtra, .modula2 div.ln-xtra {background-color: #ffc;}
@@ -3202,8 +3202,8 @@
 .modula3 .es_h {color: #000099; font-weight: bold;}
 .modula3 .br0 {color: #009900;}
 .modula3 .sy0 {color: #339933;}
-.modula3 .st0 {color: #ff0000;}
-.modula3 .st_h {color: #ff0000;}
+.modula3 .st0 {color: #BF0303;}
+.modula3 .st_h {color: #BF0303;}
 .modula3 .nu0 {color: #cc66cc;}
 .modula3 .me1 {color: #0066ee;}
 .modula3 .ln-xtra, .modula3 li.ln-xtra, .modula3 div.ln-xtra {background-color: #ffc;}
@@ -3222,12 +3222,12 @@
 .mpasm .kw5 {color: #7f0000;}
 .mpasm .co1 {color: #adadad; font-style: italic;}
 .mpasm .es0 {color: #000099; font-weight: bold;}
-.mpasm .br0 {color: #66cc66;}
-.mpasm .sy0 {color: #66cc66;}
+.mpasm .br0 {color: black;}
+.mpasm .sy0 {color: black;}
 .mpasm .st0 {color: #7f007f;}
-.mpasm .nu0 {color: #ff0000;}
-.mpasm .re0 {color: #ff0000;}
-.mpasm .re1 {color: #ff0000;}
+.mpasm .nu0 {color: #BF0303;}
+.mpasm .re0 {color: #BF0303;}
+.mpasm .re1 {color: #BF0303;}
 .mpasm .ln-xtra, .mpasm li.ln-xtra, .mpasm div.ln-xtra {background-color: #ffc;}
 .mpasm span.xtra { display:block; }
 
@@ -3239,9 +3239,9 @@
 .mxml .li2 {font-weight: bold; vertical-align:top;}
 .mxml .coMULTI {color: #808080; font-style: italic;}
 .mxml .es0 {color: #000099; font-weight: bold;}
-.mxml .br0 {color: #66cc66;}
-.mxml .sy0 {color: #66cc66;}
-.mxml .st0 {color: #ff0000;}
+.mxml .br0 {color: black;}
+.mxml .sy0 {color: black;}
+.mxml .st0 {color: #BF0303;}
 .mxml .nu0 {color: #cc66cc;}
 .mxml .sc0 {color: #00bbdd;}
 .mxml .sc1 {color: #ddbb00;}
@@ -3317,7 +3317,7 @@
 .nagios .sy0 {font-weight:bold;color:#000000;}
 .nagios .st0 {color: #660066;}
 .nagios .st_h {color: #660066;}
-.nagios .me1 {color: #006600;}
+.nagios .me1 {color: black;}
 .nagios .re0 {font-weight:bold;color:#808080;}
 .nagios .re1 {font-weight:bold;color:#000080;}
 .nagios .re2 {font-weight:bold;color:red;}
@@ -3334,7 +3334,7 @@
 .netrexx .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .netrexx .li2 {font-weight: bold; vertical-align:top;}
 .netrexx .kw1 {color: #b1b100;}
-.netrexx .kw2 {color: #ff0000; font-weight: bold;}
+.netrexx .kw2 {color: #BF0303; font-weight: bold;}
 .netrexx .kw3 {color: #00ff00; font-weight: bold;}
 .netrexx .kw4 {color: #0000ff; font-weight: bold;}
 .netrexx .kw5 {color: #880088; font-weight: bold;}
@@ -3342,9 +3342,9 @@
 .netrexx .co1 {color: #666666;}
 .netrexx .coMULTI {color: #808080;}
 .netrexx .es0 {color: #000099; font-weight: bold;}
-.netrexx .br0 {color: #66cc66;}
-.netrexx .sy0 {color: #66cc66;}
-.netrexx .st0 {color: #ff0000;}
+.netrexx .br0 {color: black;}
+.netrexx .sy0 {color: black;}
+.netrexx .st0 {color: #BF0303;}
 .netrexx .nu0 {color: #cc66cc;}
 .netrexx .me1 {color: #202020;}
 .netrexx .me2 {color: #202020;}
@@ -3362,7 +3362,7 @@
 .newlisp .co2 {color: #808080; font-style: italic;}
 .newlisp .coMULTI {color: #00aa00; font-style: italic;}
 .newlisp .es0 {color: #009900;}
-.newlisp .br0 {color: #66cc66;}
+.newlisp .br0 {color: black;}
 .newlisp .sy0 {color: #AA0000;}
 .newlisp .sy1 {color: #0000AA;}
 .newlisp .st0 {color: #009900;}
@@ -3389,16 +3389,16 @@
 .nsis .kw4 {color: #000099;}
 .nsis .kw5 {color: #ff6600;}
 .nsis .kw6 {color: #ff6600;}
-.nsis .kw7 {color: #006600;}
-.nsis .kw8 {color: #006600;}
-.nsis .kw9 {color: #006600;}
-.nsis .kw10 {color: #006600;}
-.nsis .kw11 {color: #006600;}
-.nsis .kw12 {color: #006600;}
-.nsis .kw13 {color: #006600;}
-.nsis .kw14 {color: #006600;}
-.nsis .kw15 {color: #006600;}
-.nsis .kw16 {color: #006600;}
+.nsis .kw7 {color: black;}
+.nsis .kw8 {color: black;}
+.nsis .kw9 {color: black;}
+.nsis .kw10 {color: black;}
+.nsis .kw11 {color: black;}
+.nsis .kw12 {color: black;}
+.nsis .kw13 {color: black;}
+.nsis .kw14 {color: black;}
+.nsis .kw15 {color: black;}
+.nsis .kw16 {color: black;}
 .nsis .co1 {color: #666666; font-style: italic;}
 .nsis .co2 {color: #666666; font-style: italic;}
 .nsis .coMULTI {color: #666666; font-style: italic;}
@@ -3431,8 +3431,8 @@
 .oberon2 .es_h {color: #000099; font-weight: bold;}
 .oberon2 .br0 {color: #009900;}
 .oberon2 .sy0 {color: #339933;}
-.oberon2 .st0 {color: #ff0000;}
-.oberon2 .st_h {color: #ff0000;}
+.oberon2 .st0 {color: #BF0303;}
+.oberon2 .st_h {color: #BF0303;}
 .oberon2 .nu0 {color: #cc66cc;}
 .oberon2 .me1 {color: #0066ee;}
 .oberon2 .ln-xtra, .oberon2 li.ln-xtra, .oberon2 div.ln-xtra {background-color: #ffc;}
@@ -3544,13 +3544,13 @@
 .octave .co4 {color: #FF00FF; font-style: italic;}
 .octave .co5 {color: #0000FF; font-style: italic;}
 .octave .co6 {color: #996600; font-weight:bold;}
-.octave .co7 {color: #006600; font-weight:bold;}
+.octave .co7 {color: black; font-weight:bold;}
 .octave .coMULTI {color: #0000FF; font-style: italic;}
 .octave .br0 {color: #080;}
 .octave .sy0 {color: #FF9696; font-weight:bold;}
 .octave .sy1 {color: #CC0000; font-weight:bold;}
-.octave .sy2 {color: #993333; font-weight:bold;}
-.octave .sy3 {color: #FF0000; font-weight:bold;}
+.octave .sy2 {color: #0057AE; font-weight:bold;}
+.octave .sy3 {color: #BF0303; font-weight:bold;}
 .octave .sy4 {color: #33F;}
 .octave .sy5 {color: #33F;}
 .octave .nu0 {color: #cc66cc;}
@@ -3570,11 +3570,11 @@
 .oobas .co1 {color: #808080;}
 .oobas .co2 {color: #808080;}
 .oobas .es0 {color: #000099;}
-.oobas .br0 {color: #66cc66;}
-.oobas .sy0 {color: #66cc66;}
-.oobas .st0 {color: #ff0000;}
+.oobas .br0 {color: black;}
+.oobas .sy0 {color: black;}
+.oobas .st0 {color: #BF0303;}
 .oobas .nu0 {color: #cc66cc;}
-.oobas .me1 {color: #006600;}
+.oobas .me1 {color: black;}
 .oobas .ln-xtra, .oobas li.ln-xtra, .oobas div.ln-xtra {background-color: #ffc;}
 .oobas span.xtra { display:block; }
 
@@ -3585,7 +3585,7 @@
 .oorexx .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .oorexx .li2 {font-weight: bold; vertical-align:top;}
 .oorexx .kw1 {color: #b1b100;}
-.oorexx .kw2 {color: #ff0000; font-weight: bold;}
+.oorexx .kw2 {color: #BF0303; font-weight: bold;}
 .oorexx .kw3 {color: #00ff00; font-weight: bold;}
 .oorexx .kw4 {color: #0000ff; font-weight: bold;}
 .oorexx .kw5 {color: #880088; font-weight: bold;}
@@ -3593,9 +3593,9 @@
 .oorexx .co1 {color: #666666;}
 .oorexx .coMULTI {color: #808080;}
 .oorexx .es0 {color: #000099; font-weight: bold;}
-.oorexx .br0 {color: #66cc66;}
-.oorexx .sy0 {color: #66cc66;}
-.oorexx .st0 {color: #ff0000;}
+.oorexx .br0 {color: black;}
+.oorexx .sy0 {color: black;}
+.oorexx .st0 {color: #BF0303;}
 .oorexx .nu0 {color: #cc66cc;}
 .oorexx .me1 {color: #202020;}
 .oorexx .me2 {color: #202020;}
@@ -3608,14 +3608,14 @@
 .oracle11 li, .oracle11 .li1 {font-weight: normal; vertical-align:top;}
 .oracle11 .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .oracle11 .li2 {font-weight: bold; vertical-align:top;}
-.oracle11 .kw1 {color: #993333; font-weight: bold; text-transform: uppercase;}
+.oracle11 .kw1 {color: #0057AE; font-weight: bold; text-transform: uppercase;}
 .oracle11 .co1 {color: #808080; font-style: italic;}
 .oracle11 .es0 {color: #000099; font-weight: bold;}
-.oracle11 .br0 {color: #66cc66;}
-.oracle11 .sy0 {color: #66cc66;}
-.oracle11 .st0 {color: #ff0000;}
+.oracle11 .br0 {color: black;}
+.oracle11 .sy0 {color: black;}
+.oracle11 .st0 {color: #BF0303;}
 .oracle11 .nu0 {color: #cc66cc;}
-.oracle11 .me1 {color: #ff0000;}
+.oracle11 .me1 {color: #BF0303;}
 .oracle11 .ln-xtra, .oracle11 li.ln-xtra, .oracle11 div.ln-xtra {background-color: #ffc;}
 .oracle11 span.xtra { display:block; }
 
@@ -3625,14 +3625,14 @@
 .oracle8 li, .oracle8 .li1 {font-weight: normal; vertical-align:top;}
 .oracle8 .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .oracle8 .li2 {font-weight: bold; vertical-align:top;}
-.oracle8 .kw1 {color: #993333; font-weight: bold; text-transform: uppercase;}
+.oracle8 .kw1 {color: #0057AE; font-weight: bold; text-transform: uppercase;}
 .oracle8 .co1 {color: #808080; font-style: italic;}
 .oracle8 .es0 {color: #000099; font-weight: bold;}
-.oracle8 .br0 {color: #66cc66;}
-.oracle8 .sy0 {color: #66cc66;}
-.oracle8 .st0 {color: #ff0000;}
+.oracle8 .br0 {color: black;}
+.oracle8 .sy0 {color: black;}
+.oracle8 .st0 {color: #BF0303;}
 .oracle8 .nu0 {color: #cc66cc;}
-.oracle8 .me1 {color: #ff0000;}
+.oracle8 .me1 {color: #BF0303;}
 .oracle8 .ln-xtra, .oracle8 li.ln-xtra, .oracle8 div.ln-xtra {background-color: #ffc;}
 .oracle8 span.xtra { display:block; }
 
@@ -3648,17 +3648,17 @@
 .oxygene .co1 {color: #808080; font-style: italic;}
 .oxygene .co2 {color: #008000; font-style: italic;}
 .oxygene .coMULTI {color: #808080; font-style: italic;}
-.oxygene .es0 {color: #ff0000; font-weight: bold;}
+.oxygene .es0 {color: #BF0303; font-weight: bold;}
 .oxygene .br0 {color: #000066;}
 .oxygene .sy0 {color: #000066;}
 .oxygene .sy1 {color: #000066;}
 .oxygene .sy2 {color: #000066;}
 .oxygene .sy3 {color: #000066;}
-.oxygene .st0 {color: #ff0000;}
+.oxygene .st0 {color: #BF0303;}
 .oxygene .nu0 {color: #0000ff;}
 .oxygene .me1 {color: #000000;}
 .oxygene .re0 {color: #9ac;}
-.oxygene .re1 {color: #ff0000;}
+.oxygene .re1 {color: #BF0303;}
 .oxygene .ln-xtra, .oxygene li.ln-xtra, .oxygene div.ln-xtra {background-color: #ffc;}
 .oxygene span.xtra { display:block; }
 
@@ -3694,10 +3694,10 @@
 .parasail .co1 {color: #adadad; font-style: italic;}
 .parasail .coMULTI {color: #808080; font-style: italic;}
 .parasail .es0 {color: #000099; font-weight: bold;}
-.parasail .br0 {color: #66cc66;}
-.parasail .sy0 {color: #66cc66;}
+.parasail .br0 {color: black;}
+.parasail .sy0 {color: black;}
 .parasail .st0 {color: #7f007f;}
-.parasail .nu0 {color: #ff0000;}
+.parasail .nu0 {color: #BF0303;}
 .parasail .me1 {color: #202020;}
 .parasail .ln-xtra, .parasail li.ln-xtra, .parasail div.ln-xtra {background-color: #ffc;}
 .parasail span.xtra { display:block; }
@@ -3740,17 +3740,17 @@
 .pascal .co1 {color: #808080; font-style: italic;}
 .pascal .co2 {color: #008000; font-style: italic;}
 .pascal .coMULTI {color: #808080; font-style: italic;}
-.pascal .es0 {color: #ff0000; font-weight: bold;}
+.pascal .es0 {color: #BF0303; font-weight: bold;}
 .pascal .br0 {color: #009900;}
 .pascal .sy0 {color: #000066;}
 .pascal .sy1 {color: #000066;}
 .pascal .sy2 {color: #000066;}
 .pascal .sy3 {color: #000066;}
-.pascal .st0 {color: #ff0000;}
+.pascal .st0 {color: #BF0303;}
 .pascal .nu0 {color: #cc66cc;}
-.pascal .me1 {color: #006600;}
+.pascal .me1 {color: black;}
 .pascal .re0 {color: #0000cc;}
-.pascal .re1 {color: #ff0000;}
+.pascal .re1 {color: #BF0303;}
 .pascal .ln-xtra, .pascal li.ln-xtra, .pascal div.ln-xtra {background-color: #ffc;}
 .pascal span.xtra { display:block; }
 
@@ -3760,7 +3760,7 @@
 .pcre li, .pcre .li1 {font-weight: normal; vertical-align:top;}
 .pcre .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .pcre .li2 {font-weight: bold; vertical-align:top;}
-.pcre .co1 {color: #993333; font-weight: bold;}
+.pcre .co1 {color: #0057AE; font-weight: bold;}
 .pcre .co2 {color: #cc3300; font-weight: bold;}
 .pcre .co3 {color: #cc0066; font-weight: bold;}
 .pcre .co4 {color: #cc0066; font-weight: bold;}
@@ -3782,14 +3782,14 @@
 .pcre .es_h {color: #000099; font-weight: bold;}
 .pcre .br0 {color: #009900;}
 .pcre .sy0 {color: #333399; font-weight: bold;}
-.pcre .sy1 {color: #993333; font-weight: bold;}
+.pcre .sy1 {color: #0057AE; font-weight: bold;}
 .pcre .sy2 {color: #339933; font-weight: bold;}
 .pcre .sy3 {color: #333399; font-weight: bold;}
 .pcre .sy4 {color: #333399; font-style: italic;}
-.pcre .st0 {color: #ff0000;}
+.pcre .st0 {color: #BF0303;}
 .pcre .nu0 {color: #cc66cc;}
-.pcre .me1 {color: #006600;}
-.pcre .me2 {color: #006600;}
+.pcre .me1 {color: black;}
+.pcre .me2 {color: black;}
 .pcre .ln-xtra, .pcre li.ln-xtra, .pcre div.ln-xtra {background-color: #ffc;}
 .pcre span.xtra { display:block; }
 
@@ -3808,7 +3808,7 @@
 .per .br0 {color: #000000;}
 .per .sy0 {color: #008000;}
 .per .st0 {color: #808080;}
-.per .nu0 {color: #FF0000;}
+.per .nu0 {color: #BF0303;}
 .per .me1 {color: #0000FF;}
 .per .me2 {color: #0000FF;}
 .per .ln-xtra, .per li.ln-xtra, .per div.ln-xtra {background-color: #ffc;}
@@ -3833,11 +3833,11 @@
 .perl .es_h {color: #000099; font-weight: bold;}
 .perl .br0 {color: #009900;}
 .perl .sy0 {color: #339933;}
-.perl .st0 {color: #ff0000;}
-.perl .st_h {color: #ff0000;}
+.perl .st0 {color: #BF0303;}
+.perl .st_h {color: #BF0303;}
 .perl .nu0 {color: #cc66cc;}
-.perl .me1 {color: #006600;}
-.perl .me2 {color: #006600;}
+.perl .me1 {color: black;}
+.perl .me2 {color: black;}
 .perl .re0 {color: #0000ff;}
 .perl .re4 {color: #009999;}
 .perl .ln-xtra, .perl li.ln-xtra, .perl div.ln-xtra {background-color: #ffc;}
@@ -3862,11 +3862,11 @@
 .perl6 .es_h {color: #000099; font-weight: bold;}
 .perl6 .br0 {color: #009900;}
 .perl6 .sy0 {color: #339933;}
-.perl6 .st0 {color: #ff0000;}
-.perl6 .st_h {color: #ff0000;}
+.perl6 .st0 {color: #BF0303;}
+.perl6 .st_h {color: #BF0303;}
 .perl6 .nu0 {color: #cc66cc;}
-.perl6 .me1 {color: #006600;}
-.perl6 .me2 {color: #006600;}
+.perl6 .me1 {color: black;}
+.perl6 .me2 {color: black;}
 .perl6 .re0 {color: #0000ff;}
 .perl6 .ln-xtra, .perl6 li.ln-xtra, .perl6 div.ln-xtra {background-color: #ffc;}
 .perl6 span.xtra { display:block; }
@@ -3984,7 +3984,7 @@
 .pic16 .kw2 {color: #aa3300; font-weight: bold;}
 .pic16 .kw3 {color: #0000ff;}
 .pic16 .co1 {color: #00a000;}
-.pic16 .es0 {color: #ff0000;}
+.pic16 .es0 {color: #BF0303;}
 .pic16 .br0 {color: #0000ff;}
 .pic16 .sy0 {color: #7777ff;}
 .pic16 .st0 {color: #ff7700;}
@@ -4081,15 +4081,15 @@
 .postgresql .li2 {font-weight: bold; vertical-align:top;}
 .postgresql .kw1 {color: #000000; font-weight: bold; text-transform: uppercase;}
 .postgresql .kw3 {color: #333399; font-weight: bold; text-transform: uppercase;}
-.postgresql .kw4 {color: #993333; font-weight: bold; text-transform: uppercase;}
-.postgresql .kw5 {color: #993333; font-weight: bold; text-transform: uppercase;}
+.postgresql .kw4 {color: #0057AE; font-weight: bold; text-transform: uppercase;}
+.postgresql .kw5 {color: #0057AE; font-weight: bold; text-transform: uppercase;}
 .postgresql .co1 {color: #808080; font-style: italic;}
 .postgresql .es0 {color: #000099; font-weight: bold;}
-.postgresql .br0 {color: #66cc66;}
-.postgresql .sy0 {color: #66cc66;}
-.postgresql .st0 {color: #ff0000;}
+.postgresql .br0 {color: black;}
+.postgresql .sy0 {color: black;}
+.postgresql .st0 {color: #BF0303;}
 .postgresql .nu0 {color: #cc66cc;}
-.postgresql .me1 {color: #ff0000;}
+.postgresql .me1 {color: #BF0303;}
 .postgresql .ln-xtra, .postgresql li.ln-xtra, .postgresql div.ln-xtra {background-color: #ffc;}
 .postgresql span.xtra { display:block; }
 
@@ -4106,15 +4106,15 @@
 .povray .co1 {color: #808080; font-style: italic;}
 .povray .coMULTI {color: #808080; font-style: italic;}
 .povray .es0 {color: #000099; font-weight: bold;}
-.povray .br0 {color: #66cc66;}
-.povray .sy0 {color: #66cc66;}
-.povray .st0 {color: #ff0000;}
+.povray .br0 {color: black;}
+.povray .sy0 {color: black;}
+.povray .st0 {color: #BF0303;}
 .povray .nu0 {color: #cc66aa;}
-.povray .me1 {color: #006600;}
-.povray .me2 {color: #006600;}
+.povray .me1 {color: black;}
+.povray .me2 {color: black;}
 .povray .re0 {color: #6666cc; font-weight: bold;}
-.povray .re1 {color: #66cc66; font-weight: bold;}
-.povray .re2 {color: #66cc66; font-weight: bold;}
+.povray .re1 {color: black; font-weight: bold;}
+.povray .re2 {color: black; font-weight: bold;}
 .povray .ln-xtra, .povray li.ln-xtra, .povray div.ln-xtra {background-color: #ffc;}
 .povray span.xtra { display:block; }
 
@@ -4149,7 +4149,7 @@
 .powershell .kw1 {color: #008080; font-weight: bold;}
 .powershell .kw2 {color: #008080; font-weight: bold;}
 .powershell .kw3 {color: #0000FF;}
-.powershell .kw4 {color: #FF0000;}
+.powershell .kw4 {color: #BF0303;}
 .powershell .kw5 {color: #008080; font-style: italic;}
 .powershell .kw6 {color: #000080;}
 .powershell .co1 {color: #008000;}
@@ -4183,7 +4183,7 @@
 .proftpd .br0 {color: #339933;}
 .proftpd .sy0 {color: #008000;}
 .proftpd .st0 {color: #7f007f;}
-.proftpd .nu0 {color: #ff0000;}
+.proftpd .nu0 {color: #BF0303;}
 .proftpd .ln-xtra, .proftpd li.ln-xtra, .proftpd div.ln-xtra {background-color: #ffc;}
 .proftpd span.xtra { display:block; }
 
@@ -4195,15 +4195,15 @@
 .progress .li2 {font-weight: bold; vertical-align:top;}
 .progress .kw1 {color: #0000ff; font-weight: bold;}
 .progress .kw2 {color: #1D16B2;}
-.progress .kw3 {color: #993333;}
+.progress .kw3 {color: #0057AE;}
 .progress .kw4 {color: #0000ff;}
 .progress .coMULTI {color: #808080; font-style: italic;}
 .progress .es0 {color: #000099; font-weight: bold;}
-.progress .br0 {color: #66cc66;}
-.progress .sy0 {color: #66cc66;}
-.progress .st0 {color: #ff0000;}
+.progress .br0 {color: black;}
+.progress .sy0 {color: black;}
+.progress .st0 {color: #BF0303;}
 .progress .nu0 {color: #cc66cc;}
-.progress .me0 {color: #006600;}
+.progress .me0 {color: black;}
 .progress .ln-xtra, .progress li.ln-xtra, .progress div.ln-xtra {background-color: #ffc;}
 .progress span.xtra { display:block; }
 
@@ -4285,14 +4285,14 @@
 .purebasic .kw1 {color: #000066; font-weight: bold;}
 .purebasic .kw2 {color: #0000ff;}
 .purebasic .kw3 {color: #000fff;}
-.purebasic .co1 {color: #ff0000; font-style: italic;}
-.purebasic .coMULTI {color: #ff0000; font-style: italic;}
+.purebasic .co1 {color: #BF0303; font-style: italic;}
+.purebasic .coMULTI {color: #BF0303; font-style: italic;}
 .purebasic .es0 {color: #000099; font-weight: bold;}
 .purebasic .br0 {color: #000066;}
 .purebasic .sy0 {color: #000066;}
 .purebasic .st0 {color: #009900;}
 .purebasic .nu0 {color: #CC0000;}
-.purebasic .me1 {color: #006600;}
+.purebasic .me1 {color: black;}
 .purebasic .ln-xtra, .purebasic li.ln-xtra, .purebasic div.ln-xtra {background-color: #ffc;}
 .purebasic span.xtra { display:block; }
 
@@ -4311,7 +4311,7 @@
 .pycon .co-1 {color: #444444;}
 .pycon .es0 {color: #000099; font-weight: bold;}
 .pycon .br0 {color: black;}
-.pycon .sy0 {color: #66cc66;}
+.pycon .sy0 {color: black;}
 .pycon .st0 {color: #483d8b;}
 .pycon .nu0 {color: #ff4500;}
 .pycon .me1 {color: black;}
@@ -4354,7 +4354,7 @@
 .python .coMULTI {color: #808080; font-style: italic;}
 .python .es0 {color: #000099; font-weight: bold;}
 .python .br0 {color: black;}
-.python .sy0 {color: #66cc66;}
+.python .sy0 {color: black;}
 .python .st0 {color: #483d8b;}
 .python .nu0 {color: #ff4500;}
 .python .me1 {color: black;}
@@ -4382,7 +4382,7 @@
 .q .br0 {color: #009900;}
 .q .sy0 {color: #339933;}
 .q .st0 {color: #990000;}
-.q .nu0 {color: #0000dd;}
+.q .nu0 {color: #B08000;}
 .q .nu262144 {color:#800080;}
 .q .nu524288 {color:#800080;}
 .q .nu131072 {color:#800080;}
@@ -4408,9 +4408,9 @@
 .qbasic .co2 {color: #808080;}
 .qbasic .co3 {color: #8080C0;}
 .qbasic .es0 {color: #000099;}
-.qbasic .br0 {color: #66cc66;}
-.qbasic .sy0 {color: #66cc66;}
-.qbasic .st0 {color: #ff0000;}
+.qbasic .br0 {color: black;}
+.qbasic .sy0 {color: black;}
+.qbasic .st0 {color: #BF0303;}
 .qbasic .nu0 {color: #cc66cc;}
 .qbasic .re1 {color: #cc66cc;}
 .qbasic .re2 {color: #339933;}
@@ -4431,8 +4431,8 @@
 .rails .co1 {color:#008000; font-style:italic;}
 .rails .coMULTI {color:#000080; font-style:italic;}
 .rails .es0 {color:#000099;}
-.rails .br0 {color:#006600; font-weight:bold;}
-.rails .sy0 {color:#006600; font-weight:bold;}
+.rails .br0 {color:black; font-weight:bold;}
+.rails .sy0 {color:black; font-weight:bold;}
 .rails .st0 {color:#996600;}
 .rails .nu0 {color:#006666;}
 .rails .me1 {color:#9900CC;}
@@ -4455,12 +4455,12 @@
 .rebol .co1 {color: #808080; font-style: italic;}
 .rebol .coMULTI {color: #808080; font-style: italic;}
 .rebol .es0 {color: #000099; font-weight: bold;}
-.rebol .br0 {color: #66cc66;}
-.rebol .sy0 {color: #66cc66;}
-.rebol .st0 {color: #ff0000;}
+.rebol .br0 {color: black;}
+.rebol .sy0 {color: black;}
+.rebol .st0 {color: #BF0303;}
 .rebol .nu0 {color: #cc66cc;}
-.rebol .me1 {color: #006600;}
-.rebol .me2 {color: #006600;}
+.rebol .me1 {color: black;}
+.rebol .me2 {color: black;}
 .rebol .re0 {color: #0000ff;}
 .rebol .ln-xtra, .rebol li.ln-xtra, .rebol div.ln-xtra {background-color: #ffc;}
 .rebol span.xtra { display:block; }
@@ -4491,7 +4491,7 @@
 .rexx .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .rexx .li2 {font-weight: bold; vertical-align:top;}
 .rexx .kw1 {color: #b1b100;}
-.rexx .kw2 {color: #ff0000; font-weight: bold;}
+.rexx .kw2 {color: #BF0303; font-weight: bold;}
 .rexx .kw3 {color: #00ff00; font-weight: bold;}
 .rexx .kw4 {color: #0000ff; font-weight: bold;}
 .rexx .kw5 {color: #880088; font-weight: bold;}
@@ -4499,9 +4499,9 @@
 .rexx .co1 {color: #666666;}
 .rexx .coMULTI {color: #808080;}
 .rexx .es0 {color: #000099; font-weight: bold;}
-.rexx .br0 {color: #66cc66;}
-.rexx .sy0 {color: #66cc66;}
-.rexx .st0 {color: #ff0000;}
+.rexx .br0 {color: black;}
+.rexx .sy0 {color: black;}
+.rexx .st0 {color: #BF0303;}
 .rexx .nu0 {color: #cc66cc;}
 .rexx .me1 {color: #202020;}
 .rexx .me2 {color: #202020;}
@@ -4517,9 +4517,9 @@
 .robots .kw1 {color: #b1b100;}
 .robots .co1 {color: #808080; font-style: italic;}
 .robots .es0 {color: #000099; font-weight: bold;}
-.robots .br0 {color: #66cc66;}
-.robots .sy0 {color: #66cc66;}
-.robots .st0 {color: #ff0000;}
+.robots .br0 {color: black;}
+.robots .sy0 {color: black;}
+.robots .st0 {color: #BF0303;}
 .robots .nu0 {color: #cc66cc;}
 .robots .ln-xtra, .robots li.ln-xtra, .robots div.ln-xtra {background-color: #ffc;}
 .robots span.xtra { display:block; }
@@ -4536,10 +4536,10 @@
 .rpmspec .es_h {color: #000099; font-weight: bold;}
 .rpmspec .br0 {color: #009900;}
 .rpmspec .sy0 {color: #339933;}
-.rpmspec .st0 {color: #ff0000;}
+.rpmspec .st0 {color: #BF0303;}
 .rpmspec .nu0 {color: #cc66cc;}
-.rpmspec .me1 {color: #006600;}
-.rpmspec .me2 {color: #006600;}
+.rpmspec .me1 {color: black;}
+.rpmspec .me2 {color: black;}
 .rpmspec .re1 {color: #0000ff;}
 .rpmspec .re2 {color: #009999;}
 .rpmspec .re3 {color: #000000; font-weight: bold;}
@@ -4565,8 +4565,8 @@
 .rsplus .es0 {color: #000099; font-weight: bold;}
 .rsplus .br0 {color: #080;}
 .rsplus .sy0 {color: #080;}
-.rsplus .st0 {color: #ff0000;}
-.rsplus .nu0 {color: #ff0000;}
+.rsplus .st0 {color: #BF0303;}
+.rsplus .nu0 {color: #BF0303;}
 .rsplus .re0 {color:#A020F0;}
 .rsplus .ln-xtra, .rsplus li.ln-xtra, .rsplus div.ln-xtra {background-color: #ffc;}
 .rsplus span.xtra { display:block; }
@@ -4585,8 +4585,8 @@
 .ruby .co4 {color: #cc0000; font-style: italic;}
 .ruby .coMULTI {color:#000080; font-style:italic;}
 .ruby .es0 {color:#000099;}
-.ruby .br0 {color:#006600; font-weight:bold;}
-.ruby .sy0 {color:#006600; font-weight:bold;}
+.ruby .br0 {color:black; font-weight:bold;}
+.ruby .sy0 {color:black; font-weight:bold;}
 .ruby .st0 {color:#996600;}
 .ruby .nu0 {color:#006666;}
 .ruby .me1 {color:#9900CC;}
@@ -4609,13 +4609,13 @@
 .sas .kw4 {color: #0000ff;}
 .sas .kw5 {color: #0000ff;}
 .sas .kw6 {color: #000080; font-weight: bold;}
-.sas .kw7 {color: #ff0000;}
+.sas .kw7 {color: #BF0303;}
 .sas .kw8 {color: #00ff00;}
 .sas .kw9 {color: #0000ff;}
 .sas .coMULTI {color: #006400; font-style: italic;}
 .sas .es0 {color: #000099; font-weight: bold;}
-.sas .br0 {color: #66cc66;}
-.sas .sy0 {color: #66cc66;}
+.sas .br0 {color: black;}
+.sas .sy0 {color: black;}
 .sas .st0 {color: #a020f0;}
 .sas .nu0 {color: #2e8b57; font-weight: bold;}
 .sas .re0 {color: #0000ff; font-weight: bold;}
@@ -4623,7 +4623,7 @@
 .sas .re2 {color: #006400; font-style: italic;}
 .sas .re3 {color: #006400; font-style: italic;}
 .sas .re4 {color: #006400; font-style: italic;}
-.sas .re5 {color: #ff0000; font-weight: bold;}
+.sas .re5 {color: #BF0303; font-weight: bold;}
 .sas .re6 {color: #00ff00; font-style: italic;}
 .sas .re7 {color: #0000ff; font-style: normal;}
 .sas .re8 {color: #b218b2; font-weight: bold;}
@@ -4666,9 +4666,9 @@
 .scheme .co1 {color: #808080; font-style: italic;}
 .scheme .coMULTI {color: #808080; font-style: italic;}
 .scheme .es0 {color: #000099; font-weight: bold;}
-.scheme .br0 {color: #66cc66;}
-.scheme .sy0 {color: #66cc66;}
-.scheme .st0 {color: #ff0000;}
+.scheme .br0 {color: black;}
+.scheme .sy0 {color: black;}
+.scheme .st0 {color: #BF0303;}
 .scheme .nu0 {color: #cc66cc;}
 .scheme .me0 {color: #202020;}
 .scheme .ln-xtra, .scheme li.ln-xtra, .scheme div.ln-xtra {background-color: #ffc;}
@@ -4689,11 +4689,11 @@
 .scilab .es_h {color: #000099; font-weight: bold;}
 .scilab .br0 {color: #009900;}
 .scilab .sy0 {color: #339933;}
-.scilab .st0 {color: #ff0000;}
-.scilab .st_h {color: #ff0000;}
+.scilab .st0 {color: #BF0303;}
+.scilab .st_h {color: #BF0303;}
 .scilab .nu0 {color: #cc66cc;}
-.scilab .me1 {color: #006600;}
-.scilab .me2 {color: #006600;}
+.scilab .me1 {color: black;}
+.scilab .me2 {color: black;}
 .scilab .re0 {color: #0000ff;}
 .scilab .re4 {color: #009999;}
 .scilab .ln-xtra, .scilab li.ln-xtra, .scilab div.ln-xtra {background-color: #ffc;}
@@ -4711,11 +4711,11 @@
 .sdlbasic .co3 {color: #808080;}
 .sdlbasic .co4 {color: #808080;}
 .sdlbasic .es0 {color: #000099;}
-.sdlbasic .br0 {color: #66cc66;}
-.sdlbasic .sy0 {color: #66cc66;}
-.sdlbasic .st0 {color: #ff0000;}
+.sdlbasic .br0 {color: black;}
+.sdlbasic .sy0 {color: black;}
+.sdlbasic .st0 {color: #BF0303;}
 .sdlbasic .nu0 {color: #cc66cc;}
-.sdlbasic .me0 {color: #66cc66;}
+.sdlbasic .me0 {color: black;}
 .sdlbasic .ln-xtra, .sdlbasic li.ln-xtra, .sdlbasic div.ln-xtra {background-color: #ffc;}
 .sdlbasic span.xtra { display:block; }
 
@@ -4757,9 +4757,9 @@
 .smarty .es0 {color: #000099; font-weight: bold;}
 .smarty .br0 {color: #D36900;}
 .smarty .sy0 {color: #D36900;}
-.smarty .st0 {color: #ff0000;}
+.smarty .st0 {color: #BF0303;}
 .smarty .nu0 {color: #cc66cc;}
-.smarty .me1 {color: #006600;}
+.smarty .me1 {color: black;}
 .smarty .sc1 {color: #808080; font-style: italic;}
 .smarty .sc2 {color: #009000;}
 .smarty .re0 {color: #00aaff;}
@@ -4778,10 +4778,10 @@
 .spark .co1 {color: #adadad; font-style: italic;}
 .spark .co2 {color: #adadad; font-style: italic; font-weight: bold;}
 .spark .es0 {color: #000099; font-weight: bold;}
-.spark .br0 {color: #66cc66;}
-.spark .sy0 {color: #66cc66;}
+.spark .br0 {color: black;}
+.spark .sy0 {color: black;}
 .spark .st0 {color: #7f007f;}
-.spark .nu0 {color: #ff0000;}
+.spark .nu0 {color: #BF0303;}
 .spark .me1 {color: #202020;}
 .spark .ln-xtra, .spark li.ln-xtra, .spark div.ln-xtra {background-color: #ffc;}
 .spark span.xtra { display:block; }
@@ -4792,14 +4792,14 @@
 .sparql li, .sparql .li1 {font-weight: normal; vertical-align:top;}
 .sparql .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .sparql .li2 {font-weight: bold; vertical-align:top;}
-.sparql .kw1 {color: #993333; font-weight: bold;}
+.sparql .kw1 {color: #0057AE; font-weight: bold;}
 .sparql .co0 {color: #808080; font-style: italic;}
 .sparql .co1 {color: #000078;}
 .sparql .coMULTI {color: #808080; font-style: italic;}
 .sparql .es0 {color: #000099; font-weight: bold;}
 .sparql .sy0 {color: #0000FF;}
 .sparql .sy1 {color: #FF8000; font-weight: bold;}
-.sparql .st0 {color: #ff0000;}
+.sparql .st0 {color: #BF0303;}
 .sparql .nu0 {color: #FF63C3;}
 .sparql .re1 {color: #007800;}
 .sparql .re2 {color: #780078;}
@@ -4813,13 +4813,13 @@
 .sql li, .sql .li1 {font-weight: normal; vertical-align:top;}
 .sql .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .sql .li2 {font-weight: bold; vertical-align:top;}
-.sql .kw1 {color: #993333; font-weight: bold;}
+.sql .kw1 {color: #0057AE; font-weight: bold;}
 .sql .co1 {color: #808080; font-style: italic;}
 .sql .coMULTI {color: #808080; font-style: italic;}
 .sql .es0 {color: #000099; font-weight: bold;}
-.sql .br0 {color: #66cc66;}
-.sql .sy0 {color: #66cc66;}
-.sql .st0 {color: #ff0000;}
+.sql .br0 {color: black;}
+.sql .sy0 {color: black;}
+.sql .st0 {color: #BF0303;}
 .sql .nu0 {color: #cc66cc;}
 .sql .ln-xtra, .sql li.ln-xtra, .sql div.ln-xtra {background-color: #ffc;}
 .sql span.xtra { display:block; }
@@ -4893,7 +4893,7 @@
 .tcl .coMULTI {color: #808080; font-style: italic;}
 .tcl .es0 {color: #000099; font-weight: bold;}
 .tcl .br0 {color: black;}
-.tcl .sy0 {color: #66cc66;}
+.tcl .sy0 {color: black;}
 .tcl .st0 {color: #483d8b;}
 .tcl .nu0 {color: #ff4500;}
 .tcl .me1 {color: black;}
@@ -4909,7 +4909,7 @@
 .teraterm .li2 {font-weight: bold; vertical-align:top;}
 .teraterm .kw1 {color: #000080; font-weight: bold!important;}
 .teraterm .kw2 {color: #808000; font-weight: bold;}
-.teraterm .kw3 {color: #ff0000; font-weight: bold;}
+.teraterm .kw3 {color: #BF0303; font-weight: bold;}
 .teraterm .kw4 {color: #ff00ff; font-weight: bold;}
 .teraterm .co1 {color: #008000; font-style: italic;}
 .teraterm .br0 {color: #ff00ff; font-weight: bold;}
@@ -4936,14 +4936,14 @@
 .thinbasic .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .thinbasic .li2 {font-weight: bold; vertical-align:top;}
 .thinbasic .kw1 {color: #0000FF; font-weight: bold;}
-.thinbasic .kw2 {color: #993333; font-style: italic; font-weight: bold;}
+.thinbasic .kw2 {color: #0057AE; font-style: italic; font-weight: bold;}
 .thinbasic .co1 {color: #008000;}
 .thinbasic .es0 {color: #000099;}
 .thinbasic .br0 {color: #333333;}
 .thinbasic .sy0 {color: #333333;}
 .thinbasic .st0 {color: #800080;}
 .thinbasic .nu0 {color: #CC0000;}
-.thinbasic .me1 {color: #66cc66;}
+.thinbasic .me1 {color: black;}
 .thinbasic .ln-xtra, .thinbasic li.ln-xtra, .thinbasic div.ln-xtra {background-color: #ffc;}
 .thinbasic span.xtra { display:block; }
 
@@ -4962,7 +4962,7 @@
 .tsql .es0 {color: #000099; font-weight: bold;}
 .tsql .br0 {color: #808080;}
 .tsql .sy0 {color: #808080;}
-.tsql .st0 {color: #FF0000;}
+.tsql .st0 {color: #BF0303;}
 .tsql .nu0 {color: #000;}
 .tsql .me1 {color: #202020;}
 .tsql .me2 {color: #202020;}
@@ -5039,7 +5039,7 @@
 .upc .kw1 {color: #b1b100;}
 .upc .kw2 {color: #000000; font-weight: bold;}
 .upc .kw3 {color: #000066;}
-.upc .kw4 {color: #993333;}
+.upc .kw4 {color: #0057AE;}
 .upc .co1 {color: #666666; font-style: italic;}
 .upc .co2 {color: #339933;}
 .upc .coMULTI {color: #808080; font-style: italic;}
@@ -5051,8 +5051,8 @@
 .upc .es5 {color: #006699; font-weight: bold;}
 .upc .br0 {color: #009900;}
 .upc .sy0 {color: #339933;}
-.upc .st0 {color: #ff0000;}
-.upc .nu0 {color: #0000dd;}
+.upc .st0 {color: #BF0303;}
+.upc .nu0 {color: #B08000;}
 .upc .nu6 {color: #208080;}
 .upc .nu8 {color: #208080;}
 .upc .nu12 {color: #208080;}
@@ -5073,7 +5073,7 @@
 .urbi .li2 {font-weight: bold; vertical-align:top;}
 .urbi .kw1 {color: #0000ff;}
 .urbi .kw2 {color: #0000ff;}
-.urbi .kw3 {color: #0000dd;}
+.urbi .kw3 {color: #B08000;}
 .urbi .kw4 {color: #0000ff;}
 .urbi .co1 {color: #666666;}
 .urbi .co2 {color: #339900;}
@@ -5083,23 +5083,23 @@
 .urbi .co6 {color: #a71616;}
 .urbi .co7 {color: #666666;}
 .urbi .coMULTI {color: #666666; font-style: italic;}
-.urbi .es0 {color: #ff0000;}
-.urbi .es1 {color: #ff0000;}
+.urbi .es0 {color: #BF0303;}
+.urbi .es1 {color: #BF0303;}
 .urbi .br0 {color: #7a0874; font-weight: bold;}
 .urbi .sy0 {color: #008000;}
 .urbi .sy1 {color: #0000f8;}
 .urbi .sy2 {color: #000040;}
 .urbi .sy3 {color: #000040; font-weight: bold;}
 .urbi .sy4 {color: #008080;}
-.urbi .st0 {color: #ff0000;}
+.urbi .st0 {color: #BF0303;}
 .urbi .st1 {color: #007788;}
-.urbi .nu0 {color: #0000dd;}
+.urbi .nu0 {color: #B08000;}
 .urbi .me1 {color: #007788;}
 .urbi .me2 {color: #007788;}
-.urbi .re0 {color: #0000dd}
-.urbi .re1 {color: #0000dd;}
-.urbi .re2 {color: #0000dd;}
-.urbi .re3 {color: #0000dd;}
+.urbi .re0 {color: #B08000}
+.urbi .re1 {color: #B08000;}
+.urbi .re2 {color: #B08000;}
+.urbi .re3 {color: #B08000;}
 .urbi .ln-xtra, .urbi li.ln-xtra, .urbi div.ln-xtra {background-color: #ffc;}
 .urbi span.xtra { display:block; }
 
@@ -5125,8 +5125,8 @@
 .uscript .br0 {color: #000000;}
 .uscript .sy0 {color: #669966;}
 .uscript .st0 {color: #999999;}
-.uscript .nu0 {color: #FF0000;}
-.uscript .me0 {color: #006600;}
+.uscript .nu0 {color: #BF0303;}
+.uscript .me0 {color: black;}
 .uscript .re0 {color: #E000E0;}
 .uscript .re1 {color: #E000E0;}
 .uscript .ln-xtra, .uscript li.ln-xtra, .uscript div.ln-xtra {background-color: #ffc;}
@@ -5141,7 +5141,7 @@
 .vala .kw1 {color: #0600FF;}
 .vala .kw2 {color: #FF8000; font-weight: bold;}
 .vala .kw3 {color: #008000;}
-.vala .kw4 {color: #FF0000;}
+.vala .kw4 {color: #BF0303;}
 .vala .co1 {color: #008080; font-style: italic;}
 .vala .co3 {color: #008080;}
 .vala .coMULTI {color: #008080; font-style: italic;}
@@ -5151,7 +5151,7 @@
 .vala .sy0 {color: #008000;}
 .vala .st0 {color: #666666;}
 .vala .st_h {color: #666666;}
-.vala .nu0 {color: #FF0000;}
+.vala .nu0 {color: #BF0303;}
 .vala .me1 {color: #0000FF;}
 .vala .me2 {color: #0000FF;}
 .vala .ln-xtra, .vala li.ln-xtra, .vala div.ln-xtra {background-color: #ffc;}
@@ -5251,14 +5251,14 @@
 .vhdl .kw4 {color: #000080; font-weight: bold;}
 .vhdl .kw5 {color: #000066;}
 .vhdl .co1 {color: #008000; font-style: italic;}
-.vhdl .co2 {color: #ff0000; font-weight: bold;}
+.vhdl .co2 {color: #BF0303; font-weight: bold;}
 .vhdl .coMULTI {color: #008000; font-style: italic;}
 .vhdl .es0 {color: #000099; font-weight: bold;}
 .vhdl .br0 {color: #000066;}
 .vhdl .sy0 {color: #000066;}
 .vhdl .st0 {color: #7f007f;}
-.vhdl .nu0 {color: #ff0000;}
-.vhdl .re0 {color: #ff0000;}
+.vhdl .nu0 {color: #BF0303;}
+.vhdl .re0 {color: #BF0303;}
 .vhdl .re2 {color: #ee82ee;}
 .vhdl .ln-xtra, .vhdl li.ln-xtra, .vhdl div.ln-xtra {background-color: #ffc;}
 .vhdl span.xtra { display:block; }
@@ -5297,9 +5297,9 @@
 .visualfoxpro .es0 {color: #000099; font-weight: bold;}
 .visualfoxpro .br0 {color: blue;}
 .visualfoxpro .sy0 {color: blue;}
-.visualfoxpro .st0 {color: #ff0000;}
+.visualfoxpro .st0 {color: #BF0303;}
 .visualfoxpro .nu0 {color: #cc66cc;}
-.visualfoxpro .me1 {color: #006600;}
+.visualfoxpro .me1 {color: black;}
 .visualfoxpro .ln-xtra, .visualfoxpro li.ln-xtra, .visualfoxpro div.ln-xtra {background-color: #ffc;}
 .visualfoxpro span.xtra { display:block; }
 
@@ -5332,8 +5332,8 @@
 .whitespace .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .whitespace .li2 {font-weight: bold; vertical-align:top;}
 .whitespace .co3 {color: #666666; font-style: italic;}
-.whitespace .br0 {color: #66cc66;}
-.whitespace .st0 {color: #ff0000;}
+.whitespace .br0 {color: black;}
+.whitespace .st0 {color: #BF0303;}
 .whitespace .re2 {background-color: #FF9999;}
 .whitespace .re3 {background-color: #9999FF;}
 .whitespace .ln-xtra, .whitespace li.ln-xtra, .whitespace div.ln-xtra {background-color: #ffc;}
@@ -5381,11 +5381,11 @@
 .winbatch .co2 {color: #FF1010; font-weight: bold;}
 .winbatch .coMULTI {color: #808080; font-style: italic;}
 .winbatch .es0 {color: #000099; font-weight: bold;}
-.winbatch .br0 {color: #66cc66;}
-.winbatch .sy0 {color: #66cc66;}
-.winbatch .st0 {color: #ff0000;}
+.winbatch .br0 {color: black;}
+.winbatch .sy0 {color: black;}
+.winbatch .st0 {color: #BF0303;}
 .winbatch .nu0 {color: #cc66cc;}
-.winbatch .me0 {color: #006600;}
+.winbatch .me0 {color: black;}
 .winbatch .re0 {color: #0000ff;}
 .winbatch .ln-xtra, .winbatch li.ln-xtra, .winbatch div.ln-xtra {background-color: #ffc;}
 .winbatch span.xtra { display:block; }
@@ -5402,9 +5402,9 @@
 .xbasic .kw4 {color: #0066a1;font-weight: bold}
 .xbasic .co1 {color: #808080;}
 .xbasic .es0 {color: #000099;}
-.xbasic .br0 {color: #66cc66;}
-.xbasic .sy0 {color: #66cc66;}
-.xbasic .st0 {color: #ff0000;}
+.xbasic .br0 {color: black;}
+.xbasic .sy0 {color: black;}
+.xbasic .st0 {color: #BF0303;}
 .xbasic .nu0 {color: #cc66cc;}
 .xbasic .ln-xtra, .xbasic li.ln-xtra, .xbasic div.ln-xtra {background-color: #ffc;}
 .xbasic span.xtra { display:block; }
@@ -5416,9 +5416,9 @@
 .xml .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
 .xml .li2 {font-weight: bold; vertical-align:top;}
 .xml .es0 {color: #000099; font-weight: bold;}
-.xml .br0 {color: #66cc66;}
-.xml .sy0 {color: #66cc66;}
-.xml .st0 {color: #ff0000;}
+.xml .br0 {color: black;}
+.xml .sy0 {color: black;}
+.xml .st0 {color: #BF0303;}
 .xml .nu0 {color: #cc66cc;}
 .xml .sc-1 {color: #808080; font-style: italic;}
 .xml .sc0 {color: #00bbdd;}
@@ -5461,7 +5461,7 @@
 .xpp .es0 {color: #000000;}
 .xpp .br0 {color: #000000;}
 .xpp .sy0 {color: #00007f;}
-.xpp .st0 {color: #ff0000;}
+.xpp .st0 {color: #BF0303;}
 .xpp .nu0 {color: #000000;}
 .xpp .me1 {color: #000000;}
 .xpp .me2 {color: #000000;}
@@ -5507,7 +5507,7 @@
 .z80 .nu0 {color: #dd22dd;}
 .z80 .re0 {color: #22bbff;}
 .z80 .re1 {color: #22bbff;}
-.z80 .re2 {color: #993333;}
+.z80 .re2 {color: #0057AE;}
 .z80 .ln-xtra, .z80 li.ln-xtra, .z80 div.ln-xtra {background-color: #ffc;}
 .z80 span.xtra { display:block; }
 
@@ -5527,9 +5527,9 @@
 .zxbasic .coMULTI {color: #808080; font-style: italic;}
 .zxbasic .es0 {color: #000099;}
 .zxbasic .br0 {color: #007676;}
-.zxbasic .sy0 {color: #66cc66;}
+.zxbasic .sy0 {color: black;}
 .zxbasic .st0 {color: #A00000; font-style: italic;}
 .zxbasic .nu0 {color: #b05103;}
-.zxbasic .me0 {color: #66cc66;}
+.zxbasic .me0 {color: black;}
 .zxbasic .ln-xtra, .zxbasic li.ln-xtra, .zxbasic div.ln-xtra {background-color: #ffc;}
 .zxbasic span.xtra { display:block; }
