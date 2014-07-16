@@ -1,9 +1,10 @@
 Aude (http://automata.forge.imag.fr/) is a free (as in free speech and in free beer) software to teach and experiment with automata.
 
-What is an automaton?
----------------------
+What is a finite state automaton?
+---------------------------------
 
-   An automaton is a mathematical object behind regular expressions and robots. More precisely, we can define is as a quintuplet composed of:
+   An a finite state automaton is a mathematical object behind regular expressions and robots. More precisely, we can define a finite state automaton as a quintuplet composed of:
+
     - Q     : a set of states
     - Sigma : a set of symbols
     - q0    : an initial state
@@ -11,9 +12,9 @@ What is an automaton?
     - F     : a subset of Q in which states are considered accepting / final
 
 What does this program do?
------------------------
+--------------------------
 
-   This program let the user write, draw or represent automata, run or write automata/set-related algorithms. To write algorithms, a convenient language strongly inspired of Javascript has been designed. This language as native support for automata and sets. Sets have their own dedicated notation and the language defines common set operations as operators such as minus, inter, union and allow set iteration thanks to a foreach structure.
+   This program let the user write, draw or represent automata, run or write automata/set-related algorithms. To write algorithms, a convenient language strongly inspired of Javascript has been designed: Audescript. This language as native support for automata and sets. Sets have their own dedicated notation and the language defines common set operations as operators such as minus, inter, union and allow set iteration thanks to a foreach structure. But you don’t have to write algorithms: Aude comes with a set of predefined algorithms commonly found in lectures about finite state automata.
 
    In the near future, it should be possible to run a automaton on a word and follow the execution graphically, find a regular expression from an automaton and a automaton from a regular expression, and even more.
 
@@ -32,13 +33,68 @@ How do I run the program?
     - a recent version of Safari
 
    Might work on:
-    - IE 10+, but this is untested (we would be glad to if Windows were not required to test on IE)
+    - IE 10+, but this is untested
 
    Should not work on:
     - tablets
 
-   Will probably never work on:
-    - IE < 10
+   Will probably never work on IE < 10.
+
+Running Audescript programs outside of the browser?
+---------------------------------------------------
+
+    This is possible if you have node.js installed on your system. It was only tested on Linux so far. Run:
+
+    $ ./audescript yourprogram.ajs parameters...
+
+    If you installed aude in your system, you can run
+
+    $ audescript yourprogram.ajs parameters...
+
+	Audescript can also act as an interactive shell:
+
+     $ ./audescript
+
+    File redirections are also supported:
+
+     $ ./audescript < file.ajs
+
+    If you installed aude in your system (with make install for example), you can leave the "./" part.
+
+Installing
+----------
+
+    Installing is not mandatory and it is only supported on Unix-like systems. It allows you to launch aude and audescript from any folder.
+    If you want to install Aude, just type:
+
+     $ sudo make install
+
+    in the aude folder. Two programs are installed in /usr/local/bin: “aude” and “audescript“. If you want to install to somewhere else:
+    
+     $ DESTDIR=somewhere/else sudo make install
+
+    make install will then put things in somewhere/else/bin and somewhere/else/share/aude. Be sure somewhere/else/bin and somewhere/else/share exist and are folders.
+
+    - To launch aude in firefox:
+        $ BROWSER=firefox aude
+    - To launch aude in chromium:
+        $ BROWSER=chromium aude
+    - To launch audescript:
+        $ audescript
+
+Unit tests
+-----------
+
+    Run:
+     $ ./audescript tests/test.js
+
+Author
+------
+   Raphaël Jakse (UJF) : raphael dot jakse at imag dot fr
+   Supervised by Yliès Falcone : ylies dot falcone at ujf-grenoble dot fr
+
+   This program was started as a personal project around November 2012. The main goal was to get to know automata and related algorithms, and also help friends in their revisions, in the hope more people, teachers included, would find it useful.
+   As of July of 2013, however, most of the development was done during a stage at Verimag supervised by Yliès Falcone (from the LIG Laboratory) and paid by the Université Joseph Fourier, Grenoble.
 
 What is the license of the program?
 -----------------------------------
@@ -52,7 +108,7 @@ What is the license of the program?
    One file is under WTFPL (read the file's header for more information):
       mousewheel.js
 
-   If you have doubt about a license to respect for a particular file, GPLv3+ in fine. You can also contact the author.
+   If you have doubts about a license to respect for a particular file, GPLv3+ is fine. You can also contact the author.
 
    This program makes use of the following external projects :
     - libD, under GPL 3+.
@@ -64,41 +120,3 @@ What is the license of the program?
 
    The GPLv3 license can be consulted in the file gpl.txt.
    The WTFPL license can be consulted in the file wtfpl.txt.
-
-Running Audescript programs outside of the browser?
----------------------------------------------------
-
-	Run:
-
-    $ ./audescript yourprogram.ajs parameters...
-
-    If you installed aude in your system (with make install for example), you can run
-
-    $ yourprogram.ajs parameters...
-
-Any interactive shell for Audescript?
--------------------------------------
-
-    Run:
-     $ ./audescript
-
-    File redirections are also supported:
-     $ ./audescript < file.ajs
-
-    If you installed aude in your system (with make install for example), you can leave the "./" part.
-
-Unit tests?
------------
-
-    Run:
-     $ ./audescript tests/test.js
-
-    See tests/README for more details.
-
-Author
-------
-   Raphaël Jakse (UJF) : raphael dot jakse at imag dot fr
-   Supervised by Yliès Falcone : ylies dot falcone at ujf-grenoble dot fr
-
-   This program was started as a personal project around November 2012. The main goal was to get to know automata and related algorithms, and also help friends in their revisions, in the hope more people, teachers included, would find it useful.
-   As of July of 2013, however, most of the development was done during a stage at Verimag supervised by Yliès Falcone (from the LIG Laboratory) and paid by the Université Joseph Fourier, Grenoble.
