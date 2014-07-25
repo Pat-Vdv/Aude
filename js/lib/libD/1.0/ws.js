@@ -1306,14 +1306,14 @@ libD.need(['sizepos', 'numbers'], function(){
 		},
 
 		/*
-			Method: setCloseClosing
+			Method: setPreventClosing
 			Set the function that will be called when the user wants to quit the window
 			Parameter:
 				f - the function
 			Note:
 				FIXME
 		*/
-		setCloseClosing : function (f)
+		setPreventClosing : function (f)
 		{
 			this.preventClosing = f;
 		},

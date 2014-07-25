@@ -1,9 +1,9 @@
-.ddwm-window.decoration
+.libD-wm-window.decoration
 {
 	border:1px solid rgb(50,50,50);
 }
 
-.ddwm-window.decoration
+.libD-wm-window.decoration
 {
 	-moz-border-radius:5px;
 	-khtml-border-radius:5px;
@@ -11,7 +11,7 @@
 	border:1px solid rgba(50,50,50,0.5)
 }
 
-.ddwm-window
+.libD-wm-window
 {
 	position:absolute;
 
@@ -45,30 +45,30 @@
 	zoom:1;
 }
 
-.shadows.ddwm-window.decoration.active, .no-decoration.active .ddwm-content
+.shadows.libD-wm-window.decoration.active, .no-decoration.active .libD-wm-content
 {
 	-webkit-box-shadow:0 4px 8px rgba(0,0,0,0.4);
 	-moz-box-shadow:0 4px 8px rgba(0,0,0,0.4);
 	box-shadow: 0 4px 8px rgba(0,0,0,0.4);
 }
 
-shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
+shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-content
 {
 	-webkit-box-shadow:0 4px 8px rgba(0,0,0,0.2);
 	box-shadow:0 4px 8px rgba(0,0,0,0.2);
 	-moz-box-shadow:0 4px 8px rgba(0,0,0,0.2);
 }
 
-.no-decoration.ddwm-window .ddwm-titlebar
+.no-decoration.libD-wm-window .libD-wm-titlebar
 {
 	display:none
 }
 
-.ddwm-window.decoration .ddwm-titlebar
+.libD-wm-window.decoration .libD-wm-titlebar
 {
 	background-color:rgb(237,237,237);
 }
-.ddwm-window.decoration .ddwm-titlebar
+.libD-wm-window.decoration .libD-wm-titlebar
 {
 	position:relative;
 	-moz-border-radius-topright:5px;
@@ -85,24 +85,24 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	background-repeat:repeat-x
 }
 
-.active.ddwm-window.decoration .ddwm-titlebar
+.active.libD-wm-window.decoration .libD-wm-titlebar
 {
 	background-image:url(wm/title_top_middle.png);
 	padding-bottom:1px;
 }
 
-.inactive.ddwm-window.decoration .ddwm-titlebar
+.inactive.libD-wm-window.decoration .libD-wm-titlebar
 {
 	background-image:url(wm/title_top_middle_inactive.png);
 	padding-bottom:1px
 }
 
-.inactive.ddwm-window.decoration .ddwm-title
+.inactive.libD-wm-window.decoration .libD-wm-title
 {
 	color:#AAA
 }
 
-.ddwm-titlebar-space
+.libD-wm-titlebar-space
 {
 	cursor:default;
 	position:absolute;
@@ -114,7 +114,7 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	cursor:inherit;
 }
 
-.ddwm-title
+.libD-wm-title
 {
 	margin:0;
 	padding:0;
@@ -124,7 +124,7 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	text-align:center;
 }
 
-.ddwm-title, .ddwm-text
+.libD-wm-title, .libD-wm-text
 {
 	font-size:13px;
 	font-family: Sans, sans-serif;
@@ -132,18 +132,18 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	font-weight:bold;
 }
 
-.ddwm-title.ddwm-title-embeded
+.libD-wm-title.libD-wm-title-embeded
 {
 	width:auto;
 	display:inline-block;
 }
 
-.ddwm-title-block.ddwm-title-embeded
+.libD-wm-title-block.libD-wm-title-embeded
 {
 	display:block
 }
 
-.ddwm-icon
+.libD-wm-icon
 {
 	float:left;
 	margin-left:6px;
@@ -152,12 +152,12 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	cursor:auto;
 }
 
-.ddwm-window.icon-hide .ddwm-icon
+.libD-wm-window.icon-hide .libD-wm-icon
 {
 	display:none;
 }
 
-.ddwm-window.icon-hide .ddwm-titlebar-space
+.libD-wm-window.icon-hide .libD-wm-titlebar-space
 {
 	left:0;
 	-khtml-border-top-left-radius:5px;
@@ -166,19 +166,19 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	border-top-right-radius:5px;
 }
 
-.ddwm-window.decoration .ddwm-content
+.libD-wm-window.decoration .libD-wm-content
 {
 	z-index:5;
 	overflow:hidden;
 }
 
-.ddwm-content
+.libD-wm-content
 {
 	position:relative;
 }
 
 
-.ddwm-min, .ddwm-restore, .ddwm-max, .ddwm-close
+.libD-wm-min, .libD-wm-restore, .libD-wm-max, .libD-wm-close
 {
 	position:absolute;
 	width:16px;
@@ -189,70 +189,70 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	cursor:auto;
 }
 
-.ddwm-close
+.libD-wm-close
 {
 	right:3px;
 	background-image:url(wm/close.png);
 }
 
-.ddwm-close:hover
+.libD-wm-close:hover
 {
 	background-image:url(wm/close-h.png);
 }
 
-.ddwm-close:active
+.libD-wm-close:active
 {
 	background-image:url(wm/close-f.png);
 }
 
-.ddwm-restore
+.libD-wm-restore
 {
 	right:21px;
 	background-image:url(wm/restore.png);
 }
 
-.ddwm-restore:hover
+.libD-wm-restore:hover
 {
 	background-image:url(wm/restore-h.png);
 }
 
-.ddwm-restore:active
+.libD-wm-restore:active
 {
 	background-image:url(wm/restore-f.png);
 }
 
-.ddwm-max
+.libD-wm-max
 {
 	right:21px;
 	background-image:url(wm/maximize.png);
 }
-.ddwm-max:hover
+.libD-wm-max:hover
 {
 	background-image:url(wm/maximize-h.png);
 }
 
-.ddwm-max:active
+.libD-wm-max:active
 {
 	background-image:url(wm/maximize-f.png);
 }
 
-.ddwm-min
+.libD-wm-min
 {
 	right:40px;
 	background-image:url(wm/minimize.png);
 }
 
-.ddwm-min:hover
+.libD-wm-min:hover
 {
 	background-image:url(wm/minimize-h.png);
 }
 
-.ddwm-min:active
+.libD-wm-min:active
 {
 	background-image:url(wm/minimize-f.png);
 }
 
-.ddwm-min:active, .ddwm-restore:active, .ddwm-max:active, .ddwm-close:active
+.libD-wm-min:active, .libD-wm-restore:active, .libD-wm-max:active, .libD-wm-close:active
 {
 	margin-right:2px;
 	margin-top:2px;
@@ -260,7 +260,7 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	width:12px;
 }
 
-.ddwm-window.decoration .ddwm-resize-left
+.libD-wm-window.decoration .libD-wm-resize-left
 {
 	position:absolute;
 	top:20px;
@@ -273,7 +273,7 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	border-bottom-left-radius:5px;
 }
 
-.ddwm-window.decoration .ddwm-resize-right
+.libD-wm-window.decoration .libD-wm-resize-right
 {
 	position:absolute;
 	top:20px;
@@ -286,7 +286,7 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	border-bottom-right-radius:5px;
 }
 
-.ddwm-window.decoration .ddwm-resize-bottom
+.libD-wm-window.decoration .libD-wm-resize-bottom
 {
 	position:absolute;
 	right:3px;
@@ -296,12 +296,12 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	background:#F1F1F1;
 }
 
-.ddwm-window.decoration .ddwm-resize-bottom, .ddwm-window.decoration .ddwm-resize-top, .ddwm-window.decoration .ddwm-resize-right
+.libD-wm-window.decoration .libD-wm-resize-bottom, .libD-wm-window.decoration .libD-wm-resize-top, .libD-wm-window.decoration .libD-wm-resize-right
 {
 	z-index:10;
 }
 
-.ddwm-window.decoration .ddwm-content.fixed-size
+.libD-wm-window.decoration .libD-wm-content.fixed-size
 {
 	position:absolute;
 	top:20px;
@@ -310,13 +310,13 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	right:2px
 }
 
-.ddwm-content.auto-size
+.libD-wm-content.auto-size
 {
 	margin:2px;
 	margin-top:0px
 }
 
-.ddwm-window.no-decoration .ddwm-content.fixed-size
+.libD-wm-window.no-decoration .libD-wm-content.fixed-size
 {
 	position:absolute;
 	top:0;
@@ -326,24 +326,24 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 }
 
 
-.ddwm-window.ddwm-maximized .ddwm-content.fixed-size
+.libD-wm-window.libD-wm-maximized .libD-wm-content.fixed-size
 {
 	bottom:0;
 	left:0;
 	right:0
 }
 
-.ddwm-window.ddwm-maximized .ddwm-content.auto-size
+.libD-wm-window.libD-wm-maximized .libD-wm-content.auto-size
 {
 	margin:0
 }
 
-.ddwm-maximized .ddwm-resize-bottom, .ddwm-maximized .ddwm-resize-top, .ddwm-maximized .ddwm-resize-right, .ddwm-maximized .ddwm-resize-left
+.libD-wm-maximized .libD-wm-resize-bottom, .libD-wm-maximized .libD-wm-resize-top, .libD-wm-maximized .libD-wm-resize-right, .libD-wm-maximized .libD-wm-resize-left
 {
 	display:none
 }
 
-.ddwm-window.ddwm-maximized
+.libD-wm-window.libD-wm-maximized
 {
 	border:0;
 	-moz-border-radius:0;
@@ -351,7 +351,7 @@ shadows.ddwm-window.decoration.inactive, .no-decoration.inactive .ddwm-content
 	border-radius:0
 }
 
-.ddwm-window.ddwm-maximized .ddwm-titlebar
+.libD-wm-window.libD-wm-maximized .libD-wm-titlebar
 {
 	-moz-border-radius:0;
 	-khtml-border-radius:0;

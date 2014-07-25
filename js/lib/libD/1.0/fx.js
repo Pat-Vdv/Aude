@@ -37,6 +37,61 @@ if(!libD.getStyle)
 	};
 }
 
+
+libD.animationSupported  = false;
+libD.transitionSupported = false;
+// thx https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Using_CSS_animations/Detecting_CSS_animation_support
+
+libD.transitionString = 'transition';
+libD.animationString  = 'animation';
+
+libD.ready(function () {
+	if (document.body.transitionDuration !== undefined) {
+		libD.transitionSupported = true;
+		return;
+	}
+
+	var elm             = document.body,
+	    domPrefixes     = ['Webkit', 'Moz', 'O', 'ms', 'Khtml'],
+	    pfx             = '';
+
+
+	var i;
+	for (i = 0; i < domPrefixes.length; i++) {
+		if (elm.style[domPrefixes[i] + 'TransitionDuration'] !== undefined) {
+			pfx = domPrefixes[i];
+			libD.transitionString = pfx + 'Transition';
+			libD.transitionSupported = true;
+			return;
+		}
+	}
+});
+
+libD._restoreTransitions = function (e, afterHide, shrink) {
+	e.style[libD.transitionString + 'Duration']       = e._libD_transDur;
+	e.style[libD.transitionString + 'TimingFunction'] = e._libD_transTF;
+	e.style[libD.transitionString + 'Property']       = e._libD_transPro;
+
+	delete e._libD_transDur;
+	delete e._libD_transTF;
+	delete e._libD_transPro;
+
+	e._libD_appearing = false;
+	e._libD_disappearing = false;
+
+	if (afterHide) {
+		e.style.display = 'none';
+		if (shrink) {
+			e.style.height = '';
+		}
+	}
+};
+
+libD._showQuietly = function (e, t) {
+	e.style.opacity = 1;
+	setTimeout(libD._restoreTransitions, t, e);
+};
+
 /*
  Function: showSmoothly
 	Show the element with a smooth transition, not to disturb the user.
@@ -62,7 +117,7 @@ libD.showSmoothly = libD.showQuietly = function (e,t,d,s)
 		{
 			try
 			{
-				if(!e || !e._libD_appearing || e._libD_disapearing)
+				if(!e || !e._libD_appearing || e._libD_disappearing)
 					return;
 				e._libD_appearing = false;
 				e.style.display = '';
@@ -93,7 +148,7 @@ libD.showSmoothly = libD.showQuietly = function (e,t,d,s)
 	else
 	{
 		var opac = e.style.opacity;
-		if(e.style.opac === "0")
+		if(opac === "0")
 		{
 			var o = 0;
 			e.style.opacity = '0';
@@ -107,26 +162,47 @@ libD.showSmoothly = libD.showQuietly = function (e,t,d,s)
 			var o = parseFloat(opac.replace(/,/g, '.'));
 	}
 
-	function f()
-	{
-		if(!e || !e._libD_appearing || e._libD_disapearing)
-			return;	
+	e._libD_transDur = e.style[libD.transitionString + 'Duration'];
+	e._libD_transTF  = e.style[libD.transitionString + 'TimingFunction'];
+	e._libD_transPro = e.style[libD.transitionString + 'Property'];
 
-		o+=s;
-		if(o>1)
-			o=1;
-		else if(o === s && libD.getStyle(e,'display') === 'none')
-			e.style.display='block';
+	e.style[libD.transitionString + 'Duration']       = t + 'ms';
+	e.style[libD.transitionString + 'TimingFunction'] = 'linear';
+	e.style[libD.transitionString + 'Property']       = 'opacity';
 
-		e.style.opacity = Math.round(o*100) / 100;
+	setTimeout(libD._showQuietly, d, e, t);
 
-		if(o<1)
-			setTimeout(f,i);
-		else
-			e._libD_appearing = false;
-	}
-	setTimeout(f,i + d);
+// 	function f()
+// 	{
+// 		if(!e || !e._libD_appearing || e._libD_disappearing)
+// 			return;	
+// 
+// 		o+=s;
+// 		if(o>1)
+// 			o=1;
+// 		else if(o === s && libD.getStyle(e,'display') === 'none')
+// 			e.style.display='block';
+// 
+// 		e.style.opacity = Math.round(o*100) / 100;
+// 
+// 		if(o<1)
+// 			setTimeout(f,i);
+// 		else
+// 			e._libD_appearing = false;
+// 	}
+// 	setTimeout(f,i + d);
 };
+
+
+libD._hideQuietly = function (e, shrink, t) {
+	if (shrink) {
+		e.style.height = '0';
+	}
+
+	e.style.opacity = '0';
+
+	setTimeout(libD._restoreTransitions, t, e, true);
+}
 
 /*
  Function: hideSmoothly
@@ -170,7 +246,7 @@ libD.hideQuietly = function (e,settings)
 			try {
 				if(!e || !e._libD_disappearing || e._libD_appearing)
 					return;
-				e._libD_disapearing = false;
+				e._libD_disappearing = false;
 				if(deleteNode)
 					e.parentNode.removeChild(e);
 				else
@@ -194,6 +270,7 @@ libD.hideQuietly = function (e,settings)
 		if(settings.shrink && libD.height)
 		{
 			eHeight = libD.height(e);
+			e.style.height = eHeight + 'px';
 			shrink = true;
 		}
 	}
@@ -208,6 +285,11 @@ libD.hideQuietly = function (e,settings)
 	if(libD.getStyle(e,'display') === 'none')
 	{
 		e.style.opacity = '';
+
+		if (shrink) {
+			e.style.height = '';
+		}
+
 		return;
 	}
 	else
@@ -224,22 +306,25 @@ libD.hideQuietly = function (e,settings)
 		}
 		else if(opac === "" || opac === "1")
 		{
-			var o = 1;
-			e.style.opacity = '';
-		}
-		else
-		{
-			try
-			{
-				var o = parseFloat(opac.replace(/,/g, '.'));
-			}
-			catch(err)
-			{
-				var o = 0;
-			}
+			e.style.opacity = '1';
 		}
 	}
 
+	e._libD_transDur = e.style[libD.transitionString + 'Duration'];
+	e._libD_transTF  = e.style[libD.transitionString + 'TimingFunction'];
+	e._libD_transPro = e.style[libD.transitionString + 'Property'];
+
+	e.style[libD.transitionString + 'Duration']       = t + 'ms';
+	e.style[libD.transitionString + 'TimingFunction'] = 'linear';
+
+	if (shrink) {
+		e.style[libD.transitionString + 'Property']       = 'opacity height';
+	} else {
+		e.style[libD.transitionString + 'Property']       = 'opacity';
+	}
+
+	setTimeout(libD._hideQuietly, d, e, shrink, t);
+/*
 	if(shrink)
 		var heightStep = Math.ceil(eHeight * s);
 
@@ -277,9 +362,10 @@ libD.hideQuietly = function (e,settings)
 			e.style.opacity = '';
 			e._libD_disappearing = false;
 		}
-	}
-	setTimeout(f,i + d);
-}
+	}*/
+// 	setTimeout(f,i + d);
+};
+
 /** Will hide the element quietly. Just makes a call to libD.hideQuietly for compatibility with old projects
 	DEPRECATED. Use hideQuietly instead.
 	Parameters:

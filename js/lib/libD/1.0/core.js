@@ -865,7 +865,7 @@ libD.moduleLoaded = function (module)
 			if(! --W.nDependencies)
 			{
 				libD.freeIndex(w, i);
-            W.callback.apply(W.context, W.argv);
+				W.callback.apply(W.context, W.argv);
 
 				tmpLen = w.length;
 				if(tmpLen < len - 1)

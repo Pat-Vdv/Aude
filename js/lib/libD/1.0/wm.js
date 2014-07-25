@@ -57,7 +57,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			N - the new size, in pixels or percentage */
 		height : function (W, N)
 		{
-			W.content.className = 'ddwm-content fixed-size';
+			W.content.className = 'libD-wm-content fixed-size';
 			W.win.style.height = typeof N === 'string'? N : N + libD.height(W.win) - libD.height(W.content) + 'px';
 		},
 		/* set the height of the window
@@ -113,11 +113,11 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 
 			if(W.focused)
 			{
-				Window.className="ddwm-window shadows active";
+				Window.className="libD-wm-window shadows active";
 			}
 			else
 			{
-				Window.className="ddwm-window shadows inactive";
+				Window.className="libD-wm-window shadows inactive";
 			}
 
 			if(W.minimized)
@@ -126,7 +126,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			}
 
 			var titlebar = W._libD_WM_tb = document.createElement('div');
-			titlebar.className = 'ddwm-titlebar';
+			titlebar.className = 'libD-wm-titlebar';
 			if(W.decoration)
 			{
 				Window.className += ' decoration';
@@ -142,13 +142,13 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 				icon.src = W.icon;
 
 			icon.alt = '';
-			icon.className = 'ddwm-icon';
+			icon.className = 'libD-wm-icon';
 
 			var titlebarSpace = W._libD_WM_tbarea = document.createElement('div');
-			titlebarSpace.className = 'ddwm-titlebar-space';
+			titlebarSpace.className = 'libD-wm-titlebar-space';
 
 			var title = W._libD_WM_title = document.createElement('div');
-			title.className = 'ddwm-title';
+			title.className = 'libD-wm-title';
 
 			titlebarSpace.appendChild(title);
 
@@ -158,7 +158,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			W._libD_WM_icon = icon;
 
 			var Min = document.createElement('a');
-			Min.className = 'ddwm-min';
+			Min.className = 'libD-wm-min';
 			Min.onmousedown = this._cancelEvt;
 			Min.onclick = this._min_click;
 			if(!W.minimizable)
@@ -172,13 +172,13 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			}
 			if(W.maximizedHeight && W.maximizedWidth)
 			{
-				res.className = 'ddwm-restore';
+				res.className = 'libD-wm-restore';
 				res.onclick = this._res_click;
 				title.ondblclick = this._res_click;
 			}
 			else
 			{
-				res.className = 'ddwm-max';
+				res.className = 'libD-wm-max';
 				res.onclick = this._max_click;
 				title.ondblclick = this._max_click;
 			}
@@ -189,7 +189,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			}
 			W._libD_WMRes = res;
 			var close = document.createElement('a');
-			close.className = 'ddwm-close';
+			close.className = 'libD-wm-close';
 
 			if(!W.closable)
 			{
@@ -214,17 +214,17 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			var resizeleft = document.createElement('div');
 			var resizeright = document.createElement('div');
 			var resizebottom = document.createElement('div');
-			resizeleft.className = 'ddwm-resize ddwm-resize-left';
-			resizeright.className = 'ddwm-resize ddwm-resize-right';
-			resizebottom.className = 'ddwm-resize ddwm-resize-bottom';
+			resizeleft.className = 'libD-wm-resize libD-wm-resize-left';
+			resizeright.className = 'libD-wm-resize libD-wm-resize-right';
+			resizebottom.className = 'libD-wm-resize libD-wm-resize-bottom';
 
 			if(W.height === null || W.width === null)
 			{
-				W.content.className = "ddwm-content auto-size";
+				W.content.className = "libD-wm-content auto-size";
 			}
 			else
 			{
-				W.content.className = "ddwm-content fixed-size";
+				W.content.className = "libD-wm-content fixed-size";
 			}
 
 			libD.allowSelection(resizeleft, false);
@@ -305,8 +305,8 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			W._libD_WMRes.onclick = this._res_click;
 			W._libD_WM_title.ondblclick = this._res_click;
 
-			W._libD_WMRes.className = 'ddwm-restore';
-			libD.addClass(W.win, 'ddwm-maximized');
+			W._libD_WMRes.className = 'libD-wm-restore';
+			libD.addClass(W.win, 'libD-wm-maximized');
 			setTimeout(function(){W._libD_WMblockMaxRes = false;}, t);
 			return t;
 		},
@@ -324,8 +324,8 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			W._libD_WMRes.onclick = this._max_click;
 			W._libD_WM_title.ondblclick = this._max_click;
 
-			W._libD_WMRes.className = 'ddwm-max';
-			libD.removeClass(W.win, 'ddwm-maximized');
+			W._libD_WMRes.className = 'libD-wm-max';
+			libD.removeClass(W.win, 'libD-wm-maximized');
 
 			setTimeout(function(){W._libD_WMblockMaxRes = false;}, t);
 
@@ -353,7 +353,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 			catch(e){}
 
 			if(W._libD_WM_title)
-				libD.addClass(W._libD_WM_title, 'ddwm-title-embeded');
+				libD.addClass(W._libD_WM_title, 'libD-wm-title-embeded');
 
 			return W._libD_WM_tbarea;
 		},
@@ -361,7 +361,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 		releaseDecorationArea : function(W)
 		{
 			libD.emptyNode(W._libD_WM_tbarea);
-			libD.removeClass(W._libD_WM_title, 'ddwm-title-embeded');
+			libD.removeClass(W._libD_WM_title, 'libD-wm-title-embeded');
 			W._libD_WM_tbarea.appendChild(W._libD_WM_title);
 		},
 
@@ -400,22 +400,22 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 		{
 			b = b === undefined ? true : b;
 			if(b)
-				libD.addClass(W._libD_WM_title, 'ddwm-title-block');
+				libD.addClass(W._libD_WM_title, 'libD-wm-title-block');
 			else
-				libD.removeClass(W._libD_WM_title, 'ddwm-title-block');
+				libD.removeClass(W._libD_WM_title, 'libD-wm-title-block');
 		},
 
 		handleSurface : function(W, s, action)
 		{// action is one of: auto, move, n-resize, w-resize, n-resize, s-resize, sw-resize, se-resize, nw-resize, ne-resize.
 		 // not supported by libD.wm.
-			libD.addClass(s, 'ddwm-handle');
+			libD.addClass(s, 'libD-wm-handle');
 			libD.addEvent(s, 'mousemove', libD.wm._mousemove);
 			s.libD_WSWin = W;
 		},
 
 		releaseSurface : function(W, s, action)
 		{// specifying action in the API might be inconsistant.
-			libD.removeClass(s, 'ddwm-handle');
+			libD.removeClass(s, 'libD-wm-handle');
 			libD.removeEvent(s, 'mousemove', libD.wm._mousemove);
 			delete s.libD_WSWin;
 
@@ -450,7 +450,7 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 		{
 			if(o.className === undefined)
 				o = o.parentNode;
-			return o.className.match(/(?:ddwm-[\S]+|ddWindow-[\S]+)/);
+			return o.className.match(/libD-wm-[\S]+/);
 		},
 	
 		_opacity : function (W,o)
@@ -711,11 +711,11 @@ libD.need(['fx', 'sizepos', 'ws', 'selection', 'domEssential'], function() {
 
 					if(!w.maximizedHeight && !w.maximizedWidth)
 					{
-						w.content.className = 'ddwm-content fixed-size';
+						w.content.className = 'libD-wm-content fixed-size';
 						w.updateCoords();
 					}
 					w._libD_WMRes.onclick = ws.wm._max_click;
-					w._libD_WMRes.className = 'ddwm-max';
+					w._libD_WMRes.className = 'libD-wm-max';
 					w._libD_WM_title.ondblclick = ws.wm._max_click;
 					wm._restoreShadows(ws.wl);
 					area.removeChild(wm.divProtect);

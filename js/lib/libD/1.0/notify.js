@@ -85,6 +85,7 @@ libD.need(['fx'], function()
 
 		var that = this;
 		this.displayFor = o.autoClose || 0;
+		this.area = o.area || this.defaultArea || document.body;
 		this.closing = false;
 		this.iconNotifier = this.system = null;
 
@@ -179,24 +180,19 @@ libD.need(['fx'], function()
 		/*
 			Method: show
 			Will show the notification and cancel the delay if any.
-			Parameter:
-				area (optional) - The DOM element which will receive the notification. Default: document.body
 			Returns:
 				true if it succeded
 				undefined if the notification was already shown
 				false if it failed (never happens here)
 		*/
-		show : function(area)
+		show : function()
 		{
 			if(this.delayTO)
 				clearTimeout(this.delayTO);
 			if(this.displayed) return;
-
-			if(!area)
-				area = document.body;
 		
 			libD.showQuietly(this.bubble);
-			area.appendChild(this.bubble);
+			this.area.appendChild(this.bubble);
 
 			this.displayed = true;
 
@@ -206,6 +202,16 @@ libD.need(['fx'], function()
 				this.displayFor = setTimeout(function(){that.close();}, this.displayFor);
 			}
 			return true;
+		},
+
+		/* Method: setArea
+		  Sets the DOM element which will receive the notification element.
+		  Parameter:
+				area - The DOM element which will receive the notification. Default: document.body
+		*/
+		setArea : function(area)
+		{
+			this.area = area;
 		},
 
 		/* Method: close
@@ -402,7 +408,9 @@ libD.need(['fx'], function()
 				var that = this;
 				this.delayTO = setTimeout(function(){that.show();}, d);
 			}
-		}
+		},
+
+		defaultArea:null
 	};
 
 	/*
