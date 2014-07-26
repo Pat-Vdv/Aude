@@ -2,7 +2,7 @@ msgid "Program Result"
 msgstr "Résultat"
 
 msgid "\nStack trace: \n"
-msgstr "\nPile de l'erreur : \n"
+msgstr "\nPile de l’erreur : \n"
 
 msgid "Error on line {0}, character {1}"
 msgstr "Erreur ligne {0}, caractère {1}"
@@ -11,31 +11,31 @@ msgid "Error on line {0}"
 msgstr "Erreur à la ligne {0}"
 
 msgid "Execute the current automaton with a word"
-msgstr "Exécuter l'automate actuel sur un mot"
+msgstr "Exécuter l’automate actuel sur un mot"
 
 msgid "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)"
-msgstr "Quel nom voulez-vous donner à l'image exportée ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg)"
+msgstr "Quel nom voulez-vous donner à l’image exportée ? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg)"
 
 msgid "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
-msgstr "Quel nom voulez-vous donner au fichier exporté ? (donnez l'extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
+msgstr "Quel nom voulez-vous donner au fichier exporté ? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
 
 msgid "Which name do you want to give to the exported text file?"
 msgstr "Quel nom voulez-vous donner au fichier texte exporté ?"
 
 msgid "get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."
-msgstr "get_automaton: L’automate n°{0} n'existe pas ou n’a pas d’état initial."
+msgstr "get_automaton: L’automate n°{0} n’existe pas ou n’a pas d’état initial."
 
 msgid "Please enter a name for the file in which the program will be saved."
 msgstr "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré."
 
 msgid "Please enter a name for the file in which the automaton will be saved."
-msgstr "Veuillez saisir un nom pour le fichier dans lequel l'automate sera enregistré."
+msgstr "Veuillez saisir un nom pour le fichier dans lequel l’automate sera enregistré."
 
 msgid "Syntax error: bad import parameter in {0}"
 msgstr "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}"
 
 msgid "Error: import of {0} in {2} failed: '{1}'."
-msgstr "Erreur : l'import de {0} dpuis {2} a échoué : '{1}'."
+msgstr "Erreur : l’import de {0} dpuis {2} a échoué : '{1}'."
 
 msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
 msgstr "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis '{0}')."
@@ -104,19 +104,19 @@ msgid "Delay between steps (ms): "
 msgstr "Pause entre les étapes (ms) : "
 
 msgid "This automaton into the editor"
-msgstr "Cet automate dans l'éditeur"
+msgstr "Cet automate dans l’éditeur"
 
 msgid "To add a new state, double-click on the drawing area where you want it to be."
-msgstr "Pour ajouter un nouvel état, double-cliquez sur la surface de dessin à l'endroit où vous voulez le placer."
+msgstr "Pour ajouter un nouvel état, double-cliquez sur la surface de dessin à l’endroit où vous voulez le placer."
 
 msgid "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
-msgstr "Pour ajouter une nouvelle transition, cliquez sur l'état de départ en appuyant sur Maj puis cliquez sur l'état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>."
+msgstr "Pour ajouter une nouvelle transition, cliquez sur l’état de départ en appuyant sur Maj puis cliquez sur l’état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l’aide sur comment saisir les symboles</a>."
 
 msgid "To rename a state, double-click on it."
 msgstr "Pour renommer un état, double-cliquez dessus."
 
 msgid "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
-msgstr "Pour modifier les symboles d'une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l'aide sur comment saisir les symboles</a>."
+msgstr "Pour modifier les symboles d’une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l’aide sur comment saisir les symboles</a>."
 
 msgid "To remove a state, Ctrl+click on it."
 msgstr "Pour supprimer un état, cliquez dessus en maintenant Ctrl enfoncé."
@@ -140,10 +140,10 @@ msgid "New transition"
 msgstr "Nouvelle transition"
 
 msgid "Modify state's name"
-msgstr "Modifier le nom d'un état"
+msgstr "Modifier le nom d’un état"
 
 msgid "Modify transitions' symbols"
-msgstr "Modifier les symboles d'une transition"
+msgstr "Modifier les symboles d’une transition"
 
 msgid "Remove a state"
 msgstr "Supprimer un état"
@@ -176,7 +176,7 @@ msgid "Remove current automaton"
 msgstr "Supprimer cet automate"
 
 msgid "There is no automaton to save."
-msgstr "Il n'y a pas d'automate à enregistrer."
+msgstr "Il n’y a pas d’automate à enregistrer."
 
 msgid "Automaton"
 msgstr "Automate"
@@ -251,7 +251,7 @@ msgid "Question {0} has no answers."
 msgstr "La question {0} n’a pas de réponse."
 
 msgid "You can draw the automaton bellow."
-msgstr "Vous pouvez dessiner l'automate ci-dessous."
+msgstr "Vous pouvez dessiner l’automate ci-dessous."
 
 msgid "Equiv. between 2 automata"
 msgstr "Équiv. entre 2 automates"
@@ -371,7 +371,7 @@ msgid "Built-in algorithms"
 msgstr "Algorithmes intégrés"
 
 msgid "Examples of automaton"
-msgstr "Exemples d'automate"
+msgstr "Exemples d’automate"
 
 msgid "Load a quiz"
 msgstr "Ouvrir un quiz"

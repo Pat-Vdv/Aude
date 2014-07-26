@@ -60,7 +60,7 @@
         sw,
         cm;
 
-    var _ = window.AutomataGuil10n = libD.l10n();
+    var _ = window.AudeGuil10n = libD.l10n();
 
     AutomataDesigner.getValueFunction = function (s) {
         try {

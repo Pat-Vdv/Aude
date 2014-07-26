@@ -1,4 +1,4 @@
-#TranslationFunction AutomataGuil10n
+#TranslationFunction AudeGuil10n
 
 msgid "Program Result"
 msgstr ""
