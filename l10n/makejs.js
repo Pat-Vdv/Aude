@@ -1,3 +1,7 @@
+#!/usr/bin/env node
+
+/*Makes translations available to Aude.*/
+
 var fs = require('fs');
 
 var langs = fs.readdirSync("po");
