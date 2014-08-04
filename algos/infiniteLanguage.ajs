@@ -27,7 +27,7 @@ function infiniteLanguage(A) {
       }
       
       if(!cycle) {
-         cycle = onCycle(state, emptySet(State), state);
+         cycle = onCycle(state, emptySet, state);
       }
       
       if(cycle && A.isFinalState(state)) {
@@ -46,7 +46,7 @@ function infiniteLanguage(A) {
       return false;
    }
    
-   return visit(A.getInitialState(), emptySet(State), false);
+   return visit(A.getInitialState(), emptySet, false);
 }
 
 run(infiniteLanguage, get_automaton(currentAutomaton));
