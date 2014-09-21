@@ -840,6 +840,14 @@
             }
         },
 
+         /**
+         * This methods returns the set of successors of a state. Its behavior is well defined only on determinized automata.
+         * 
+         * @method
+         * @memberof Automaton
+         * @param {State} [state] The state from which the successors are to get
+         * @param {Symbol} [symbol] If given, restrain successors to a symbol. If not given, consider all symbols.
+         */
         getSuccessors: function (state, symbol) {
             var successors = new Set();
             var allSymbols = arguments.length === 1;
