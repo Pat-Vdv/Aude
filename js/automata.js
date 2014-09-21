@@ -1,8 +1,9 @@
+/*kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix; */
 /*jslint browser: true, ass: true, continue: true, es5: false, forin: true, todo: true, vars: true, white: true, indent: 3 */
 /*jshint noarg:true, noempty:true, eqeqeq:true, boss:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
 
 /*
-    Copyright (c) 2013, Raphaël Jakse (Université Joseph Fourier)
+    Copyright (c) 2013-2014, Raphaël Jakse (Université Joseph Fourier)
     All rights reserved.
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
@@ -627,6 +628,8 @@
             }
         },
 
+
+
         /**
          * This method tests whether a symbol belongs to the automaton.
          * @method
@@ -835,6 +838,23 @@
             if (cont) {
                 this.currentStatesAddAccessiblesByEpsilon(transitionFunction, visited);
             }
+        },
+
+        getSuccessors: function (state, symbol) {
+            var successors = new Set();
+            var allSymbols = arguments.length === 1;
+
+            this.trans.forEach(
+                function (t) {
+                    if (t.startState === state) {
+                        if (allSymbols || t.symbol === symbol) {
+                            successors.add(t.endState);
+                        }
+                    }
+                }
+            );
+
+            return successors;
         },
 
         /**
