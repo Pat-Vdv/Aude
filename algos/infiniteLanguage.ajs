@@ -11,13 +11,14 @@ function infiniteLanguage(A) {
       
       visited.add(curState);
       
-      foreach(symbol in trans(curState)) {
-         foreach(state in trans(curState, symbol)) {
-            if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
-               return true;
-            }
-         }	
+      console.log(curState);
+      
+      foreach(state in A.getSuccessors(curState)) {
+         if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
+            return true;
+         }
       }
+
       return false;
    }
    
@@ -36,13 +37,12 @@ function infiniteLanguage(A) {
       
       visited.add(state);
       
-      foreach(symbol in trans(state)) {
-         foreach(destState in trans(state, symbol)) {
-            if(visit(destState, visited.copy(), cycle)) {
-               return true;
-            }
+      foreach(destState in A.getSuccessors(state)) {
+         if(visit(destState, visited.copy(), cycle)) {
+            return true;
          }
       }
+
       return false;
    }
    
