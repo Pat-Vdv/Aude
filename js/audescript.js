@@ -90,7 +90,7 @@
     } catch (ignore) {}
 
     try {
-        destructuringSupported = eval("(function () {var [a,b,c] = [1,2,3]; return a === 1 && b === 2 && c === 3})()");
+        destructuringSupported  = eval("(function () {var [a,b,c] = [1,2,3]; return a === 1 && b === 2 && c === 3})()");
     } catch (ignore) {}
 
     try { // eval to allow parsing of the file even in browsers not supporting yield.
