@@ -382,7 +382,7 @@
             script.type = "text/javascript;version=1.8";
         }
 
-        script.textContent = "function userProgram(run) {'use strict';\n" + audescript.toPureJS(code, includes) + "\n}";
+        script.textContent = "function userProgram(run) {'use strict';\n" + audescript.toPureJS(code, {includesArray:includes}) + "\n}";
         enableAutoHandlingError = "user's program";
         head.appendChild(script);
         enableAutoHandlingError = false;
@@ -2010,7 +2010,7 @@
             waitingFor.remove(includeName);
 
             var includes = [];
-            code = audescript.toPureJS(code, includes);
+            code = audescript.toPureJS(code, {includesArray:includes});
 
             if (nextLoadIsPrefefAlgo) {
                 predefAlgoFunctions[includeName] = code;
