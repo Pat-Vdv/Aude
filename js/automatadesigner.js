@@ -320,7 +320,7 @@
         }
     }
 
-    var _ = pkg.AutomataDesignerl10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; };
+    var _ = pkg.l10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; };
 
     pkg.svgNode      = null;      // <svg> editor
     pkg.svgZoom      = 1;         // current zoom level
@@ -1692,4 +1692,4 @@
     pkg.prompt = function (title, descr, def, fun) {
         fun(window.prompt(title + ": " + descr, def));
     };
-}(window.AutomataDesigner = {}, window.AutomataDesignerGlue || (window.AutomataDesignerGlue = {}), this));
+}(window.automataDesigner = {}, window.automataDesignerGlue || (window.automataDesignerGlue = {}), this));

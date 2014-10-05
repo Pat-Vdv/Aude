@@ -3,13 +3,13 @@
 /*jslint indent: 4, nomen: true, ass: true, vars: true, evil: true, plusplus: true, todo: true, bitwise: true, stupid: true */
 /*eslint-env node*/
 /*eslint no-eval:0*/
-/*global Audescript:false, automataAreEquivalent:false, Set:false, minimize:false, object2automaton:false, getNeeds:false, fs:false*/
+/*global audescript:false, automataAreEquivalent:false, Set:false, minimize:false, object2automaton:false, getNeeds:false, fs:false*/
 
 "use strict";
 
 function evalAudeScript(s) {
     try {
-        return eval(Audescript.toPureJS(s));
+        return eval(audescript.toPureJS(s));
     } catch (e) {
         return e;
     }
@@ -145,7 +145,7 @@ function doTests(testCorrect, testFailed, testFailInfo) {
         "6": (function () {
             try {
                 eval(
-                    Audescript.toPureJS(
+                    audescript.toPureJS(
                         "(function(){const [a,b,c] = [1,2,3]; a = 2;})()"
                     )
                 );
@@ -168,7 +168,11 @@ function doTests(testCorrect, testFailed, testFailInfo) {
         "17": evalAudeScript("(a => a + 10)(32) === 42"),
         "18": evalAudeScript("1 == 2 || 1 == 1"),
         "19": evalAudeScript("{1,2,3,4} symDiff {3,4,5,6} == {1,2,5,6}"),
-        "20": evalAudeScript("let (a, b) = ((0 && 1) || [2, 3]); a === 2 && b === 3")
+        "20": evalAudeScript("let (a, b) = ((0 && 1) || [2, 3]); a === 2 && b === 3"),
+        "21": evalAudeScript("(1 == 1 ? 2 == 2 ? 3 : 2 : 1) === 3"),
+        "22": evalAudeScript("(1 == 1 ? 2 == 3 ? 3 : 2 : 1) === 2"),
+        "23": evalAudeScript("(1 == 0 ? 2 == 2 ? 3 : 2 : 1) === 1"),
+        "24": evalAudeScript("(x=>x+1)(0) === 1") // dont touch spaces i, this one please ;-)
     };
 
     var tryParse = [
@@ -193,7 +197,7 @@ function doTests(testCorrect, testFailed, testFailInfo) {
 
     function parse(f) {
         try {
-            eval(Audescript.toPureJS(fs.readFileSync(__dirname + "/" + f, "utf8")));
+            eval(audescript.toPureJS(fs.readFileSync(__dirname + "/" + f, "utf8")));
             return "OK";
         } catch (e) {
             return "Failed (" + e + ")\n" + e.stack;

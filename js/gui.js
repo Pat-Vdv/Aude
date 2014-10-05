@@ -21,9 +21,9 @@
 /*jshint multistr:true*/
 /*eslint-env browser*/
 /*eslint no-underscore-dangle:0, no-alert:0*/
-/*global Set:false, FileReader:false, libD:false, AutomataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, Audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, CodeMirror:false, AutomataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
+/*global Set:false, FileReader:false, libD:false, automataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, CodeMirror:false, automataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
 
-// NEEDS : automatadesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
+// NEEDS : automataDesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
 
 (function () {
     "use strict";
@@ -60,9 +60,10 @@
         sw,
         cm;
 
-    var _ = window.AudeGuil10n = libD.l10n();
+    window.audeGui = {l10n: libD.l10n()};
+    var _ = window.audeGui.l10n;
 
-    AutomataDesigner.getValueFunction = function (s) {
+    automataDesigner.getValueFunction = function (s) {
         try {
             var v = Set.prototype.getValue(s, automataMap);
             return v;
@@ -71,7 +72,7 @@
         }
     };
 
-    AutomataDesigner.getStringValueFunction = function (s) {
+    automataDesigner.getStringValueFunction = function (s) {
         try {
             Set.prototype.getValue(s, automataMap); // s is a legal value
             return s;
@@ -94,7 +95,7 @@
         splitter.style.left = (e.clientX * 100 / width) + "%";
         leftPane.style.right = ((width - e.clientX) * 100 / width) + "%";
         results.style.left =  ((e.clientX + sw) * 100 / width) + "%";
-        AutomataDesigner.redraw();
+        automataDesigner.redraw();
         if (zoom.redraw) {
             zoom.redraw();
         }
@@ -108,7 +109,7 @@
         }
 
         content.style.top  = toolbar.offsetHeight + "px";
-        AutomataDesigner.redraw();
+        automataDesigner.redraw();
 
         if (zoom.redraw) {
             zoom.redraw();
@@ -125,7 +126,7 @@
             splitter.classList.remove("disabled");
             sw = splitter.offsetWidth;
             splitterMove({clientX: splitter.offsetLeft});
-            AutomataDesigner.userZoom(zoom);
+            automataDesigner.userZoom(zoom);
             onResize();
         }
     }
@@ -218,7 +219,7 @@
     function openAutomaton(code) {
         if (typeof code === "string") {
             automatoncodeedit.value = code;
-            AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+            automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
             return;
         }
 
@@ -272,7 +273,7 @@
 
     function launchUserProgram(userProgram) {
         blockResult = false;
-        window.currentAutomaton = AutomataDesigner.currentIndex;
+        window.currentAutomaton = automataDesigner.currentIndex;
 
         var res;
 
@@ -381,7 +382,7 @@
             script.type = "text/javascript;version=1.8";
         }
 
-        script.textContent = "function userProgram(run) {'use strict';\n" + Audescript.toPureJS(code, includes) + "\n}";
+        script.textContent = "function userProgram(run) {'use strict';\n" + audescript.toPureJS(code, includes) + "\n}";
         enableAutoHandlingError = "user's program";
         head.appendChild(script);
         enableAutoHandlingError = false;
@@ -412,8 +413,8 @@
         };
     }
 
-    if (!window.AutomataDesignerGlue) {
-        window.AutomataDesignerGlue = {};
+    if (!window.automataDesignerGlue) {
+        window.automataDesignerGlue = {};
     }
 
     function automatonJSLoaded() {
@@ -618,8 +619,8 @@
         });
 
     libD.need(["ready", "notify", "wm", "ws", "jso2dom", "*langPack"], function () {
-        AutomataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
-        AutomataDesigner.prompt = (function () {
+        automataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
+        automataDesigner.prompt = (function () {
             var refs = {},
                 win,
                 func,
@@ -692,7 +693,7 @@
             automatonJSLoaded();
         }
 
-        AutomataDesigner.load();
+        automataDesigner.load();
         var automataListClose = document.getElementById("automata-list-chooser-close"),
             automataListIntro = document.getElementById("automata-list-chooser-intro"),
             automataListDiv   = document.getElementById("automata-list-chooser"),
@@ -776,9 +777,9 @@
                     "<p> Enjoy yourself!</p>"
             ), "Aude");
 
-            AutomataDesigner.svgContainer.parentNode.appendChild(divWelcome);
+            automataDesigner.svgContainer.parentNode.appendChild(divWelcome);
             function hideWelcome() {
-                AutomataDesigner.svgContainer.parentNode.removeChild(divWelcome);
+                automataDesigner.svgContainer.parentNode.removeChild(divWelcome);
                 document.body.removeEventListener("click", hideWelcome, false);
             }
             document.body.addEventListener("click", hideWelcome, false);
@@ -789,7 +790,7 @@
                 clearTimeout(executionTimeout);
                 executionTimeout = 0;
                 wordDiv.textContent = "";
-                AutomataDesigner.cleanSVG(index);
+                automataDesigner.cleanSVG(index);
             }
         }
 
@@ -837,14 +838,14 @@
                 executeWin.__refs = refs;
                 executeWin.addEvent("close", function () {
                     wordDiv.textContent = "";
-                    AutomataDesigner.cleanSVG(AutomataDesigner.currentIndex);
+                    automataDesigner.cleanSVG(automataDesigner.currentIndex);
                 });
                 libD.wm.handleSurface(executeWin, refs.root);
                 refs.run.onclick = function () {
                     stopExecution();
-                    AutomataDesigner.cleanSVG(AutomataDesigner.currentIndex);
+                    automataDesigner.cleanSVG(automataDesigner.currentIndex);
                     refs.delay.onchange();
-                    execute(false, refs.word.value, AutomataDesigner.currentIndex);
+                    execute(false, refs.word.value, automataDesigner.currentIndex);
                 };
 
                 refs.step.onclick = function () {
@@ -852,7 +853,7 @@
                         clearTimeout(executionTimeout);
                         execute(true);
                     } else {
-                        execute(true, refs.word.value, AutomataDesigner.currentIndex);
+                        execute(true, refs.word.value, automataDesigner.currentIndex);
                     }
                 };
 
@@ -881,15 +882,15 @@
                 exportFN = fn;
 
                 if (switchmode.value === "design") {
-                    automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
+                    automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false);
                 } else {
-                    AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+                    automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
                 }
 
                 if (fn.length > 4 && fn.substr(fn.length - 4) === ".svg") {
-                    saveAs(new Blob([AutomataDesigner.getSVG(AutomataDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
+                    saveAs(new Blob([automataDesigner.getSVG(automataDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
                 } else {
-                    var A = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
+                    var A = automataDesigner.getAutomaton(automataDesigner.currentIndex);
                     if (A) {
                         saveAs(new Blob([automaton2dot(A)], {type: "text/plain;charset=utf-8"}), fn);
                     } else {
@@ -918,9 +919,9 @@
         }());
 
         document.getElementById("redraw").onclick = function () {
-            automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, true);
+            automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, true);
             if (automatoncodeedit.value) {
-                AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+                automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
             }
         };
 
@@ -938,7 +939,7 @@
 
                     switch (format) {
                     case ".svg":
-                        saveAs(new Blob([AutomataDesigner.outerHTML(results.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
+                        saveAs(new Blob([automataDesigner.outerHTML(results.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
                         break;
                     case ".dot":
                         saveAs(new Blob([automaton2dot(automatonResult)], {type: "text/plain;charset=utf-8"}), fn);
@@ -979,7 +980,7 @@
 
         automataListUL.onmouseover = function () {
             if (salc_cur_automaton === -1) {
-                salc_cur_automaton = AutomataDesigner.currentIndex;
+                salc_cur_automaton = automataDesigner.currentIndex;
             }
         };
 
@@ -1007,7 +1008,7 @@
 
         function automataListMouseOver(e) {
             if (salc_cur_automaton !== -1) {
-                AutomataDesigner.setCurrentIndex(e.currentTarget._index);
+                automataDesigner.setCurrentIndex(e.currentTarget._index);
             }
         }
 
@@ -1067,7 +1068,7 @@
                 return undefined;
             }
 
-            var A = AutomataDesigner.getAutomaton(i);
+            var A = automataDesigner.getAutomaton(i);
 
             if (automataNumber <= i || !A) {
                 throw new Error(libD.format(_("get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."), JSON.stringify(i)));
@@ -1085,8 +1086,8 @@
         };
 
         function automatonSetNumber(index) {
-            AutomataDesigner.setCurrentIndex(index);
-            automatoncodeedit.value = AutomataDesigner.getAutomatonCode(index, false);
+            automataDesigner.setCurrentIndex(index);
+            automatoncodeedit.value = automataDesigner.getAutomatonCode(index, false);
         }
 
         switchmode.onchange = function () {
@@ -1136,7 +1137,7 @@
                 codeedit.classList.add("disabled");
                 automataedit.classList.remove("disabled");
                 automatoncode.classList.add("disabled");
-                AutomataDesigner.svgContainer.classList.remove("disabled");
+                automataDesigner.svgContainer.classList.remove("disabled");
                 onResize();
                 break;
             case "automatoncode":
@@ -1145,7 +1146,7 @@
                     deferedResultShow = false;
                 }
 
-                automatoncodeedit.value = AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false);
+                automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false);
 
                 if (cm && cm.getValue()) {
                     toolbar.className = "designmode codemode";
@@ -1156,7 +1157,7 @@
                 codeedit.classList.add("disabled");
                 automataedit.classList.remove("disabled");
                 automatoncode.classList.remove("disabled");
-                AutomataDesigner.svgContainer.classList.add("disabled");
+                automataDesigner.svgContainer.classList.add("disabled");
                 onResize();
                 break;
             }
@@ -1164,7 +1165,7 @@
 
         automatoncodeedit.onchange = function () {
             if (this.value) {
-                AutomataDesigner.setAutomatonCode(this.value, AutomataDesigner.currentIndex);
+                automataDesigner.setAutomatonCode(this.value, automataDesigner.currentIndex);
             }
         };
 
@@ -1174,7 +1175,7 @@
             o.id = "automaton_n" + automatonCount;
             automataNumber.appendChild(o);
             automataNumber.value = automatonCount;
-            AutomataDesigner.newAutomaton(automatonCount);
+            automataDesigner.newAutomaton(automatonCount);
             automatonSetNumber(automatonCount++);
 
             if (!automataListDiv.classList.contains("disabled")) {
@@ -1186,7 +1187,7 @@
             if (automatonCount > 1) {
                 var curAutomaton = parseInt(automataNumber.value, 10);
                 automataNumber.removeChild(document.getElementById("automaton_n" + (automatonCount - 1)));
-                AutomataDesigner.removeAutomaton(curAutomaton);
+                automataDesigner.removeAutomaton(curAutomaton);
 
                 if (curAutomaton === automatonCount - 1) {
                     automatonSetNumber(automataNumber.value = automatonCount - 2);
@@ -1215,7 +1216,7 @@
         resultToLeft.onclick = function () {
             if (automatonResult) {
                 automatonPlus.onclick();
-                AutomataDesigner.setSVG(results.querySelector("svg"), AutomataDesigner.currentIndex);
+                automataDesigner.setSVG(results.querySelector("svg"), automataDesigner.currentIndex);
                 automatoncodeedit.value = automaton_code(automatonResult);
             }
         };
@@ -1255,7 +1256,7 @@
         automataListUL.onmouseout = function (e) {
             e = e.toElement || e.relatedTarget;
             if ((e === automataListUL || e === automataListUL.parentNode) && salc_cur_automaton !== -1) {
-                AutomataDesigner.setCurrentIndex(salc_cur_automaton);
+                automataDesigner.setCurrentIndex(salc_cur_automaton);
                 salc_cur_automaton = -1;
             }
         };
@@ -1266,8 +1267,8 @@
             automataListDiv.classList.add("disabled");
         };
 
-        AutomataDesignerGlue.requestSVG = function (index) {
-            AutomataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), "svg"), index);
+        automataDesignerGlue.requestSVG = function (index) {
+            automataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), "svg"), index);
         };
 
         function automatonFromObj(o) {
@@ -1307,7 +1308,7 @@
             automataContainer.style.top     = "";
             divQuiz.textContent = "";
             divQuiz.classList.remove("enabled");
-            AutomataDesigner.redraw();
+            automataDesigner.redraw();
             zoom.redraw();
         }
 
@@ -1367,11 +1368,11 @@
 
                     break;
                 case "word":
-                    respA = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
+                    respA = automataDesigner.getAutomaton(automataDesigner.currentIndex);
                     var words = q.words,
                         regex = "";
 
-                    r.userResponse = AutomataDesigner.getSVG(AutomataDesigner.currentIndex);
+                    r.userResponse = automataDesigner.getSVG(automataDesigner.currentIndex);
 
                     if (respA) {
                         for (i = 0, len = words.length; i < len; ++i) {
@@ -1402,9 +1403,9 @@
                     }
                     break;
                 case "automatonEquiv":
-                    respA = AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex);
+                    respA = automataDesigner.getAutomaton(automataDesigner.currentIndex);
 
-                    r.userResponse = AutomataDesigner.getSVG(AutomataDesigner.currentIndex);
+                    r.userResponse = automataDesigner.getSVG(automataDesigner.currentIndex);
 
                     if (respA) {
                         var A;
@@ -1615,24 +1616,24 @@
                 break;
             case "word":
                 refs.answers.innerHTML = "<p>" +  _("You can draw the automaton bellow.") + "</p>";
-                AutomataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AutomataDesigner.currentIndex);
+                automataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, automataDesigner.currentIndex);
 
                 setTimeout(function () {
                     automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + "px";
                     automataContainer.style.display = "";
-                    AutomataDesigner.redraw();
+                    automataDesigner.redraw();
                     zoom.redraw();
                 }, 0);
 
                 break;
             case "automatonEquiv":
                 refs.answers.innerHTML = "<p>" +  _("You can draw the automaton bellow.") + "</p>";
-                AutomataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AutomataDesigner.currentIndex);
+                automataDesigner.setSVG(quiz.answers[quiz.currentQuestion].userResponse, automataDesigner.currentIndex);
 
                 setTimeout(function () {
                     automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + "px";
                     automataContainer.style.display = "";
-                    AutomataDesigner.redraw();
+                    automataDesigner.redraw();
                     zoom.redraw();
                 }, 0);
 
@@ -1730,7 +1731,7 @@
         }
 
         function saveAutomaton(fname) {
-            saveAs(new Blob([AutomataDesigner.getAutomatonCode(AutomataDesigner.currentIndex, false)], {type: "text/plain"}), fname);
+            saveAs(new Blob([automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false)], {type: "text/plain"}), fname);
         }
 
         saveas.onclick = function () {
@@ -1761,7 +1762,7 @@
                 }
             } else {
                 if (switchmode.value === "automatoncode") {
-                    AutomataDesigner.setAutomatonCode(automatoncodeedit.value, AutomataDesigner.currentIndex);
+                    automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
                 }
 
                 if (!automatonFileName) {
@@ -1795,7 +1796,7 @@
                         if (stepNumber % 2) {
                             if (currentStates) {
                                 for (i = 0, len = currentStates.length; i < len; ++i) {
-                                    AutomataDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
+                                    automataDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
                                 }
                             }
 
@@ -1807,7 +1808,7 @@
                                     accepting = true;
                                 }
 
-                                AutomataDesigner.stateSetBackgroundColor(
+                                automataDesigner.stateSetBackgroundColor(
                                     index,
                                     currentStates[i],
                                     accepted
@@ -1823,7 +1824,7 @@
                             currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
 
                             for (i = 0, len = currentTransitions.length; i < len; ++i) {
-                                AutomataDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
+                                automataDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
                             }
                         }
                     } else {
@@ -1835,7 +1836,7 @@
                     stepNumber = 0; // we start everything.
 
                     if (index === undefined) {
-                        index = AutomataDesigner.currentIndex;
+                        index = automataDesigner.currentIndex;
                     }
 
                     wordDiv.textContent = "";
@@ -1857,7 +1858,7 @@
                     layer2.id = "word-layer2";
                     wordDiv.appendChild(layer2);
 
-                    currentAutomaton = AutomataDesigner.getAutomaton(index, true);
+                    currentAutomaton = automataDesigner.getAutomaton(index, true);
                     var q_init = currentAutomaton.getInitialState();
                     listOfExecutions = [[[q_init, epsilon]]];
                     currentAutomaton.setCurrentState(q_init);
@@ -1874,7 +1875,7 @@
                         }
 
                         if (EXECUTION_STEP_TIME || executionByStep) {
-                            AutomataDesigner.stateSetBackgroundColor(
+                            automataDesigner.stateSetBackgroundColor(
                                 index,
                                 currentStates[i],
                                 accepted
@@ -1966,12 +1967,12 @@
 
         function launchPredefAlgo() {
             if (curAlgo.value === "id") {
-                setAutomatonResult(AutomataDesigner.getAutomaton(AutomataDesigner.currentIndex));
+                setAutomatonResult(automataDesigner.getAutomaton(automataDesigner.currentIndex));
                 return;
             }
 
             if (predefAlgoFunctions[curAlgo.value]) {
-                window.currentAutomaton = AutomataDesigner.currentIndex;
+                window.currentAutomaton = automataDesigner.currentIndex;
                 if (typeof predefAlgoFunctions[curAlgo.value] === "string") {
                     var id      = "predef-algo-" + curAlgo.value,
                         script  = document.getElementById(id);
@@ -2009,7 +2010,7 @@
             waitingFor.remove(includeName);
 
             var includes = [];
-            code = Audescript.toPureJS(code, includes);
+            code = audescript.toPureJS(code, includes);
 
             if (nextLoadIsPrefefAlgo) {
                 predefAlgoFunctions[includeName] = code;

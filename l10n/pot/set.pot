@@ -1,4 +1,4 @@
-#TranslationFunction Setl10n
+#TranslationFunction Set
 
 msgid  "Set.checkConstraint(element): The element does not satisfies the type constraint."
 msgstr ""

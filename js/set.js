@@ -41,7 +41,6 @@
 
 (function (pkg, that) {
     "use strict";
-    var _ = pkg.Setl10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; };
 
     /**
      * A class to manipulate sets in Javascript.
@@ -90,6 +89,8 @@
             }
         }
     };
+
+    var _ = pkg.Set.l10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; };
 
     function listToString(l) {
         var res = "", i, len;
@@ -1017,7 +1018,7 @@
 
                     var lastItem = this[1], t = this[0];
                     this.length = 0;
-                    
+
                     var i, len;
                     for (i = 0, len = t.length; i < len; ++i) {
                         this.setItem(i, t[i]);

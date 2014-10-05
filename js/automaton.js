@@ -42,9 +42,6 @@
 (function (pkg, that) {
     "use strict";
 
-    var _      = pkg.Automatal10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; },
-        format = function (s, i) { return s.replace("{0}", i); };
- 
     /**
      * epsilon: Represents epsilon to manipulate epsilon transitions.
      * epsilon is a function to enforce equality to be true when and only when comparing explicitely with epsilon.
@@ -90,6 +87,9 @@
         }
         this.lastTakenTransitions.setTypeConstraint(pkg.Transition);
     };
+
+    var _      = pkg.Automaton.l10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; },
+    format = function (s, i) { return s.replace("{0}", i); };
 
     pkg.Automaton.prototype = {
         /**
@@ -842,7 +842,7 @@
 
          /**
          * This methods returns the set of successors of a state. Its behavior is well defined only on determinized automata.
-         * 
+         *
          * @method
          * @memberof Automaton
          * @param {State} [state] The state from which the successors are to get

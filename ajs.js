@@ -29,7 +29,7 @@
 /*jshint -W020*/
 /*eslint no-underscore-dangle:0*/
 /*eslint-env node*/
-/*global global:true, require:true, readFile:false, Packages:false, java:false, console:true, arguments:false, Audescript:false, Set:false */
+/*global global:true, require:true, readFile:false, Packages:false, java:false, console:true, arguments:false, audescript:false, Set:false */
 
 (function (that) {
     "use strict";
@@ -155,17 +155,18 @@
         that.global = global;
     }
 
-    var packages = ["set", "automata", "mappingfunction", "audescript"];
-    for (i in packages) {
-        if (packages.hasOwnProperty(i)) {
-            p = require(audePath + "/js/" + packages[i] + ".js");
-            for (j in p) {
-                if (p.hasOwnProperty(j)) {
-                    that.global[j] = p[j];
-                }
+    var packages = ["set", "automaton", "mappingfunction"];
+    for (var i = 0; i < packages.length; ++i) {
+        p = require(audePath + "/js/" + packages[i] + ".js");
+        for (j in p) {
+            if (p.hasOwnProperty(j)) {
+                that.global[j] = p[j];
             }
         }
     }
+    var audescript = require(audePath + "/js/audescript/audescript.js");
+
+    that.global.audescript = audescript;
 
     // ignore run lines
     that.global.run = that.global.get_automaton = that.global.get_automatons = function () { return; };
@@ -176,7 +177,8 @@
     function loadAJS(f) {
         var needs = [];
         var code = that.fs.readFileSync(that.path.resolve(process.cwd(), f), {encoding: "utf8"});
-        var jscode = Audescript.toPureJS(code, needs);
+		var opts = {includesArray:needs};
+        var jscode = audescript.toPureJS(code, opts);
         that.global.getNeeds(needs, f);
         that.global.require    = require;
         that.global.process    = process;
@@ -234,7 +236,7 @@
 
         rl.on("close", function () {
             if (audeString) {
-                var res = eval.call(ctx, Audescript.toPureJS(audeString));
+                var res = eval.call(ctx, audescript.toPureJS(audeString));
                 if (process.stdin.isTTY) {
                     console.log(res);
                 }
@@ -248,7 +250,7 @@
                 sigIntAgain = false;
                 audeString += s + "\n";
                 try {
-                    res = eval.call(ctx, Audescript.toPureJS(audeString, needs));
+                    res = eval.call(ctx, audescript.toPureJS(audeString, needs));
                     that.global.getNeeds(needs, "#interpreter");
                     rl.setPrompt("> ");
                 } catch (e) {

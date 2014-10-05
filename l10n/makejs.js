@@ -11,7 +11,7 @@ function skipLine() {
    while(i < len && po[i] !== '\n') {
       ++i;
    }
-   ++i; 
+   ++i;
 }
 
 function skipSpaces() {
@@ -61,7 +61,7 @@ for(var l in langs) {
       var transitionFunction = fs.readFileSync("pot/" + poFile + 't', {encoding:'utf-8'})
                                .match(/\#TranslationFunction[\s]+([\S]+)/)[1];
 
-      fs.writeSync(jsFile, "_=" + transitionFunction + "||v;");
+      fs.writeSync(jsFile, "_=" + transitionFunction + ".l10n;");
 
       po = fs.readFileSync("po/" + lang + '/' + poFile, {encoding:'utf-8'});
 

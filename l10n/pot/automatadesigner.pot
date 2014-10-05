@@ -1,4 +1,4 @@
-#TranslationFunction AutomataDesigner.AutomataDesignerl10n
+#TranslationFunction automataDesigner
 
 msgid  "New transition"
 msgstr ""

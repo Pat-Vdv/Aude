@@ -1,4 +1,4 @@
-#TranslationFunction Automatal10n
+#TranslationFunction Automaton
 
 msgid  "Automaton.setStates(): The given argument is not a Set."
 msgstr ""
