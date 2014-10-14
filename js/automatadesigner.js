@@ -689,9 +689,7 @@
 
         var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockNewState, blockClick;
 
-        // move the path editor when a state is moved
         function pathEditEllipseMove(e) {
-            //TODO : handle control points ?
             var pt = svgcursorPoint(e);
             var seg = pointOnEllipse(nodeMoving._ellipse, pt.x, pt.y, nodeMoving._seg[0].getItem(nodeMoving._seg[1]), nodeMoving._seg[1] ? 10 : 0);
             nodeMoving.setAttribute("cx", seg.x);
@@ -731,7 +729,6 @@
             }
         }
 
-        // move the path editor when a point is moved
         function pathEditSolidMove(e) {
             var segMove = nodeMoving._seg[0].getItem(nodeMoving._seg[1]);
             var origSegStart = nodeMoving._seg[2].getItem(0);
@@ -745,13 +742,14 @@
             movePoints(origSegStart, origSegEnd, nodeMoving._seg[0], nodeMoving._seg[2], nodeMoving._seg[1] + 1, nodeMoving._seg[0].numberOfItems - 1, dx, dy);
             nodeMoving.setAttribute("cx", segMove.x);
             nodeMoving.setAttribute("cy", segMove.y);
+            fixTransition(nodeMoving._seg[3]);
         }
 
-        // move the path editor when a control point is moved
         function pathEditControlMove(e) {
             var pt = svgcursorPoint(e);
             nodeMoving.setAttribute("cx", nodeMoving._seg[0][nodeMoving._seg[1]] = pt.x);
             nodeMoving.setAttribute("cy", nodeMoving._seg[0][nodeMoving._seg[2]] = pt.y);
+            fixTransition(nodeMoving._seg[3]);
         }
 
         // move the visible area
@@ -805,6 +803,38 @@
             }
 
             return true;
+        }
+
+        function fixTransition(path) {
+            var segs = path.pathSegList;
+            pointOnEllipse(
+                getBigEllipse(
+                    document.getElementById(path.parentNode.id.split(" ")[0])
+                ),
+                segs.getItem(1).x1,
+                segs.getItem(1).y1,
+                segs.getItem(0)
+            );
+
+            var seg = segs.getItem(segs.numberOfItems-1);
+
+            var targetEllipse = getBigEllipse(
+                document.getElementById(path.parentNode.id.split(" ")[1])
+            );
+
+            pointOnEllipse(
+                targetEllipse,
+                seg.x2,
+                seg.y2,
+                seg,
+                10
+            );
+
+            posTriangleArrow(
+                path.parentNode.getElementsByTagName("polygon")[0].points,
+                targetEllipse,
+                seg
+            );
         }
 
         // event when a node is moved
@@ -879,6 +909,17 @@
                     }
                     text.setAttribute("x", textOrig.x.baseVal.getItem(0).value + (coefTextX * dx));
                     text.setAttribute("y", textOrig.y.baseVal.getItem(0).value + (coefTextY * dy));
+
+                    if (nodes[0] === nodes[1] || (!coords.t[i].transitionStraight && !coords.t[i][0][1])) { // the state is the destination, we move the arrow
+                        pointsOrig = coords.t[i][1].querySelector("polygon").points;
+
+                        for (s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
+                            pp = polygonPoints.getItem(s);
+                            po = pointsOrig.getItem(s);
+                            pp.x = po.x + dx;
+                            pp.y = po.y + dy;
+                        }
+                    }
                 } else {
                     origSegStart = origSegs.getItem(0);
                     origSegEnd   = origSegs.getItem(segs.numberOfItems - 1);
@@ -919,17 +960,8 @@
                             seg.x = newPos(origSeg.x, origSegStart.x, origSegEnd.x, origSeg.y, origSegStart.y, origSegEnd.y, width, dx, height, dy);
                             seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width, dx);
                         }
-                    }
-                }
 
-                if (nodes[0] === nodes[1] || (!coords.t[i].transitionStraight && !coords.t[i][0][1])) { // the state is the destination, we move the arrow
-                    pointsOrig = coords.t[i][1].querySelector("polygon").points;
-
-                    for (s = 0, leng = polygonPoints.numberOfItems; s < leng; ++s) {
-                        pp = polygonPoints.getItem(s);
-                        po = pointsOrig.getItem(s);
-                        pp.x = po.x + dx;
-                        pp.y = po.y + dy;
+                        fixTransition(path);
                     }
                 }
             }
@@ -1098,7 +1130,7 @@
                         handle._mousemove = pathEditControlMove;
                         handle.setAttribute("cx", seg.x1);
                         handle.setAttribute("cy", seg.y1);
-                        handle._seg = [seg, "x1", "y1"];
+                        handle._seg = [seg, "x1", "y1", p];
                         pathEditor.appendChild(handle);
                     }
                     if (seg.x2 !== seg.x || seg.y2 !== seg.y) {
@@ -1110,7 +1142,7 @@
                         handle._mousemove = pathEditControlMove;
                         handle.setAttribute("cx", seg.x2);
                         handle.setAttribute("cy", seg.y2);
-                        handle._seg = [seg, "x2", "y2"];
+                        handle._seg = [seg, "x2", "y2", p];
                         pathEditor.appendChild(handle);
                     }
                 }
