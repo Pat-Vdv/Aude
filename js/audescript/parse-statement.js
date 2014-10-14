@@ -100,7 +100,8 @@
                 lexer: context.lexer,
                 inForeach: context.inForeach,
                 includes: context.includes,
-                jsFeatures: context.jsFeatures
+                jsFeatures: context.jsFeatures,
+                enforceReturnType: context.enforceReturnType
             }) + lexer.nextSymbol() /* "}" */);
         }
         return false;
@@ -249,11 +250,32 @@
         return false;
     }
 
-    function functionBody(context, s) {
-        if (!context.jsFeatures.abbreviatedFunction && s.trim()[0] !== "{") {
-            return "{return " + s + "}";
+    function functionBody(context, s, typedArgs) {
+        var before = "",
+            after  = "";
+
+        if (typedArgs) {
+            before = "{";
+            after = "}";
+            for (var arg in typedArgs) {
+                if (typedArgs.hasOwnProperty(arg)) {
+                    before += "audescript.ct(" + arg + "," + typedArgs[arg] + ");";
+                }
+            }
         }
-        return s;
+
+        if (!context.jsFeatures.abbreviatedFunction && s.trim()[0] !== "{") {
+            return before + "{return " + s + "}" + after;
+        }
+
+        return before + s + after;
+    }
+
+    function checkReturn(context, symbol, expr) {
+        if (symbol === "return" && context.enforceReturnType) {
+            return "audescript.ct(" + expr + "," + context.enforceReturnType + ")";
+        }
+        return expr;
     }
 
     function tryInstruction(context, begin) {
@@ -270,30 +292,22 @@
                 return -1;
             }
 
+            var kw;
+
             if (context.inForeach) {
-                symbol = pkg.internals.foreachReplacements(context);
+                kw = pkg.internals.foreachReplacements(context);
+            } else {
+                kw = symbol;
             }
 
-            return symbol + getExpression(context, {
+            return kw + context.lexer.getWhite() + checkReturn(context, symbol, getExpression(context, {
                 constraintedVariables: context.constraintedVariables
-            });
+            }));
         }
-/*
-        if () {
-            if (context.value) {
-                context.lexer.restore(begin);
-                return -1;
-            }
-
-            if (context.inForeach) {
-                symbol = pkg.internals.foreachReplacements(context);
-            }
-
-            return symbol;
-        }*/
 
         return false;
     }
+
     function tryInstructionBlock(context, begin) {
         var lexer  = context.lexer,
             symbol = lexer.symbol,
@@ -302,30 +316,74 @@
         if (symbol === "function") {
             // can also be a value
             state = lexer.save();
+
+            var functionReturnType = null;
             var functionName = lexer.getWhite() + lexer.nextSymbol();
 
             if (functionName.trim() === "(") {
-                lexer.restore(state);
                 functionName = functionName.slice(0, -1);
+                lexer.i--;
             }
 
-            return (
-                symbol
-             + functionName
-              + getExpression(context, {
-                    constraintedVariables: context.constraintedVariables,
-                    noTuple: true,
-                    onlyOneValue: true
-                })
-              + functionBody(
-                    context,
-                    getExpression(context, {
-                        inForeach: false,
-                        constraintedVariables: copy(context.constraintedVariables),
-                        noSetOrObj: true
-                    })
-                )
-            );
+
+            if (lexer.nextSymbol() === "(") {
+                var parameters = "(";
+                var typedArgs = {};
+                var argName;
+                while (!lexer.end() && lexer.symbol !== ")") {
+                    parameters += lexer.getWhite();
+                    lexer.nextSymbol();
+                    if (lexer.type === lexer.VARIABLE) {
+                        argName = lexer.symbol;
+                        parameters += lexer.symbol + lexer.getWhite(true);
+                        lexer.nextSymbol();
+                        if (lexer.symbol === ":") {
+                            parameters += lexer.getWhite(true);
+                            typedArgs[argName] = pkg.internals.getConstraintString(context);
+                        }
+                    } else {
+                        context.lexer.restore(begin);
+                        return -1;
+                    }
+
+                    parameters += lexer.getWhite(true);
+                    lexer.nextSymbol();
+                    if (lexer.symbol === ",") {
+                        parameters += "," + lexer.getWhite();
+                    } else if (lexer.symbol !== ")") {
+                        context.lexer.restore(begin);
+                        return -1;
+                    }
+                }
+                parameters += ")" + lexer.getWhite();
+                var save = lexer.save();
+                lexer.nextSymbol();
+                if (lexer.symbol === ":") {
+                    parameters += lexer.getWhite(true);
+                    functionReturnType = pkg.internals.getConstraintString(context);
+                } else {
+                    lexer.restore(save);
+                }
+                return (
+                    symbol
+                  + functionName
+                  + parameters
+                  + functionBody(
+                        context,
+                        getExpression(context, {
+                            inForeach: false,
+                            constraintedVariables: copy(context.constraintedVariables),
+                            enforceReturnType: functionReturnType,
+                            endSymbols: {";": true},
+                            noSetOrObj: true
+                        }),
+                        typedArgs
+                    )
+                );
+            } else {
+                context.lexer.restore(begin);
+                return -1;
+            }
         }
 
         if (
@@ -638,6 +696,7 @@
                 tryOther(context);
 
         if (tmpRes === -1) {
+            // parsing failed
             return "";
         }
 

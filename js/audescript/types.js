@@ -54,7 +54,7 @@
                 switch(lowerType) {
                 case "integer":
                 case "int":
-                    typeConstraint = "'integer'";
+                    typeConstraint = "'int'";
                     break;
                 case "number":
                     typeConstraint = "'number'";
@@ -70,6 +70,8 @@
                     typeConstraint = "Set";
                     break;
                 case "bool":
+                    typeConstraint = "'boolean'";
+                    break;
                 case "boolean":
                 case "string":
                 case "object":

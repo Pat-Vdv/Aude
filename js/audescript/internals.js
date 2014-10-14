@@ -35,7 +35,13 @@
             if (!newContext.hasOwnProperty("inForeach")) {
                 newContext.inForeach = context.inForeach;
             }
+
+            if(!newContext.hasOwnProperty("enforceReturnType")) {
+                newContext.enforceReturnType = context.enforceReturnType;
+            }
+
             newContext.jsFeatures = context.jsFeatures;
+
             return pkg.internals.parseStatement(newContext);
         },
 

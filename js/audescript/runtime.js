@@ -110,18 +110,32 @@
 
         if (value !== null && value !== undefined && variable !== null && value !== undefined) {
             if (typeof value !== typeof variable && value.constructor !== variable.constructor) {
-                throw new Error(_("Assignation Error: types of the value and the variable don’t match."));
+                throw new Error(_("Type Error: types don't match."));
             }
             return integerCheck ? (value > 0 ? Math.floor(value) : Math.ceil(value)) : value;
         }
 
         if (value !== variable) {
-            throw new Error(_("Assignation Error: types of the value and the variable don’t match."));
+            throw new Error(_("Type Error: types don't match."));
         }
 
         return value;
     };
 
+    pkg.ct = function (val, type) {
+        if (typeof type === "string") {
+            if (type === "int") {
+                if (!(typeof val === "number" && val % 1 === 0)) {
+                    throw new TypeError(_("type mismatch."));
+                }
+            } else if (typeof val !== type) {
+                throw new TypeError(_("type mismatch."));
+            }
+        } else if (val !== null && !(val instanceof type)) {
+            throw new TypeError(_("type mismatch."));
+        }
+        return val;
+    };
 
     Object.defineProperty(Object.prototype, "forEach", {
         enumerable: false,

@@ -172,7 +172,7 @@ function doTests(testCorrect, testFailed, testFailInfo) {
         "21": evalAudeScript("(1 == 1 ? 2 == 2 ? 3 : 2 : 1) === 3"),
         "22": evalAudeScript("(1 == 1 ? 2 == 3 ? 3 : 2 : 1) === 2"),
         "23": evalAudeScript("(1 == 0 ? 2 == 2 ? 3 : 2 : 1) === 1"),
-        "24": evalAudeScript("(x=>x+1)(0) === 1") // dont touch spaces i, this one please ;-)
+        "24": evalAudeScript("(x=>x+1)(0) === 1") // dont touch spaces for this one please ;-)
     };
 
     var tryParse = [

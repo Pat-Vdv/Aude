@@ -147,18 +147,18 @@
         checkConstraint: function (element) {
             if (this.typeConstraint) {
                 if (typeof this.typeConstraint === "string") {
-                    if (this.typeConstraint === "integer") {
+                    if (this.typeConstraint === "int") {
                         if (!(typeof element === "number" && element % 1 === 0)) {
                             throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
                         }
                     } else if (typeof element !== this.typeConstraint) {
                         throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
                     }
-                } else if (!(element instanceof this.typeConstraint)) {
+                } else if (element !== null && !(element instanceof this.typeConstraint)) {
                     if (this.typeConstraint === pkg.Set && (element instanceof Array || element instanceof pkg.Tuple)) {
                         element = pkg.to_set(element); // this is ok to implicitely convert lists to sets
                     } else {
-                        throw new Error(_("Set.checkConstraint(element): Tthe element does not satisfies the type constraint."));
+                        throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
                     }
                 }
             }
