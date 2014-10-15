@@ -70,7 +70,7 @@ Installing
      $ sudo make install
 
     in the aude folder. Two programs are installed in /usr/local/bin: “aude” and “audescript“. If you want to install to somewhere else:
-    
+
      $ DESTDIR=somewhere/else sudo make install
 
     make install will then put things in somewhere/else/bin and somewhere/else/share/aude.
@@ -78,10 +78,11 @@ Installing
     - To launch aude in firefox:
         $ BROWSER=firefox aude
     - To launch aude in chromium:
-        $ BROWSER=chromium aude
+        $ BROWSER=chromium-browser aude
     - To launch audescript:
         $ audescript
 
+    Opera version before 15 is not supported.
 Unit tests
 -----------
 

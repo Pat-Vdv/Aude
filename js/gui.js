@@ -323,7 +323,7 @@
             if (includeName.match(/^(?:[a-z]+:(?:\\|\/\/?)|\/)/)) { // absolute path
                 handleError(libD.format(_("Error: import: absolute paths are not supported in this version (in '{0}')'"), includer));
             } else {
-                window.getFile(
+                getFile(
                     "algos/" + includeName,
                     function (data) {
                         window.gotScript(includeName, data);
@@ -624,7 +624,7 @@
             }
 
             if (message === "send") {
-                message = _("This can happen with browsers like Google Chrome when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline.");
+                message = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
             }
             notify(_("Unable to get the list of predefined algorithms"), message);
         });
