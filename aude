@@ -6,6 +6,12 @@ if [ "$BROWSER" = "" ]; then
     BROWSER=x-www-browser
 fi
 
+BROWSER=`readlink -f $(which $BROWSER)`
+
+if [ "`basename $(which $BROWSER)`" = "chromium-browser" ] || [ "`basename $(which $BROWSER)`" = "google-chrome" ]; then
+    BROWSER="$BROWSER --allow-file-access-from-files"
+fi
+
 if [ -f $d/../share/aude/index.html ]; then
     $BROWSER $d/../share/aude/index.html
 elif [ -f $d/index.html ]; then

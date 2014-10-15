@@ -57,7 +57,12 @@
             };
 
             xhr.overrideMimeType("text/plain");
-            xhr.send();
+
+            try {
+                xhr.send();
+            } catch (e) {
+                failure("send", 0);
+            }
         } catch (e) {
             if (failure) {
                 failure(e.message);

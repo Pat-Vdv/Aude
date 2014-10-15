@@ -82,6 +82,13 @@
     };
 
     function notify(title, content, type) {
+        if (!libD.Notify) {
+            libD.need(["notify"], function () {
+                notify(title, content, type);
+            });
+            return;
+        }
+
         if (!not || !not.displayed) {
             not = new libD.Notify({closeOnClick: true});
         }
@@ -614,6 +621,10 @@
         function (message, status) {
             if (message === "status") {
                 message = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
+            }
+
+            if (message === "send") {
+                message = _("This can happen with browsers like Google Chrome when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline.");
             }
             notify(_("Unable to get the list of predefined algorithms"), message);
         });
