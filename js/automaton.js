@@ -865,6 +865,30 @@
             return successors;
         },
 
+        getReachable : function (state, visited) {
+            if (state === undefined) {
+                state = this.getInitialState();
+            }
+
+            if (!visited) {
+                visited = new Set();
+            }
+
+            var that = this;
+
+            this.getSuccessors(state).forEach(
+                function (s) {
+                    if (s !== state && !visited.contains(s)) {
+                        visited.add(s);
+                        visited.unionInPlace(that.getReachable(s, visited));
+                    }
+                }
+            );
+
+            return visited;
+        },
+
+
         /**
          * This methods looks at current states and transitions of the Automaton to replace current states by all states accessible with the given symbol.
          * @method
