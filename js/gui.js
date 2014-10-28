@@ -1195,7 +1195,6 @@
         };
 
         automatonMinus.onclick = function () {
-            if (automatonCount > 1) {
                 var curAutomaton = parseInt(automataNumber.value, 10);
                 automataNumber.removeChild(document.getElementById("automaton_n" + (automatonCount - 1)));
                 automataDesigner.removeAutomaton(curAutomaton);
@@ -1207,6 +1206,11 @@
                 }
 
                 --automatonCount;
+
+                if (automatonCount < 1) {
+                    automatonPlus.onclick();
+                }
+
                 var j, len, i = automataList.indexOf(curAutomaton);
 
                 if (i !== -1) {
@@ -1221,7 +1225,6 @@
                 if (!automataListDiv.classList.contains("disabled")) {
                     showAutomataListChooser();
                 }
-            }
         };
 
         resultToLeft.onclick = function () {
