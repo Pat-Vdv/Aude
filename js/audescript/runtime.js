@@ -63,6 +63,22 @@
         return true;
     }
 
+    function objEq(v1, v2, dontMirror) {
+        for (var i in v1) {
+            if (v1.hasOwnProperty(i)) {
+                if (!(v2.hasOwnProperty(i) && (dontMirror || pkg.eq(v1[i], v2[i])))) {
+                    return false;
+                }
+            }
+        }
+
+        if (!dontMirror) {
+            return objEq(v2, v1, true);
+        }
+
+        return true;
+    }
+
     // checks "real" equality between v1 and v2
     pkg.eq = function (v1, v2) {
         if (v1 instanceof Tuple && v1.length === 1) {
@@ -73,23 +89,30 @@
 
         return v1 == v2 || (
             typeof v1 === typeof v2
-            && (v1 instanceof Set && v2 instanceof Set
+            && v1.constructor === v2.constructor
+            && (v1 instanceof Set
                 ? v1.card() === v2.card() && !v1.minus(v2).card()
-                : (v1 instanceof Transition && v2 instanceof Transition
+                : (v1 instanceof Transition
                     ?          pkg.eq(v1.symbol, v2.symbol)
                             && pkg.eq(v1.startState, v2.startState)
                             && pkg.eq(v1.endState, v2.endState)
-                    : (v1 instanceof Automaton && v2 instanceof Automaton
+                    : (v1 instanceof Automaton
                         ?          pkg.eq(v1.states, v2.states)
                                 && pkg.eq(v1.finalStates, v2.finalStates)
                                 && pkg.eq(v1.trans, v2.trans)
                                 && pkg.eq(v1.q_init, v2.q_init)
-                        : (v1 instanceof Tuple && v2 instanceof Tuple)
+                        : (v1 instanceof Tuple
                             ? tuplesEq(v1, v2)
-                            : JSON.stringify(v1) === JSON.stringify(v2)
+                            : (
+                                (v1.constructor === Object || v1.constructor === Array
+                                    ? objEq(v1, v2)
+                                    : JSON.stringify(v1) === JSON.stringify(v2)
+                                )
                             )
                         )
                     )
+                )
+            )
         );
 
         /*eslint-enable eqeqeq */

@@ -159,8 +159,8 @@ function doTests(testCorrect, testFailed, testFailInfo) {
         "8":  evalAudeScript("1+2 belongsTo {3}"),
         "9":  evalAudeScript("3 belongsTo {1} union {3}"),
         "10": evalAudeScript("Tuple(1,2,3) != Tuple(1,Tuple(2,3))"),
-        "11": evalAudeScript("Tuple(1,2,3) == Tuple(Tuple(1,2),3)"),
-        "12": evalAudeScript("{Tuple(1,2,3)} == {1} cross {2} cross {3}"),
+        "11": evalAudeScript("(1,2,3) == ((1,2),3)"),
+        "12": evalAudeScript("{(1,2,3)} == {1} cross {2} cross {3}"),
         "13": evalAudeScript("1 belongsTo {0,1} belongsTo {true,false}"),
         "14": evalAudeScript("({3} contains 1+2) === true"),
         "15": evalAudeScript("({1} union {3} contains 1) === true"),
@@ -172,7 +172,10 @@ function doTests(testCorrect, testFailed, testFailInfo) {
         "21": evalAudeScript("(1 == 1 ? 2 == 2 ? 3 : 2 : 1) === 3"),
         "22": evalAudeScript("(1 == 1 ? 2 == 3 ? 3 : 2 : 1) === 2"),
         "23": evalAudeScript("(1 == 0 ? 2 == 2 ? 3 : 2 : 1) === 1"),
-        "24": evalAudeScript("(x=>x+1)(0) === 1") // dont touch spaces for this one please ;-)
+        "24": evalAudeScript("(x=>x+1)(0) === 1"), // dont touch spaces for this one please ;-)
+        "25": evalAudeScript("{a:1,b:1} == {b:1,a:1}"),
+        "26": evalAudeScript("{a:1,b:2} != {b:1,a:1}"),
+        "27": evalAudeScript("[1,2,3] != [1,2]")
     };
 
     var tryParse = [

@@ -87,9 +87,13 @@
                 ).match(/^\{[\s]*\}$/)
             ) {
                 return (
-                    (obj || (context.noValue && oneVal))
-                        ? "{" + pres + "}"
-                        : parseStatementAfter(context, "to_set([" + pres + "])")
+                    obj
+                        ? parseStatementAfter(context, "{" + pres + "}")
+                        : (
+                            (context.noValue && oneVal)
+                                ? "{" + pres + "}"
+                                : parseStatementAfter(context, "to_set([" + pres + "])")
+                        )
                 );
             }
 
