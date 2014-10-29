@@ -3,7 +3,21 @@
 d=`dirname $_`
 
 if [ "$BROWSER" = "" ]; then
-    BROWSER=x-www-browser
+	if [ "`which firefox`" != "" ]; then
+		BROWSER=firefox
+	elif [ "`which iceweasel`" != "" ]; then
+	    BROWSER=iceweasel
+	elif [ "`which google-chrome`" != "" ]; then
+	    BROWSER=google-chrome
+	elif [ "`which chromium-browser`" != "" ]; then
+	    BROWSER=chromium-browser
+	elif [ "`which arora`" != "" ]; then
+	    BROWSER=arora
+	elif [ "`which opera-developer`" != "" ]; then
+	    BROWSER=opera-developer
+    else
+	    BROWSER=x-www-browser
+    fi
 fi
 
 BROWSER=`readlink -f $(which $BROWSER)`
