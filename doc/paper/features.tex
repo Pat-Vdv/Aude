@@ -18,12 +18,12 @@ To help writing documents about automata, the tool provides a way to export imag
 
 
 \paragraph{}
-So as to let students experiment with automata-related algorithm, the tool embeds a custom programming language and some common algorithms written in this language especially designed for manipulating sets and automata (see figure \ref{aude-algo}). With this possibility of testing algorithms of the lesson, of reading and implementing them without worrying about sets implementation, automata-related algorithms are made more experiencible for students.
+So as to let students experiment with automata-related algorithm, the tool embeds a custom programming language and some common algorithms written in this language especially designed for manipulating sets and automata (see figure \ref{aude-algo}). With this possibility of testing algorithms of the lesson, of reading and implementing them without worrying about sets implementation, automata-related algorithms are made more experiencible for students. This language, named Audescript, is a customized Javacript which ease set manipulations with a notation for writing sets and set operators. Its also provides a means to specify types on variables.
 
 
 \paragraph{}
 The tool comes with some basic algorithms such as:
-          
+
 \begin{itemize}
    \item{determinization: get a determinist automaton from any automaton.}
    \item{completion: get a complete automaton from any automaton.}
@@ -96,7 +96,7 @@ The finite state automaton is usually represented by a quintuplet $(Q, \Sigma, \
 \end{itemize}
 
 \paragraph{}
-The usual definition of the finite state automaton is entirely based and completely depends on sets, and so are automata-related algorithms (see figure~\ref{algo-diff}). As a result, the tool embeds a programming language in which sets are first-class citizens. Instead of writing an entirely new programming language, choice was made to extend Javascript to sets and automata. This implies that students have access to all the features of a widespread generalist programming language as well as features specific to the Automata Theory. See figure~\ref{audejs-ex} to see an implementation of the algorithm~\ref{algo-diff}. 
+The usual definition of the finite state automaton is entirely based and completely depends on sets, and so are automata-related algorithms (see figure~\ref{algo-diff}). As a result, the tool embeds a programming language in which sets are first-class citizens. Instead of writing an entirely new programming language, choice was made to extend Javascript to sets and automata. This implies that students have access to all the features of a widespread generalist programming language as well as features specific to the Automata Theory. See figure~\ref{audejs-ex} to see an implementation of the algorithm~\ref{algo-diff}.
 
 \begin{algorithm}
    \caption{Find differentiable states}
@@ -153,9 +153,9 @@ function distinguableStates(A) {
 \end{figure}
 \paragraph{}
 Extending a programming language, in our case, means:
-       
+
 \begin{itemize}
-   \item{Extending the ``standard librar'': adding a class to manipulate sets and a class to manipulate automata.}
+   \item{Extending the ``standard library'': adding a class to manipulate sets and a class to manipulate automata.}
    \item{Modifying the grammar of the language: adding features like set manipulations and iteration.}
 \end{itemize}
 
@@ -210,25 +210,10 @@ foreach(e in mySet) {
 \begin{lrbox}{\foreachgenerated}
 \begin{minipage}{0.5\textwidth}
  \begin{lstlisting}
-   try{(mySet).forEach(function(e ) {
-  if(  Audescript.eq(e, to_set([1,2,3]))) {
-   throw StopIteration; // we found our triplet
-  }
-  else if(e instanceof Set) { // if e is a Set
-    try{(e).forEach(function(f ) {
-      if( contains(e, epsilon)) {
-        throw 0; //we found epsilon
-      }
-    }
-  )}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){throw e;}}}
+try{(object).forEach(function (i ) {
 
-  if(  Audescript.eq(e, new Set())) {
-     throw -1; // we found the empty set. Stopping the execution.
-  }
 }
-
-// ...
-)}catch(e){if(e instanceof Error){throw e}else if(!(e === StopIteration)){return e;}}
+)}catch (e) {if (e instanceof audescript.ThrowValue) {throw e.v;}else if (e instanceof audescript.ReturnValue) {return e.v;}}
  \end{lstlisting}
 \end{minipage}
 \end{lrbox}
@@ -247,4 +232,4 @@ foreach(e in mySet) {
 These transformations must not be done inside string literals, {\itshape object} in \lstinline!foreach! can contain parenthesis, the variable declaration can hold a initialization value, set literals look very similar to blocks of codes, \lstinline!foreach! can be nested so a need to match curly brackets appears, \lstinline!break! and \lstinline!return! statement must be transformed inside \lstinline!foreach! loop, etc. Manipulated languages are not {\itshape regular}\footnote{a language is regular iff it can be described with a regular expression. Rules like “there is the same number of opening and closing parenthesis” make a language not regular.} and transformations are not that trivial eventually. As a consequence, another method needs to be used, the code must be parsed more subtly.
 
 \paragraph{}
-A project like \href{http://zaach.github.io/jison/}{Jison}, which is a parser like \href{http://www.gnu.org/software/bison/}{Bison} might have been used\footnote{See \href{http://cjihrig.com/blog/creating-a-javascript-parser/}{http://cjihrig.com/blog/creating-a-javascript-parser/} for an implementation of a Javascript parser with Jison}. However, handwriting the parser was chosen in order to keep whitespace characters intact, to have full control over optional semicolons (if a semicolon was not written by the programmer, the semicolon should not appear in the generated code) and to handle ambiguities between regular expression tokens (which begin with \lstinline!/!) and division operators (\lstinline!/!, \lstinline!/=!) easily. Handwriting the parser also seemed to be a more efficient and straightforward solution here because transformations can be made without generating any abstract syntax tree. Moreover, this let write a quite flexible parser, validation being delegated to the actual Javascript engine, which already has a good error reporting system.
+A project like \href{http://zaach.github.io/jison/}{Jison}, which is a parser like \href{http://www.gnu.org/software/bison/}{Bison} might have been used\footnote{See \href{http://cjihrig.com/blog/creating-a-javascript-parser/}{http://cjihrig.com/blog/creating-a-javascript-parser/} for an implementation of a Javascript parser with Jison}. However, handwriting the parser was chosen in order to keep whitespace characters intact, to have full control over optional semicolons (if a semicolon was not written by the programmer, the semicolon should not appear in the generated code) and to handle ambiguities between regular expression tokens (which begin with \lstinline!/!) and division operators (\lstinline!/!, \lstinline!/=!) easily. Handwriting the parser also seemed to be a more efficient and straightforward solution here because transformations can be made without generating any abstract syntax tree. Moreover, this lets write a quite flexible parser, validation being delegated to the actual Javascript engine, which already has a good error reporting system.

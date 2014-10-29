@@ -1,0 +1,129 @@
+\section{Using the tool}
+
+\subsection{Running Aude}
+\paragraph{}
+The easiest way to run Aude is to use it online with any recent browser (Internet Explorer is not tested often, it is recommended to use another browser. Opera prior to version 15 and Konqueror/KHTML are not supported).
+
+\paragraph{}
+Running Aude off-line is also supported. The most recommended way to do this is to open the \verb!index.html! file in Firefox / Iceweasel or Arora. You can also use Chromium/Google Chrome and Opera 15+, but the \verb!--allow-file-access-from-files! command line switch is needed when launching the browser. Midori and epiphany are not supported for off-line usage yet. Safari and Internet Explorer are not tested for offline usage.
+
+\paragraph{}
+The \verb!aude! shell script can be used on Unix systems to run Aude, it should take care of command line switches and will use the \verb!BROWSER! variable environment if it is set, or choose a suitable browser otherwise.
+
+\subsection{Drawing an automaton}
+
+\paragraph{}
+To draw an automaton, you should be in the "Automaton" mode, which is the default mode when you run Aude. You can click on the "plus" button if there is already an automaton and you want to begin a new one. You can also click on the "minus" button if you want to discard the current automaton.
+
+\paragraph{}
+Drawing automata is done by using a mouse and a keyboard. Others input devices are not supported yet, though a workaround (on a tablet for example) would be to input automata using the "automaton code" mode and then to move states in the "Automaton" mode. The more frequently an action is likely to be taken, the simpler the steps to perform it.
+
+\paragraph{}
+To {\bfseries add a state}, double-click on the drawing area. The state gets a default name and is set to initial if it is the only state present. You can change the name of the state by double-clicking on it.
+
+\paragraph{}
+If you want to want to {\bfseries make a state accepting}, right-click on it. Accepting states are double-circled. To make a state non accepting, right-click on it.
+
+\paragraph{}
+To {\bfseries change the initial state}, control-right click on the new initial state.
+
+\paragraph{}
+If you want to {\bfseries add a transition}, shift+click on the state from which the transition should begin, and click on the destination state. You can release shift and/or the button of the mouse if you wish, though it is not mandatory.
+
+You will be asked to enter the symbols of the transition separated by commas. To {\bfseries modify the symbols} of a transition, double-click on them.
+
+See the note on epsilon to know how to input epsilons.
+
+\paragraph{}
+At any time, you can click on the help button ({\bfseries \includegraphics[width=10pt]{{draw-brush}.png}?}) to {\bfseries get a reminder on how to perform an action}.
+
+\paragraph{}
+You can {\bfseries change the shape of a transition} by clicking on the head of the arrow and moving the control points. To {\bfseries make a transition straight}, shift+click on the head of the arrow.
+
+\paragraph{}
+You can {\bfseries zoom / unzoom} by using the wheel. The area is zoomed at the place where the cursor of the mouse is.
+
+\paragraph{}
+If you want your automaton to be {\bfseries automatically reorganized} (using the Graphviz engine), you can click on the "redraw" button.
+
+\paragraph{}
+{\bfseries To delete a transition}, control-click on the head of its arrow or on its symbol list. {\bfseries To delete a state}, control-click on it as well.
+
+\subsection{Entering an automaton}
+
+\paragraph{}
+Complementary to drawing, you can input an automaton by issuing its code in the Aude interface. Select the "Automaton Code" mode at the top-left side of Aude.
+
+The code of an automaton is composed of: a non-empty list of states begining with the initial state, a list of accepting states, and a list of transition. A SVG representation can be given between \verb!<representation type='image/svg+xml'>! and \verb!</representation>!, after the list of transitions. For each list, each element has its own line (one element per line), and lists are separated by an empty line (even in case of empty lists). A transition is given by an origin state, a symbol and a destination state (in this order), separated by spaces. See the note on epsilon to know how to handle epsilons.
+
+\subsection{Note on epsilon}
+\paragraph{}
+When giving the symbols of a transition, you might need to use epsilon. The special symbol \textit{epsilon}, which is the empty symbol, can be given with the epsilon character or with a \verb!e! escaped with a backslash (\verb!\e!). If you really need your automaton to recognize the real epsilon character (non-empty character), surround it with double-quotes~: (\verb!"\e"!).
+
+\subsection{Saving, loading, exporting an automaton}
+\paragraph{}
+You can save and load automata. Click on the load/save/save as button when you are in the "Automaton" or the "Automaton code" mode.
+
+You can also export an automaton in the SVG or the DOT (Graphviz) formats by clicking the export button, in order to use them in documents. The DOT format won't keep your custom placements. SVG pictures can be exported in the EPS format in order to be used in LaTeX documents or can be used as is in HTML documents (check browser SVG compatibilities if you need to support old browsers). You can also convert SVG to any other image format (like PNG, JPG, etc). SVG and EPS are vector formats, so you can zoom infinitely without loosing quality, we therefore recommend you to use them whenever possible.
+
+\subsection{Run a word}
+\paragraph{}
+You can test a word against an automaton and visualize the execution. Click on "Run a word" in the "Automaton" mode when you have your automaton done; a window appear. In this window, input the word you want to test, and click on "execute" or "one step", if you want the execution run without interruption or if you can to control the execution. The execution is detailed in a textual format in the "result" part of Aude. Closing the windows causes the execution to end.
+
+\subsection{Running an algorithm}
+\paragraph{}
+Aude comes with predefined algorithm. Most algorithms work on an automaton. When you have an automaton ready in the "automaton" or "automaton code" mode, choose an algorithm and click on "run". The result will appear at the right side of aude. If the result is an automaton, you can save it in the Aude format by clicking on the "export the result" button. You can also edit it by clicking on he "this automaton in the editor" button. In this case, the current automaton is kept and a new number is assigned to the result in the editor.
+
+\paragraph{}
+Some algorithms need more than one automaton. For example, automata equivalence is an algorithm which needs two automata. In this case, it is necessary to select the automata which are to give to the algorithm and to specify the order in which they are given.
+
+\paragraph{}
+First, automata which are to give must be loaded in the program. You could have just drawn them, or opened them from files. What is important is that they have a number.
+
+\paragraph{}
+Then, click on the "choose automata parameters" icon~: \includegraphics[width=10pt]{{format-list-ordered}.png}. Click on the automata which are to give to the algorithm in the right order. Clicking on an automaton another time deletes it from the list. When you are ready, you can run the algorithm as usual.
+
+\subsection{Load or write a program}
+\paragraph{}
+First, choose the "Program" mode. From there, you can open an existing program with the "open" button. You can run the program by clicking on the "run program" button. This button also appears in "automaton" and "automaton code" modes when there is a program in the "program" mode.
+
+\paragraph{}
+Programs are written using the Audescript programming language. This language is derived from Javascript. The main differences are:
+
+\begin{itemize}
+	\item{Audescript has set literals, like \verb!{1,2,3}! or \verb!{"Hello", "world"}!}
+	\item{Audescript has set operators, like \verb!minus!, \verb!union!, \verb!cross!, \verb!inter!, \verb!symDiff!}
+	\item{Audescript lets you type variables, like in \verb!a : int!, \verb!a : Automaton!, \verb!l : Array!, \verb!s : Set of String = {"hello", "world"}!, functions and function parameters like in \verb!function sum(a : int, b : int) : int { return a + b;}!. Type checking is done at runtime.}
+\end{itemize}
+
+\paragraph{}
+For examples of programs written in Audescript, you can take a look at Aude's predefined algorithms and tests present in the \verb!tests! folder of Aude.
+
+\subsection{Load a Quiz}
+\paragraph{}
+Aude has an experimental Quiz module. To load a quiz, click on the "Load a Quiz" button and choose a quiz. If you want to write a quiz, you can take a look at the "quiz" folder of Aude for an example of Quiz.
+
+\paragraph{}
+What is supported by the quiz module is multiple choice questions, drawing an automaton which must recognize a language given by a set of words, an equivalent automaton or a regular expression. The quiz ends by a recap giving what was correctly, incorrectly or partially answered.
+
+\subsection{Using the Audescript interpreter}
+Aude comes with a standalone Audescript interpreter which depends on Node.js. It was only tested on Linux so far. In order to run the interpreter, in a terminal, move to the Aude directory and run:
+
+\begin{verbatim}
+./audescript yourprogram.ajs parameters...
+\end{verbatim}
+
+Audescript can also act as an interactive shell:
+
+\begin{verbatim}
+./audescript
+\end{verbatim}
+
+File redirections are also supported:
+
+\begin{verbatim}
+./audescript < file.ajs
+\end{verbatim}
+
+It is possible to install Aude (with make install for example). In this case, you can launch the interpreter from everywhere and leave the "./" part of the commands.
+
