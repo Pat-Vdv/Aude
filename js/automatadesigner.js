@@ -1217,7 +1217,7 @@
                 if (i === len - 1) {
                     handle._moveFrame = pathEditEllipseMoveFrame;
                     handle._ellipse   = getBigEllipse(document.getElementById(tid[1]));
-                    handle._arrow     = nodeMoving.querySelector("polygon");
+                    handle._arrow     = p.parentNode.querySelector("polygon");
                 } else if (!i) {
                     handle._moveFrame = pathEditEllipseMoveFrame;
                     handle._ellipse   = getBigEllipse(document.getElementById(tid[0]));
