@@ -45,6 +45,15 @@
             return pkg.internals.parseStatement(newContext);
         },
 
+        newContextFrom: function (context, o) {
+            o.lexer      = context.lexer;
+            o.inForeach  = context.inForeach;
+            o.includes   = context.includes;
+            o.jsFeatures = context.jsFeatures;
+            o.enforceReturnType = context.enforceReturnType;
+            return o;
+        },
+
         parseStatements: function (context) {
             if (!context.constraintedVariables) {
                 context.constraintedVariables = {

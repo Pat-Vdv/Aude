@@ -177,7 +177,7 @@
         enumerable: false,
         writable:   true,
         value: function () {
-            return this[this.length-1];
+            return this[this.length - 1];
         }
     });
 

@@ -517,6 +517,15 @@
             return pkg.internals.parseStatement(newContext);
         },
 
+        newContextFrom: function (context, o) {
+            o.lexer      = context.lexer;
+            o.inForeach  = context.inForeach;
+            o.includes   = context.includes;
+            o.jsFeatures = context.jsFeatures;
+            o.enforceReturnType = context.enforceReturnType;
+            return o;
+        },
+
         parseStatements: function (context) {
             if (!context.constraintedVariables) {
                 context.constraintedVariables = {
@@ -1643,7 +1652,7 @@
         enumerable: false,
         writable:   true,
         value: function () {
-            return this[this.length-1];
+            return this[this.length - 1];
         }
     });
 
@@ -2128,15 +2137,13 @@
             }
 
             lexer.restore(begin);
-            return parseStatementAfter(context, "{" + pkg.internals.parseStatements({
-                constraintedVariables: copy(context.constraintedVariables),
-                endSymbols: { "}": true },
-                lexer: context.lexer,
-                inForeach: context.inForeach,
-                includes: context.includes,
-                jsFeatures: context.jsFeatures,
-                enforceReturnType: context.enforceReturnType
-            }) + lexer.nextSymbol() /* "}" */);
+
+            return parseStatementAfter(context, "{" + pkg.internals.parseStatements(
+                pkg.internals.newContextFrom(context, {
+                    constraintedVariables: copy(context.constraintedVariables),
+                    endSymbols: { "}": true }
+                })) + lexer.nextSymbol() /* "}" */
+            );
         }
         return false;
     }

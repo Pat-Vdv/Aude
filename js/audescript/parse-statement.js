@@ -98,15 +98,13 @@
             }
 
             lexer.restore(begin);
-            return parseStatementAfter(context, "{" + pkg.internals.parseStatements({
-                constraintedVariables: copy(context.constraintedVariables),
-                endSymbols: { "}": true },
-                lexer: context.lexer,
-                inForeach: context.inForeach,
-                includes: context.includes,
-                jsFeatures: context.jsFeatures,
-                enforceReturnType: context.enforceReturnType
-            }) + lexer.nextSymbol() /* "}" */);
+
+            return parseStatementAfter(context, "{" + pkg.internals.parseStatements(
+                pkg.internals.newContextFrom(context, {
+                    constraintedVariables: copy(context.constraintedVariables),
+                    endSymbols: { "}": true }
+                })) + lexer.nextSymbol() /* "}" */
+            );
         }
         return false;
     }
