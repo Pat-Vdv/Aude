@@ -1639,6 +1639,14 @@
         }
     });
 
+    Object.defineProperty(Array.prototype, "peek", {
+        enumerable: false,
+        writable:   true,
+        value: function () {
+            return this[this.length-1];
+        }
+    });
+
     try { // eval to allow parsing of the file even in browsers not supporting yield.
         eval(
             "Object.defineProperty(Object.prototype, 'iterator', {"
