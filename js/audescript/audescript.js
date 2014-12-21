@@ -1563,7 +1563,8 @@
         /*eslint-disable eqeqeq */
 
         return v1 == v2 || (
-            typeof v1 === typeof v2
+            v1 !== null
+            && typeof v1 === typeof v2
             && v1.constructor === v2.constructor
             && (v1 instanceof Set
                 ? v1.card() === v2.card() && !v1.minus(v2).card()
