@@ -1088,7 +1088,7 @@
             return A;
         };
 
-        window.get_automatons = function (count, callback) {
+        window.get_automata = function (count, callback) {
             if (automataList.length < count) {
                 showAutomataListChooser(count, callback);
             } else {
@@ -1256,8 +1256,8 @@
 
         window.reallyRun = function (fun, g, f) {
             blockResult = true;
-            if (fun === window.get_automatons) {
-                window.get_automatons(g, function () {
+            if (fun === window.get_automata) {
+                window.get_automata(g, function () {
                     setResult(f.apply(this, arguments));
                 });
             } else {

@@ -169,7 +169,7 @@
     that.global.audescript = audescript;
 
     // ignore run lines
-    that.global.run = that.global.get_automaton = that.global.get_automatons = function () { return; };
+    that.global.run = that.global.get_automaton = that.global.get_automata = function () { return; };
     that.global.currentAutomaton = 0;
 
     var gots = new Set();
