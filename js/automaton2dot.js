@@ -83,21 +83,22 @@
         return Set.prototype.elementToString(s, trans ? {"ε": epsilon} : {});
     };
 
-    pkg.automaton2dot = function (A, title) {
+    pkg.automaton2dot = function (a, title) {
         if (!title) {
             title = "automaton";
         }
 
         var res                = catln("digraph ", JSON.stringify(title), " {\n\trankdir=LR\n\t_begin [style = invis];"),
-            NonAcceptingStates = A.getNonFinalStates().getList(),
-            AcceptingStates    = A.getFinalStates().getList(),
-            transitions        = A.getTransitions().getList(),
-            states             = A.getStates().getList(),
-            initialState       = A.getInitialState(),
-            leng               = transitions.length,
+            nonacceptingStates = a.getNonFinalStates().getList(),
+            acceptingStates    = a.getFinalStates().getList(),
+            transitions        = a.getTransitions().getList(),
+            states             = a.getStates().getList(),
+            initialState       = a.getInitialState(),
+            leng               = states.length,
             table              = [],
             startState,
             endState,
+            endTrans,
             trans,
             symbols,
             comma,
@@ -112,34 +113,34 @@
             q,
             i;
 
-        if (!A.hasState(initialState)) {
+        if (!a.hasState(initialState)) {
             throw new Error("Automaton has no initial state.");
         }
 
-        if (A.isAcceptingState(initialState)) {
+        if (a.isAcceptingState(initialState)) {
             res += catln("\n\tnode [shape = doublecircle];");
             res += catln("\t\t", dotState(initialState));
         }
 
-        if (NonAcceptingStates.length || !A.isAcceptingState(initialState)) {
+        if (nonacceptingStates.length || !a.isAcceptingState(initialState)) {
             res += catln("\n\tnode [shape = circle];");
 
-            if (!A.isAcceptingState(initialState)) {
+            if (!a.isAcceptingState(initialState)) {
                 res += catln("\t\t", dotState(initialState));
             }
 
-            for (q in NonAcceptingStates) {
-                if (NonAcceptingStates[q] !== initialState) {
-                    res += catln("\t\t", dotState(NonAcceptingStates[q]));
+            for (q in nonacceptingStates) {
+                if (nonacceptingStates.hasOwnProperty(q) && nonacceptingStates[q] !== initialState) {
+                    res += catln("\t\t", dotState(nonacceptingStates[q]));
                 }
             }
         }
 
-        if (AcceptingStates.length) {
+        if (acceptingStates.length) {
             res += catln("\n\tnode [shape = doublecircle];");
-            for (q in AcceptingStates) {
-                if (AcceptingStates[q] !== initialState) {
-                    res += catln("\t\t", dotState(AcceptingStates[q]));
+            for (q in acceptingStates) {
+                if (acceptingStates.hasOwnProperty(q) && acceptingStates[q] !== initialState) {
+                    res += catln("\t\t", dotState(acceptingStates[q]));
                 }
             }
         }
@@ -150,7 +151,7 @@
             t = transitions[tr];
 
             if (!table[t.startState]) {
-                table[t.startState] = [];
+                table[t.startState] = {};
             }
 
             if (!table[t.startState][t.endState]) {
@@ -160,7 +161,7 @@
             table[t.startState][t.endState].add(t.symbol);
         }
 
-        if (!A.hasState(initialState)) {
+        if (!a.hasState(initialState)) {
             throw new Error("Initial state is not set.");
         }
 
@@ -169,15 +170,15 @@
         for (sS = 0; sS < leng; ++sS) {
             startState = states[sS];
 
-            if (table[startState]) {
-                trans = table[startState];
-
+            trans = table[startState];
+            if (trans) {
                 for (eS = 0; eS < leng; ++eS) {
-
-                    if (trans[endState = states[eS]]) {
+                    endState = states[eS];
+                    endTrans = trans[endState];
+                    if (endTrans) {
                         res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, "&amp;"), " -> ", JSON.stringify(toString(endState)).replace(/&/g, "&amp;"), " [label = ");
 
-                        symbols = table[startState][endState].getSortedList();
+                        symbols = endTrans.getSortedList();
                         comma   = "";
                         s       = "";
                         tmp     = "";
