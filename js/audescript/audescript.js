@@ -105,7 +105,7 @@
              || (!dotEncountered && lexer.lookAhead() === ".")
          )) {
             if (!dotEncountered) {
-                dotEncountered =  lexer.lookAhead() === ".";
+                dotEncountered = lexer.lookAhead() === ".";
             }
             lexer.nextChar();
         }
@@ -914,7 +914,6 @@
     pkg.jsFeatures = {
         letDeclaration:      false,
         arrowFunction:       false,
-        letExpression:       false,
         iterations:          false,
         constDeclaration:    false,
         abbreviatedFunction: false,
@@ -932,10 +931,6 @@
             pkg.jsFeatures.abbreviatedFunction = eval("(function () true)()");
         } catch (ignore) {}
     }
-
-    try {
-        pkg.jsFeatures.letExpression    = eval("(function () {var a=1, t; let (a=2) {if (a === 2) {t = true}}; return t && a === 1;})();");
-    } catch (ignore) {}
 
     try {
         pkg.jsFeatures.letDeclaration   = eval("(function () {var a=1, t; if (true) {let a = 2;t = a === 2} return t && a === 1;})();");
@@ -2543,44 +2538,8 @@
         }
 
         if (keyword === "const" || keyword === "let" || keyword === "var") {
-            var state;
-            if (keyword === "let") {
-                state = lexer.save();
-                lexer.getWhite();
-                lexer.nextSymbol();
-                lexer.restore(state);
-                if (lexer.symbol === "(") {
-                    var letVars = getExpression(context, {
-                        noTuple: true,
-                        onlyOneValue: true,
-                        constraintedVariables: context.constraintedVariables
-                    }) + lexer.nextSymbol();
-                    var state2 = lexer.save();
-                    lexer.getWhite();
-                    if (lexer.lookAhead() !== "=") {
-                        lexer.restore(state2);
-                        if (context.jsFeatures.letExpression) {
-                            return "let" + letVars + getExpression(context, {
-                                constraintedVariables: copy(context.constraintedVariables)
-                            });
-                        }
-
-                        return (
-                            "(function () {var "
-                          + letVars.replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, "$1$2$3")
-                          + ";" + getExpression(context, {
-                                constraintedVariables: copy(
-                                    context.constraintedVariables
-                                )
-                            }) + "})()"
-                        );
-                    }
-                }
-                lexer.restore(state);
-                // regular let, handling just after this.
-            }
-
-            var listOfVals,
+            var state,
+                listOfVals,
                 semicolonExpected = false,
                 vars,
                 val,
