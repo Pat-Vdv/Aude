@@ -503,44 +503,8 @@
         }
 
         if (keyword === "const" || keyword === "let" || keyword === "var") {
-            var state;
-            if (keyword === "let") {
-                state = lexer.save();
-                lexer.getWhite();
-                lexer.nextSymbol();
-                lexer.restore(state);
-                if (lexer.symbol === "(") {
-                    var letVars = getExpression(context, {
-                        noTuple: true,
-                        onlyOneValue: true,
-                        constraintedVariables: context.constraintedVariables
-                    }) + lexer.nextSymbol();
-                    var state2 = lexer.save();
-                    lexer.getWhite();
-                    if (lexer.lookAhead() !== "=") {
-                        lexer.restore(state2);
-                        if (context.jsFeatures.letExpression) {
-                            return "let" + letVars + getExpression(context, {
-                                constraintedVariables: copy(context.constraintedVariables)
-                            });
-                        }
-
-                        return (
-                            "(function () {var "
-                          + letVars.replace(/^([\s]*)\(([\s\S]+)\)([\s]*)$/, "$1$2$3")
-                          + ";" + getExpression(context, {
-                                constraintedVariables: copy(
-                                    context.constraintedVariables
-                                )
-                            }) + "})()"
-                        );
-                    }
-                }
-                lexer.restore(state);
-                // regular let, handling just after this.
-            }
-
-            var listOfVals,
+            var state,
+                listOfVals,
                 semicolonExpected = false,
                 vars,
                 val,

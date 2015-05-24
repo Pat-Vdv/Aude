@@ -33,7 +33,6 @@
     pkg.jsFeatures = {
         letDeclaration:      false,
         arrowFunction:       false,
-        letExpression:       false,
         iterations:          false,
         constDeclaration:    false,
         abbreviatedFunction: false,
@@ -51,10 +50,6 @@
             pkg.jsFeatures.abbreviatedFunction = eval("(function () true)()");
         } catch (ignore) {}
     }
-
-    try {
-        pkg.jsFeatures.letExpression    = eval("(function () {var a=1, t; let (a=2) {if (a === 2) {t = true}}; return t && a === 1;})();");
-    } catch (ignore) {}
 
     try {
         pkg.jsFeatures.letDeclaration   = eval("(function () {var a=1, t; if (true) {let a = 2;t = a === 2} return t && a === 1;})();");

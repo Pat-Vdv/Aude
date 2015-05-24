@@ -74,7 +74,7 @@
              || (!dotEncountered && lexer.lookAhead() === ".")
          )) {
             if (!dotEncountered) {
-                dotEncountered =  lexer.lookAhead() === ".";
+                dotEncountered = lexer.lookAhead() === ".";
             }
             lexer.nextChar();
         }
