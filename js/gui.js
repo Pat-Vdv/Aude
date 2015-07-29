@@ -700,6 +700,8 @@
 
         if (window.js18Supported) {
             libD.jsLoad("js/setIterators.js", automatonJSLoaded, "application/javascript;version=1.8");
+        } else if (window.Symbol) {
+            libD.jsLoad("js/setIterators.js", automatonJSLoaded);
         } else {
             automatonJSLoaded();
         }
