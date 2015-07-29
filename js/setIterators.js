@@ -1,8 +1,14 @@
-Set.prototype.iterator =  function () {
-    for (var i in this.l) {
-        yield this.l[i];
-    }
-};
+if (typeof Symbol === "undefined") {
+    try {
+        eval("\
+            Set.prototype.iterator =  function () {\
+                for (var i in this.l) {\
+                    yield this.l[i];\
+                }\
+            };\
+        ");
+    } catch (e) {}
+}
 
 try {
     eval("\
