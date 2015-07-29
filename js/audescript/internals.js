@@ -40,6 +40,10 @@
                 newContext.enforceReturnType = context.enforceReturnType;
             }
 
+            if (!newContext.hasOwnProperty("useStrict")) {
+                newContext.useStrict  = context.useStrict;
+            }
+
             newContext.jsFeatures = context.jsFeatures;
 
             return pkg.internals.parseStatement(newContext);
@@ -50,6 +54,7 @@
             o.inForeach  = context.inForeach;
             o.includes   = context.includes;
             o.jsFeatures = context.jsFeatures;
+            o.useStrict  = context.useStrict;
             o.enforceReturnType = context.enforceReturnType;
             return o;
         },

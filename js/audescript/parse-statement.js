@@ -99,7 +99,7 @@
 
             lexer.restore(begin);
 
-            return parseStatementAfter(context, "{" + pkg.internals.parseStatements(
+            return ("{" + pkg.internals.parseStatements(
                 pkg.internals.newContextFrom(context, {
                     constraintedVariables: copy(context.constraintedVariables),
                     endSymbols: { "}": true }
@@ -253,12 +253,13 @@
     }
 
     function functionBody(context, s, typedArgs) {
-        var before = "",
-            after  = "";
+        var before = "";
+
+        if (context.useStrict) {
+            before = "'use strict';";
+        }
 
         if (typedArgs) {
-            before = "{";
-            after = "}";
             for (var arg in typedArgs) {
                 if (typedArgs.hasOwnProperty(arg)) {
                     before += "audescript.ct(" + arg + "," + typedArgs[arg] + ");";
@@ -266,11 +267,17 @@
             }
         }
 
-        if (!context.jsFeatures.abbreviatedFunction && s.trim()[0] !== "{") {
-            return before + "{return " + s + "}" + after;
+        if (s.trim()[0] !== "{") {
+            if (before || !context.jsFeatures.abbreviatedFunction) {
+                return "{" + before + "return " + s + "}";
+            }
         }
 
-        return before + s + after;
+        if (before) {
+            s = s.replace("{", "{" + before);
+        }
+
+        return s;
     }
 
     function checkReturn(context, symbol, expr) {
@@ -327,11 +334,11 @@
                 lexer.i--;
             }
 
-
             if (lexer.nextSymbol() === "(") {
                 var parameters = "(";
                 var typedArgs = {};
                 var argName;
+
                 while (!lexer.end() && lexer.symbol !== ")") {
                     parameters += lexer.getWhite();
                     lexer.nextSymbol();
@@ -346,6 +353,10 @@
                     } else {
                         context.lexer.restore(begin);
                         return -1;
+                    }
+
+                    if (lexer.symbol === ")") {
+                        break;
                     }
 
                     parameters += lexer.getWhite(true);
@@ -366,6 +377,7 @@
                 } else {
                     lexer.restore(save);
                 }
+
                 return (
                     symbol
                   + functionName
@@ -373,6 +385,7 @@
                   + functionBody(
                         context,
                         getExpression(context, {
+                            useStrict: false,
                             inForeach: false,
                             constraintedVariables: copy(context.constraintedVariables),
                             enforceReturnType: functionReturnType,
@@ -406,15 +419,21 @@
 
 
             if (symbol === "catch") {
+                var context2 = {};
+                pkg.internals.newContextFrom(context, context2);
+                context2.useStrict = false;
                 return symbol + getExpression(context, {
                     inForeach: false,
                     noTuple: true,
                     constraintedVariables: context.constraintedVariables
-                }) + functionBody(context, getExpression(context, {
-                    inForeach: false,
-                    constraintedVariables: copy(context.constraintedVariables),
-                    noSetOrObj: true
-                }));
+                }) + functionBody(
+                    context2,
+                    getExpression(context, {
+                        inForeach: false,
+                        constraintedVariables: copy(context.constraintedVariables),
+                        noSetOrObj: true
+                    })
+                );
             }
 
             if (symbol === "try" || symbol === "finally") {

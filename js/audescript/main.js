@@ -40,7 +40,8 @@
         return pkg.internals.parseStatements({
             lexer: new pkg.Lexer(str),
             includes: opts && opts.includesArray,
-            jsFeatures: (opts && opts.jsFeatures) || pkg.jsFeatures
+            jsFeatures: (opts && opts.jsFeatures) || pkg.jsFeatures,
+            useStrict: (opts && opts.useStrict)  || false
         });
     };
 }((typeof exports !== "undefined" && exports) || (this.audescript = {}), this));

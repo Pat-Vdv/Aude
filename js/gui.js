@@ -2026,7 +2026,7 @@
             waitingFor.remove(includeName);
 
             var includes = [];
-            code = audescript.toPureJS(code, {includesArray:includes});
+            code = audescript.toPureJS(code, {includesArray:includes, useStrict:true});
 
             if (nextLoadIsPrefefAlgo) {
                 predefAlgoFunctions[includeName] = code;
