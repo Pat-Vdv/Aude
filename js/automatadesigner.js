@@ -31,6 +31,8 @@
     "use strict";
 
     var svgNS = "http://www.w3.org/2000/svg";
+    var RESIZE_HANDLE_WIDTH = 6;
+    var CSSP = "automata-designer-"
 
     // translate the node with the vector (tx,ty)
     function translate(n, tx, ty) {
@@ -84,7 +86,7 @@
     // Given a node representing a state, gives the biggest ellipse of the node in case of a final state.
     // Otherwise, give the only ellipse of the node
     function getBigEllipse(n) {
-        var ellipse, c = n.childNodes, i, len;
+        var ellipse = null, c = n.childNodes, i, len;
         for (i = 0, len = c.length; i < len; ++i) {
             if (c[i].cx) {
                 ellipse = c[i];
@@ -93,12 +95,22 @@
         return ellipse;
     }
 
+    function getSmallEllipse(n) {
+        var c = n.childNodes, i, len;
+        for (i = 0, len = c.length; i < len; ++i) {
+            if (c[i].cx) {
+                return c[i];
+            }
+        }
+        return null;
+    }
+
     //set the initial state for the current automaton
     function setInitialState(node) {
         var path, polygon, title;
 
         if (initialStateArrow) {
-            path    = initialStateArrow.querySelector("path");
+            path    = initialStateArrow.getElementsByTagName("path")[0];
             polygon = initialStateArrow.querySelector("polygon");
             title   = initialStateArrow.querySelector("title");
         } else {
@@ -146,6 +158,43 @@
         initialState = initialStates[pkg.currentIndex] = node;
     }
 
+    var resizeHandle = null, resizeHandledElement = null;
+
+    function resizeHandlesHide() {
+        if (!resizeHandle || !resizeHandle.rect.parentNode) {
+            return;
+        }
+
+        var p = resizeHandle.rect.parentNode;
+        p.removeChild(resizeHandle.rect);
+        p.removeChild(resizeHandle.topLeft);
+        p.removeChild(resizeHandle.top);
+        p.removeChild(resizeHandle.topRight);
+        p.removeChild(resizeHandle.bottomLeft);
+        p.removeChild(resizeHandle.bottom);
+        p.removeChild(resizeHandle.bottomRight);
+        p.removeChild(resizeHandle.right);
+        p.removeChild(resizeHandle.left);
+
+        if (resizeHandledElement) {
+            resizeHandledElement.classList.remove(CSSP + "resize-handled");
+            resizeHandledElement = null;
+        }
+    }
+
+    function addDist(p, cx, cy, dist) {
+        if (dist) {
+            var dx = p.x - cx;
+            var dy = p.y - cy;
+            var oldD = Math.sqrt(dx * dx + dy * dy);
+            var newD = oldD + dist;
+
+            p.x = cx + dx * newD / oldD;
+            p.y = cy + dy * newD / oldD;
+        }
+        return p;
+    }
+
     // Given a SVG <ellispe /> and its center (cx, cy), a point (x,y), a distance to the ellipse in pixels,
     // gives the coordinates of the point placed around the ellipse to the desired distance.
     // Parameters:
@@ -156,7 +205,6 @@
     //  - cx, cy (optional) : the center of the ellipse, if already known
     //  Optional parameters can get null in case they have to be passed (distanceToEllipse must be set to 0 instead)
     function pointOnEllipse(ellipse, x, y, p, distanceToEllipse, cx, cy) {
-
         if (!cy) {
             cy = ellipse.cy.baseVal.value;
         }
@@ -165,33 +213,21 @@
             cx = ellipse.cx.baseVal.value;
         }
 
-        var alpha = Math.atan((x - cx) / (y - cy)),
-            r     = ellipse.ry.baseVal.value + (distanceToEllipse || 0);
+        var ry = ellipse.ry.baseVal.value,
+            rx = ellipse.rx.baseVal.value;
 
         if (!p) {
             p = {};
         }
 
-        var alphaMsemiPi    = alpha - Math.PI / 2 || 0,
-            cosAlphaMsemiPi = Math.cos(alphaMsemiPi),
-            sinAlphaMsemiPi = Math.sin(alphaMsemiPi);
+        var c = y - cy;
+        var d = x - cx;
 
-        if (y >= cy) {
-            if (x > cx) {
-                p.x = cx - r * (cosAlphaMsemiPi - 2 * Math.abs(cosAlphaMsemiPi));
-                p.y = cy + r * (sinAlphaMsemiPi + 2 * Math.abs(sinAlphaMsemiPi));
-                return p;
-            }
+        var common = rx * ry / Math.sqrt(rx * rx * c * c + ry * ry * d * d);
+        p.x = cx + common * d;
+        p.y = cy + common * c;
 
-            p.x = cx - r * (cosAlphaMsemiPi + 2 * Math.abs(cosAlphaMsemiPi));
-            p.y = cy + r * (sinAlphaMsemiPi + 2 * Math.abs(sinAlphaMsemiPi));
-            return p;
-        }
-
-        p.x = cx - r * cosAlphaMsemiPi;
-        p.y = cy + r * sinAlphaMsemiPi;
-
-        return p;
+        return addDist(p, cx, cy, distanceToEllipse);
     }
 
     // Position the triangle polygonPoints of a transition correctly on the svg <ellipse /> at point p{x,y}.
@@ -268,13 +304,12 @@
             p = pathSegList.getItem(2);
 
             var pi = pathSegList.getItem(1);
-            var ry = ellipseD.ry.baseVal.value,
-                rx = ellipseD.rx.baseVal.value,
-                y  = Math.sqrt(ry * ry - rx * rx / 4);
+            var rx = ellipseD.rx.baseVal.value,
+                ry = ellipseD.ry.baseVal.value;
 
-            po.x  = cx - rx / 2;
-            po.y  = cy - y;
-            p.x   = cx + rx / 2;
+            pointOnEllipse(ellipseD, cx - 10, cy - 18 - ry, po, 0, cx, cy);
+
+            p.x   = cx + 10;
             p.y   = po.y - 10;
             pi.x1 = po.x - 1;
             pi.y1 = po.y - 10;
@@ -286,7 +321,7 @@
             p.y1  = pi.y;
             p.x2  = p.x - 1;
             p.y2  = p.y - 6;
-            posTriangleArrow(polygonPoints, ellipseD, p, cx + rx / 2, cy + ry - y);
+            posTriangleArrow(polygonPoints, ellipseD, p, cx, cy);
 
             text.setAttribute("x", pi.x);
             text.setAttribute("y", pi.y - 5);
@@ -485,22 +520,25 @@
             pathEditor = null;
         }
 
+        resizeHandlesHide();
+
         if (!dontCleanColors && svgs[index]) {
-            var ellipses = svgs[index].querySelectorAll("ellipse"),
-                edges    = svgs[index].querySelectorAll(".edge"),
+            var ellipses = svgs[index].getElementsByTagName("ellipse"),
+                edges    = svgs[index].getElementsByClassName("edge"),
                 len,
                 i;
 
             for (i = 0, len = ellipses.length; i < len; ++i) {
                 ellipses[i].setAttribute("fill", "transparent");
+                ellipses[i].classList.remove(CSSP + "resize-handled");
             }
 
             for (i = 0, len = edges.length; i < len; ++i) {
                 if (edges[i].id !== "initialStateArrow") {
-                    edges[i].querySelector("text").removeAttribute("fill");
+                    edges[i].getElementsByTagName("text")[0].removeAttribute("fill");
                     edges[i].querySelector("polygon").setAttribute("fill", "black");
                     edges[i].querySelector("polygon").setAttribute("stroke", "black");
-                    edges[i].querySelector("path").setAttribute("stroke", "black");
+                    edges[i].getElementsByTagName("path")[0].setAttribute("stroke", "black");
                 }
             }
         }
@@ -578,7 +616,7 @@
         for (i = 0, len = trans.length; i < len; ++i) {
             if (trans[i] !== initialStateArrows[index]) {
                 tid  = trans[i].id.split(" ");
-                text = trans[i].querySelector("text").textContent;
+                text = trans[i].getElementsByTagName("text")[0].textContent;
                 f = atob(tid[0]);
                 t = atob(tid[1]);
 
@@ -621,7 +659,7 @@
         for (i = 0, len = trans.length; i < len; ++i) {
             if (trans[i] !== initialStateArrows[index]) {
                 tid  = trans[i].id.split(" ");
-                text = trans[i].querySelector("text").textContent;
+                text = trans[i].getElementsByTagName("text")[0].textContent;
                 f    = atob(tid[0]);
                 t    = atob(tid[1]);
 
@@ -693,7 +731,9 @@
             if (!mouseCoords) {
                 return;
             }
+
             requestAnimationFrame(currentMoveAction);
+
             var e = mouseCoords;
 
             var pt = svgcursorPoint(e);
@@ -768,6 +808,7 @@
             nodeMoving.setAttribute("cx", nodeMoving._seg[0][nodeMoving._seg[1]] = pt.x);
             nodeMoving.setAttribute("cy", nodeMoving._seg[0][nodeMoving._seg[2]] = pt.y);
             fixTransition(nodeMoving._seg[3]);
+            fixPathEditor();
         }
 
         // move the visible area
@@ -797,7 +838,7 @@
             var tid = edge.id.split(" ");
 
             var errorMargin = 1,
-                path        = edge.querySelector("path").pathSegList,
+                path        = edge.getElementsByTagName("path")[0].pathSegList,
                 state1      = document.getElementById(tid[0]).querySelector("ellipse"),
                 state2      = document.getElementById(tid[1]).querySelector("ellipse"),
                 cx1         = state1.cx.baseVal.value,
@@ -829,22 +870,72 @@
             return true;
         }
 
-        function fixTransition(path) {
-            var segs = path.pathSegList;
-            pointOnEllipse(
-                getBigEllipse(
-                    document.getElementById(path.parentNode.id.split(" ")[0])
-                ),
-                segs.getItem(1).x1,
-                segs.getItem(1).y1,
-                segs.getItem(0)
-            );
+        function fixNode(node) {
+            var bigEllipse   = getBigEllipse(node);
+            var smallEllipse = getSmallEllipse(node);
 
-            var seg = segs.getItem(segs.numberOfItems-1);
+            if (bigEllipse !== smallEllipse) {
+                var smallBBox = smallEllipse.getBBox();
+
+                bigEllipse.setAttribute("rx", 4 + smallBBox.width  / 2);
+                bigEllipse.setAttribute("ry", 4 + smallBBox.height / 2);
+                bigEllipse.setAttribute("cx", smallEllipse.getAttribute("cx"));
+                bigEllipse.setAttribute("cy", smallEllipse.getAttribute("cy"));
+            }
+
+            if (node === initialState) {
+                setInitialState(node);
+            }
+        }
+
+        function fixTransition(path, text) {
+            var segs = path.pathSegList;
+
+            var origEllipse = getBigEllipse(
+                document.getElementById(path.parentNode.id.split(" ")[0])
+            );
 
             var targetEllipse = getBigEllipse(
                 document.getElementById(path.parentNode.id.split(" ")[1])
             );
+
+            var p0 = segs.getItem(0)
+            var p = {
+                x: p0.x,
+                y: p0.y
+            };
+
+            pointOnEllipse(
+                origEllipse,
+                segs.getItem(1).x1,
+                segs.getItem(1).y1,
+                p0
+            );
+
+            var dx = p0.x - p.x;
+            var dy = p0.y - p.y;
+
+            if (origEllipse === targetEllipse) {
+                for (var point, i = 1; i < segs.length; i++) {
+                    point = segs.getItem(i)
+                    if (point.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
+                        point.x1 += dx;
+                        point.y1 += dy;
+                        point.x2 += dx;
+                        point.y2 += dy;
+                    }
+
+                    point.x += dx;
+                    point.y += dy;
+                }
+
+                if (text) {
+                    text.setAttribute("x", text.x.baseVal[0].value + dx);
+                    text.setAttribute("y", text.y.baseVal[0].value + dy);
+                }
+            }
+
+            var seg = segs.getItem(segs.numberOfItems-1);
 
             pointOnEllipse(
                 targetEllipse,
@@ -861,18 +952,115 @@
             );
         }
 
+        function resizePS(ele, relativeBBox, bbox, coords, newBBox, shift) {
+            var newWidth, newHeight;
+
+            if (coords.width || shift) {
+                newWidth = newBBox.width * relativeBBox.width;
+                ele.setAttribute("rx", newWidth / 2);
+            } else {
+                newWidth = bbox.width;
+            }
+
+            if (coords.height || shift) {
+                newHeight = newBBox.height * relativeBBox.height;
+                ele.setAttribute("ry", newHeight / 2);
+            } else {
+                newHeight = bbox.height;
+            }
+
+            if (coords.left) {
+                ele.setAttribute("cx", newBBox.x + newWidth / 2);
+            }
+
+            if (coords.top) {
+                ele.setAttribute("cy", newBBox.y + newHeight / 2);
+            }
+        }
+
+        function fixNodeAndTransition(node) {
+            resizeHandlesOn(resizeHandledElement);
+
+            fixNode(node);
+
+            var path, text, n = nodeMovingData;
+
+            for (var i = 0, len = n.t.length; i < len; ++i) {
+                path = coords.t[i][0][0].getElementsByTagName("path")[0];
+                text = coords.t[i][0][0].getElementsByTagName("text")[0];
+                fixTransition(path, text);
+            }
+        }
+
+        function nodeResizeFrame(e) {
+            if (!mouseCoords) {
+                return;
+            }
+
+            var e = mouseCoords;
+
+            requestAnimationFrame(currentMoveAction);
+
+            if (e === true || pkg.stopMoveNode) {
+                return;
+            }
+
+            mouseCoords = true;
+
+            var dx = (e.clientX - coords.x) / pkg.svgZoom,
+                dy = (e.clientY - coords.y) / pkg.svgZoom;
+
+            var newBBox = {
+                x:      coords.left   ? coords.bbox.x + dx : coords.bbox.x,
+                y:      coords.top    ? coords.bbox.y + dy : coords.bbox.y,
+                width:  coords.width  ? coords.bbox.width  + dx * (coords.left ? -2 : 2) : coords.bbox.width,
+                height: coords.height ? coords.bbox.height + dy * (coords.top  ? -2 : 2) : coords.bbox.height
+            };
+
+            if (e.shiftKey) {
+                newBBox.width = newBBox.height = (
+                    !coords.height
+                        ? newBBox.width
+                        : (!coords.width
+                            ? newBBox.height
+                            : Math.min(newBBox.width, newBBox.height)
+                        )
+                );
+            }
+
+            var c = coords.smallEllipse;
+
+            resizePS(
+                c.ele,
+                c.relativeBBox,
+                c.bbox,
+                coords,
+                newBBox,
+                e.shiftKey
+            );
+
+            fixNodeAndTransition(coords.node);
+        }
+
         function nodeMoveFrame() {
             if (!mouseCoords) {
                 return;
             }
 
+            var e = mouseCoords;
+
             requestAnimationFrame(currentMoveAction);
 
-            var e = mouseCoords;
-            if (pkg.stopMoveNode) {
+            if (e === true || pkg.stopMoveNode) {
                 return;
             }
-            var dy = (e.clientY - coords.y) / pkg.svgZoom, dx = (e.clientX - coords.x) / pkg.svgZoom;
+
+            mouseCoords = true;
+
+
+            var dx = (e.clientX - coords.x) / pkg.svgZoom,
+                dy = (e.clientY - coords.y) / pkg.svgZoom;
+
             coords.text.setAttribute("x", coords.tx + dx);
             coords.text.setAttribute("y", coords.ty + dy);
             coords.ellipse[0].setAttribute("cx", coords.cx + dx);
@@ -884,7 +1072,7 @@
 
             if (initialState === nodeMoving) {
                 // moving the initial state arrow
-                setInitialState(nodeMoving); // FIXME: isn"t this inefficient ?
+                setInitialState(nodeMoving);
             }
 
             var coefTextX = 1,
@@ -916,11 +1104,11 @@
 
             for (i = 0, len = n.t.length; i < len; ++i) {
                 nodes         = coords.t[i][0][0].id.split(" ");
-                path          = coords.t[i][0][0].querySelector("path");
+                path          = coords.t[i][0][0].getElementsByTagName("path")[0];
                 segs          = path.pathSegList;
-                origSegs      = coords.t[i][1].querySelector("path").pathSegList;
-                text          = coords.t[i][0][0].querySelector("text");
-                textOrig      = coords.t[i][1].querySelector("text");
+                origSegs      = coords.t[i][1].getElementsByTagName("path")[0].pathSegList;
+                text          = coords.t[i][0][0].getElementsByTagName("text")[0];
+                textOrig      = coords.t[i][1].getElementsByTagName("text")[0];
                 polygonPoints = coords.t[i][0][0].querySelector("polygon").points;
 
                 if (nodes[0] === nodes[1]) {// transition from / to the same state, just moving
@@ -998,10 +1186,7 @@
         }
 
         function mouseMove(e) {
-            mouseCoords = {
-                clientX: e.clientX,
-                clientY:e.clientY
-            };
+            mouseCoords = e;
         }
 
         function cancelMoveAction() {
@@ -1017,15 +1202,11 @@
             requestAnimationFrame(currentMoveAction);
         }
 
-        function beginNodeMoving(nodeMoving, e) {
+        function prepareNodeMove(nodeMoving, e) {
             pkg.stopMove = true;
-            pkg.svgContainer.style.cursor = "move";
-
-            setMoveAction(nodeMoveFrame, e);
-
             coords = {
-                ellipse: nodeMoving.querySelectorAll("ellipse"),
-                text:    nodeMoving.querySelector("text"),
+                ellipse: nodeMoving.getElementsByTagName("ellipse"),
+                text:    nodeMoving.getElementsByTagName("text")[0],
                 x:       e.clientX,
                 y:       e.clientY
             };
@@ -1049,6 +1230,37 @@
                 coords.t[i] = [n.t[i], n.t[i][0].cloneNode(true)];
                 coords.t[i].transitionStraight = isTransitionStraight(n.t[i][0]);
             }
+        }
+
+        function beginNodeResizing(nodeMoving, e) {
+            prepareNodeMove(nodeMoving, e);
+
+            var bbox = resizeHandledElement.getBBox();
+            var node = parentWithClass(resizeHandledElement, "node");
+
+            coords.top    = e.target.className.baseVal.indexOf("-top") !== -1;
+            coords.left   = e.target.className.baseVal.indexOf("-left") !== -1;
+            coords.width  = coords.left || e.target.className.baseVal.indexOf("-right") !== -1;
+            coords.height = coords.top  || e.target.className.baseVal.indexOf("-bottom") !== -1;
+            coords.bbox   = bbox;
+            coords.node   = node;
+
+            var smallEllipse = getSmallEllipse(node);
+            var smallEllipseBBox = smallEllipse.getBBox();
+
+            coords.smallEllipse = {
+                ele: smallEllipse,
+                bbox: smallEllipseBBox,
+                relativeBBox: relativePS(smallEllipseBBox, bbox)
+            }
+
+            setMoveAction(nodeResizeFrame, e);
+        }
+
+        function beginNodeMoving(nodeMoving, e) {
+            prepareNodeMove(nodeMoving, e);
+            pkg.svgContainer.style.cursor = "move";
+            setMoveAction(nodeMoveFrame, e);
         }
 
         // move event when two nodes must be bound (the transition is following the cursor)
@@ -1142,9 +1354,9 @@
             var tid = edge.id.split(" ");
 
             cleanTransitionPos(
-                edge.querySelector("path"),
+                edge.getElementsByTagName("path")[0],
                 edge.querySelector("polygon").points,
-                edge.querySelector("text"),
+                edge.getElementsByTagName("text")[0],
                 document.getElementById(tid[0]),
                 document.getElementById(tid[1])
             );
@@ -1239,7 +1451,7 @@
             }
 
             pathEditor.id = "path-editor";
-            pathEditor._path = nodeMoving.querySelector("path");
+            pathEditor._path = nodeMoving.getElementsByTagName("path")[0];
             fixPathEditor();
             pkg.svgNode.appendChild(pathEditor);
         }
@@ -1267,7 +1479,6 @@
                 tl       = nodeList[atob(nodeMoving.id)].t,
                 segs,
                 ellipse,
-                ry,
                 path,
                 tid,
                 ndx,
@@ -1280,55 +1491,44 @@
 
             if (ellipses.length > 1) { // to non accepting state
                 nodeMoving.removeChild(ellipses[1]);
-                ry = ellipses[0].ry.baseVal.value - 4;
                 ellipse = ellipses[0];
             } else {
                 ellipse = ellipses[0].cloneNode(false);
-                ry = ellipse.ry.baseVal.value + 4;
+                var rx = ellipse.rx.baseVal.value + 4,
+                    ry = ellipse.ry.baseVal.value + 4;
+
                 ellipse.setAttribute("fill", "none");
-                ellipse.setAttribute("rx", ry);
-                ellipse.setAttribute("ry", ry);
                 nodeMoving.insertBefore(ellipse, ellipses[0].nextSibling);
             }
 
-            if (initialState === nodeMoving) {
-                // we translate the initial state arrow
-                path = initialStateArrow.querySelector("path");
-                p = path.pathSegList.getItem(path.pathSegList.numberOfItems - 1);
-                np = pointOnEllipse(ellipse, p.x, p.y, null, 10);
-                translate(initialStateArrow.querySelector("polygon"), ndx, ndy);
-                translate(path, ndx, ndy);
-            }
+            fixNode(nodeMoving);
 
             for (t = 0, len = tl.length; t < len; ++t) {
                 tid = tl[t][0].id.split(" ");
 
-                if (tl[t][1] || tid[1] === tid[0]) { // state n is the origin of the transition t
-                    // we get the first point of the transition
-                    p = tl[t][0].querySelector("path").pathSegList.getItem(0);
+                if (tid[1] === tid[0]) {
+                    fixTransition(
+                        tl[t][0].getElementsByTagName("path")[0],
+                        tl[t][0].getElementsByTagName("text")[0]
+                    );
                 } else {
-                    // we get the last point of the transition
-                    p = tl[t][0].querySelector("polygon").points.getItem(1);
-                }
+                    if (tl[t][1]) { // state n is the origin of the transition t
+                        // we get the first point of the transition
+                        p = tl[t][0].getElementsByTagName("path")[0].pathSegList.getItem(0);
+                    } else {
+                        // we get the last point of the transition
+                        p = tl[t][0].querySelector("polygon").points.getItem(1);
+                    }
 
-                np = pointOnEllipse(ellipse, p.x, p.y);
-                ndx = np.x - p.x;
-                ndy = np.y - p.y;
+                    np = pointOnEllipse(ellipse, p.x, p.y);
+                    ndx = np.x - p.x;
+                    ndy = np.y - p.y;
 
-                if (tl[t][1] && tid[0] !== tid[1]) {
-                    p.x = np.x;
-                    p.y = np.y;
-                } else {
-                    segs = tl[t][0].querySelector("path").pathSegList;
-                    if (tid[0] === tid[1]) { // FIXME: crappy but kinda works.
-                        translate(tl[t][0].querySelector("polygon"), ndx, ndy);
-                        translate(tl[t][0].querySelector("path"),    ndx, ndy);
-                        p = segs.getItem(segs.numberOfItems - 1);
-                        pointOnEllipse(ellipse, p.x, p.y, np, 10);
-                        translate(tl[t][0].querySelector("polygon"), ndx, ndy);
+                    if (tl[t][1]) {
                         p.x = np.x;
                         p.y = np.y;
                     } else {
+                        segs = tl[t][0].getElementsByTagName("path")[0].pathSegList;
                         s = segs.getItem(segs.numberOfItems - 1);
                         s.x += ndx;
                         s.y += ndy;
@@ -1372,7 +1572,7 @@
         }
 
         function editNodeName(node) {
-            var text = node.querySelector("text");
+            var text = node.getElementsByTagName("text")[0];
             pkg.prompt(
                 _("Name of the state"),
                 _("Which name do you want for the state ?"),
@@ -1412,17 +1612,25 @@
                             delete nodeList[oldid];
                             node.querySelector("title").textContent = toBrokenGraphvizTitle(text.textContent = t);
                             node.setAttribute("id", tb);
-                            if (node === initialState) {
-                                setInitialState(node);
+
+                            var ellipse = getSmallEllipse(node);
+                            var minWidth = text.getBBox().width + 28;
+
+                            if (ellipse.getBBox().width < minWidth) {
+                                ellipse.setAttribute("rx", minWidth / 2);
                             }
                         }
+
+                        // FIXME terrible hack to "repair" the node after resize
+                        prepareNodeMove(node, {});
+                        fixNodeAndTransition(node);
                     }
                 }
             );
         }
 
         function editTransitionSymbols(edge) {
-            var text = edge.querySelector("text");
+            var text = edge.getElementsByTagName("text")[0];
             pkg.prompt(
                 _("Transitions' symbols"),
                 _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."),
@@ -1488,6 +1696,15 @@
             return false;
         }
 
+        function relativePS(bbox, refBbox) {
+            return {
+                x: (bbox.x - refBbox.x) / refBbox.width,
+                y: (bbox.y - refBbox.y) / refBbox.height,
+                width:  bbox.width / refBbox.width,
+                height: bbox.height / refBbox.height
+            };
+        }
+
         pkg.svgContainer.addEventListener("mousedown", function (e) {
             blockNewState = true;
             if (blockClick) {
@@ -1495,7 +1712,6 @@
             }
             blockClick = true;
             if (!e.button) { // left button
-
                 nodeMoving = parentWithClass(e.target, "pathedit-handle");
                 if (nodeMoving) {
                     // handle path editing
@@ -1506,12 +1722,17 @@
 
                     pkg.stopMove = true;
                     setMoveAction(nodeMoving._moveFrame, e);
+                } else if (e.target.classList.contains(CSSP + "resize-handle")) {
+                    beginNodeResizing(parentWithClass(resizeHandledElement, "node"), e);
                 } else {
                     pkg.cleanSVG(pkg.currentIndex, true);
 
                     if ( (nodeMoving = parentWithClass(e.target, "node")) ) {
                         if (currentMoveAction === nodeBindingFrame) {
-                            endNewTransition(nodeMoving);
+                            setTimeout(
+                                endNewTransition.bind(null, nodeMoving),
+                                0
+                            ); // setTimeout: workaround to get focus
                         } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
                             pkg.stopMove = true;
                             removeNode(nodeMoving);
@@ -1553,6 +1774,19 @@
             }
         }, false);
 
+        function nodeMouseOut(node) {
+            var node = parentWithClass(node, "node");
+
+            if (node) {
+                stateOverlayOn(node);
+            } else if (currentMoveAction !== nodeResizeFrame) {
+                stateOverlayOff();
+            }
+
+            pkg.svgContainer.style.cursor = "";
+            cancelMoveAction();
+        }
+
         pkg.svgContainer.addEventListener("mouseup", function (e) {
             blockClick = false;
             if (currentMoveAction === nodeBindingFrame) {
@@ -1560,14 +1794,149 @@
                     endNewTransition(nodeMoving);
                 }
             } else {
-                pkg.svgContainer.style.cursor = "";
-                cancelMoveAction();
+                nodeMouseOut(e.target);
             }
 
             if (pathEditor) {
                 fixPathEditor();
             }
         }, false);
+
+        function makeResizeHandle() {
+            var rect = document.createElementNS(svgNS, "rect");
+            resizeHandle = {
+                rect: rect,
+                topLeft    : rect.cloneNode(false),
+                top        : rect.cloneNode(false),
+                topRight   : rect.cloneNode(false),
+                bottomLeft : rect.cloneNode(false),
+                bottom     : rect.cloneNode(false),
+                bottomRight: rect.cloneNode(false),
+                left       : rect.cloneNode(false),
+                right      : rect.cloneNode(false)
+            };
+
+            resizeHandle.topLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.top.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.topRight.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.bottomLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.bottom.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.bottomRight.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.left.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            resizeHandle.right.setAttribute("width", RESIZE_HANDLE_WIDTH);
+
+            resizeHandle.topLeft.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.top.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.topRight.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.bottomLeft.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.bottom.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.bottomRight.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.left.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            resizeHandle.right.setAttribute("height", RESIZE_HANDLE_WIDTH);
+
+
+            resizeHandle.topLeft.classList.add(CSSP + "resize-handle");
+            resizeHandle.top.classList.add(CSSP + "resize-handle");
+            resizeHandle.topRight.classList.add(CSSP + "resize-handle");
+            resizeHandle.bottomLeft.classList.add(CSSP + "resize-handle");
+            resizeHandle.bottom.classList.add(CSSP + "resize-handle");
+            resizeHandle.bottomRight.classList.add(CSSP + "resize-handle");
+            resizeHandle.left.classList.add(CSSP + "resize-handle");
+            resizeHandle.right.classList.add(CSSP + "resize-handle");
+
+            resizeHandle.topLeft.classList.add(CSSP + "resize-top-left");
+            resizeHandle.top.classList.add(CSSP + "resize-top");
+            resizeHandle.topRight.classList.add(CSSP + "resize-top-right");
+            resizeHandle.bottomLeft.classList.add(CSSP + "resize-bottom-left");
+            resizeHandle.bottom.classList.add(CSSP + "resize-bottom");
+            resizeHandle.bottomRight.classList.add(CSSP + "resize-bottom-right");
+            resizeHandle.left.classList.add(CSSP + "resize-left");
+            resizeHandle.right.classList.add(CSSP + "resize-right");
+
+
+            resizeHandle.topLeft.style.cursor = "nw-resize";
+            resizeHandle.top.style.cursor = "n-resize";
+            resizeHandle.topRight.style.cursor = "ne-resize";
+            resizeHandle.bottomLeft.style.cursor = "sw-resize";
+            resizeHandle.bottom.style.cursor = "s-resize";
+            resizeHandle.bottomRight.style.cursor = "se-resize";
+            resizeHandle.left.style.cursor = "w-resize";
+            resizeHandle.right.style.cursor = "e-resize";
+
+            resizeHandle.rect.classList.add(CSSP + "resize-handle-rect");
+        }
+
+        function stateOverlayOff() {
+            resizeHandlesHide();
+        }
+
+        function resizeHandlesOn(ele) {
+
+            var r = ele.getBBox();
+
+            r = {
+                left:   r.x,
+                top:    r.y,
+                right:  r.x + r.width,
+                bottom: r.y + r.height,
+                width:  r.width,
+                height: r.height
+            };
+
+
+            resizeHandle.rect.setAttribute("x",        r.left);
+            resizeHandle.left.setAttribute("x",        r.left - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.topLeft.setAttribute("x",     r.left - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.bottomLeft.setAttribute("x",  r.left - (RESIZE_HANDLE_WIDTH / 2));
+
+            resizeHandle.rect.setAttribute("width",    r.width);
+            resizeHandle.right.setAttribute("x",       r.right - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.topRight.setAttribute("x",    r.right - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.bottomRight.setAttribute("x", r.right - (RESIZE_HANDLE_WIDTH / 2));
+
+            resizeHandle.rect.setAttribute("y",        r.top);
+            resizeHandle.top.setAttribute("y",         r.top - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.topLeft.setAttribute("y",     r.top - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.topRight.setAttribute("y",    r.top - (RESIZE_HANDLE_WIDTH / 2));
+
+            resizeHandle.rect.setAttribute("height",   r.height);
+            resizeHandle.bottom.setAttribute("y",      r.bottom - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.bottomLeft.setAttribute("y",  r.bottom - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.bottomRight.setAttribute("y", r.bottom - (RESIZE_HANDLE_WIDTH / 2));
+
+            resizeHandle.bottom.setAttribute("x",      r.left + r.width  / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.top.setAttribute("x",         r.left + r.width  / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.left.setAttribute("y",        r.top  + r.height / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            resizeHandle.right.setAttribute("y",       r.top  + r.height / 2 - (RESIZE_HANDLE_WIDTH / 2));
+
+            if (resizeHandledElement !== ele) {
+
+                if (resizeHandledElement) {
+                    resizeHandledElement.classList.remove(CSSP + "resize-handled");
+                }
+
+                resizeHandledElement = ele;
+                ele.classList.add(CSSP + "resize-handled");
+
+                pkg.svgNode.appendChild(resizeHandle.rect);
+                pkg.svgNode.appendChild(resizeHandle.topLeft);
+                pkg.svgNode.appendChild(resizeHandle.top);
+                pkg.svgNode.appendChild(resizeHandle.topRight);
+                pkg.svgNode.appendChild(resizeHandle.bottomLeft);
+                pkg.svgNode.appendChild(resizeHandle.bottom);
+                pkg.svgNode.appendChild(resizeHandle.bottomRight);
+                pkg.svgNode.appendChild(resizeHandle.right);
+                pkg.svgNode.appendChild(resizeHandle.left);
+            }
+        }
+
+        function stateOverlayOn(state) {
+            if (!resizeHandle) {
+                makeResizeHandle();
+            }
+
+            resizeHandlesOn(getBigEllipse(state));
+        }
 
         pkg.svgContainer.addEventListener("dblclick", function (e) {
             if ( (nodeEdit = parentWithClass(e.target, "node")) ) {
@@ -1741,10 +2110,10 @@
         if (s) {
             var edge = s.getElementById(btoa(startState) + " " + btoa(endState));
             if (edge) {
-                edge.querySelector("text").setAttribute("fill", color);
+                edge.getElementsByTagName("text")[0].setAttribute("fill", color);
                 edge.querySelector("polygon").setAttribute("fill", color);
                 edge.querySelector("polygon").setAttribute("stroke", color);
-                edge.querySelector("path").setAttribute("stroke", color);
+                edge.getElementsByTagName("path")[0].setAttribute("stroke", color);
             }
         }
     };
@@ -1768,9 +2137,9 @@
             var edge = s.getElementById(btoa(startState) + " " + btoa(endState));
 
             if (edge) {
-                var text     = edge.querySelector("text"),
+                var text     = edge.getElementsByTagName("text")[0],
                     polygon  = edge.querySelector("polygon"),
-                    path     = edge.querySelector("path");
+                    path     = edge.getElementsByTagName("path")[0];
 
                 text.setAttribute("fill", color);
                 polygon.setAttribute("fill", color);
@@ -1788,10 +2157,10 @@
             var edge = s.getElementById(btoa(startState) + " " + btoa(endState));
 
             if (edge) {
-                edge.querySelector("text").removeAttribute("fill");
+                edge.getElementsByTagName("text")[0].removeAttribute("fill");
                 edge.querySelector("polygon").setAttribute("fill", "black");
                 edge.querySelector("polygon").setAttribute("stroke", "black");
-                edge.querySelector("path").setAttribute("stroke", "black");
+                edge.getElementsByTagName("path")[0].setAttribute("stroke", "black");
             }
         }
     };

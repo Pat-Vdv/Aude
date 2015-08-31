@@ -563,5 +563,16 @@ td, th {
 }
 
 p img {
-  vertical-align:middle 
+  vertical-align:middle
+}
+
+.automata-designer-resize-handle-rect {
+    stroke:#A40;
+    stroke-dasharray:5,5;
+    fill:none
+}
+
+.automata-designer-resize-handle {
+    stroke:#A40;
+    fill:#F50
 }
