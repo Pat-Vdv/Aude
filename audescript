@@ -17,8 +17,8 @@ if [ "$JS" = "" ]; then
     fi
 fi
 
-if [ -f `dirname $_`/ajs.js ]; then
-    $JS `dirname $_`/ajs.js $@
+if [ -f `dirname $0`/ajs.js ]; then
+    $JS `dirname $0`/ajs.js $@
 else
-    $JS `dirname $_`/../share/aude/ajs.js $@
+    $JS `dirname $0`/../share/aude/ajs.js $@
 fi

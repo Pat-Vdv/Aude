@@ -40,6 +40,9 @@ minify-html:
 		);"`;\
 	echo "$$html" > index.html
 
+test:
+	./audescript tests/test.js
+
 install:
 	mkdir -p ${DESTDIR}/share/aude ${DESTDIR}/bin
 	cp -r ajs.js dirlist.txt algos icons index.html js l10n quiz style ${DESTDIR}/share/aude
