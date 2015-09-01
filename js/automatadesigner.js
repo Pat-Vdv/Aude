@@ -2045,8 +2045,8 @@
             } else {
                 var bcr = elem.getBoundingClientRect();
                 var parentBcr = pkg.svgNode.parentNode.getBoundingClientRect();
-                overlay.style.left    = (bcr.x - parentBcr.x) + "px";
-                overlay.style.top     = (OVERLAY_TOP_OFFSET + bcr.height + bcr.y - parentBcr.y) + "px";
+                overlay.style.left = (bcr.left - parentBcr.left) + "px";
+                overlay.style.top  = (OVERLAY_TOP_OFFSET + bcr.height + bcr.top - parentBcr.top) + "px";
             }
 
             pkg.svgNode.parentNode.appendChild(overlay);
