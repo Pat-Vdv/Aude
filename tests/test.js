@@ -3,7 +3,7 @@
 /*jslint indent: 4, nomen: true, ass: true, vars: true, evil: true, plusplus: true, todo: true, bitwise: true, stupid: true */
 /*eslint-env node*/
 /*eslint no-eval:0*/
-/*global audescript:false, automataAreEquivalent:false, Set:false, minimize:false, object2automaton:false, getNeeds:false, fs:false*/
+/*global audescript:false, automataAreEquivalent:false, Set:false, minimize:false, object2automaton:false, getNeeds:false, fs:false, infiniteLanguage:false */
 
 "use strict";
 
@@ -175,7 +175,68 @@ function doTests(testCorrect, testFailed, testFailInfo) {
         "24": evalAudeScript("(x=>x+1)(0) === 1"), // dont touch spaces for this one please ;-)
         "25": evalAudeScript("{a:1,b:1} == {b:1,a:1}"),
         "26": evalAudeScript("{a:1,b:2} != {b:1,a:1}"),
-        "27": evalAudeScript("[1,2,3] != [1,2]")
+        "27": evalAudeScript("[1,2,3] != [1,2]"),
+        "28": infiniteLanguage(
+                object2automaton(
+                    {
+                        "states": ["0","1","3","2"],
+                        "finalStates": ["4"],
+                        "transitions": [
+                            ["0","a","1"],
+                            ["0","a","3"],
+                            ["1","a","2"],
+                            ["3","a","1"],
+                            ["2","a","3"],
+                            ["2","a","4"]
+                        ]
+                    }
+                )
+              ) === true,
+        "29": infiniteLanguage(
+                object2automaton(
+                    {
+                        "states": ["0","1","3","2"],
+                        "finalStates": ["0"],
+                        "transitions": [
+                            ["0","a","1"],
+                            ["0","a","3"],
+                            ["1","a","2"],
+                            ["3","a","1"],
+                            ["2","a","3"]
+                        ]
+                    }
+                )
+              ) === false,
+        "30": infiniteLanguage(
+                object2automaton(
+                    {
+                        "states": ["0","1","2"],
+                        "finalStates": ["3"],
+                        "transitions": [
+                            ["0","a","1"],
+                            ["0","a","3"],
+                            ["1","a","2"],
+                            ["2","a","0"],
+                            ["3","a","2"]
+                        ]
+                    }
+                )
+              ) === true,
+        "31": infiniteLanguage(
+                object2automaton(
+                    {
+                        "states": ["0","3","2"],
+                        "finalStates": ["1"],
+                        "transitions": [
+                            ["0","a","1"],
+                            ["0","a","3"],
+                            ["1","a","2"],
+                            ["2","a","0"],
+                            ["3","a","2"]
+                        ]
+                    }
+                )
+              ) === true
     };
 
     var tryParse = [
@@ -227,7 +288,8 @@ function doTests(testCorrect, testFailed, testFailInfo) {
 getNeeds([
     "minimization",
     "equivalence",
-    "automaton2json"
+    "automaton2json",
+    "infiniteLanguage"
 ]);
 
 function testCorrect(i) {
