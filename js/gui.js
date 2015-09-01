@@ -1097,6 +1097,17 @@
             }
         };
 
+        window.heap = function (a) {
+            Object.defineProperty(a, "top", {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: function () { return a[a.length - 1]; }
+            });
+
+            return a;
+        };
+
         function automatonSetNumber(index) {
             automataDesigner.setCurrentIndex(index);
             automatoncodeedit.value = automataDesigner.getAutomatonCode(index, false);
