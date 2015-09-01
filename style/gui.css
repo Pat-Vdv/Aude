@@ -623,10 +623,16 @@ p img {
     position:absolute;
     top:5px;
     left:5px;
-    border:1px solid #DDA;
-    color:#AA5;
+    border:1px solid #BB8;
+    color:#883;
     font-size:small;
     background:#FFC;
     border-radius:8px;
+    opacity:0.5;
     padding:0;
+    transition:200ms
+}
+
+#new-state-btn:hover {
+    opacity:1
 }

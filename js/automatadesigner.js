@@ -1851,7 +1851,7 @@
             if (currentMoveAction === nodeBindingFrame) {
                 if (!blockNewState && (nodeMoving = parentWithClass(e.target, "node"))) {
                     endNewTransition(nodeMoving);
-                    stopOverlay = true;
+                    stopOverlay = false;
                 }
             } else {
                 nodeMouseUp(e);
