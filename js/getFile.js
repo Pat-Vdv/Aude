@@ -40,7 +40,7 @@
         try {
             var xhr = new XMLHttpRequest();
             //workaround chromium issue #45702
-            xhr.open("get", fname + (location.protocol === "file:" ? "?" + (new Date().toString()) : ""), false);
+            xhr.open("get", fname + (location.protocol === "file:" ? "?" + (new Date().toString()) : ""), true);
             xhr.setRequestHeader("Cache-Control", "no-cache");
 
             xhr.onreadystatechange = function () {

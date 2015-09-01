@@ -545,11 +545,6 @@
                     }
 
                     libD.need(["ready", "ws", "wm", "*langPack"], function () {
-                        curAlgo  = document.getElementById("predef-algos");
-                        open     = document.getElementById("open");
-                        quiz     = document.getElementById("quiz");
-                        filequiz = document.getElementById("filequiz");
-
                         var j, line, fname, descr, algos = algoFile.split("\n");
 
                         for (j = 0; j < algos.length; ++j) {
@@ -760,6 +755,10 @@
         codeedit          = document.getElementById("codeedit");
         fileautomaton     = document.getElementById("fileautomaton");
         fileprogram       = document.getElementById("fileprogram");
+        filequiz          = document.getElementById("filequiz");
+        curAlgo           = document.getElementById("predef-algos");
+        open              = document.getElementById("open");
+        quiz              = document.getElementById("quiz");
 
         var exportResultFN     = _("automaton.txt"),
             exportResultTextFN = _("result.txt");
