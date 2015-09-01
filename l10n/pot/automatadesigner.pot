@@ -20,3 +20,25 @@ msgstr ""
 
 msgid  "Sorry, there is already a transition between these states in this way."
 msgstr ""
+
+msgid  "New state"
+msgstr ""
+
+msgid  "Toggle accepting"
+msgstr ""
+
+msgid  "Rename"
+msgstr ""
+
+msgid  "Make initial"
+msgstr ""
+
+msgid  "Delete"
+msgstr ""
+
+msgid  "Modify symbols"
+msgstr ""
+
+msgid  "Make straight"
+msgstr ""
+

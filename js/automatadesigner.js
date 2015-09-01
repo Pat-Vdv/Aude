@@ -32,7 +32,9 @@
 
     var svgNS = "http://www.w3.org/2000/svg";
     var RESIZE_HANDLE_WIDTH = 6;
-    var CSSP = "automata-designer-"
+    var CSSP = "automata-designer-";
+    var OVERLAY_TIMEOUT = 1500;
+    var OVERLAY_TOP_OFFSET = 10;
 
     // translate the node with the vector (tx,ty)
     function translate(n, tx, ty) {
@@ -159,22 +161,24 @@
     }
 
     var resizeHandle = null, resizeHandledElement = null;
+    var currentOverlay = null, overlay = null, stateOverlay = null, transitionOverlay = null;
+
+    function overlayHide() {
+        if (overlay) {
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            currentOverlay = null;
+        }
+    }
 
     function resizeHandlesHide() {
-        if (!resizeHandle || !resizeHandle.rect.parentNode) {
+        if (!resizeHandle || !resizeHandle.g.parentNode) {
             return;
         }
 
-        var p = resizeHandle.rect.parentNode;
-        p.removeChild(resizeHandle.rect);
-        p.removeChild(resizeHandle.topLeft);
-        p.removeChild(resizeHandle.top);
-        p.removeChild(resizeHandle.topRight);
-        p.removeChild(resizeHandle.bottomLeft);
-        p.removeChild(resizeHandle.bottom);
-        p.removeChild(resizeHandle.bottomRight);
-        p.removeChild(resizeHandle.right);
-        p.removeChild(resizeHandle.left);
+        var p = resizeHandle.g.parentNode;
+        p.removeChild(resizeHandle.g);
 
         if (resizeHandledElement) {
             resizeHandledElement.classList.remove(CSSP + "resize-handled");
@@ -520,6 +524,7 @@
             pathEditor = null;
         }
 
+        overlayHide();
         resizeHandlesHide();
 
         if (!dontCleanColors && svgs[index]) {
@@ -706,6 +711,14 @@
             pkg.svgContainer = document.getElementById("svg-container");
         }
 
+        pkg.svgContainer.appendChild(document.createElement("div"));
+        pkg.svgContainer = pkg.svgContainer.lastChild;
+        pkg.svgContainer.style.position = "absolute";
+        pkg.svgContainer.style.top = "0";
+        pkg.svgContainer.style.left = "0";
+        pkg.svgContainer.style.right = "0";
+        pkg.svgContainer.style.bottom = "0";
+
         window.addEventListener("resize", pkg.redraw, false);
 
         // get the right coordinates of the cursor of the <svg> node
@@ -794,7 +807,7 @@
             movePoints(origSegStart, origSegEnd, nodeMoving._seg[0], nodeMoving._seg[2], nodeMoving._seg[1] + 1, nodeMoving._seg[0].numberOfItems - 1, dx, dy);
             nodeMoving.setAttribute("cx", segMove.x);
             nodeMoving.setAttribute("cy", segMove.y);
-            fixTransition(nodeMoving._seg[3]);
+            nodeMoving._seg[3] && fixTransition(nodeMoving._seg[3]);
         }
 
         function pathEditControlMoveFrame(e) {
@@ -807,7 +820,7 @@
             var pt = svgcursorPoint(e);
             nodeMoving.setAttribute("cx", nodeMoving._seg[0][nodeMoving._seg[1]] = pt.x);
             nodeMoving.setAttribute("cy", nodeMoving._seg[0][nodeMoving._seg[2]] = pt.y);
-            fixTransition(nodeMoving._seg[3]);
+            nodeMoving._seg[3] && fixTransition(nodeMoving._seg[3]);
             fixPathEditor();
         }
 
@@ -1187,6 +1200,7 @@
 
         function mouseMove(e) {
             mouseCoords = e;
+            stopOverlay = true;
         }
 
         function cancelMoveAction() {
@@ -1198,7 +1212,7 @@
         function setMoveAction(frameFunction, e) {
             pkg.svgContainer.onmousemove = mouseMove;
             currentMoveAction = frameFunction;
-            mouseMove(e);
+            mouseCoords = e;
             requestAnimationFrame(currentMoveAction);
         }
 
@@ -1360,6 +1374,8 @@
                 document.getElementById(tid[0]),
                 document.getElementById(tid[1])
             );
+
+            fixPathEditor();
         }
 
         // event when a transition label is moved
@@ -1383,6 +1399,10 @@
         }
 
         function fixPathEditor() {
+            if (!pathEditor) {
+                return;
+            }
+
             var p = pathEditor._path;
 
             var segs = p.pathSegList;
@@ -1683,6 +1703,8 @@
             nodeList[id] = {
                 t: []
             };
+
+            return g;
         }
 
         // checks if the node or one of its parent has class c. Specific to the AutomatonDesigner.
@@ -1705,6 +1727,7 @@
             };
         }
 
+        var stopOverlay = false;
         pkg.svgContainer.addEventListener("mousedown", function (e) {
             blockNewState = true;
             if (blockClick) {
@@ -1714,6 +1737,8 @@
             if (!e.button) { // left button
                 nodeMoving = parentWithClass(e.target, "pathedit-handle");
                 if (nodeMoving) {
+                    overlayHide();
+
                     // handle path editing
                     coords = {
                         x: e.clientX,
@@ -1723,8 +1748,10 @@
                     pkg.stopMove = true;
                     setMoveAction(nodeMoving._moveFrame, e);
                 } else if (e.target.classList.contains(CSSP + "resize-handle")) {
+                    overlayHide();
                     beginNodeResizing(parentWithClass(resizeHandledElement, "node"), e);
-                } else {
+                } else if (!parentWithClass(e.target, CSSP + "overlay")) {
+                    var cso = currentOverlay;
                     pkg.cleanSVG(pkg.currentIndex, true);
 
                     if ( (nodeMoving = parentWithClass(e.target, "node")) ) {
@@ -1733,23 +1760,32 @@
                                 endNewTransition.bind(null, nodeMoving),
                                 0
                             ); // setTimeout: workaround to get focus
+                            stopOverlay = true;
                         } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
                             pkg.stopMove = true;
                             removeNode(nodeMoving);
                         } else if (e.shiftKey) {
                             beginNewTransition(nodeMoving, e);
                         } else {
+                            if (cso === nodeMoving) {
+                                stopOverlay = true;
+                            }
                             beginNodeMoving(nodeMoving, e);
                         }
                     } else if ( (nodeMoving = parentWithClass(e.target, "edge")) ) {
+                        if (cso === nodeMoving) {
+                            stopOverlay = true;
+                        }
+
                         if (e.shiftKey) {
                             transitionStraight(nodeMoving);
                         } else if (e.ctrlKey || e.metaKey) {
                             deleteTransition(nodeMoving, null);
-                        } else if (e.target.nodeName === "text") {
-                            beginMoveTransitionLabel(e.target, e);
                         } else {
                             beginNewTransitionEdit(nodeMoving);
+                            if (e.target.nodeName === "text") {
+                                beginMoveTransitionLabel(e.target, e);
+                            }
                         }
                     } else if (!currentMoveAction) {
                         blockNewState = false;
@@ -1774,13 +1810,31 @@
             }
         }, false);
 
-        function nodeMouseOut(node) {
-            var node = parentWithClass(node, "node");
+        function nodeMouseUp(e) {
+            var node = parentWithClass(e.target, "node");
 
             if (node) {
-                stateOverlayOn(node);
+                if (!e.button) {
+                    if (stopOverlay) {
+                        stopOverlay = false;
+                    } else {
+                        stateResizeHandlesOn(node);
+                        overlayOn(node);
+                    }
+                }
             } else if (currentMoveAction !== nodeResizeFrame) {
-                stateOverlayOff();
+                resizeHandlesHide();
+
+                node = parentWithClass(e.target, "edge");
+                if (node) {
+                    if (stopOverlay) {
+                        stopOverlay = false;
+                    } else {
+                        overlayOn(node);
+                    }
+                } else {
+                    overlayHide();
+                }
             }
 
             pkg.svgContainer.style.cursor = "";
@@ -1789,22 +1843,29 @@
 
         pkg.svgContainer.addEventListener("mouseup", function (e) {
             blockClick = false;
+
+            if (parentWithClass(e.target, CSSP + "overlay")) {
+                return;
+            }
+
             if (currentMoveAction === nodeBindingFrame) {
                 if (!blockNewState && (nodeMoving = parentWithClass(e.target, "node"))) {
                     endNewTransition(nodeMoving);
+                    stopOverlay = true;
                 }
             } else {
-                nodeMouseOut(e.target);
-            }
+                nodeMouseUp(e);
 
-            if (pathEditor) {
-                fixPathEditor();
+                if (pathEditor) {
+                    fixPathEditor();
+                }
             }
         }, false);
 
         function makeResizeHandle() {
             var rect = document.createElementNS(svgNS, "rect");
             resizeHandle = {
+                g: document.createElementNS(svgNS, "g"),
                 rect: rect,
                 topLeft    : rect.cloneNode(false),
                 top        : rect.cloneNode(false),
@@ -1815,6 +1876,16 @@
                 left       : rect.cloneNode(false),
                 right      : rect.cloneNode(false)
             };
+
+            resizeHandle.g.appendChild(resizeHandle.rect);
+            resizeHandle.g.appendChild(resizeHandle.topLeft);
+            resizeHandle.g.appendChild(resizeHandle.top);
+            resizeHandle.g.appendChild(resizeHandle.topRight);
+            resizeHandle.g.appendChild(resizeHandle.bottomLeft);
+            resizeHandle.g.appendChild(resizeHandle.bottom);
+            resizeHandle.g.appendChild(resizeHandle.bottomRight);
+            resizeHandle.g.appendChild(resizeHandle.left);
+            resizeHandle.g.appendChild(resizeHandle.right);
 
             resizeHandle.topLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
             resizeHandle.top.setAttribute("width", RESIZE_HANDLE_WIDTH);
@@ -1866,8 +1937,127 @@
             resizeHandle.rect.classList.add(CSSP + "resize-handle-rect");
         }
 
-        function stateOverlayOff() {
-            resizeHandlesHide();
+        function makeStateOverlay() {
+            stateOverlay = document.createElement("ul");
+            stateOverlay.classList.add(CSSP + "overlay");
+
+            stateOverlay.appendChild(document.createElement("li"));
+            stateOverlay.lastChild.appendChild(document.createElement("a"));
+            stateOverlay.lastChild.lastChild.href = "#";
+            stateOverlay.lastChild.lastChild.textContent = _("Toggle accepting");
+
+            stateOverlay.lastChild.lastChild.onclick = function () {
+                toggleAccepting(currentOverlay);
+                overlayHide();
+            };
+
+            stateOverlay.appendChild(document.createElement("li"));
+            stateOverlay.lastChild.appendChild(document.createElement("a"));
+            stateOverlay.lastChild.lastChild.href = "#";
+            stateOverlay.lastChild.lastChild.textContent = _("Rename");
+
+            stateOverlay.lastChild.lastChild.onclick = function () {
+                editNodeName(currentOverlay);
+                overlayHide();
+            };
+
+            stateOverlay.appendChild(document.createElement("li"));
+            stateOverlay.lastChild.appendChild(document.createElement("a"));
+            stateOverlay.lastChild.lastChild.href = "#";
+            stateOverlay.lastChild.lastChild.textContent = _("Make initial");
+
+            stateOverlay.lastChild.lastChild.onclick = function () {
+                setInitialState(currentOverlay);
+                overlayHide();
+            };
+
+            stateOverlay.appendChild(document.createElement("li"));
+            stateOverlay.lastChild.appendChild(document.createElement("a"));
+            stateOverlay.lastChild.lastChild.href = "#";
+            stateOverlay.lastChild.lastChild.textContent = _("Delete");
+
+            stateOverlay.lastChild.lastChild.onclick = function () {
+                removeNode(currentOverlay);
+                overlayHide();
+                resizeHandlesHide();
+            };
+
+            stateOverlay.appendChild(document.createElement("li"));
+            stateOverlay.lastChild.appendChild(document.createElement("a"));
+            stateOverlay.lastChild.lastChild.href = "#";
+            stateOverlay.lastChild.lastChild.textContent = _("New transition");
+
+            stateOverlay.lastChild.lastChild.onclick = function (e) {
+                beginNewTransition(currentOverlay, e);
+                overlayHide();
+            };
+
+            transitionOverlay = document.createElement("ul");
+            transitionOverlay.classList.add(CSSP + "overlay");
+
+            transitionOverlay.appendChild(document.createElement("li"));
+            transitionOverlay.lastChild.appendChild(document.createElement("a"));
+            transitionOverlay.lastChild.lastChild.href = "#";
+            transitionOverlay.lastChild.lastChild.textContent = _("Modify symbols");
+
+            transitionOverlay.lastChild.lastChild.onclick = function () {
+                editTransitionSymbols(currentOverlay);
+                overlayHide();
+            };
+
+            transitionOverlay.appendChild(document.createElement("li"));
+            transitionOverlay.lastChild.appendChild(document.createElement("a"));
+            transitionOverlay.lastChild.lastChild.href = "#";
+            transitionOverlay.lastChild.lastChild.textContent = _("Make straight");
+
+            transitionOverlay.lastChild.lastChild.onclick = function () {
+                transitionStraight(currentOverlay);
+                overlayHide();
+            };
+            transitionOverlay.appendChild(document.createElement("li"));
+            transitionOverlay.lastChild.appendChild(document.createElement("a"));
+            transitionOverlay.lastChild.lastChild.href = "#";
+            transitionOverlay.lastChild.lastChild.textContent = _("Delete");
+
+            transitionOverlay.lastChild.lastChild.onclick = function () {
+                deleteTransition(currentOverlay);
+                endNewTransitionEdit();
+                overlayHide();
+            };
+       }
+
+        function setOverlayOn(node, e) {
+            currentOverlay = node;
+
+            var elem;
+
+            if (node.classList.contains("edge")) {
+                elem = node.getElementsByTagName("text")[0];
+                overlay = transitionOverlay;
+            } else {
+                elem = node;
+                overlay = stateOverlay;
+            }
+
+            if (e) {
+                overlay.style.left = (e.clientX + 2) + "px";
+                overlay.style.top = (e.clientY + 2) + "px";
+            } else {
+                var bcr = elem.getBoundingClientRect();
+                var parentBcr = pkg.svgNode.parentNode.getBoundingClientRect();
+                overlay.style.left    = (bcr.x - parentBcr.x) + "px";
+                overlay.style.top     = (OVERLAY_TOP_OFFSET + bcr.height + bcr.y - parentBcr.y) + "px";
+            }
+
+            pkg.svgNode.parentNode.appendChild(overlay);
+        }
+
+        function overlayOn(node) {
+            if (!overlay) {
+                makeStateOverlay();
+            }
+
+            setOverlayOn(node);
         }
 
         function resizeHandlesOn(ele) {
@@ -1918,19 +2108,11 @@
                 resizeHandledElement = ele;
                 ele.classList.add(CSSP + "resize-handled");
 
-                pkg.svgNode.appendChild(resizeHandle.rect);
-                pkg.svgNode.appendChild(resizeHandle.topLeft);
-                pkg.svgNode.appendChild(resizeHandle.top);
-                pkg.svgNode.appendChild(resizeHandle.topRight);
-                pkg.svgNode.appendChild(resizeHandle.bottomLeft);
-                pkg.svgNode.appendChild(resizeHandle.bottom);
-                pkg.svgNode.appendChild(resizeHandle.bottomRight);
-                pkg.svgNode.appendChild(resizeHandle.right);
-                pkg.svgNode.appendChild(resizeHandle.left);
+                pkg.svgNode.appendChild(resizeHandle.g);
             }
         }
 
-        function stateOverlayOn(state) {
+        function stateResizeHandlesOn(state) {
             if (!resizeHandle) {
                 makeResizeHandle();
             }
@@ -2056,9 +2238,19 @@
         };
 
         pkg.clearSVG(pkg.currentIndex);
+
+        pkg.svgContainer.parentNode.appendChild(document.createElement("button"));
+        pkg.svgContainer.parentNode.lastChild.id = "new-state-btn";
+
+        pkg.svgContainer.parentNode.lastChild.onclick = function (e) {
+            beginNodeMoving(createNode(e), e);
+        };
+
+        pkg.svgContainer.parentNode.lastChild.textContent = _("New state");
+
     };
 
-    // utility function : gets the pkg.outerHTML of a node.
+    // utility function : gets the outerHTML of a node.
     // WARNING: please don"t use this function for anything,
     //          it's not universal and could break your code.
     //          Check its implementation for more details.

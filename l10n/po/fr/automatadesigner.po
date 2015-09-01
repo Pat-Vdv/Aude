@@ -18,3 +18,25 @@ msgstr "Désolé, mais un état porte déjà ce nom."
 
 msgid  "Sorry, there is already a transition between these states in this way."
 msgstr "Désolé, il y a déjà une transition dans ce sens entre ces états."
+
+
+msgid  "New state"
+msgstr "Nouvel état"
+
+msgid  "Toggle accepting"
+msgstr "Accepteur / non accepteur"
+
+msgid  "Rename"
+msgstr "Renommer"
+
+msgid  "Make initial"
+msgstr "Rendre initial"
+
+msgid  "Delete"
+msgstr "Supprimer"
+
+msgid  "Modify symbols"
+msgstr "Modifier les symboles"
+
+msgid  "Make straight"
+msgstr "Rendre droite"
