@@ -1,18 +1,16 @@
 include epsElim;
 
 function infiniteLanguage(A) {
-   A     : Automaton = epsElim(A);
+   A = epsElim(A);
    let trans = A.getTransitionFunction();
-   
+
    function onCycle(consideredState, visited, curState) {
       if(visited contains curState) {
          return false;
       }
-      
+
       visited.add(curState);
-      
-      console.log(curState);
-      
+
       foreach(state in A.getSuccessors(curState)) {
          if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
             return true;
@@ -21,22 +19,22 @@ function infiniteLanguage(A) {
 
       return false;
    }
-   
+
    function visit(state, visited, cycle) {
       if(visited contains state) {
          return false;
       }
-      
+
       if(!cycle) {
          cycle = onCycle(state, emptySet, state);
       }
-      
+
       if(cycle && A.isFinalState(state)) {
          return true;
       }
-      
+
       visited.add(state);
-      
+
       foreach(destState in A.getSuccessors(state)) {
          if(visit(destState, visited.copy(), cycle)) {
             return true;
@@ -45,7 +43,7 @@ function infiniteLanguage(A) {
 
       return false;
    }
-   
+
    return visit(A.getInitialState(), emptySet, false);
 }
 

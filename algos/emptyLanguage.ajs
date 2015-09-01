@@ -3,7 +3,7 @@ include epsElim;
 function emptyLanguage(A) {
    // If the automaton doesn't recognize any word, return true. Otherwize, return false. 
    
-   A             : Automaton = epsElim(A);
+   A = epsElim(A);
    visitedStates : Set of State;
    
    function visit(state) {
