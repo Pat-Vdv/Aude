@@ -41,6 +41,7 @@
         automatonFileName,
         programFileName,
         fileautomaton,
+        svgContainer,
         fileprogram,
         offsetError,
         switchmode,
@@ -752,6 +753,7 @@
         }
 
         automatoncodeedit = document.getElementById("automatoncodeedit");
+        svgContainer      = document.getElementById("svg-container"),
         results           = zoom.svgContainer = document.getElementById("results");
         splitter          = document.getElementById("splitter");
         leftPane          = document.getElementById("left-pane");
@@ -1190,7 +1192,7 @@
                 codeedit.classList.add("disabled");
                 automataedit.classList.remove("disabled");
                 automatoncode.classList.add("disabled");
-                automataDesigner.svgContainer.classList.remove("disabled");
+                svgContainer.classList.remove("disabled");
                 onResize();
                 break;
             case "automatoncode":
@@ -1222,7 +1224,7 @@
                 codeedit.classList.add("disabled");
                 automataedit.classList.remove("disabled");
                 automatoncode.classList.remove("disabled");
-                automataDesigner.svgContainer.classList.add("disabled");
+                svgContainer.classList.add("disabled");
                 onResize();
                 break;
             }
