@@ -1,0 +1,249 @@
+On
+reqon
+waitoff
+reqoff
+Off
+waiton
+reqwaitoff
+reqwaiton
+
+
+On on On
+On request reqon
+On off waitoff
+reqon "st(on)" On
+reqon on reqon
+reqon Off reqoff
+waitoff off waitoff
+waitoff int Off
+waitoff on waiton
+waitoff request reqwaitoff
+reqoff On reqon
+reqoff "st(off)" Off
+Off request reqoff
+Off off Off
+Off on waiton
+waiton int On
+waiton off waitoff
+waiton on waiton
+waiton request reqwaiton
+reqwaitoff int reqoff
+reqwaitoff on waiton
+reqwaitoff off reqwaitoff
+reqwaitoff request reqwaitoff
+reqwaitoff on reqwaiton
+reqwaiton int reqon
+reqwaiton off reqwaitoff
+reqwaiton on reqwaiton
+reqwaiton request reqwaiton
+
+<representation type='image/svg+xml'>
+<svg width="1180" height="628" viewBox="43.6364 -53.6364 1072.73 570.909" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph1" class="graph">
+<title>automaton</title>
+
+
+
+<g id="T24=" class="node"><title>On</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="141" cy="254.8" rx="22.6738" ry="22.6738"></ellipse>
+<text text-anchor="middle" x="141" y="259" font-family="Times,serif" font-size="14.00">On</text>
+</g>
+
+<g id="initialStateArrow" class="edge"><title>_begin-&gt;On</title>
+<path fill="none" stroke="black" d="M80.32620048522949,254.8000030517578C99.65953381856282,254.8000030517578 108.99286715189616,254.8000030517578 108.32620048522949,254.8000030517578"></path>
+<polygon fill="black" stroke="black" points="118.32620048522949,254.8000030517578 108.32620048522949,250.8000030517578 113.32620048522949,254.8000030517578 108.32620048522949,254.8000030517578 108.32620048522949,254.8000030517578 108.32620048522949,254.8000030517578 113.32620048522949,254.8000030517578 108.32620048522949,258.8000030517578 118.32620048522949,254.8000030517578 118.32620048522949,254.8000030517578"></polygon>
+</g>
+
+<g id="T24= T24=" class="edge"><title>On-&gt;On</title>
+<path fill="none" stroke="black" d="M133.281,233.401 C132.439,223.474 135.012,214.8 141,214.8 C144.743,214.8 147.151,218.188 148.226,223.153"></path>
+<polygon fill="black" stroke="black" points="151.734,223.244 148.719,233.401 144.742,223.581 151.734,223.244"></polygon>
+<text text-anchor="middle" x="141" y="210.60000000000002" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="cmVxb24=" class="node"><title>reqon</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="277" cy="254.8" rx="33.0469" ry="33.0469"></ellipse>
+<text text-anchor="middle" x="277" y="259" font-family="Times,serif" font-size="14.00">reqon</text>
+</g>
+
+<g id="T24= cmVxb24=" class="edge"><title>On-&gt;reqon</title>
+<path fill="none" stroke="black" d="M164.127,254.8 C182.951,254.8 210.519,254.8 233.578,254.8"></path>
+<polygon fill="black" stroke="black" points="233.808,251.3 243.808,254.8 233.808,258.3 233.808,251.3"></polygon>
+<text text-anchor="middle" x="204" y="250.60000000000002" font-family="Times,serif" font-size="14.00">request</text>
+</g>
+
+<g id="d2FpdG9mZg==" class="node"><title>waitoff</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="820" cy="105.80000000000001" rx="38.8401" ry="38.8401"></ellipse>
+<text text-anchor="middle" x="820" y="110" font-family="Times,serif" font-size="14.00">waitoff</text>
+</g>
+
+<g id="T24= d2FpdG9mZg==" class="edge"><title>On-&gt;waitoff</title>
+<path fill="none" stroke="black" d="M144.198,232.363 C151.291,173.795 179.094,20.8 276,20.8 C276,20.8 276,20.8 657,20.8 C704.378,20.8 751.547,49.66 782.664,73.747"></path>
+<polygon fill="black" stroke="black" points="784.961,71.103 790.61,80.067 780.604,76.582 784.961,71.103"></polygon>
+<text text-anchor="middle" x="477" y="16.600000000000023" font-family="Times,serif" font-size="14.00">off</text>
+</g>
+
+<g id="cmVxb24= T24=" class="edge"><title>reqon-&gt;On</title>
+<path fill="none" stroke="black" d="M246.996,269.113 C240.26,271.799 233.007,274.201 226,275.6 C206.823,279.43 200.996,280.244 182,275.6 C177.809,274.575 173.568,273.028 169.493,271.229"></path>
+<polygon fill="black" stroke="black" points="167.787,274.29 160.387,266.708 170.901,268.021 167.787,274.29"></polygon>
+<text text-anchor="middle" x="204" y="270.6" font-family="Times,serif" font-size="14.00">"st(on)"</text>
+</g>
+
+<g id="cmVxb24= cmVxb24=" class="edge"><title>reqon-&gt;reqon</title>
+<path fill="none" stroke="black" d="M265.756,223.675 C265.576,212.703 269.324,203.8 277,203.8 C282.037,203.8 285.383,207.634 287.037,213.371"></path>
+<polygon fill="black" stroke="black" points="290.557,213.336 288.244,223.675 283.604,214.151 290.557,213.336"></polygon>
+<text text-anchor="middle" x="277" y="199.60000000000002" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="cmVxb2Zm" class="node"><title>reqoff</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="401" cy="214.8" rx="34.7496" ry="34.7496"></ellipse>
+<text text-anchor="middle" x="401" y="219" font-family="Times,serif" font-size="14.00">reqoff</text>
+</g>
+
+<g id="cmVxb24= cmVxb2Zm" class="edge"><title>reqon-&gt;reqoff</title>
+<path fill="none" stroke="black" d="M308.324,243.614 C314.797,241.302 321.609,238.925 328,236.8 C337.674,233.583 348.137,230.284 358.01,227.251"></path>
+<polygon fill="black" stroke="black" points="357.05,223.885 367.636,224.321 359.089,230.582 357.05,223.885"></polygon>
+<text text-anchor="middle" x="338" y="225.60000000000002" font-family="Times,serif" font-size="14.00">Off</text>
+</g>
+
+<g id="d2FpdG9mZg== d2FpdG9mZg==" class="edge"><title>waitoff-&gt;waitoff</title>
+<path fill="none" stroke="black" d="M803.5,70.8 C803.5,59.133 809,49.8 820,49.8 C827.563,49.8 832.525,54.211 834.889,60.76"></path>
+<polygon fill="black" stroke="black" points="838.371,60.372 836.5,70.8 831.46,61.481 838.371,60.372"></polygon>
+<text text-anchor="middle" x="820" y="45.60000000000002" font-family="Times,serif" font-size="14.00">off</text>
+</g>
+
+<g id="T2Zm" class="node"><title>Off</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="543" cy="171.8" rx="24.3751" ry="24.3751"></ellipse>
+<text text-anchor="middle" x="543" y="176" font-family="Times,serif" font-size="14.00">Off</text>
+</g>
+
+<g id="d2FpdG9mZg== T2Zm" class="edge"><title>waitoff-&gt;Off</title>
+<path fill="none" stroke="black" d="M782.812,93.861 C741.206,82.259 671.741,69.504 618,92.8 C594.588,102.949 575.194,124.556 562.141,142.612"></path>
+<polygon fill="black" stroke="black" points="564.821,144.891 556.253,151.124 559.063,140.909 564.821,144.891"></polygon>
+<text text-anchor="middle" x="656" y="74.60000000000002" font-family="Times,serif" font-size="14.00">int</text>
+</g>
+
+<g id="d2FpdG9u" class="node"><title>waiton</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="656" cy="172.8" rx="37.1386" ry="37.1386"></ellipse>
+<text text-anchor="middle" x="656" y="177" font-family="Times,serif" font-size="14.00">waiton</text>
+</g>
+
+<g id="d2FpdG9mZg== d2FpdG9u" class="edge"><title>waitoff-&gt;waiton</title>
+<path fill="none" stroke="black" d="M781.189,109.078 C760.043,111.996 733.662,117.489 712,127.8 C704.794,131.23 697.718,135.8 691.166,140.714"></path>
+<polygon fill="black" stroke="black" points="693.184,143.582 683.178,147.064 688.828,138.102 693.184,143.582"></polygon>
+<text text-anchor="middle" x="732" y="109.60000000000002" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="cmVxd2FpdG9mZg==" class="node"><title>reqwaitoff</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="997" cy="234.8" rx="51.5011" ry="51.5011"></ellipse>
+<text text-anchor="middle" x="997" y="239" font-family="Times,serif" font-size="14.00">reqwaitoff</text>
+</g>
+
+<g id="d2FpdG9mZg== cmVxd2FpdG9mZg==" class="edge"><title>waitoff-&gt;reqwaitoff</title>
+<path fill="none" stroke="black" d="M855.772,122.142 C877.481,133.092 905.482,148.615 928,165.8 C937.401,172.974 946.767,181.413 955.409,189.88"></path>
+<polygon fill="black" stroke="black" points="957.899,187.42 962.483,196.972 952.943,192.363 957.899,187.42"></polygon>
+<text text-anchor="middle" x="908" y="135.60000000000002" font-family="Times,serif" font-size="14.00">request</text>
+</g>
+
+<g id="cmVxb2Zm cmVxb24=" class="edge"><title>reqoff-&gt;reqon</title>
+<path fill="none" stroke="black" d="M376.835,239.617 C368.52,246.845 358.566,253.811 348,257.6 C339.088,260.796 329.123,261.789 319.571,261.624"></path>
+<polygon fill="black" stroke="black" points="319.217,265.11 309.435,261.04 319.62,258.121 319.217,265.11"></polygon>
+<text text-anchor="middle" x="338" y="252.60000000000002" font-family="Times,serif" font-size="14.00">On</text>
+</g>
+
+<g id="cmVxb2Zm T2Zm" class="edge"><title>reqoff-&gt;Off</title>
+<path fill="none" stroke="black" d="M433.088,201.428 C439.913,198.723 447.148,196.028 454,193.8 C471.983,187.952 492.457,182.75 509.129,178.874"></path>
+<polygon fill="black" stroke="black" points="508.435,175.443 518.962,176.639 509.987,182.269 508.435,175.443"></polygon>
+<text text-anchor="middle" x="477" y="176.60000000000002" font-family="Times,serif" font-size="14.00">"st(off)"</text>
+</g>
+
+<g id="T2Zm cmVxb2Zm" class="edge"><title>Off-&gt;reqoff</title>
+<path fill="none" stroke="black" d="M528.414,191.548 C521.13,200.368 511.322,209.834 500,214.6 C483.09,221.718 463.037,222.875 445.49,221.83"></path>
+<polygon fill="black" stroke="black" points="445.162,225.315 435.49,220.988 445.749,218.339 445.162,225.315"></polygon>
+<text text-anchor="middle" x="477" y="209.60000000000002" font-family="Times,serif" font-size="14.00">request</text>
+</g>
+
+<g id="T2Zm T2Zm" class="edge"><title>Off-&gt;Off</title>
+<path fill="none" stroke="black" d="M533.81,149.331 C532.808,138.907 535.871,129.8 543,129.8 C547.567,129.8 550.465,133.538 551.695,138.964"></path>
+<polygon fill="black" stroke="black" points="555.209,139.175 552.19,149.331 548.217,139.509 555.209,139.175"></polygon>
+<text text-anchor="middle" x="543" y="125.60000000000002" font-family="Times,serif" font-size="14.00">off</text>
+</g>
+
+<g id="T2Zm d2FpdG9u" class="edge"><title>Off-&gt;waiton</title>
+<path fill="none" stroke="black" d="M567.54,172.012 C579.421,172.119 594.265,172.253 608.333,172.38"></path>
+<polygon fill="black" stroke="black" points="608.417,168.88 618.385,172.47 608.354,175.88 608.417,168.88"></polygon>
+<text text-anchor="middle" x="593" y="167.60000000000002" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="d2FpdG9u T24=" class="edge"><title>waiton-&gt;On</title>
+<path fill="none" stroke="black" d="M631.507,201.06 C626.838,207.106 622.112,213.555 618,219.8 C592.404,258.666 604.57,283.018 568,311.8 C535.469,337.403 519.398,335.8 478,335.8 C276,335.8 276,335.8 276,335.8 C231.357,335.8 188.846,302.466 164.104,278.566"></path>
+<polygon fill="black" stroke="black" points="161.321,280.733 156.715,271.192 166.266,275.778 161.321,280.733"></polygon>
+<text text-anchor="middle" x="401" y="331.6" font-family="Times,serif" font-size="14.00">int</text>
+</g>
+
+<g id="d2FpdG9u d2FpdG9mZg==" class="edge"><title>waiton-&gt;waitoff</title>
+<path fill="none" stroke="black" d="M693.081,166.443 C711.215,162.546 733.26,156.721 752,148.6 C761.308,144.566 770.795,139.32 779.589,133.891"></path>
+<polygon fill="black" stroke="black" points="777.81,130.874 788.121,128.439 781.58,136.773 777.81,130.874"></polygon>
+<text text-anchor="middle" x="732" y="143.60000000000002" font-family="Times,serif" font-size="14.00">off</text>
+</g>
+
+<g id="d2FpdG9u d2FpdG9u" class="edge"><title>waiton-&gt;waiton</title>
+<path fill="none" stroke="black" d="M644.386,137.358 C644.621,126.403 648.492,117.8 656,117.8 C660.927,117.8 664.288,121.505 666.083,127.148"></path>
+<polygon fill="black" stroke="black" points="669.592,126.949 667.614,137.358 662.669,127.987 669.592,126.949"></polygon>
+<text text-anchor="middle" x="656" y="113.60000000000002" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="cmVxd2FpdG9u" class="node"><title>reqwaiton</title>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="820" cy="346.8" rx="49.7981" ry="49.7981"></ellipse>
+<text text-anchor="middle" x="820" y="351" font-family="Times,serif" font-size="14.00">reqwaiton</text>
+</g>
+
+<g id="d2FpdG9u cmVxd2FpdG9u" class="edge"><title>waiton-&gt;reqwaiton</title>
+<path fill="none" stroke="black" d="M681.957,199.606 C707.676,227.23 748.179,270.733 778.494,303.293"></path>
+<polygon fill="black" stroke="black" points="781.323,301.196 785.575,310.9 776.2,305.966 781.323,301.196"></polygon>
+<text text-anchor="middle" x="732" y="229.60000000000002" font-family="Times,serif" font-size="14.00">request</text>
+</g>
+
+<g id="cmVxd2FpdG9mZg== cmVxb2Zm" class="edge"><title>reqwaitoff-&gt;reqoff</title>
+<path fill="none" stroke="black" d="M945.639,237.883 C849.532,242.903 633.536,250.017 454,225.8 C450.988,225.394 447.89,224.91 444.779,224.375"></path>
+<polygon fill="black" stroke="black" points="444.069,227.803 434.881,222.527 445.354,220.922 444.069,227.803"></polygon>
+<text text-anchor="middle" x="656" y="235.60000000000002" font-family="Times,serif" font-size="14.00">int</text>
+</g>
+
+<g id="cmVxd2FpdG9mZg== d2FpdG9u" class="edge"><title>reqwaitoff-&gt;waiton</title>
+<path fill="none" stroke="black" d="M946.636,224.469 C940.368,223.207 934.037,221.956 928,220.8 C849.084,205.69 756.91,189.72 702.948,180.539"></path>
+<polygon fill="black" stroke="black" points="702.277,183.975 693.004,178.85 703.449,177.074 702.277,183.975"></polygon>
+<text text-anchor="middle" x="820" y="187.60000000000002" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="cmVxd2FpdG9mZg== cmVxd2FpdG9mZg==" class="edge"><title>reqwaitoff-&gt;reqwaitoff</title>
+<path fill="none" stroke="black" d="M980.791,186.12 C982.058,174.448 987.461,165.8 997,165.8 C1003.56,165.8 1008.16,169.888 1010.81,176.235"></path>
+<polygon fill="black" stroke="black" points="1014.25,175.576 1013.21,186.12 1007.45,177.228 1014.25,175.576"></polygon>
+<text text-anchor="middle" x="997" y="161.60000000000002" font-family="Times,serif" font-size="14.00">off,request</text>
+</g>
+
+<g id="cmVxd2FpdG9mZg== cmVxd2FpdG9u" class="edge"><title>reqwaitoff-&gt;reqwaiton</title>
+<path fill="none" stroke="black" d="M953.4,262.064 C928.424,278.048 896.754,298.317 870.651,315.023"></path>
+<polygon fill="black" stroke="black" points="872.339,318.098 862.03,320.541 868.566,312.202 872.339,318.098"></polygon>
+<text text-anchor="middle" x="908" y="275.6" font-family="Times,serif" font-size="14.00">on</text>
+</g>
+
+<g id="cmVxd2FpdG9u cmVxb24=" class="edge"><title>reqwaiton-&gt;reqon</title>
+<path fill="none" stroke="black" d="M770.822,339.277 C682.754,325.409 489.935,294.508 328,264.8 C325.184,264.283 322.281,263.738 319.359,263.178"></path>
+<polygon fill="black" stroke="black" points="318.59,266.595 309.444,261.248 319.928,259.724 318.59,266.595"></polygon>
+<text text-anchor="middle" x="543" y="293.6" font-family="Times,serif" font-size="14.00">int</text>
+</g>
+
+<g id="cmVxd2FpdG9u cmVxd2FpdG9mZg==" class="edge"><title>reqwaiton-&gt;reqwaitoff</title>
+<path fill="none" stroke="black" d="M869.524,342.402 C888.876,338.921 910.634,332.701 928,321.6 C941.891,312.72 954.132,299.991 964.261,287.007"></path>
+<polygon fill="black" stroke="black" points="961.506,284.846 970.29,278.922 967.118,289.031 961.506,284.846"></polygon>
+<text text-anchor="middle" x="908" y="316.6" font-family="Times,serif" font-size="14.00">off</text>
+</g>
+
+<g id="cmVxd2FpdG9u cmVxd2FpdG9u" class="edge"><title>reqwaiton-&gt;reqwaiton</title>
+<path fill="none" stroke="black" d="M803.727,300.146 C804.865,288.503 810.289,279.8 820,279.8 C826.676,279.8 831.327,283.913 833.951,290.268"></path>
+<polygon fill="black" stroke="black" points="837.392,289.611 836.273,300.146 830.577,291.213 837.392,289.611"></polygon>
+<text text-anchor="middle" x="820" y="275.6" font-family="Times,serif" font-size="14.00">on,request</text>
+</g>
+</g>
+</svg>
+</representation>

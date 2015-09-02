@@ -19,7 +19,7 @@
 
 
 <g id="MA==" class="node"><title>0</title>
-<ellipse fill="transparent" stroke="black" cx="136" cy="56.8" rx="18" ry="18"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="136" cy="56.8" rx="18" ry="18"></ellipse>
 <text text-anchor="middle" x="136" y="61" font-family="Times,serif" font-size="14.00">0</text>
 </g>
 
@@ -29,8 +29,8 @@
 </g>
 
 <g id="MQ==" class="node"><title>1</title>
-<ellipse fill="transparent" stroke="black" cx="216.92307692307693" cy="-31.661538461538456" rx="18" ry="18"></ellipse>
-<ellipse fill="transparent" stroke="black" cx="216.92307692307693" cy="-31.661538461538456" rx="22" ry="22"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="216.92307692307693" cy="-31.661538461538456" rx="18" ry="18"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="216.92307692307693" cy="-31.661538461538456" rx="22" ry="22"></ellipse>
 <text text-anchor="middle" x="216.92307692307693" y="-27.461538461538453" font-family="Times,serif" font-size="14.00">1</text>
 </g>
 
@@ -41,12 +41,12 @@
 </g>
 
 <g id="Mg==" class="node"><title>2</title>
-<ellipse fill="transparent" stroke="black" cx="336.61538461538464" cy="-48.2" rx="18" ry="18"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="336.61538461538464" cy="-48.2" rx="18" ry="18"></ellipse>
 <text text-anchor="middle" x="336.61538461538464" y="-44" font-family="Times,serif" font-size="14.00">2</text>
 </g>
 
 <g id="Mw==" class="node"><title>3</title>
-<ellipse fill="transparent" stroke="black" cx="415.46153846153845" cy="-22.815384615384616" rx="18" ry="18"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="415.46153846153845" cy="-22.815384615384616" rx="18" ry="18"></ellipse>
 <text text-anchor="middle" x="415.46153846153845" y="-18.615384615384613" font-family="Times,serif" font-size="14.00">3</text>
 </g>
 
@@ -63,8 +63,8 @@
 </g>
 
 <g id="NA==" class="node"><title>4</title>
-<ellipse fill="transparent" stroke="black" cx="322.53846153846155" cy="119.49230769230769" rx="18" ry="18"></ellipse>
-<ellipse fill="transparent" stroke="black" cx="322.53846153846155" cy="119.49230769230769" rx="22" ry="22"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="322.53846153846155" cy="119.49230769230769" rx="18" ry="18"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="322.53846153846155" cy="119.49230769230769" rx="22" ry="22"></ellipse>
 <text text-anchor="middle" x="322.53846153846155" y="123.6923076923077" font-family="Times,serif" font-size="14.00">4</text>
 </g>
 

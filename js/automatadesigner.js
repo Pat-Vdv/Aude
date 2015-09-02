@@ -38,6 +38,15 @@
     var OVERLAY_TOP_OFFSET = 10;
     var MOVE_BEFORE_BLOCK_OVERLAY = 3;
 
+    function fill(node, color) {
+        if (color === "none") {
+            node.setAttribute("fill", "white");
+            node.setAttribute("fill-opacity", "0");
+        } else {
+            node.setAttribute("fill", color);
+        }
+    }
+
     // translate the node with the vector (tx,ty)
     function translate(n, tx, ty) {
         var attrsx = ["x", "cx", "x1", "x2"],
@@ -423,7 +432,7 @@
             i;
 
         for (i = 0, len = states.length; i < len; ++i) {
-            states[i].querySelector("ellipse").setAttribute("fill", "transparent");
+            fill(states[i].querySelector("ellipse"), "none");
             workingNodeList[atob(states[i].id)] = {
                 t: []
             };
@@ -536,7 +545,7 @@
                 i;
 
             for (i = 0, len = ellipses.length; i < len; ++i) {
-                ellipses[i].setAttribute("fill", "transparent");
+                fill(ellipses[i], "none");
                 ellipses[i].classList.remove(CSSP + "resize-handled");
             }
 
@@ -1550,7 +1559,7 @@
                 var rx = ellipse.rx.baseVal.value + 4,
                     ry = ellipse.ry.baseVal.value + 4;
 
-                ellipse.setAttribute("fill", "none");
+                fill(ellipse, "none");
                 nodeMoving.insertBefore(ellipse, ellipses[0].nextSibling);
             }
 
@@ -1713,7 +1722,7 @@
             var pt = svgcursorPoint(e);
             var ry = 18.3848;
             var cy = pt.y;
-            ellipse.setAttribute("fill", "transparent");
+            fill(ellipse, "none");
             ellipse.setAttribute("stroke", "black");
             ellipse.setAttribute("rx", 17.8879);
             ellipse.setAttribute("ry", ry);
@@ -2367,13 +2376,13 @@
         if (s) {
             state = s.getElementById(btoa(pkg.getStringValueFunction(state)));
             if (state) {
-                getBigEllipse(state).setAttribute("fill", color);
+                fill(getBigEllipse(state), color);
             }
         }
     };
 
     pkg.stateRemoveBackgroundColor = function (index, state) {
-        pkg.stateSetBackgroundColor(index, state, "transparent");
+        pkg.stateSetBackgroundColor(index, state, "none") ;
     };
 
     pkg.transitionSetColor = function (index, startState, symbol, endState, color) {
