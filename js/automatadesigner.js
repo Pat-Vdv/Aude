@@ -698,7 +698,7 @@
                 f    = atob(tid[0]);
                 t    = atob(tid[1]);
 
-                parseTransition(text, f, t);
+                symbols = parseTransition(text, f, t);
 
                 for (s = 0, leng = symbols.length; s < leng; ++s) {
                     A.addTransition(getValue(f), (onlyStrings && (symbols[s] !== epsilon)) ? symbols[s].toString() : symbols[s], getValue(t));
