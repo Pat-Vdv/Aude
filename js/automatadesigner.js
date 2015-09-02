@@ -2118,6 +2118,9 @@
         }
 
         function resizeHandlesOn(ele) {
+            if (!ele) {
+                return;
+            }
 
             var r = ele.getBBox();
 
