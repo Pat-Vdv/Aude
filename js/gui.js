@@ -633,15 +633,17 @@
                 winContent = libD.jso2dom(
                     ["div.libD-ws-colors-auto",
                         [
-                            ["div", ["label", {"#": "descr", "for": "window.prompt-input", "style": "white-space:pre-wrap"}]],
-                            ["div", {style: "display:table;width:100%"},
-                                ["div", {style: "display:table-row"},
-                                    [
-                                        ["div", {style: "display:table-cell;width:100%"}, ["input#window.prompt-input", {"#": "input", type: "text", style: "width:100%"}]],
-                                        ["div",  {style: "display:table-cell"},
-                                            [
-                                                ["input", {"#": "ok", type: "button", value: _("OK")}]
-                                            ]]]]]]],
+                            ["div", {"style":"display:inline-block"},
+                                ["label", {"#": "descr", "for": "window.prompt-input", "style": "white-space:pre-wrap"}]
+                            ],
+                            ["div.prompt-container",
+                                [
+                                    ["input.prompt-input", {"#": "input", type: "text", style: ""}],
+                                    ["input.prompt-btn", {"#": "ok", type: "button", value: _("OK")}]
+                                ]
+                            ]
+                        ]
+                    ],
                     refs
                 );
 
