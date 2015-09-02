@@ -47,3 +47,6 @@ msgstr ""
 
 msgid  "Click where you want to place the new state."
 msgstr ""
+
+msgid  "Cancel"
+msgstr ""
