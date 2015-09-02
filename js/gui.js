@@ -900,16 +900,21 @@
             if (fn) {
                 exportFN = fn;
 
-                if (switchmode.value === "design") {
-                    automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false);
-                } else {
-                    automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
-                }
-
                 if (fn.length > 4 && fn.substr(fn.length - 4) === ".svg") {
+                    if (switchmode.value !== "design") {
+                        automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
+                    }
+
                     saveAs(new Blob([automataDesigner.getSVG(automataDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
                 } else {
+                    if (switchmode.value === "design") {
+                        automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false);
+                    } else {
+                        automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
+                    }
+
                     var A = automataDesigner.getAutomaton(automataDesigner.currentIndex);
+
                     if (A) {
                         saveAs(new Blob([automaton2dot(A)], {type: "text/plain;charset=utf-8"}), fn);
                     } else {

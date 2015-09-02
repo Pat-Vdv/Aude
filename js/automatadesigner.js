@@ -690,6 +690,7 @@
 
     pkg.getSVG = function (index) {
         if (svgs[index]) {
+            pkg.cleanSVG(index);
             return pkg.outerHTML(svgs[index]).trim();
         }
         return "";
