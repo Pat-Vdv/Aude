@@ -7,20 +7,21 @@ function touchHandler(event) {
 
     switch (event.type) {
     case "touchstart": type = "mousedown"; break;
-    case "touchmove":  type = "mousemove"; break;          
+    case "touchmove":  type = "mousemove"; break;
     case "touchend":   type = "mouseup";   break;
+    case "tap":        type = "click";     break;
     case "dbltap":     type = "dblclick";  break;
     default: return;
     }
 
-//initMouseEvent(type, canBubble, cancelable, view, clickCount, 
-//              screenX, screenY, clientX, clientY, ctrlKey, 
+//initMouseEvent(type, canBubble, cancelable, view, clickCount,
+//              screenX, screenY, clientX, clientY, ctrlKey,
 //              altKey, shiftKey, metaKey, button, relatedTarget);
 
      var simulatedEvent = document.createEvent("MouseEvent");
-     simulatedEvent.initMouseEvent(type, true, true, window, 1, 
-            first.screenX, first.screenY, 
-            first.clientX, first.clientY, false, 
+     simulatedEvent.initMouseEvent(type, true, true, window, 1,
+            first.screenX, first.screenY,
+            first.clientX, first.clientY, false,
             false, false, false, 0/*left*/, null);
      first.target.dispatchEvent(simulatedEvent);
      event.preventDefault();
@@ -47,7 +48,7 @@ document.addEventListener('touchend', (function(speed, distance) {
 
     var cancelEvent = function(e) {
         e = (e || window.event);
-    
+
         if (e) {
             if (e.preventDefault) {
                 e.stopPropagation();
@@ -195,7 +196,8 @@ document.addEventListener('touchend', (function(speed, distance) {
     };
 }()), false);
 
-document.addEventListener("dbltap", touchHandler, true);
+document.addEventListener("tap", touchHandler, true);
+// document.addEventListener("dbltap", touchHandler, true);
 document.addEventListener("touchstart", touchHandler, true);
 document.addEventListener("touchmove", touchHandler, true);
 document.addEventListener("touchend", touchHandler, true);

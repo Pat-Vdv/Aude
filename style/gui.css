@@ -592,7 +592,8 @@ p img {
    margin:0;
    list-style:none;
    padding:0;
-   transition:200ms;
+   transition-duration:200ms;
+   transition-property:opacity, color;
    overflow:hidden;
    opacity:0.5
 }
@@ -627,12 +628,25 @@ p img {
     color:#883;
     font-size:small;
     background:#FFC;
-    border-radius:8px;
+    border-radius:10000px;
     opacity:0.5;
-    padding:0;
-    transition:200ms
+    padding:1ex;
+    min-height:13ex;
+    display:inline-block;
+    vertical-align:middle;
+    line-height:13ex;
+    text-align:center;
+    min-width:13ex;
+    transition:200ms;
+    -webkit-tap-highlight-color: orange;
+    cursor:pointer
 }
 
 #new-state-btn:hover {
     opacity:1
+}
+
+#new-state-btn.mouse-down {
+    opacity:1;
+    background:orange
 }

@@ -691,6 +691,10 @@
             };
         }());
 
+        automataDesigner.msg = function (o) {
+            return libD.notify(o);
+        };
+
         head = document.querySelector("head");
 
         if (window.js18Supported) {

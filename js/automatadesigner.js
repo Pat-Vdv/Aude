@@ -31,10 +31,11 @@
     "use strict";
 
     var svgNS = "http://www.w3.org/2000/svg";
-    var RESIZE_HANDLE_WIDTH = 6;
+    var RESIZE_HANDLE_WIDTH = 12;
     var CSSP = "automata-designer-";
     var OVERLAY_TIMEOUT = 1500;
     var OVERLAY_TOP_OFFSET = 10;
+    var MOVE_BEFORE_BLOCK_OVERLAY = 3;
 
     // translate the node with the vector (tx,ty)
     function translate(n, tx, ty) {
@@ -738,7 +739,26 @@
             return pt.matrixTransform(b);
         }
 
-        var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockNewState, blockClick, mouseCoords = null, currentMoveAction = null;
+        var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockNewState, blockClick, mouseCoords = null, origMouseCoords = null, currentMoveAction = null, insertNodeMsg = null, newTransitionMsg = null;
+
+        function cancelMsg() {
+            if (insertNodeMsg) {
+                insertNodeMsg.close();
+                insertNodeMsg = null;
+            }
+
+            if (newTransitionMsg) {
+                newTransitionMsg.close();
+                newTransitionMsg = null;
+            }
+        }
+
+        function msg(o, tip) {
+            cancelMsg();
+            var res = pkg.msg(o);
+            res.addButton(_("Cancel"), cancelMsg);
+            return res;
+        }
 
         function pathEditEllipseMoveFrame(e) {
             if (!mouseCoords) {
@@ -1199,8 +1219,18 @@
         }
 
         function mouseMove(e) {
-            mouseCoords = e;
-            stopOverlay = true;
+            if (origMouseCoords) {
+                var dx = Math.abs(origMouseCoords.clientX - e.clientX),
+                    dy = Math.abs(origMouseCoords.clientY - e.clientY);
+
+                if (Math.sqrt(dx * dx + dy * dy) > MOVE_BEFORE_BLOCK_OVERLAY) {
+                    mouseCoords = e;
+                    stopOverlay = true;
+                    origMouseCoords = null;
+                }
+            } else {
+                mouseCoords = e;
+            }
         }
 
         function cancelMoveAction() {
@@ -1272,6 +1302,7 @@
         }
 
         function beginNodeMoving(nodeMoving, e) {
+            origMouseCoords = e;
             prepareNodeMove(nodeMoving, e);
             pkg.svgContainer.style.cursor = "move";
             setMoveAction(nodeMoveFrame, e);
@@ -1392,6 +1423,7 @@
 
         function beginMoveTransitionLabel(text, e) {
             pkg.stopMove = true;
+            origMouseCoords = e;
             nodeMoving = text;
             coords = [e.clientX, e.clientY, e.target.x.baseVal.getItem(0).value, e.target.y.baseVal.getItem(0).value];
             setMoveAction(labelMoveFrame, e);
@@ -1735,6 +1767,12 @@
             }
             blockClick = true;
             if (!e.button) { // left button
+                if (insertNodeMsg) {
+                    createNode(e);
+                    insertNodeMsg.close();
+                    insertNodeMsg = null;
+                }
+
                 nodeMoving = parentWithClass(e.target, "pathedit-handle");
                 if (nodeMoving) {
                     overlayHide();
@@ -1755,7 +1793,11 @@
                     pkg.cleanSVG(pkg.currentIndex, true);
 
                     if ( (nodeMoving = parentWithClass(e.target, "node")) ) {
-                        if (currentMoveAction === nodeBindingFrame) {
+                        if (newTransitionMsg) {
+                            beginNewTransition(newTransitionMsg.beginState, e);
+                            newTransitionMsg.close();
+                            newTransitionMsg = null;
+                        } else if (currentMoveAction === nodeBindingFrame) {
                             setTimeout(
                                 endNewTransition.bind(null, nodeMoving),
                                 0
@@ -1988,7 +2030,11 @@
             stateOverlay.lastChild.lastChild.textContent = _("New transition");
 
             stateOverlay.lastChild.lastChild.onclick = function (e) {
-                beginNewTransition(currentOverlay, e);
+                newTransitionMsg = msg({
+                    title: _("New transition"),
+                    content: _("Click on the destination state of the new transition."),
+                });
+                newTransitionMsg.beginState = currentOverlay;
                 overlayHide();
             };
 
@@ -2140,6 +2186,16 @@
                     pathEdit.parentNode.removeChild(pathEdit);
                     cancelMoveAction();
                 }
+
+                if (insertNodeMsg) {
+                    insertNodeMsg.close();
+                    insertNodeMsg = null;
+                }
+
+                if (newTransitionMsg) {
+                    newTransitionMsg.close();
+                    newTransitionMsg = null;
+                }
             }
         }, false);
 
@@ -2239,11 +2295,22 @@
 
         pkg.clearSVG(pkg.currentIndex);
 
-        pkg.svgContainer.parentNode.appendChild(document.createElement("button"));
+        pkg.svgContainer.parentNode.appendChild(document.createElement("a"));
         pkg.svgContainer.parentNode.lastChild.id = "new-state-btn";
 
+        pkg.svgContainer.parentNode.lastChild.onmousedown = function (e) {
+            e.target.classList.add("mouse-down");
+        };
+
+        pkg.svgContainer.parentNode.lastChild.onmouseup = function (e) {
+            e.target.classList.remove("mouse-down");
+        };
+
         pkg.svgContainer.parentNode.lastChild.onclick = function (e) {
-            beginNodeMoving(createNode(e), e);
+            insertNodeMsg = msg({
+                title: _("New state"),
+                content: _("Click where you want to place the new state.")
+            });
         };
 
         pkg.svgContainer.parentNode.lastChild.textContent = _("New state");
@@ -2360,4 +2427,12 @@
     pkg.prompt = function (title, descr, def, fun) {
         fun(window.prompt(title + ": " + descr, def));
     };
+
+    (function () {
+        var fakeMsg = {close: function () {}, addButton : function () {}};
+        pkg.msg = function () {
+            return fakeMsg;
+        };
+    }());
+
 }(window.automataDesigner = {}, window.automataDesignerGlue || (window.automataDesignerGlue = {}), this));
