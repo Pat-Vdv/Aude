@@ -1,6 +1,12 @@
 //thx http://stackoverflow.com/questions/1517924/javascript-mapping-touch-events-to-mouse-events#1781750
 
 function touchHandler(event) {
+    var nn = event.target.nodeName.toLowerCase();
+
+    if (nn === "input" || nn === "select" || nn === "button") {
+        return;
+    }
+
     var touches = event.changedTouches,
         first   = touches ? touches[0] : event,
         type    = "";
