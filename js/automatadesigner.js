@@ -2070,9 +2070,9 @@
                 endNewTransitionEdit();
                 overlayHide();
             };
-       }
+        }
 
-        function setOverlayOn(node, e) {
+       function setOverlayOn(node) {
             currentOverlay = node;
 
             var elem;
@@ -2085,14 +2085,25 @@
                 overlay = stateOverlay;
             }
 
-            if (e) {
-                overlay.style.left = (e.clientX + 2) + "px";
-                overlay.style.top = (e.clientY + 2) + "px";
+            var bcr = elem.getBoundingClientRect();
+            var parentBcr = pkg.svgNode.parentNode.getBoundingClientRect();
+            var x = bcr.left - parentBcr.left;
+            var y = bcr.top - parentBcr.top;
+
+            if (bcr.left < parentBcr.width - bcr.right) {
+                overlay.style.left = Math.max(0, x) + "px";
+                overlay.style.right = "";
             } else {
-                var bcr = elem.getBoundingClientRect();
-                var parentBcr = pkg.svgNode.parentNode.getBoundingClientRect();
-                overlay.style.left = (bcr.left - parentBcr.left) + "px";
-                overlay.style.top  = (OVERLAY_TOP_OFFSET + bcr.height + bcr.top - parentBcr.top) + "px";
+                overlay.style.right = Math.max(0, parentBcr.width - x - bcr.width) + "px";
+                overlay.style.left = "";
+            }
+
+            if (bcr.top < parentBcr.height - bcr.bottom) {
+                overlay.style.top  = Math.max(0, OVERLAY_TOP_OFFSET + bcr.height + y + RESIZE_HANDLE_WIDTH * pkg.svgZoom) + "px";
+                overlay.style.bottom = "";
+            } else {
+                overlay.style.bottom = Math.max(0, parentBcr.height - y + RESIZE_HANDLE_WIDTH * pkg.svgZoom + OVERLAY_TOP_OFFSET) + "px";
+                overlay.style.top = "";
             }
 
             pkg.svgNode.parentNode.appendChild(overlay);
