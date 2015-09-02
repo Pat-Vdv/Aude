@@ -32,6 +32,7 @@
 
     var svgNS = "http://www.w3.org/2000/svg";
     var RESIZE_HANDLE_WIDTH = 12;
+    var TRANSITION_HANDLE_WIDTH = 6;
     var CSSP = "automata-designer-";
     var OVERLAY_TIMEOUT = 1500;
     var OVERLAY_TOP_OFFSET = 10;
@@ -1450,7 +1451,7 @@
                     if (seg.x1 !== segs.getItem(i - 1).x || seg.y1 !== segs.getItem(i - 1).y) {
                         handle = document.createElementNS(svgNS, "circle");
                         handle.setAttribute("class", "pathedit-handle");
-                        handle.setAttribute("r", 3);
+                        handle.setAttribute("r", TRANSITION_HANDLE_WIDTH);
                         handle.setAttribute("fill", "#F50");
                         handle.setAttribute("stroke", "black");
                         handle._moveFrame = pathEditControlMoveFrame;
@@ -1462,7 +1463,7 @@
                     if (seg.x2 !== seg.x || seg.y2 !== seg.y) {
                         handle = document.createElementNS(svgNS, "circle");
                         handle.setAttribute("class", "pathedit-handle");
-                        handle.setAttribute("r", 3);
+                        handle.setAttribute("r", TRANSITION_HANDLE_WIDTH);
                         handle.setAttribute("fill", "#F50");
                         handle.setAttribute("stroke", "black");
                         handle._moveFrame = pathEditControlMoveFrame;
@@ -1477,7 +1478,7 @@
                 handle.setAttribute("class", "pathedit-handle");
                 handle.setAttribute("cx", seg.x);
                 handle.setAttribute("cy", seg.y);
-                handle.setAttribute("r", 3);
+                handle.setAttribute("r", TRANSITION_HANDLE_WIDTH);
                 if (i === len - 1) {
                     handle._moveFrame = pathEditEllipseMoveFrame;
                     handle._ellipse   = getBigEllipse(document.getElementById(tid[1]));
