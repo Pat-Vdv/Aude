@@ -593,7 +593,7 @@
 
     function parseTransition(text, f, t) {
         try {
-            symbols = parse_transition(text);
+            return parse_transition(text);
         } catch (e) {
             alert(
                 libD.format(
