@@ -2323,7 +2323,7 @@
         pkg.svgContainer.parentNode.lastChild.onclick = function (e) {
             insertNodeMsg = msg({
                 title: _("New state"),
-                content: _("Click where you want to place the new state.")
+                content: _("Click where you want to place the new state.")
             });
         };
 

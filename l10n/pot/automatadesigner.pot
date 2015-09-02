@@ -42,3 +42,8 @@ msgstr ""
 msgid  "Make straight"
 msgstr ""
 
+msgid  "Click on the destination state of the new transition."
+msgstr ""
+
+msgid  "Click where you want to place the new state."
+msgstr ""

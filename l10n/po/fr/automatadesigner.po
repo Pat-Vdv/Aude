@@ -40,3 +40,10 @@ msgstr "Modifier les symboles"
 
 msgid  "Make straight"
 msgstr "Rendre droite"
+
+msgid  "Click on the destination state of the new transition."
+msgstr "Cliquez sur l'état de destination de la nouvelle transition."
+
+msgid  "Click where you want to place the new state."
+msgstr "Cliquez à l'endroit où vous souhaitez placer le nouvel état."
+
