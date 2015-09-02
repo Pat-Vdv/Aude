@@ -693,8 +693,9 @@
                 return {
                     value: JSON.parse(
 						end === "\""
-							? "\"" + s.substring(j0 + 1,j).replace(/"/g, "\\\"") + "\""
-							: s.substring(j0, j + 1)),
+							? s.substring(j0, j + 1)
+							: "\"" + s.substring(j0 + 1,j).replace(/"/g, "\\\"") + "\""
+                    ),
                     lastIndex: lastIndex
                 };
             }

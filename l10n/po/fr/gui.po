@@ -22,8 +22,11 @@ msgstr "Quel nom voulez-vous donner au fichier exporté ? (donnez l’extension
 msgid "Which name do you want to give to the exported text file?"
 msgstr "Quel nom voulez-vous donner au fichier texte exporté ?"
 
-msgid "get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."
-msgstr "get_automaton: L’automate n°{0} n’existe pas ou n’a pas d’état initial."
+msgid "get_automaton: automaton n°{0} could not be understood."
+msgstr "get_automaton: impossible de lire l'automate n°{0}."
+
+msgid "get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."
+msgstr "get_automaton: l’automate n°{0} n’existe pas ou n’a pas d’état initial."
 
 msgid "Please enter a name for the file in which the program will be saved."
 msgstr "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré."
@@ -427,3 +430,8 @@ msgstr "<h2>Bienvenue sur {0}.</h2>
 <p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>
 <p> Amusez vous bien !</p>"
 
+msgid  "Unable to access the code of automaton n°{0}"
+msgstr "Impossible d'accéder au code de l'automaton n°{0}"
+
+msgid  "You need to fix the automaton in design mode before accessing its code."
+msgstr "Vous devez corriger l'automate dans le mode dessin avant d'accéder à son code."

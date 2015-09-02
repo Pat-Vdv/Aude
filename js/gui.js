@@ -1092,10 +1092,14 @@
                 return undefined;
             }
 
-            var A = automataDesigner.getAutomaton(i);
+            try {
+                var A = automataDesigner.getAutomaton(i);
+            } catch (e) {
+                throw new Error(libD.format(_("get_automaton: automaton n°{0} could not be understood."), JSON.stringify(i)));
+            }
 
             if (automataNumber <= i || !A) {
-                throw new Error(libD.format(_("get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."), JSON.stringify(i)));
+                throw new Error(libD.format(_("get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."), JSON.stringify(i)));
             }
 
             return A;
@@ -1120,12 +1124,26 @@
             return a;
         };
 
+        var currentMode = switchmode.value;
+
         function automatonSetNumber(index) {
             automataDesigner.setCurrentIndex(index);
-            automatoncodeedit.value = automataDesigner.getAutomatonCode(index, false);
+            if (currentMode === "automatoncode") {
+                try {
+                    automatoncodeedit.value = automataDesigner.getAutomatonCode(index, false);
+                } catch (e) {
+                    switchmode.value = "design";
+                    switchmode.onchange();
+                    libD.notify({
+                        type:    "error",
+                        title:   libD.format(_("Unable to access the code of automaton n°{0}"), automataDesigner.currentIndex),
+                        content: _("You need to fix the automaton in design mode before accessing its code.")
+                    });
+                }
+            }
         }
 
-        switchmode.onchange = function () {
+        switchmode.onchange = function (e) {
             switch (this.value) {
             case "program":
                 toolbar.className = "algomode";
@@ -1176,12 +1194,24 @@
                 onResize();
                 break;
             case "automatoncode":
+                try {
+                    automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false);
+                } catch (e) {
+                    libD.notify({
+                        type:    "error",
+                        title:   libD.format(_("Unable to access the code of automaton n°{0}"), automataDesigner.currentIndex),
+                        content: _("You need to fix the automaton in design mode before accessing its code."),
+                    });
+                    this.value = "design";
+                    switchmode.onchange();
+                    return;
+                }
+
                 if (deferedResultShow) {
                     setTimeout(enableResults, 0);
                     deferedResultShow = false;
                 }
 
-                automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, false);
 
                 if (cm && cm.getValue()) {
                     toolbar.className = "designmode codemode";
@@ -1196,6 +1226,7 @@
                 onResize();
                 break;
             }
+            currentMode = this.value;
         };
 
         automatoncodeedit.onchange = function () {

@@ -21,7 +21,7 @@
 /*jshint boss: true*/
 /*eslint-env browser*/
 /*eslint no-console:0, no-alert:0, no-underscore-dangle:0 */
-/*global atob:false, btoa:false, DOMParser:false, SVGPathSeg: false, parse_transition: false, format_transition: false, listenMouseWheel: false, epsilon: false, Set: false, automataMap:false, Automaton: false*/
+/*global atob:false, btoa:false, DOMParser:false, SVGPathSeg: false, parse_transition: false, pkg.formatTrans: false, listenMouseWheel: false, epsilon: false, Set: false, automataMap:false, Automaton: false*/
 
 // NEEDS: automaton.js, mousewheel.js;
 
@@ -95,6 +95,9 @@
         pathEditor,              // <g> to edit paths and control points of these paths
         initialState;            // current automaton initial state's note (<g>)
 
+    pkg.formatTrans = function (t) {
+        return t.replace(/\\e/g, "ε");
+    };
 
     // Given a node representing a state, gives the biggest ellipse of the node in case of a final state.
     // Otherwise, give the only ellipse of the node
@@ -588,6 +591,22 @@
         return s === "ε" ? "\\e" : JSON.stringify(s);
     };
 
+    function parseTransition(text, f, t) {
+        try {
+            symbols = parse_transition(text);
+        } catch (e) {
+            alert(
+                libD.format(
+                    _("Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \")."),
+                    f,
+                    t,
+                    text
+                )
+            );
+            throw e;
+        }
+    }
+
     // Retrieve the code of the automaton #index, svg code included.
     // if the <svg> representation is not desired (e.g. you need a cleaner visual representation of the automaton),
     // set withoutSVG to true
@@ -636,7 +655,7 @@
                 f = atob(tid[0]);
                 t = atob(tid[1]);
 
-                symbols = parse_transition(text);
+                symbols = parseTransition(text, f, t);
                 for (s = 0, leng = symbols.length; s < leng; ++s) {
                     code +=  getStringValue(f) + " " + (symbols[s] === epsilon ? "\\e" : Set.prototype.elementToString(symbols[s], automataMap)) + " " + getStringValue(t) + "\n";
                 }
@@ -679,7 +698,8 @@
                 f    = atob(tid[0]);
                 t    = atob(tid[1]);
 
-                symbols = parse_transition(text);
+                parseTransition(text, f, t);
+
                 for (s = 0, leng = symbols.length; s < leng; ++s) {
                     A.addTransition(getValue(f), (onlyStrings && (symbols[s] !== epsilon)) ? symbols[s].toString() : symbols[s], getValue(t));
                 }
@@ -1388,7 +1408,7 @@
                         polygon.setAttribute("stroke", "black");
 
                         var text = document.createElementNS(svgNS, "text");
-                        text.textContent = format_transition(trans || "\\e");
+                        text.textContent = pkg.formatTrans(trans || "\\e");
                         text.setAttribute("text-anchor", "middle");
                         text.setAttribute("font-family", "Times Roman,serif");
                         text.setAttribute("font-size", "14.00");
@@ -1700,7 +1720,7 @@
                 text.textContent,
                 function (t) {
                     if (t !== null) {
-                        text.textContent = format_transition(t || "\\e");
+                        text.textContent = pkg.formatTrans(t || "\\e");
                     }
                 }
             );

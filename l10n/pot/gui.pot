@@ -24,7 +24,10 @@ msgstr ""
 msgid "Which name do you want to give to the exported text file?"
 msgstr ""
 
-msgid "get_automaton: Automaton n°{0} doesn’t exist or doesn’t have an initial state."
+msgid "get_automaton: automaton n°{0} could not be understood."
+msgstr ""
+
+msgid "get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."
 msgstr ""
 
 msgid "Please enter a name for the file in which the program will be saved."
@@ -416,3 +419,8 @@ msgid "<h2>Welcome to {0}.</h2>
 <p> Enjoy yourself!</p>"
 msgstr ""
 
+msgid  "Unable to access the code of automaton n°{0}"
+msgstr ""
+
+msgid  "You need to fix the automaton in design mode before accessing its code."
+msgstr ""
