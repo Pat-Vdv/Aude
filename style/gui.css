@@ -622,7 +622,7 @@ p img {
 
 #new-state-btn {
     position:absolute;
-    top:5px;
+    bottom:5px;
     left:5px;
     border:1px solid #BB8;
     color:#883;
@@ -638,7 +638,6 @@ p img {
     text-align:center;
     min-width:13ex;
     transition:200ms;
-    -webkit-tap-highlight-color: orange;
     cursor:pointer
 }
 
