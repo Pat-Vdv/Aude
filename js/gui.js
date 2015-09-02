@@ -841,16 +841,16 @@
                     right:       results.offsetWidth  + 10,
                     top:         toolbar.offsetHeight + 5,
                     content:     libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
-                        ["div", {"#": "root"}, ["label", [
-                            ["#", _("Word: ")],
-                            ["input", {type: "text", "#": "word"}],
+                        ["div", {"#": "root"}, [
+                            ["label", {"for":"execute-word-input"}, _("Word: ")],
+                            ["input#execute-word-input", {type: "text", "#": "word"}],
                             ["input", {type: "button", value: _("Run"),  "#": "run"}],
                             ["input", {type: "button", value: _("Step"), "#": "step"}]
-                        ]]],
-                        ["div", ["label", [
-                            ["#", _("Delay between steps (ms): ")],
-                            ["input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}]
-                        ]]]
+                        ]],
+                        ["div", [
+                            ["label", {"for":"execute-delay-input"}, _("Delay between steps (ms): ")],
+                            ["input#execute-delay-input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}]
+                        ]]
                     ]], refs)
                 });
                 executeWin.__refs = refs;
@@ -860,6 +860,7 @@
                 });
                 libD.wm.handleSurface(executeWin, refs.root);
                 refs.run.onclick = function () {
+                    refs.run.focus(); // make the virtual keyboard disappear on tablets
                     stopExecution();
                     automataDesigner.cleanSVG(automataDesigner.currentIndex);
                     refs.delay.onchange();
