@@ -340,8 +340,8 @@ msgstr "Aucun automate ou aucune expression régulière n’a été donné dans 
 msgid "Automaton given in the quiz is not correct."
 msgstr "L’automate donné dans le quiz n’est pas correct."
 
-msgid "Select an algorithm"
-msgstr "Choisir un algorithme"
+msgid "Select an algo"
+msgstr "Choisir un algo"
 
 msgid "You didn’t select enough automata. Please select {0} automata."
 msgstr "Vous n’avez pas sélectionné assez d’automates. Veuillez en sélectionner {0}."
@@ -400,35 +400,43 @@ msgstr "Depuis votre ordinateur"
 msgid "Choose and order the parameter automata"
 msgstr "Choisir et ordonner les automates paramètres"
 
-msgid "<h2>Welcome to {0}.</h2>
-<p>Here is the area where you can <strong>draw automata</strong>.</p>
+msgid "<h2>Welcome to {0}!</h2>
+<h3> Never used {0} before? </h3>
 <ul>
-    <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>
+    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom right of the screen.</li>
+    <li>You can apply an algorithm on your automaton with the <strong>Choose an algo</strong> toolbar button.</li>
+</ul>
+<h3> Using a keyboard and a mouse? You can be faster. </h3>
+<ul>
+    <li>To add a <strong>new state</strong>, double-click where you want the state to be.</li>
     <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
     <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
     <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
     <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
     <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
 </ul>
-<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>
-<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>
+<h3> Quizzes </h3>
 <p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>
-<p>To hide this text, click on it.</p>
-<p> Enjoy yourself!</p>"
-msgstr "<h2>Bienvenue sur {0}.</h2>
-<p>Ceci est l’endroit où vous pouvez <strong>dessiner des automates</strong>.</p>
+<p> Now it’s your turn!</p>"
+
+msgstr "<h2>Bienvenue sur {0}!</h2>
+<h3> Vous n’avez encore jamais utilisé {0} ? </h3>
 <ul>
-    <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez à l’endroit où vous voulez le placer.</li>
+<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à droite de l'écran.</li>
+<li>Vous pouvez appliquer un algorithme sur votre automate en cliquant sur le boutton <strong>Choisir un algo</strong> de la barre d’outils.</li>
+</ul>
+<h3> Vous utilisez un clavier et une souris ? Vous pouvez être plus rapide. </h3>
+<ul>
+    <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez là où vous voulez le placer.</li>
     <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>
     <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>
     <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>
     <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>
     <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>
 </ul>
-<p>Vous pouvez <strong>accéder à ces instructions</strong> à tout moment en cliquant sur l’icône <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> de la barre d’outils.</p>
-<p>Quand vous exécuterez un programme ou un algorithme, le <strong>résultat</strong> apparaîtra <strong>à la droite</strong> de l’écran.</p>
+<h3> Quizz </h3>
 <p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>
-<p> Amusez vous bien !</p>"
+<p> À vous de jouer !</p>"
 
 msgid  "Unable to access the code of automaton n°{0}"
 msgstr "Impossible d'accéder au code de l'automaton n°{0}"

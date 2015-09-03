@@ -117,7 +117,6 @@
             results.style.left =  ((splitter.offsetLeft + sw) * 100 / width) + "%";
         }
 
-        content.style.top  = toolbar.offsetHeight + "px";
         automataDesigner.redraw();
 
         if (zoom.redraw) {
@@ -723,12 +722,11 @@
             automataListUL    = document.getElementById("automata-list-chooser-content"),
             automataContainer = document.getElementById("automata-container"),
             automatonMinus    = document.getElementById("automaton_minus"),
-            automataNumber    = document.getElementById("n_automaton"),
+            automataNumber    = document.getElementById("n-automaton"),
             automatoncode     = document.getElementById("automatoncode"),
             automatonPlus     = document.getElementById("automaton_plus"),
             automataedit      = document.getElementById("automataedit"),
             exportResult      = document.getElementById("export-result"),
-            drawToolbar       = document.getElementById("draw-toolbar"),
             executeBtn        = document.getElementById("execute"),
             exportBtn         = document.getElementById("export"),
             wordDiv           = document.getElementById("word"),
@@ -792,21 +790,24 @@
             var divWelcome = document.createElement("div");
             divWelcome.id = "welcome";
             divWelcome.innerHTML = libD.format(_(
-                "<h2>Welcome to {0}.</h2>" +
-                    "<p>Here is the area where you can <strong>draw automata</strong>.</p>" +
-                    "<ul>" +
-                    "    <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>" +
-                    "    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>" +
-                    "    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>" +
-                    "    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>" +
-                    "    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>" +
-                    "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>" +
-                    "</ul>" +
-                    "<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>" +
-                    "<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>" +
-                    "<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>" +
-                    "<p>To hide this text, click on it.</p>" +
-                    "<p> Enjoy yourself!</p>"
+                "<h2>Welcome to {0}!</h2>" +
+                "<h3> Never used {0} before? </h3>" +
+                "<ul>" +
+                "    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom right of the screen.</li>" +
+                "    <li>You can apply an algorithm on your automaton with the <strong>Choose an algo</strong> toolbar button.</li>" +
+                "</ul>" +
+                "<h3> Using a keyboard and a mouse? You can be faster. </h3>" +
+                "<ul>" +
+                "    <li>To add a <strong>new state</strong>, double-click where you want the state to be.</li>" +
+                "    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>" +
+                "    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>" +
+                "    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>" +
+                "    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>" +
+                "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>" +
+                "</ul>" +
+                "<h3> Quizzes </h3>" +
+                "<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>" +
+                "<p> Now it’s your turn!</p>"
             ), "Aude");
 
             automataDesigner.svgContainer.parentNode.appendChild(divWelcome);
@@ -937,24 +938,6 @@
                 }
             }
         };
-
-        document.getElementById("draw-toolbar-btn").onclick = function () {
-            drawToolbar.classList.toggle("disabled");
-            onResize();
-        };
-
-
-        (function () {
-            function buttonClick(e) {
-                notify(e.currentTarget.textContent, _(e.currentTarget.value), "info");
-            }
-
-            var i, len, drawToolbarButtons = drawToolbar.querySelectorAll("button");
-
-            for (i = 0, len = drawToolbarButtons.length; i < len; ++i) {
-                drawToolbarButtons[i].onclick = buttonClick;
-            }
-        }());
 
         document.getElementById("redraw").onclick = function () {
             automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, true);
@@ -1251,7 +1234,7 @@
 
         automatonPlus.onclick = function () {
             var o = document.createElement("option");
-            o.textContent = automatonCount;
+            o.textContent = _("n°") + automatonCount;
             o.id = "automaton_n" + automatonCount;
             automataNumber.appendChild(o);
             automataNumber.value = automatonCount;

@@ -342,7 +342,7 @@ msgstr ""
 msgid "Automaton given in the quiz is not correct."
 msgstr ""
 
-msgid "Select an algorithm"
+msgid "Select an algo"
 msgstr ""
 
 msgid "You didn’t select enough automata. Please select {0} automata."
@@ -402,21 +402,25 @@ msgstr ""
 msgid "Choose and order the parameter automata"
 msgstr ""
 
-msgid "<h2>Welcome to {0}.</h2>
-<p>Here is the area where you can <strong>draw automata</strong>.</p>
+msgid "<h2>Welcome to {0}!</h2>
+<h3> Never used {0} before? </h3>
 <ul>
-   <li>To add a <strong>new state</strong>, double-click at the place where you want the state to be.</li>
-   <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
-   <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
-   <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
-   <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
-   <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
+    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom right of the screen.</li>
+    <li>You can apply an algorithm on your automaton with the <strong>Choose an algo</strong> toolbar button.</li>
 </ul>
-<p>You can <strong>access to these instructions</strong> at any time by clicking the <img alt=\"\" src=\"icons/oxygen/16x16/actions/draw-brush.png\" /><b style=\"color:black;font-size:small\">?</b> toolbar icon.</p>
-<p>When running a program or an algorithm, the <strong>result</strong> will appear <strong>at the right side</strong> of the screen.</p>
+<h3> Using a keyboard and a mouse? You can be faster. </h3>
+<ul>
+    <li>To add a <strong>new state</strong>, double-click where you want the state to be.</li>
+    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
+    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
+    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
+    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
+    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
+</ul>
+<h3> Quizzes </h3>
 <p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>
-<p>To hide this text, click on it.</p>
-<p> Enjoy yourself!</p>"
+<p> Now it’s your turn!</p>"
+
 msgstr ""
 
 msgid  "Unable to access the code of automaton n°{0}"
