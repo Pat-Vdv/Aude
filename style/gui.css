@@ -44,8 +44,16 @@ body {
    vertical-align:middle;
    background:#CDE;
    padding:1px 0;
-   font-size:0
+   font-size:0;
+   display:-webkit-flex;
+   display:flex;
 }
+
+#toolbar .left {
+    -webkit-flex:1;
+    flex:1;
+}
+
 
 #toolbar .sep {
    padding-left:0.5ex;
@@ -123,11 +131,6 @@ button * {
 
 .launch-disabled #algo-exec {
    display:none !important
-}
-
-#toolbar .right {
-   float:right;
-   height:1.3rem
 }
 
 #toolbar button {
