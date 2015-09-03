@@ -768,6 +768,8 @@
         open              = document.getElementById("open");
         quiz              = document.getElementById("quiz");
 
+        automatoncodeedit.spellcheck = false;
+
         var exportResultFN     = _("automaton.txt"),
             exportResultTextFN = _("result.txt");
 
