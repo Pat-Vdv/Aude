@@ -40,6 +40,7 @@
         automatoncodeedit,
         automatonFileName,
         programFileName,
+        resultsContent,
         fileautomaton,
         svgContainer,
         fileprogram,
@@ -139,6 +140,11 @@
         }
     }
 
+    function cleanResults() {
+        resultToLeft.style.display = "none";
+        resultsContent.textContent = "";
+    }
+
     function textFormat(text, node, html) {
         if (!node) {
             node = document.createElement("span");
@@ -153,8 +159,8 @@
         enableResults();
         var res = document.createElement("pre");
         res.textContent = t;
-        results.textContent = "";
-        results.appendChild(res);
+        cleanResults();
+        resultsContent.appendChild(res);
         if (!dontNotify) {
             if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
                 notify(_("Program Result"), res.cloneNode(true), "normal");
@@ -165,8 +171,8 @@
     function setNodeResult(n, dontNotify) {
         automatonResult = null;
         enableResults();
-        results.textContent = "";
-        results.appendChild(n);
+        cleanResults();
+        resultsContent.appendChild(n);
         if (!dontNotify) {
             if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
                 notify(_("Program Result"), n.cloneNode(true), "normal");
@@ -183,12 +189,13 @@
         automatonResult = A;
         var svgCode = automaton2svg(A);
 
-        results.innerHTML = "<div id='results-tb'></div>" + svgCode;
-        results.firstChild.appendChild(resultToLeft);
+        resultsContent.innerHTML = svgCode;
+        resultToLeft.style.display = "";
+
         if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
             notify(_("Program Result"), svgCode, "normal");
         }
-        zoom.svgNode = results.querySelector("svg");
+        zoom.svgNode = resultsContent.querySelector("svg");
         if (zoom.redraw) {
             zoom.redraw();
         }
@@ -211,7 +218,7 @@
             }
         }
 
-        var svg = results.querySelector("svg");
+        var svg = resultsContent.getElementsByTagName("svg")[0];
         if (svg) {
             zoom.svgNode = svg;
             results.style.overflow = "hidden";
@@ -720,7 +727,7 @@
             automatoncode     = document.getElementById("automatoncode"),
             automatonPlus     = document.getElementById("automaton_plus"),
             automataedit      = document.getElementById("automataedit"),
-            exportResult      = document.getElementById("export_result"),
+            exportResult      = document.getElementById("export-result"),
             drawToolbar       = document.getElementById("draw-toolbar"),
             executeBtn        = document.getElementById("execute"),
             exportBtn         = document.getElementById("export"),
@@ -755,6 +762,7 @@
         automatoncodeedit = document.getElementById("automatoncodeedit");
         svgContainer      = document.getElementById("svg-container"),
         results           = zoom.svgContainer = document.getElementById("results");
+        resultsContent    = document.getElementById("results-content");
         splitter          = document.getElementById("splitter");
         leftPane          = document.getElementById("left-pane");
         content           = document.getElementById("content");
@@ -775,8 +783,10 @@
 
         resultToLeft.appendChild(libD.jso2dom([
             ["img", {alt: "", src: "icons/oxygen/16x16/actions/arrow-left.png"}],
-            ["span", _("This automaton into the editor")]
+            ["span", _("Edit this automaton")]
         ]));
+
+        document.getElementById("results-tb").insertBefore(resultToLeft, exportResult);
 
         (function () {
             var divWelcome = document.createElement("div");
@@ -967,7 +977,7 @@
 
                     switch (format) {
                     case ".svg":
-                        saveAs(new Blob([automataDesigner.outerHTML(results.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
+                        saveAs(new Blob([automataDesigner.outerHTML(resultsContent.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
                         break;
                     case ".dot":
                         saveAs(new Blob([automaton2dot(automatonResult)], {type: "text/plain;charset=utf-8"}), fn);
@@ -981,7 +991,7 @@
 
                 if (fn) {
                     exportResultTextFN = fn;
-                    saveAs(new Blob([results.textContent], {type: "text/plain;charset=utf-8"}), fn);
+                    saveAs(new Blob([resultsContent.textContent], {type: "text/plain;charset=utf-8"}), fn);
                 }
             }
         };
@@ -1289,7 +1299,7 @@
         resultToLeft.onclick = function () {
             if (automatonResult) {
                 automatonPlus.onclick();
-                automataDesigner.setSVG(results.querySelector("svg"), automataDesigner.currentIndex);
+                automataDesigner.setSVG(resultsContent.querySelector("svg"), automataDesigner.currentIndex);
                 automatoncodeedit.value = automaton_code(automatonResult);
             }
         };
@@ -1996,12 +2006,12 @@
                 }
 
                 if ((currentTransitions && EXECUTION_STEP_TIME) || stepNumber === -1) {
-                    results.textContent = "";
+                    cleanResults();
                     var res, s;
 
                     for (i = 0, len = listOfExecutions.length; i < len; ++i) {
-                        results.appendChild(document.createElement("div"));
-                        results.lastChild.className = "execution";
+                        resultsContent.appendChild(document.createElement("div"));
+                        resultsContent.lastChild.className = "execution";
                         res = "";
 
                         for (j = 0, leng = listOfExecutions[i].length; j < leng; ++j) {
@@ -2009,7 +2019,7 @@
                             res += j ? ": " + (s === epsilon ? "ε" : Set.prototype.elementToString(s, automataMap)) + " → " + Set.prototype.elementToString(listOfExecutions[i][j][0]) : Set.prototype.elementToString(listOfExecutions[i][j][0]);
                         }
 
-                        results.lastChild.textContent = res;
+                        resultsContent.lastChild.textContent = res;
                     }
                 }
 

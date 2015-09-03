@@ -108,7 +108,7 @@ msgstr ""
 msgid "Delay between steps (ms): "
 msgstr ""
 
-msgid "This automaton into the editor"
+msgid "Edit this automaton"
 msgstr ""
 
 msgid "To add a new state, double-click on the drawing area where you want it to be."

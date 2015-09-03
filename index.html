@@ -109,9 +109,6 @@
          <span>
             <button id="quiz" data-translated-content="true" >Load a Quiz</button>
          </span>
-         <span>
-            <button id="export_result" data-translated-content="true">Export result</button>
-         </span>
       </div>
       <div class="designmode-specific disabled codemode-disabled" id="draw-toolbar">
          <span>
@@ -144,7 +141,12 @@
             <div id="div-quiz"></div>
          </div>
          <div id="splitter" class="disabled"></div>
-         <div id="results" class="disabled"></div>
+         <div id="results" class="disabled">
+            <div id="results-tb">
+                <button id="export-result"><span data-translated-content="true">Export result</span></button>
+            </div>
+            <div id="results-content"></div>
+        </div>
          <div id="automata-list-chooser" class="disabled">
             <p id="automata-list-chooser-intro"></p>
             <a href="#" data-translated-content="true" id="automata-list-chooser-close">Close</a>

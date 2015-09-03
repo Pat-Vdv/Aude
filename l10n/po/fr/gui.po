@@ -106,8 +106,8 @@ msgstr "Un pas"
 msgid "Delay between steps (ms): "
 msgstr "Pause entre les étapes (ms) : "
 
-msgid "This automaton into the editor"
-msgstr "Cet automate dans l’éditeur"
+msgid "Edit this automaton"
+msgstr "Éditer cet automate"
 
 msgid "To add a new state, double-click on the drawing area where you want it to be."
 msgstr "Pour ajouter un nouvel état, double-cliquez sur la surface de dessin à l’endroit où vous voulez le placer."
