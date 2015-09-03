@@ -10,6 +10,7 @@ html,body {
 body {
     display:-webkit-flex;
     display:flex;
+    -webkit-flex-direction:column;
     flex-direction:column;
 }
 
@@ -45,6 +46,8 @@ body {
    background:#CDE;
    padding:1px 0;
    font-size:0;
+   -webkit-flex-direction:row;
+   flex-direction:row;
    display:-webkit-flex;
    display:flex;
 }
@@ -65,7 +68,7 @@ body {
 
 #toolbar button, #toolbar select {
    background-color:rgba(255,255,255,0.3);
-   min-height:30px;
+   min-height:32px;
    font-size:small;
    border:0;
    border-top:1px solid #BBC;
@@ -116,7 +119,6 @@ select {
 
 #toolbar span {
    vertical-align:middle;
-   border-radius: 4px
 }
 
 button * {
@@ -726,7 +728,7 @@ input[type=text]:focus, input[type=password]:focus {
 
 input[type=button], button, select {
    margin:1px;
-   border-radius:none;
+   border-radius:0;
    min-height:1.5rem;
    border:1px solid silver;
    background:white
