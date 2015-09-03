@@ -1234,6 +1234,7 @@
 
         automatonPlus.onclick = function () {
             var o = document.createElement("option");
+            o.value = automatonCount;
             o.textContent = _("n°") + automatonCount;
             o.id = "automaton_n" + automatonCount;
             automataNumber.appendChild(o);
