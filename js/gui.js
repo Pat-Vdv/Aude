@@ -814,6 +814,7 @@
             function hideWelcome() {
                 automataDesigner.svgContainer.parentNode.removeChild(divWelcome);
                 document.body.removeEventListener("click", hideWelcome, false);
+                automataDesigner.setViewBoxSize();
             }
             document.body.addEventListener("click", hideWelcome, false);
         }());
