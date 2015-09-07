@@ -429,7 +429,7 @@ msgstr "<h2>Bienvenue sur {0}!</h2>
 <ul>
     <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez là où vous voulez le placer.</li>
     <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>
-    <li>Pour <strong>renomer</strong> un état ou une transition, double-cliquez dessus.</li>
+    <li>Pour <strong>renommer</strong> un état ou une transition, double-cliquez dessus.</li>
     <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>
     <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>
     <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>
