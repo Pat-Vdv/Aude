@@ -793,7 +793,7 @@
                 "<h2>Welcome to {0}!</h2>" +
                 "<h3> Never used {0} before? </h3>" +
                 "<ul>" +
-                "    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom right of the screen.</li>" +
+                "    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom left of the screen.</li>" +
                 "    <li>You can apply an algorithm on your automaton with the <strong>Choose an algo</strong> toolbar button.</li>" +
                 "</ul>" +
                 "<h3> Using a keyboard and a mouse? You can be faster. </h3>" +
