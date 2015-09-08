@@ -44,6 +44,7 @@
             node.setAttribute("fill-opacity", "0");
         } else {
             node.setAttribute("fill", color);
+            node.removeAttribute("fill-opacity");
         }
     }
 
