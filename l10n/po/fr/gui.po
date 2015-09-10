@@ -38,7 +38,7 @@ msgid "Syntax error: bad import parameter in {0}"
 msgstr "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}"
 
 msgid "Error: import of {0} in {2} failed: '{1}'."
-msgstr "Erreur : l’import de {0} dpuis {2} a échoué : '{1}'."
+msgstr "Erreur : l’import de {0} depuis {2} a échoué : '{1}'."
 
 msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
 msgstr "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis '{0}')."
