@@ -36,7 +36,6 @@
                 }
             });
         </script>
-        <script src="js/boot.js"></script>
         <script>
         /*<!--//*/
             if(!window.js18Supported) {
@@ -44,12 +43,12 @@
             }
             if(!window.AutomataDesigner) {
                 /* we are in the development version, lets load everything */
-                function boot() {
-                    for(var i in arguments) {
-                        document.write('<script src="' + arguments[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
+                function boot(files) {
+                    for(var i = 0; i < files.length; i++) {
+                        document.write('<script src="' + files[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
                     }
                 }
-                boot(
+                boot([
                     "js/lib/source-map.min.js",
                     "js/lib/libD/1.0/core.js",
                     "js/lib/hammer.min.js",
@@ -71,7 +70,7 @@
                     "js/lib/fileSaver.js",
                     "js/lib/ace-builds/src-noconflict/ace.js"
 //                 "js/codemirror-audescript/audescript.js"
-                );
+                ]);
             }
             window.addEventListener('load', function() {
                 setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
