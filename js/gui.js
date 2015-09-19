@@ -1809,7 +1809,7 @@
             }
 
             automataContainer.style.display = "none";
-            handleImports(["equivalence", "regex2automaton", "automaton2json"], "Quiz");
+            loadIncludes(["equivalence", "regex2automaton", "automaton2json"]);
             automatonPlus.onclick();
 
             if (!(quiz.questions && quiz.questions instanceof Array)) {
