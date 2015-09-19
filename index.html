@@ -38,40 +38,38 @@
         </script>
         <script>
         /*<!--//*/
-            if(!window.js18Supported) {
+            if (!window.js18Supported) {
                 var js18Supported = false;
             }
-            if(!window.AutomataDesigner) {
-                /* we are in the development version, lets load everything */
-                function boot(files) {
-                    for(var i = 0; i < files.length; i++) {
-                        document.write('<script src="' + files[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
-                    }
+
+            function boot(files) {
+                for(var i = 0; i < files.length; i++) {
+                    document.write('<script src="' + files[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
                 }
-                boot([
-                    "js/lib/source-map.min.js",
-                    "js/lib/libD/1.0/core.js",
-                    "js/lib/hammer.min.js",
-                    "js/mousewheel.js",
-                    "js/getFile.js",
-                    "js/lib/babel-core/browser.min.js",
-                    "js/audescript/audescript.js",
-                    "js/set.js",
-                    "js/setIterators.js",
-                    "js/map.js",
-                    "js/audescript/runtime.js",
-                    "js/aude.js",
-                    "js/automaton.js",
-                    "js/automaton2dot.js",
-                    "js/lib/requestAnimationFrame.js",
-                    "js/automatadesigner.js",
-                    "js/gui.js",
-                    "js/touch2click.js",
-                    "js/lib/fileSaver.js",
-                    "js/lib/ace-builds/src-noconflict/ace.js"
-//                 "js/codemirror-audescript/audescript.js"
-                ]);
             }
+            boot([
+                "js/lib/source-map.min.js",
+                "js/lib/libD/1.0/core.js",
+                "js/lib/hammer.min.js",
+                "js/mousewheel.js",
+                "js/getFile.js",
+                "js/lib/babel-core/browser.min.js",
+                "js/audescript/audescript.js",
+                "js/set.js",
+                "js/setIterators.js",
+                "js/map.js",
+                "js/audescript/runtime.js",
+                "js/aude.js",
+                "js/automaton.js",
+                "js/automaton2dot.js",
+                "js/lib/requestAnimationFrame.js",
+                "js/automatadesigner.js",
+                "js/gui.js",
+                "js/touch2click.js",
+                "js/lib/fileSaver.js",
+                "js/lib/ace-builds/src-noconflict/ace.js"
+            ]);
+
             window.addEventListener('load', function() {
                 setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
             }, false);
