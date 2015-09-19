@@ -21,7 +21,7 @@
 /*jshint multistr:true*/
 /*eslint-env browser*/
 /*eslint no-underscore-dangle:0, no-alert:0*/
-/*global Set:false, FileReader:false, libD:false, automataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, CodeMirror:false, automataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
+/*global Set:false, FileReader:false, libD:false, automataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, aceEditor:false, automataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
 
 // NEEDS : automataDesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
 
@@ -30,9 +30,6 @@
 
     var enableAutoHandlingError = false,
         automatonResult         = null,
-        blockResult             = false,
-        waitingFor              = new Set(),
-        launchAfterImport       = false,
         deferedResultShow       = false,
         freader                 = new FileReader(),
         resultToLeft            = document.createElement("button"),
@@ -41,6 +38,8 @@
         automatonFileName,
         programFileName,
         resultsContent,
+        automataNumber,
+        resultsConsole,
         fileautomaton,
         svgContainer,
         fileprogram,
@@ -60,14 +59,57 @@
         head,
         not,
         sw,
-        cm;
+        aceEditor;
+
+    audescript.console = {
+        logg: function (type, printed) {
+            var line = document.createElement("div");
+            line.className = "console-line " + type;
+            for (var i = 0; i < printed.length; i++) {
+                line.appendChild(document.createTextNode(printed[i]));
+            }
+            resultsConsole.appendChild(line);
+        },
+
+        log: function () {
+            audescript.console.logg("log", arguments);
+        },
+
+        error: function () {
+            audescript.console.logg("error", arguments);
+        },
+
+        warn: function () {
+            audescript.console.logg("warning", arguments);
+        }
+    };
 
     window.audeGui = {l10n: libD.l10n()};
     var _ = window.audeGui.l10n;
 
+    function audescript2js(code, moduleName, fileName, data) {
+        var res = audescript.toJS(code, moduleName, fileName);
+        data.includes = res.neededModules;
+        return babel.transform(
+            "(function (run, get_automaton, get_automata, currentAutomaton) {" +
+            res.code + "})", {retainLines: true}
+        ).code;
+    }
+
+     function run(fun, g, f) {
+        resultsConsole.textContent = "";
+        if (fun === get_automata) {
+            get_automata(g, function () {
+                setResult(f.apply(this, arguments));
+            });
+        } else {
+            setResult(fun.apply(window, [].slice.call(arguments, 1)));
+        }
+    };
+
     automataDesigner.getValueFunction = function (s) {
         try {
-            var v = Set.prototype.getValue(s, automataMap);
+            var v = aude.getValue(s, automataMap);
             return v;
         } catch (e) {
             return s;
@@ -76,7 +118,7 @@
 
     automataDesigner.getStringValueFunction = function (s) {
         try {
-            Set.prototype.getValue(s, automataMap); // s is a legal value
+            aude.getValue(s, automataMap); // s is a legal value
             return s;
         } catch (e) {
             return JSON.stringify(s); // turn into string
@@ -94,6 +136,7 @@
         if (!not || !not.displayed) {
             not = new libD.Notify({closeOnClick: true});
         }
+
         not.setTitle(title);
         not.setDescription(content);
         not.setType(type);
@@ -135,6 +178,7 @@
             sw = splitter.offsetWidth;
             splitterMove({clientX: splitter.offsetLeft});
             automataDesigner.userZoom(zoom);
+            zoom.enable();
             onResize();
         }
     }
@@ -221,11 +265,15 @@
         if (svg) {
             zoom.svgNode = svg;
             results.style.overflow = "hidden";
+
             if (zoom.redraw) {
                 zoom.redraw();
             }
         } else {
             zoom.svgNode = null;
+            if (zoom.disable) {
+                zoom.disable();
+            }
             results.style.overflow = "";
         }
     }
@@ -256,13 +304,14 @@
 
     function openProgram(code) {
         if (typeof code === "string") {
-            cm.setValue(code);
+            aceEditor.setValue(code);
             return;
         }
 
         freader.onload = function () {
             openProgram(freader.result);
         };
+
         freader.readAsText(fileprogram.files[0], "utf-8");
         programFileName = fileprogram.value;
     }
@@ -284,137 +333,6 @@
         setTextResult(errorTitle + "\n" + errorText, true);
     }
 
-
-    function launchUserProgram(userProgram) {
-        blockResult = false;
-        window.currentAutomaton = automataDesigner.currentIndex;
-
-        var res;
-
-        try {
-            res = userProgram(window.reallyRun);
-        } catch (e) {
-            if (e instanceof Error && e.stack) {
-                var details, i, len, stack = e.stack.split("\n");
-                for (i = 0, len = stack.length; i < len; ++i) {
-                    if (stack[i].match(location.href + ":")) {
-                        details = stack[i].match(/:([0-9]+)(?::([0-9]+))?/);
-                        if (details) {
-                            handleError(e.message, parseInt(details[1], 10) - offsetError, e.stack, details[2]);
-                        } else {
-                            handleError(e.message, e.lineNumber - offsetError, e.stack);
-                        }
-                        return;
-                    }
-                }
-                handleError(e.message || e, e.lineNumber);
-            } else {
-                handleError(e.message || e, e.ineNumber);
-            }
-            return;
-        }
-
-        if (blockResult) {
-            blockResult = false;
-        } else {
-            setResult(res);
-        }
-    }
-
-    window.getScriptFailed = function (includeName, includer, reason) {
-        handleError(libD.format(_("Error: import of {0} in {2} failed: '{1}'."), includeName, reason, includer));
-    };
-
-    window.AutomatonGlue = {
-        getScript: function (includeName, includer) {
-            if (includeName.match(/^(?:[a-z]+:(?:\\|\/\/?)|\/)/)) { // absolute path
-                handleError(libD.format(_("Error: import: absolute paths are not supported in this version (in '{0}')'"), includer));
-            } else {
-                getFile(
-                    "algos/" + includeName,
-                    function (data) {
-                        window.gotScript(includeName, data);
-                    },
-                    function (message, status) {
-                        if (message === "status") {
-                            message = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
-                        }
-
-                        window.getScriptFailed(includeName, includer, message);
-                    },
-                    true
-                );
-            }
-        }
-    };
-
-    function getScript(includeName, includer) {
-        if (waitingFor.contains(includeName)) {
-            return;
-        }
-
-        if (includeName[0] === "'") {
-            includeName = includeName.replace(/"/g, "\\\"");
-            includeName = includeName.substr(1, includeName.length - 1);
-        }
-        if (includeName[0] === "\"") {
-            try {
-                includeName = JSON.parse(includeName); // should not happen
-            } catch (e) {
-                handleError(libD.format(_("Syntax error: bad import parameter in {0}"), includer));
-                return;
-            }
-        }
-        if (includeName.length < 4 || includeName.substr(includeName.length - 4) !== ".ajs") {
-            includeName += ".ajs";
-        }
-        waitingFor.add(includeName);
-        window.AutomatonGlue.getScript(includeName, includer);
-    }
-
-    function handleImports(includes, includer) {
-        var i, len;
-        for (i = 0, len = includes.length; i < len; ++i) {
-            getScript(includes[i], includer);
-        }
-    }
-
-    function loadProgram(code) {
-        var script   = document.getElementById("useralgo"),
-            includes = [];
-
-        if (script) {
-            head.removeChild(script);
-        }
-
-        waitingFor.empty();
-        window.userProgram = null;
-        script = document.createElement("script");
-        script.id = "useralgo";
-
-        if (js18Supported) {
-            script.type = "text/javascript;version=1.8";
-        }
-
-        script.textContent = "function userProgram(run) {'use strict';\n" + audescript.toPureJS(code, {includesArray:includes}) + "\n}";
-        enableAutoHandlingError = "user's program";
-        head.appendChild(script);
-        enableAutoHandlingError = false;
-        handleImports(includes, "user's program");
-    }
-
-    function execProgram(code) {
-        if (code) {
-            loadProgram(code);
-        }
-
-        if (window.userProgram && waitingFor.isEmpty()) {
-            launchUserProgram(window.userProgram);
-        } else {
-            launchAfterImport = true;
-        }
-    }
-
     window.onselectstart = window.ondragstart = function (e) {
         e.preventDefault();
         return false;
@@ -431,20 +349,228 @@
         window.automataDesignerGlue = {};
     }
 
-    function automatonJSLoaded() {
-        window.onerror = function (message, url, lineNumber) {
-            /*jslint unparam:true*/
-            if (enableAutoHandlingError) {
-                if (offsetError > -1) {
-                    handleError(message + (typeof enableAutoHandlingError === "string" ? "(in " + enableAutoHandlingError + ")" : ""), lineNumber - offsetError);
-                } else {
-                    offsetError = lineNumber - 1;
-                }
-                return true;
+    function get_automaton(i) {
+        if (isNaN(i)) {
+            return undefined;
+        }
+
+        try {
+            var A = automataDesigner.getAutomaton(i);
+        } catch (e) {
+            console.error(e);
+            throw new Error(libD.format(_("get_automaton: automaton n°{0} could not be understood."), JSON.stringify(i)));
+        }
+
+        if (automataNumber <= i || !A) {
+            throw new Error(libD.format(_("get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."), JSON.stringify(i)));
+        }
+
+        return A;
+    };
+
+    function get_automata(count, callback) {
+        if (automataList.length < count) {
+            showAutomataListChooser(count, callback);
+        } else {
+            callWithList(count, callback);
+        }
+    };
+
+
+    var modules = {};
+    var loadedModule = {};
+
+    function loadModule(moduleName, callback) {
+        if (modules[curAlgo.value]) {
+            if (callback) {
+                callback();
             }
-        };
-        offsetError = -1;
-        loadProgram(":");
+            return;
+        }
+
+        if (loadedModule[moduleName]) {
+            loadedModule[moduleName].push(callback);
+            return;
+        }
+
+        loadedModule[moduleName] = [callback];
+
+        getFile(
+            "algos/" + moduleName + ".ajs?" + Date.now(),
+            function (f) {
+                loadAudescriptCode(moduleName, f, function (code) {
+                    var m = loadedModule[moduleName];
+                    while (m.length) {
+                        (m.pop())();
+                    }
+                });
+            },
+            function (message, status) {
+                if (message === "status") {
+                    message = libD.format(
+                        _("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"),
+                        status
+                    );
+                }
+
+                if (message === "send") {
+                    message = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
+                }
+
+                notify(
+                    libD.format(
+                        _("Unable to load module {0}"),
+                        moduleName
+                    ),
+                    message,
+                    "error"
+                );
+            }
+        );
+    }
+
+    function loadIncludes(includes, callback) {
+        for (var i = 0; i < includes.length; i++) {
+            if (!modules[includes[i]]) {
+                loadModule(
+                    includes[i],
+                    function () {
+                        loadIncludes(includes, callback);
+                    }
+                );
+                return;
+            }
+
+            if (!audescript.m(includes[i])) {
+                loadLibrary(modules[includes[i]], includes[i]);
+            }
+        }
+
+        callback();
+    }
+
+    function loadLibrary(code, moduleName) {
+        runProgramCode(
+            code,
+            moduleName || "<program>",
+            libD.Void,
+            libD.Void,
+            libD.Void
+        );
+    }
+
+    function runProgram(code, moduleName) {
+        runProgramCode(
+            code,
+            moduleName || "<program>",
+            run,
+            get_automaton,
+            get_automata
+        );
+    }
+
+    function loadProgram(audescriptCode, moduleName) {
+        loadAudescriptCode(moduleName, audescriptCode, runProgram);
+    }
+
+    function launchPredefAlgo() {
+        if (curAlgo.value === "id") {
+            resultsConsole.textContent = "";
+            setResult(automataDesigner.getAutomaton(automataDesigner.currentIndex));
+            return;
+        } else {
+            if (modules[curAlgo.value]) {
+                runProgram(modules[curAlgo.value], curAlgo.value);
+            } else {
+                loadModule(curAlgo.value, launchPredefAlgo);
+            }
+        }
+    }
+
+    function replaceStackLine(stackLine) {
+        return stackLine.replace(/eval at .*\(.*\),[\s]+/, "").replace(/@(file|https?|ftps?|sftp):\/\/.+> eval:/, " ");
+    }
+
+    function cleanStack(stack) {
+        var stackLines = stack.split("\n");
+        var res = "";
+//         var oldRes = "";
+        for (var i = 0; i < stackLines.length; i++) {
+            if (i === 0 && stackLines[0].match(/^[a-zA-Z]*Error:/)) {
+                continue;
+            }
+
+            if (stackLines[i].match(/^[\s]*at run/) || stackLines[i].match(/^run(ProgramCode)?@/)) {
+                break;
+            }
+
+            var line = replaceStackLine(stackLines[i]);
+            if (line.match(/^\s*\d+:\d+\s*$/)) {
+                break;
+            }
+//             oldRes = res;
+            res += (res ? "\n" : "") + line;
+        }
+
+//         return oldRes;
+        return res;
+    }
+
+    function runProgramCode(f, moduleName, run, get_automaton, get_automata) {
+        resultsConsole.textContent = "";
+        try {
+            var res = f(run, get_automaton, get_automata, automataDesigner.currentIndex);
+            if (res !== undefined) {
+                setResult(res);
+            }
+        } catch (e) {
+            libD.notify({
+                type: "error",
+                title: libD.format(_("Error executing {0}"), moduleName),
+                content: libD.jso2dom(
+                    ["div", {style:"white-space:pre-wrap"},
+                        e.toString() + "\n" + cleanStack(e.stack)
+                    ]
+                )
+            });
+            throw e;
+        }
+    }
+
+    function loadAudescriptCode(moduleName, audescriptCode, callback) {
+        var data = {};
+        var includes;
+        var code;
+
+        try {
+            code = eval(
+                audescript2js(audescriptCode, moduleName, moduleName + ".ajs", data)
+            );
+
+            includes = data.includes;
+        } catch (e) {
+            notify(
+                libD.format(
+                    _("Parse error (module {0})"),
+                    moduleName
+                ),
+                e.toString(),
+                "error"
+            );
+
+            throw e;
+        }
+
+        loadIncludes(
+            includes,
+            function () {
+                if (moduleName) {
+                    modules[moduleName] = code;
+                }
+
+                callback(code);
+            }
+        );
     }
 
     getFile("algos/list.txt",
@@ -560,7 +686,7 @@
                                 fname = line[0].trim();
                                 descr = line[1].trim();
                                 line = document.createElement("option");
-                                line.value = fname;
+                                line.value = fname.replace(/\.ajs$/, "");
                                 line.textContent = _(descr);
                                 curAlgo.appendChild(line);
                             }
@@ -707,11 +833,9 @@
         head = document.querySelector("head");
 
         if (window.js18Supported) {
-            libD.jsLoad("js/setIterators.js", automatonJSLoaded, "application/javascript;version=1.8");
+            libD.jsLoad("js/setIterators.js", libD.Void, "application/javascript;version=1.8");
         } else if (window.Symbol) {
-            libD.jsLoad("js/setIterators.js", automatonJSLoaded);
-        } else {
-            automatonJSLoaded();
+            libD.jsLoad("js/setIterators.js");
         }
 
         automataDesigner.load();
@@ -722,7 +846,6 @@
             automataListUL    = document.getElementById("automata-list-chooser-content"),
             automataContainer = document.getElementById("automata-container"),
             automatonMinus    = document.getElementById("automaton_minus"),
-            automataNumber    = document.getElementById("n-automaton"),
             automatoncode     = document.getElementById("automatoncode"),
             automatonPlus     = document.getElementById("automaton_plus"),
             automataedit      = document.getElementById("automataedit"),
@@ -739,9 +862,6 @@
             automatonCount      = 0,
             automataList        = [],
             exportFN            = "",
-            predefAlgoFunctions = [],
-            nextLoadIsPrefefAlgo,
-            loadPredefAlgoAfterImport = null,
             CURRENT_FINAL_STATE_COLOR            = localStorage.CURRENT_FINAL_STATE_COLOR || "rgba(90, 160, 0, 0.5)",
             CURRENT_TRANSITION_COLOR             = localStorage.CURRENT_TRANSITION_COLOR  || "#BD5504",
             CURRENT_STATE_COLOR                  = localStorage.CURRENT_STATE_COLOR       || "#FFFF7B",
@@ -757,9 +877,10 @@
             EXECUTION_STEP_TIME = 1200;
         }
 
+        resultsConsole    = document.getElementById("results-console");
         automatoncodeedit = document.getElementById("automatoncodeedit");
         svgContainer      = document.getElementById("svg-container"),
-        results           = zoom.svgContainer = document.getElementById("results");
+        results           = document.getElementById("results");
         resultsContent    = document.getElementById("results-content");
         splitter          = document.getElementById("splitter");
         leftPane          = document.getElementById("left-pane");
@@ -773,6 +894,9 @@
         curAlgo           = document.getElementById("predef-algos");
         open              = document.getElementById("open");
         quiz              = document.getElementById("quiz");
+        automataNumber    = document.getElementById("n-automaton"),
+        zoom.svgContainer = results;
+
 
         automatoncodeedit.spellcheck = false;
 
@@ -993,7 +1117,7 @@
             var k, automata = [];
 
             for (k = 0; k < count; ++k) {
-                automata.push(window.get_automaton(automataList[k]));
+                automata.push(get_automaton(automataList[k]));
             }
 
             /*jshint validthis: true */
@@ -1085,32 +1209,6 @@
             automataListDiv.classList.remove("disabled");
         }
 
-        window.get_automaton = function (i) {
-            if (isNaN(i)) {
-                return undefined;
-            }
-
-            try {
-                var A = automataDesigner.getAutomaton(i);
-            } catch (e) {
-                throw new Error(libD.format(_("get_automaton: automaton n°{0} could not be understood."), JSON.stringify(i)));
-            }
-
-            if (automataNumber <= i || !A) {
-                throw new Error(libD.format(_("get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."), JSON.stringify(i)));
-            }
-
-            return A;
-        };
-
-        window.get_automata = function (count, callback) {
-            if (automataList.length < count) {
-                showAutomataListChooser(count, callback);
-            } else {
-                callWithList(count, callback);
-            }
-        };
-
         window.heap = function (a) {
             Object.defineProperty(a, "top", {
                 enumerable: false,
@@ -1148,27 +1246,24 @@
                 codeedit.classList.remove("disabled");
                 automataedit.classList.add("disabled");
 
-                if (!cm) {
-                    cm = CodeMirror(codeedit, {
-                        lineNumbers:   true,
-                        electricChars: true,
-                        indentUnit:    3,
-                        tabMode:       "spaces",
-                        tabSize:       3
-                    });
+                if (!aceEditor) {
+                    aceEditor = ace.edit(codeedit.id);
+                    aceEditor.getSession().setOption("useWorker", false);
+                    aceEditor.getSession().setMode("ace/mode/audescript");
+                    aceEditor.$blockScrolling = Infinity
 
-                    var codemirrorNode = cm.getWrapperElement();
+//                     var codemirrorNode = cm.getWrapperElement();
 
-                    listenMouseWheel(function (e, delta) {
-                        if (e.ctrlKey || e.metaKey) {
-                            var fs = parseFloat(window.getComputedStyle(codemirrorNode, null).fontSize);
-                            codemirrorNode.style.fontSize = (fs + 2 * delta) + "px";
-                            cm.refresh();
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
-                        }
-                    });
+//                     listenMouseWheel(function (e, delta) {
+//                         if (e.ctrlKey || e.metaKey) {
+//                             var fs = parseFloat(window.getComputedStyle(codemirrorNode, null).fontSize);
+//                             codemirrorNode.style.fontSize = (fs + 2 * delta) + "px";
+//                             cm.refresh();
+//                             e.preventDefault();
+//                             e.stopPropagation();
+//                             return false;
+//                         }
+//                     });
                 }
 
                 onResize();
@@ -1179,7 +1274,7 @@
                     deferedResultShow = false;
                 }
 
-                if (cm && cm.getValue()) {
+                if (aceEditor && aceEditor.getValue()) {
                     toolbar.className = "designmode";
                 } else {
                     toolbar.className = "designmode launch-disabled";
@@ -1211,7 +1306,7 @@
                 }
 
 
-                if (cm && cm.getValue()) {
+                if (aceEditor && aceEditor.getValue()) {
                     toolbar.className = "designmode codemode";
                 } else {
                     toolbar.className = "designmode codemode launch-disabled";
@@ -1296,26 +1391,8 @@
         document.getElementById("automaton_plus").onclick();
 
         document.getElementById("algo-exec").onclick = function () {
-            if (cm) {
-                execProgram(cm.getValue());
-            }
-        };
-
-        window.run = function (f) {
-            if (loadPredefAlgoAfterImport === true) {
-                loadPredefAlgoAfterImport = null;
-                launchUserProgram(predefAlgoFunctions[curAlgo.value] = f);
-            }
-        };
-
-        window.reallyRun = function (fun, g, f) {
-            blockResult = true;
-            if (fun === window.get_automata) {
-                window.get_automata(g, function () {
-                    setResult(f.apply(this, arguments));
-                });
-            } else {
-                setResult(fun.apply(window, [].slice.call(arguments, 1)));
+            if (aceEditor) {
+                loadProgram(aceEditor.getValue());
             }
         };
 
@@ -1429,9 +1506,11 @@
 
                     var diff = answers.symDiff(q.answers);
 
-                    r.isCorrect = diff.isEmpty();
+                    r.isCorrect = diff.card() === 0;
                     if (!r.isCorrect) {
-                        r.reasons.push(libD.format(_("Wrong answer for {0}."), diff.getSortedList().toString()));
+                        var diffL = aude.toArray(diff);
+                        diffL.sort();
+                        r.reasons.push(libD.format(_("Wrong answer for {0}."), diffL.toString()));
                     }
 
                     break;
@@ -1677,7 +1756,7 @@
                         textFormat(possibilities[j].html, refs[j + "content"], true);
                     }
 
-                    if (quiz.answers[quiz.currentQuestion].userResponse instanceof Set && quiz.answers[quiz.currentQuestion].userResponse.contains(qid)) {
+                    if (quiz.answers[quiz.currentQuestion].userResponse instanceof Set && quiz.answers[quiz.currentQuestion].userResponse.has(qid)) {
                         refs["answer-" + j].checked = true;
                     }
                 }
@@ -1795,7 +1874,7 @@
         }
 
         function saveProgram(fname) {
-            saveAs(new Blob([cm.getValue()], {type: "text/plain;charset=utf-8"}), fname);
+            saveAs(new Blob([aceEditor.getValue()], {type: "text/plain;charset=utf-8"}), fname);
         }
 
         function saveAutomaton(fname) {
@@ -1868,7 +1947,7 @@
                                 }
                             }
 
-                            currentStates = currentAutomaton.getCurrentStates().getList();
+                            currentStates = aude.toArray(currentAutomaton.getCurrentStates());
                             accepting = false;
                             for (i = 0, len = currentStates.length; i < len; ++i) {
                                 accepted = currentAutomaton.isAcceptingState(currentStates[i]);
@@ -1885,11 +1964,11 @@
                                 );
                             }
                         } else {
-                            currentStates = currentAutomaton.getCurrentStates().getList();
+                            currentStates = aude.toArray(currentAutomaton.getCurrentStates());
                             currentAutomaton.runSymbol(word[0]);
                             wordDiv.firstChild.childNodes[currentSymbolNumber++].className = "eaten";
                             word = word.substr(1);
-                            currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
+                            currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
                             for (i = 0, len = currentTransitions.length; i < len; ++i) {
                                 automataDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
@@ -1898,7 +1977,7 @@
                     } else {
                         currentAutomaton.runSymbol(word[0]);
                         word = word.substr(1);
-                        currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
+                        currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
                     }
                 } else {
                     stepNumber = 0; // we start everything.
@@ -1930,10 +2009,10 @@
                     var q_init = currentAutomaton.getInitialState();
                     listOfExecutions = [[[q_init, epsilon]]];
                     currentAutomaton.setCurrentState(q_init);
-                    currentTransitions = currentAutomaton.getLastTakenTransitions().getList();
+                    currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
                     accepting = false;
-                    currentStates = currentAutomaton.getCurrentStates().getList();
+                    currentStates = aude.toArray(currentAutomaton.getCurrentStates());
 
                     for (i = 0, len = currentStates.length; i < len; ++i) {
                         accepted = currentAutomaton.isAcceptingState(currentStates[i]);
@@ -2001,7 +2080,7 @@
 
                         for (j = 0, leng = listOfExecutions[i].length; j < leng; ++j) {
                             s = listOfExecutions[i][j][1];
-                            res += j ? ": " + (s === epsilon ? "ε" : Set.prototype.elementToString(s, automataMap)) + " → " + Set.prototype.elementToString(listOfExecutions[i][j][0]) : Set.prototype.elementToString(listOfExecutions[i][j][0]);
+                            res += j ? ": " + (s === epsilon ? "ε" : aude.elementToString(s, automataMap)) + " → " + aude.elementToString(listOfExecutions[i][j][0]) : aude.elementToString(listOfExecutions[i][j][0]);
                         }
 
                         resultsContent.lastChild.textContent = res;
@@ -2033,95 +2112,8 @@
             };
         }());
 
-        function launchPredefAlgo() {
-            if (curAlgo.value === "id") {
-                setAutomatonResult(automataDesigner.getAutomaton(automataDesigner.currentIndex));
-                return;
-            }
-
-            if (predefAlgoFunctions[curAlgo.value]) {
-                window.currentAutomaton = automataDesigner.currentIndex;
-                if (typeof predefAlgoFunctions[curAlgo.value] === "string") {
-                    var id      = "predef-algo-" + curAlgo.value,
-                        script  = document.getElementById(id);
-
-                    if (script) {
-                        head.removeChild(script);
-                    }
-
-                    script = document.createElement("script");
-
-                    if (js18Supported) {
-                        script.type = "text/javascript;version=1.8";
-                    }
-
-                    script.textContent = "window.run(function (run){'use strict';\n" + predefAlgoFunctions[curAlgo.value] + "\n});";
-                    predefAlgoFunctions[curAlgo.value] = null;
-                    script.id = id;
-                    loadPredefAlgoAfterImport = true;
-                    enableAutoHandlingError = curAlgo.value;
-                    head.appendChild(script);
-                    enableAutoHandlingError = false;
-                } else {
-                    launchUserProgram(predefAlgoFunctions[curAlgo.value]);
-                }
-            } else {
-                nextLoadIsPrefefAlgo = true;
-                window.AutomatonGlue.getScript(curAlgo.value, "?");
-            }
-        }
 
         document.getElementById("algorun").onclick = launchPredefAlgo;
-
-
-        window.gotScript = function (includeName, code) {
-            waitingFor.remove(includeName);
-
-            var includes = [];
-            code = audescript.toPureJS(code, {includesArray:includes, useStrict:true});
-
-            if (nextLoadIsPrefefAlgo) {
-                predefAlgoFunctions[includeName] = code;
-                loadPredefAlgoAfterImport = 1;
-                nextLoadIsPrefefAlgo = false;
-            } else {
-                var id      = "useralgo-include-" + includeName,
-                    script  = document.getElementById(id);
-
-                if (script) {
-                    head.removeChild(script);
-                }
-
-                script = document.createElement("script");
-                script.id = id;
-
-                if (js18Supported) {
-                    script.type = "text/javascript;version=1.8";
-                }
-
-                script.textContent = code;
-                window.currentAutomaton = NaN;
-                enableAutoHandlingError = "module " + includeName;
-                head.appendChild(script);
-                enableAutoHandlingError = false;
-            }
-
-            handleImports(includes, "module " + includeName);
-
-            if (waitingFor.isEmpty()) {
-                setTimeout(
-                    function () {
-                        if (launchAfterImport && window.userProgram) {
-                            launchAfterImport = false;
-                            execProgram();
-                        } else if (loadPredefAlgoAfterImport) {
-                            launchPredefAlgo();
-                        }
-                    },
-                    0
-                );
-            }
-        };
 
         window.helpSymbols = function (e) {
             if (e === "show") {

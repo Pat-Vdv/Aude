@@ -658,7 +658,7 @@
 
                 symbols = parseTransition(text, f, t);
                 for (s = 0, leng = symbols.length; s < leng; ++s) {
-                    code +=  getStringValue(f) + " " + (symbols[s] === epsilon ? "\\e" : Set.prototype.elementToString(symbols[s], automataMap)) + " " + getStringValue(t) + "\n";
+                    code +=  getStringValue(f) + " " + (symbols[s] === epsilon ? "\\e" : aude.elementToString(symbols[s], automataMap)) + " " + getStringValue(t) + "\n";
                 }
             }
         }
@@ -2246,9 +2246,23 @@
         }, false);
 
         (pkg.userZoom = function (that) {
+            that.disabled = true;
+
             if (!that.redraw) {
                 that.redraw = function () {
                     pkg.redraw(that);
+                };
+            }
+
+            if (!that.disable) {
+                that.disable = function () {
+                    that.disabled = true;
+                };
+            }
+
+            if (!that.enable) {
+                that.enable = function () {
+                    that.disabled = false;
                 };
             }
 
@@ -2270,7 +2284,7 @@
             }
 
             listenMouseWheel(function (e, delta) {
-                if (!that.svgNode) {
+                if (!that.svgNode || that.disabled) {
                     return null;
                 }
 
@@ -2294,11 +2308,20 @@
 
             if (window.Hammer) {
                 window.Hammer(that.svgContainer).on("touch", function () {
+                    if (that.disabled) {
+                        return;
+                    }
+
                     initialZoom = that.svgZoom;
                     lastDeltaX = 0;
                     lastDeltaY = 0;
                 });
+
                 window.Hammer(that.svgContainer).on("pinch", function (e) {
+                    if (that.disabled) {
+                        return;
+                    }
+
                     if (that === pkg) {
                         blockNewState = true;
                     }
@@ -2321,6 +2344,10 @@
                 });
 
                 window.Hammer(that.svgContainer).on("drag", function (e) {
+                    if (that.disabled) {
+                        return;
+                    }
+
                     if (!that.stopMove) {
                         blockNewState = true;
                         drag(e);
@@ -2328,11 +2355,17 @@
                 });
 
                 window.Hammer(that.svgContainer).on("release", function () {
+                    if (that.disabled) {
+                        return;
+                    }
+
                     that.stopMove = false;
                     that.stopMoveNode = false;
                 });
             }
         })(pkg);
+
+        pkg.enable();
 
         pkg.svgContainer.ondragstart = pkg.svgContainer.onselectstart = pkg.svgContainer.oncontextmenu = function (e) {
             e.preventDefault();

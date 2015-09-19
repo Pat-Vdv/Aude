@@ -1,10 +1,10 @@
-include determinization;
-include minimization;
-include regex2automaton;
-include normalization;
+from determinization import determinize;
+from minimization    import minimize;
+from regex2automaton import regexToAutomaton;
+from normalization   import normalize;
 
 run(
-   function(A) {
+   function()
       return normalize(minimize(determinize(regexToAutomaton())));
-   }
+    end function
 );

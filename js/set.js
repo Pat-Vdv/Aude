@@ -62,7 +62,6 @@
 
         if (l) {
             if (l instanceof pkg.Set) {// l is a set
-                this.setTypeConstraint(l.typeConstraint);
                 l = l.getList();
             }
 
@@ -82,10 +81,6 @@
                 } else {
                     throw new Error("A Set can only be built from a list or another Set.");
                 }
-
-                if (l.typeConstraint) {
-                    this.setTypeConstraint(l.typeConstraint);
-                }
             }
         }
     };
@@ -98,7 +93,7 @@
             if (res) {
                 res += ",";
             }
-            res += pkg.Set.prototype.elementToString(l[i]);
+            res += Set.prototype.elementToString(l[i]);
         }
 
         if (l instanceof pkg.Tuple) {
@@ -120,7 +115,6 @@
 
          */
         contains: function (element) {
-            element =  this.checkConstraint(element);
             return this.l.hasOwnProperty("$" + this.elementToString(element));
         },
 
@@ -136,36 +130,6 @@
         },
 
         /**
-         * This method raise an exception if an element does not verifies the constraints to belong to the set.
-         * @method checkConstraint
-         * @memberof Set
-         * @param {any} element The element to check.
-         * @exception {Error} Throws an error if the element does not satisfy the constrains.
-         * @returns {any} Returns an eventually adapted version of the element (e.g. if the constraint is the element to be a set, if the element was an Array or an Object, it is turned into a Set).
-         * @see Set#setTypeConstraint
-         */
-        checkConstraint: function (element) {
-            if (this.typeConstraint) {
-                if (typeof this.typeConstraint === "string") {
-                    if (this.typeConstraint === "int") {
-                        if (!(typeof element === "number" && element % 1 === 0)) {
-                            throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
-                        }
-                    } else if (typeof element !== this.typeConstraint) {
-                        throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
-                    }
-                } else if (element !== null && !(element instanceof this.typeConstraint)) {
-                    if (this.typeConstraint === pkg.Set && (element instanceof Array || element instanceof pkg.Tuple)) {
-                        element = pkg.to_set(element); // this is ok to implicitely convert lists to sets
-                    } else {
-                        throw new Error(_("Set.checkConstraint(element): The element does not satisfies the type constraint."));
-                    }
-                }
-            }
-            return element;
-        },
-
-        /**
          * This method adds an element to the set.
          * @method add
          * @memberof Set
@@ -173,7 +137,6 @@
          * @exception {Error} throws an error if the element does not verify the belonging constraints.
          */
         add: function (element) {
-            element =  this.checkConstraint(element);
             var rep = "$" + this.elementToString(element);
             if ((element instanceof pkg.Set) && !this.contains(element)) {
                 var th = this;
@@ -234,7 +197,7 @@
          */
 
         unionInPlace: function (set) {
-            set = pkg.to_set(set);
+            set = Set.prototype.toSet(set);
             this._blockEvents = true;
 
             var i;
@@ -260,7 +223,7 @@
          */
 
         interInPlace: function (set) {
-            set = pkg.to_set(set);
+            set = Set.prototype.toSet(set);
             this._blockEvents = true;
             var i, e;
             for (i in this.l) {
@@ -287,7 +250,7 @@
          * @see Set#minus
          */
         minusInPlace: function (set) {
-            set = pkg.to_set(set);
+            set = Set.prototype.toSet(set);
             this._blockEvents = true;
             var i;
             for (i in set.l) {
@@ -312,6 +275,22 @@
             return new pkg.Set(this).unionInPlace(set);
         },
 
+        cross: function (set) {
+            var res = new Set();
+
+            this.forEach(
+                function (e1) {
+                    set.forEach(
+                        function (e2) {
+                            res.add(new Tuple().fromList([e1, e2]));
+                        }
+                    );
+                }
+            );
+
+            return res;
+        },
+
         /**
          * This method checks if the set is a subset of the set given in parameter.
          * @memberof Set
@@ -320,7 +299,7 @@
          * @returns {Boolean} Returns true if the set is a subset of the set given in parameter, false otherwise.
          */
         subsetOf: function (set) {
-            set = pkg.to_set(set);
+            set = Set.prototype.toSet(set);
             var i;
             for (i in this.l) {
                 if (this.l.hasOwnProperty(i) && !set.contains(this.l[i])) {
@@ -343,7 +322,7 @@
          */
         symDiff: function (set) {
             var i, r = new pkg.Set();
-            set = pkg.to_set(set);
+            set = Set.prototype.toSet(set);
 
             for (i in this.l) {
                 if (this.l.hasOwnProperty(i) && !set.contains(this.l[i])) {
@@ -530,17 +509,6 @@
         },
 
         /**
-         * This method is to set a type constraint on elements that will be added to the set.
-         * @method setTypeConstraint
-         * @memberof Set
-         * @param {any} typeConstraint a string representation of a Javascript basic type, or a constructor of a Javascript class.
-         * @note This function should always be called when the set is empty because it doesn't check the constraint on the current elements of the set.
-         */
-        setTypeConstraint: function (typeConstraint) {
-            this.typeConstraint = typeConstraint;
-        },
-
-        /**
          * This method is to verify a property on each element of the set. If the function passed in argument returns true for all elements of the set, this method returns true; false otherwise.
          * @method every
          * @memberof Set
@@ -557,6 +525,18 @@
                 }
             }
             return true;
+        },
+
+        some: function (func) {
+            var i;
+            for (i in this.l) {
+                if (this.l.hasOwnProperty(i)) {
+                    if (func(this.l[i])) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         },
 
         /**
@@ -581,6 +561,10 @@
             }
             this._blockEvents = false;
             this.updated("empty");
+        },
+
+        clear : function () {
+            this.empty();
         },
 
         /**
@@ -614,7 +598,7 @@
             }
         },
 
-        elementToString : function (e, map) {
+        elementToString: function (e, map) {
             if (typeof e === "number" && isNaN(e)) {
                 return "NaN";
             }
@@ -669,246 +653,18 @@
             }
         },
 
-        getNextValue: function (s, j, len, map) {
-            if (len === undefined) {
-                len = s.length;
+        toSet: function (l) {
+            if (l instanceof Set) {
+                return l;
             }
-
-            while (j < len && (!s[j].trim() || s[j] === ",")) {
-                ++j;
-            }
-
-            var j0 = j, lastIndex, end, closed, nextValue;
-
-            if (s[j] === "\"" || s[j] === "'") {
-                end = s[j++];
-                while (j < len && s[j] !== end) {
-                    if (s[j] === "\\") {
-                        ++j;
-                    }
-                    ++j;
-                }
-
-                lastIndex = j + 1;
-                return {
-                    value: JSON.parse(
-						end === "\""
-							? s.substring(j0, j + 1)
-							: "\"" + s.substring(j0 + 1,j).replace(/"/g, "\\\"") + "\""
-                    ),
-                    lastIndex: lastIndex
-                };
-            }
-
-            if (s[j] === "{") {
-                var key, set = new pkg.Set();
-                ++j;
-                closed = false;
-                while (j < len) {
-                    while (j < len && (!s[j].trim() || s[j] === ",")) {
-                        ++j;
-                    }
-
-                    if (s[j] === "}") {
-                        lastIndex = j + 1;
-                        closed = true;
-                        j = lastIndex;
-                        break;
-                    }
-
-                    nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
-
-                    if (j === nextValue.lastIndex) {
-                        throw new Error(_("Value is malformed."));
-                    }
-
-                    j = nextValue.lastIndex;
-
-                    if (s[j] === ":") {
-                        if (set instanceof pkg.Set) {
-                            if (set.isEmpty()) {
-                                set = {};
-                            } else {
-                                throw new Error(_("Value is malformed."));
-                            }
-                        }
-                        ++j;
-
-                        key = nextValue.value;
-                        nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
-                        set[key] = nextValue.value;
-                    } else if (set instanceof pkg.Set) {
-                        set.add(nextValue.value);
-                    } else {
-                        throw new Error(_("Value is malformed."));
-                    }
-
-                    j = nextValue.lastIndex;
-                }
-
-                if (!closed) {
-                    throw new Error(_("Value is malformed."));
-                }
-
-                return {
-                    value:set,
-                    lastIndex:lastIndex
-                };
-            }
-
-            if (s[j] === "(" || s[j] === "[") {
-                end = s[j] === "(" ? ")" : "]";
-                var tuple = (end === ")") ? new pkg.Tuple() : [];
-                ++j;
-                closed = false;
-                while (j < len) {
-                    while (j < len && (!s[j].trim() || s[j] === ",")) {
-                        ++j;
-                    }
-
-                    if (s[j] === end) {
-                        lastIndex = j + 1;
-                        j = lastIndex;
-                        closed = true;
-                        break;
-                    }
-
-                    nextValue = pkg.Set.prototype.getNextValue(s, j, len, map);
-
-                    if (j === nextValue.lastIndex) {
-                        throw new Error(_("Value is malformed."));
-                    }
-
-                    tuple.push(nextValue.value);
-                    j = nextValue.lastIndex;
-                }
-
-                if (!closed) {
-                    throw new Error(_("Value is malformed."));
-                }
-
-                return {
-                    value:tuple,
-                    lastIndex:lastIndex
-                };
-            }
-
-            while (j < len && s[j].trim() && ":(,})]".indexOf(s[j]) === -1) {
-                ++j;
-            }
-
-            var valName = s.substring(j0,j).trim();
-
-            if (s[j] === "(") {
-                var values = [];
-
-                if (/^[a-zA-Z]+$/.test(valName)) {
-                    if (typeof that[valName] !== "function") {
-                        throw new Error(_("Constructor name in value refers to unkown class."));
-                    }
-                    ++j;
-                    while (j < len && s[j] !== ")") {
-                        nextValue = pkg.Set.prototype.getNextValue(s,j,len, map);
-                        j = nextValue.lastIndex;
-                        values.push(nextValue.value);
-                    }
-                }
-
-                if (valName === "Date") {
-                    return {
-                        value : new Date(values[0] || null),
-                        lastIndex: j + 1
-                    };
-                }
-
-                if (valName === "Object") {
-                    return {
-                        value : values[0] || null, // FIXME check correction
-                        lastIndex: j + 1
-                    };
-                }
-
-                var F = function (){return;};
-
-                F.prototype = that[valName].prototype;
-                var v = new F();
-                that[valName].apply(v, values);
-
-                return {
-                    value:v,
-                    lastIndex:j + 1
-                };
-            }
-
-            switch (valName) {
-            case "true":
-                return {
-                    value:true,
-                    lastIndex:j
-                };
-            case "false":
-                return {
-                    value:false,
-                    lastIndex:j
-                };
-            case "null":
-                return {
-                    value:null,
-                    lastIndex:j
-                };
-            case "undefined":
-                return {
-                    value:undefined,
-                    lastIndex:j
-                };
-            case "NaN":
-                return {
-                    value:NaN,
-                    lastIndex:j
-                };
-            case "Infinity":
-            case "+Infinity":
-                return {
-                    value:Infinity,
-                    lastIndex:j
-                };
-            case "-Infinity":
-                return {
-                    value:-Infinity,
-                    lastIndex:j
-                };
-            default:
-                var d = parseFloat(valName);
-                if (d.toString() === valName) {
-                    return {
-                        value:d,
-                        lastIndex:j
-                    };
-                }
-            }
-
-            return {
-                value:typeof map === "object" && map.hasOwnProperty(valName) ? map[valName] : valName,
-                lastIndex:j
-            };
-        },
-
-        getValue: function (s, map) {
-            s = s.trim();
-            var len = s.length,
-                 nextValue = pkg.Set.prototype.getNextValue(s, 0, len, map);
-            if (nextValue.lastIndex === len) {
-                return nextValue.value;
-            }
-            throw new Error(_("Value is malformed."));
+            return new Set(l);
         }
     };
 
-    pkg.Tuple = function () {
-        if (!(this instanceof pkg.Tuple)) {
-            return new pkg.Tuple().fromList(arguments);
-        }
 
+    pkg.Set.prototype.serializeElement = pkg.Set.prototype.toString;
+
+    pkg.Tuple = function () {
         var length = 0;
         Object.defineProperty(this, "length", {
             enumerable: false,
@@ -929,7 +685,6 @@
             }
 
         });
-        this.fromList(arguments);
     };
 
     Object.defineProperties(pkg.Tuple.prototype, {
@@ -1071,130 +826,9 @@
         toString: {
             enumerable:false,
             value: function () {
-                return pkg.Set.prototype.elementToString(this);
+                return Set.prototype.elementToString(this);
             }
         }
     });
-
-    pkg.Set.prototype.serializeElement = pkg.Set.prototype.toString;
-    pkg.new_set = function (l) {
-        return new pkg.Set(l);
-    };
-
-    pkg.to_set = function (l) {
-        if (l instanceof pkg.Set) {
-            return l;
-        }
-        return new pkg.Set(l);
-    };
-
-    pkg.contains = pkg.has = function (set, element) {
-        return pkg.to_set(set).contains(element);
-    };
-
-    pkg.belongs_to = function (element, set) {
-        return pkg.to_set(set).contains(element);
-    };
-
-    pkg.add = function (set, element) {
-        set.add(element);
-    };
-
-    pkg.remove = function (set, element) {
-        set.remove(element);
-    };
-
-    pkg.card = function (set) {
-        return set.l.length;
-    };
-
-    pkg.union = function (set1, set2) {
-        var set = pkg.to_set(set1);
-        set.unionInPlace(set2);
-        return set;
-    };
-
-    pkg.inter = function (set1, set2) {
-        var set = pkg.new_set(), e, i;
-        for (i in set1.l) {
-            if(set1.l.hasOwnProperty(i)) {
-                e = set1.l[i];
-                if (set2.contains(set1.l[i])) {
-                    set.add(e);
-                }
-            }
-        }
-        return set;
-    };
-
-    pkg.minus = function (set1, set2) {
-        set1 = pkg.new_set(set1);
-        set1.minusInPlace(set2);
-        return set1;
-    };
-
-    pkg.inter_in_place = function (set1, set2) {
-        return set1.interInPlace(set2);
-    };
-
-    pkg.union_in_place = function (set1, set2) {
-        return set1.unionInPlace(set2);
-    };
-
-    pkg.minus_in_place = function (set1, set2) {
-        return set1.minusInPlace(set2);
-    };
-
-    pkg.cross = function (set1, set2) {
-        var i, j, set = pkg.new_set();
-        set1 = pkg.to_set(set1);
-        set2 = pkg.to_set(set2);
-        for (i in set1.l) {
-            if(set1.l.hasOwnProperty(i)) {
-                for (j in set2.l) {
-                    if(set2.l.hasOwnProperty(j)) {
-                        set.add(new pkg.Tuple(set1.l[i], set2.l[j]));
-                    }
-                }
-            }
-        }
-        return set;
-    };
-
-    pkg.set_type_constraint = function (set, type) {
-        set.setTypeConstraint(type);
-    };
-
-    pkg.every = function (set, func) {
-        return set.every(func);
-    };
-
-    pkg.get_list = function (set) {
-        return pkg.to_set(set).getList();
-    };
-
-    pkg.get_sorted_list = function (set) {
-        return pkg.to_set(set).getSortedList();
-    };
-
-    pkg.powerset = function (set) {
-        return pkg.to_set(set).powerset();
-    };
-
-    pkg.sym_diff = function (set1, set2) {
-        return pkg.to_set(set1).symDiff(set2);
-    };
-
-    pkg.subset_of = function (set1, set2) {
-        return pkg.to_set(set1).subsetOf(set2);
-    };
-
-    pkg.empty = function (set) {
-        set.empty();
-    };
-
-    pkg.is_empty = function (set) {
-        return set.isEmpty();
-    };
 
 }(typeof this.exports === "object" ? this.exports : this, typeof this.exports === "object" ? this.exports : this));

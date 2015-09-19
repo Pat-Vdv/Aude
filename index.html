@@ -4,13 +4,25 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1" />
         <title>Aude</title>
-        <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" />
+<!--         <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" /> -->
         <link rel="stylesheet" href="style/gui.css" />
         <script type="text/javascript;version=1.8">
             var js18Supported = true;
         </script>
         <script>
             var libD = {path: 'js/lib/libD/1.0/'};
+
+            window.require = function (m) {
+                if (m === "audescript-runtime") {
+                    return audescript;
+                }
+
+                if (m === "source-map") {
+                    return sourceMap;
+                }
+
+                throw new Error("this require is dummy and is only for requiring audescript");
+            }
         </script>
         <script src="js/lib/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
             MathJax.Hub.Config({
@@ -33,27 +45,32 @@
             if(!window.AutomataDesigner) {
                 /* we are in the development version, lets load everything */
                 function boot() {
-                for(var i in arguments) {
-                    document.write('<script src="' + arguments[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
-                }
+                    for(var i in arguments) {
+                        document.write('<script src="' + arguments[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
+                    }
                 }
                 boot(
-                "js/lib/libD/1.0/core.js",
-                "js/lib/hammer.min.js",
-                "js/mousewheel.js",
-                "js/getFile.js",
-                "js/set.js",
-                "js/automaton.js",
-                "js/mappingfunction.js",
-                "js/automaton2dot.js",
-                "js/audescript/audescript.js",
-                "js/lib/requestAnimationFrame.js",
-                "js/automatadesigner.js",
-                "js/gui.js",
-                "js/touch2click.js",
-                "js/lib/fileSaver.js",
-                "js/lib/codemirror/lib/codemirror.js",
-                "js/codemirror-audescript/audescript.js"
+                    "js/lib/source-map.min.js",
+                    "js/lib/libD/1.0/core.js",
+                    "js/lib/hammer.min.js",
+                    "js/mousewheel.js",
+                    "js/getFile.js",
+                    "js/lib/babel-core/browser.min.js",
+                    "js/audescript/audescript.js",
+                    "js/set.js",
+                    "js/setIterators.js",
+                    "js/map.js",
+                    "js/audescript/runtime.js",
+                    "js/aude.js",
+                    "js/automaton.js",
+                    "js/automaton2dot.js",
+                    "js/lib/requestAnimationFrame.js",
+                    "js/automatadesigner.js",
+                    "js/gui.js",
+                    "js/touch2click.js",
+                    "js/lib/fileSaver.js",
+                    "js/lib/ace-builds/src-noconflict/ace.js"
+//                 "js/codemirror-audescript/audescript.js"
                 );
             }
             window.addEventListener('load', function() {
@@ -133,6 +150,7 @@
                         <button id="export-result"><span data-translated-content="true">Export result</span></button>
                     </div>
                     <div id="results-content"></div>
+                    <div id="results-console"></div>
                 </div>
                 <div id="automata-list-chooser" class="disabled">
                     <p id="automata-list-chooser-intro"></p>

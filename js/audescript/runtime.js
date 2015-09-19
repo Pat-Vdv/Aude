@@ -1,6 +1,6 @@
 /*kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix; */
 /*
-    Copyright (c) 2013-2014, Raphaël Jakse (Université Joseph Fourier)
+    Copyright (c) 2013-2015, Raphaël Jakse (Université Joseph Fourier)
     All rights reserved.
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
@@ -39,15 +39,6 @@
     var Automaton  = that.Automaton  || notdef;
     var Transition = that.Transition || notdef;
 
-    pkg.StopIteration = {};
-    pkg.ReturnValue = function (v) {
-        this.v = v;
-    };
-
-    pkg.ThrowValue = function (v) {
-        this.v = v;
-    };
-
     function tuplesEq(t1, t2) {
         if (t1.length !== t2.length) {
             return false;
@@ -79,9 +70,11 @@
         return true;
     }
 
+    pkg.Tuple = Tuple;
+
     // checks "real" equality between v1 and v2
     pkg.eq = function (v1, v2) {
-        if (v1 instanceof Tuple && v1.length === 1) {
+        if (v1 instanceof pkg.Tuple && v1.length === 1) {
             return pkg.eq(v2, v1[0]);
         }
 
@@ -102,7 +95,7 @@
                                 && pkg.eq(v1.finalStates, v2.finalStates)
                                 && pkg.eq(v1.trans, v2.trans)
                                 && pkg.eq(v1.q_init, v2.q_init)
-                        : (v1 instanceof Tuple
+                        : (v1 instanceof pkg.Tuple
                             ? tuplesEq(v1, v2)
                             : (
                                 (v1.constructor === Object || v1.constructor === Array
@@ -119,47 +112,123 @@
         /*eslint-enable eqeqeq */
     };
 
-    // checks if value can be assigned to variable and return the right value. integerCheck enforce value being an integer.
-    pkg.as = function (variable, value, integerCheck) {
-        if (variable instanceof Set && value instanceof Set) {
-            if (!variable.typeConstraint  || variable.typeConstraint === value.constraintType) {
-                return value;
-            }
-
-            var newVal = new Set();
-            newVal.setTypeConstraint(variable.typeConstraint);
-            newVal.unionInPlace(value);
-            return value;
+    pkg.ct = function (container, value) {
+        // contains
+        if (typeof container === "string" || container instanceof Array) {
+            return container.indexOf(value) !== -1;
         }
 
-        if (value !== null && value !== undefined && variable !== null && value !== undefined) {
-            if (typeof value !== typeof variable && value.constructor !== variable.constructor) {
-                throw new Error(_("Type Error: types don't match."));
-            }
-            return integerCheck ? (value > 0 ? Math.floor(value) : Math.ceil(value)) : value;
+        if (container instanceof Set) {
+            return container.has(value);
         }
-
-        if (value !== variable) {
-            throw new Error(_("Type Error: types don't match."));
-        }
-
-        return value;
     };
 
-    pkg.ct = function (val, type) {
-        if (typeof type === "string") {
-            if (type === "int") {
-                if (!(typeof val === "number" && val % 1 === 0)) {
-                    throw new TypeError(_("type mismatch."));
+    pkg.ict = function (value, container) {
+        return pkg.ct(container, value);
+    };
+
+    pkg.U = pkg.union = function (container1, container2) {
+        return pkg.unionInPlace(
+            pkg.unionInPlace(new Set(), container1),
+            container2
+        );
+    };
+
+    pkg.I = pkg.inter = function (container1, container2) {
+        var res = new Set();
+
+        container2 = pkg.toSet(container2);
+
+        container1.forEach(
+            function (e) {
+                if (container2.has(e)) {
+                    res.add(e);
                 }
-            } else if (typeof val !== type) {
-                throw new TypeError(_("type mismatch."));
             }
-        } else if (val !== null && !(val instanceof type)) {
-            throw new TypeError(_("type mismatch."));
-        }
-        return val;
+        );
+
+        return res;
     };
+
+    pkg.M = pkg.minus = function (container1, container2) {
+        return pkg.minusInPlace(new Set(container1), container2);
+    };
+
+    pkg.minusInPlace = function (container1, container2) {
+        if (container1 instanceof Set) {
+            container1.minusInPlace(container2);
+            return container1;
+        }
+
+        throw new Error(audescript.l10n("Inter in place is only possible with sets"));
+    };
+
+    pkg.subsetOf = function (container1, container2) {
+        return container1.subsetOf(container2);
+    };
+
+    pkg.cross = pkg.X = function (container1, container2) {
+        return pkg.toSet(container1).cross(pkg.toSet(container2));
+    };
+
+    pkg.has = function (container, value) {
+        return container.hasOwnProperty(value);
+    };
+
+    pkg.symDiff = function (container1, container2) {
+        return pkg.toSet(container1).symDiff(container2);
+    },
+
+    pkg.toSet = Set.prototype.toSet;
+
+    pkg.set = function(l) {
+        return new Set(l);
+    };
+
+    pkg.Ui = pkg.unionInPlace = function (container1, container2) {
+        if (container1 instanceof Set) {
+            container1.unionInPlace(container2);
+            return container1;
+        }
+
+        throw new Error(audescript.l10n("Union in place is only possible with sets"));
+    };
+
+    pkg.e = function (v) {
+        if (v instanceof Set) {
+            return v.card() === 0;
+        }
+
+        if (v instanceof Array) {
+            return v.length === 0;
+        }
+
+        if (typeof v === "string") {
+            return v === "";
+        }
+
+        try {
+
+        } catch (e) {
+            throw new Error(audescript.l10n("This value's type is not supported by the 'is (not) empty' operator"));
+        }
+    }
+
+    var modules = {};
+
+    pkg.m = function (moduleName, newModule) {
+        if (newModule && !modules[moduleName]) {
+            modules[moduleName] = {};
+        }
+
+        return modules[moduleName];
+    };
+
+    pkg.tuple = function (arr) {
+        return (new Tuple()).fromList(arr);
+    };
+
+    pkg.console = console;
 
     Object.defineProperty(Object.prototype, "forEach", {
         enumerable: false,
@@ -181,22 +250,4 @@
             return this[this.length - 1];
         }
     });
-
-    try { // eval to allow parsing of the file even in browsers not supporting yield.
-        eval(
-            "Object.defineProperty(Object.prototype, 'iterator', {"
-                +     "enumerable:false,"
-                +     "writable: true,"
-                +     "configurable: true,"
-                +     "value: function () {"
-                +         "for (var i in this) {"
-                +             "if (this.hasOwnProperty(i)) {"
-                +                 "yield this[i];"
-                +             "}"
-                +         "}"
-                +         "return;"
-                +     "}"
-                + "});"
-        );
-    } catch (ignore) {}
 }((typeof exports !== "undefined" && exports) || (this.audescript || (this.audescript = {})), this));

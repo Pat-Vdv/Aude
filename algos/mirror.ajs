@@ -1,37 +1,39 @@
-function mirror(A) {
-   mirA : Automaton;
-   F    : Set of State = A.getFinalStates();
+export function mirror(A)
+    let mirA := new Automaton
+    let F    := A.getFinalStates()
 
-   switch(F.card()) {
-      case 0:
-         mirA.setInitialState('I');
-         return mirA;
-      case 1:
-         mirA.setInitialState(F.getItem());
-         break;
-      default:
-         ini : String = 'I';
-         while(A.hasState(ini)) {
-            ini += 'I';
-         }
+    if F.card() = 0 then
+        mirA.setInitialState("I")
+        return mirA
+    else if F.card() = 1 then
+        let f := F.getItem()
+        mirA.setInitialState(f);
+    else
+        let ini := "I"
 
-         mirA.setInitialState(ini);
-         foreach(state in F) {
-            mirA.addState(state);
-            mirA.addTransition(ini, epsilon, state);
-         }
-   }
+        while A.hasState(ini) do
+            ini := ini + "I"
+        done
 
-   foreach(state in A.getStates()) {
-      mirA.addState(state);
-   }
-   foreach(t in A.getTransitions()) {
-      mirA.addTransition(t.endState, t.symbol, t.startState);
-   }
+        mirA.setInitialState(ini)
 
-   mirA.setFinalState(A.getInitialState());
+        foreach state in F do
+            mirA.addState(state)
+            mirA.addTransition(ini, epsilon, state)
+        done
+    end if
 
-   return mirA;
-}
+    foreach state in A.getStates() do
+        mirA.addState(state)
+    done
 
-run(mirror, get_automaton(currentAutomaton));
+    foreach t in A.getTransitions() do
+        mirA.addTransition(t.endState, t.symbol, t.startState)
+    done
+
+    mirA.setFinalState(A.getInitialState())
+
+    return mirA
+end function
+
+run(mirror, get_automaton(currentAutomaton))

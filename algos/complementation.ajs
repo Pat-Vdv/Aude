@@ -1,13 +1,13 @@
-include completion;
+from completion import complete;
 
-function complement(A) {
-   compA : Automaton = complete(A);
+function complement(A)
+   let compA := complete(A);
 
-   foreach(state in compA.getStates()) {
-      compA.toggleFinalState(state);
-   }
+   foreach state in compA.getStates() do
+      compA.toggleFinalState(state)
+   done
 
-   return compA;
-}
+   return compA
+end function
 
 run(complement, get_automaton(currentAutomaton));

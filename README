@@ -1,123 +1,146 @@
-Aude (http://automata.forge.imag.fr/) is a free (as in free speech and in free beer) software to teach and experiment with automata.
+Aude (http://automata.forge.imag.fr/) is a free (as in free speech and in free
+beer) software to teach and experiment with automata.
 
 What is a finite state automaton?
 ---------------------------------
 
-   An a finite state automaton is a mathematical object behind regular expressions and robots. More precisely, we can define a finite state automaton as a quintuplet composed of:
+   An a finite state automaton is a mathematical object behind regular
+   expressions and robots. More precisely, we can define a finite state
+   automaton as a quintuplet composed of:
 
     - Q     : a set of states
     - Sigma : a set of symbols
     - q0    : an initial state
-    - Delta : a set of transitions, a transition being a (state, symbol, state) triplet.
+    - Delta : a set of transitions, a transition being a (state, symbol, state)
+              triplet.
     - F     : a subset of Q in which states are considered accepting / final
 
 What does this program do?
 --------------------------
 
-   This program let the user write, draw or represent automata, run or write automata/set-related algorithms. To write algorithms, a convenient language strongly inspired of Javascript has been designed: Audescript. This language as native support for automata and sets. Sets have their own dedicated notation and the language defines common set operations as operators such as minus, inter, union and allow set iteration thanks to a foreach structure. But you don’t have to write algorithms: Aude comes with a set of predefined algorithms commonly found in lectures about finite state automata.
+   This program lets the user write, draw or represent automata, run or write
+   automata/set-related algorithms. To write algorithms, a convenient language
+   strongly inspired of Javascript has been designed: Audescript. This language
+   as native support for automata and sets. Sets have their own dedicated
+   notation and the language defines common set operations as operators such as
+   minus, inter, union and allow set iteration thanks to a foreach structure.
+   But you don’t have to write algorithms: Aude comes with a set of predefined
+   algorithms commonly found in lectures about finite state automata.
 
-   In the near future, it should be possible to run a automaton on a word and follow the execution graphically, find a regular expression from an automaton and a automaton from a regular expression, and even more.
 
 How do I run the program?
 -------------------------
 
    Just open "index.html" in a recent browser.
 
+   With Chrome / Chromium and newest version of Opera, you need to run a web
+   server. Mac / Linux users can run the following command in Aude's folder:
+
+        python -m SimpleHTTPServer 8010
+
+   Then, Aude is accessible at http://localhost:8010/
+
+   Windows users are advised to use Mozilla Firefox, this is probably the
+   simplest option.
+
    Supported browsers are:
-    - The last version of Firefox (22+)
-    - The last version of Google Chrome / Chromium (28+)
-    - The last version of Opera (15+)
+    - The last version of Firefox
     - A recent version of Rekonq or any other browser that makes use of Webkit
+    - The last version of Google Chrome / Chromium
+    - The last version of Opera
 
    Should work on:
     - a recent version of Safari
 
-   Might work on:
-    - IE 10+, but this is untested
+   Probably does not work on Internet Explorer / Edge as Aude is untested in
+   these browser. Yell at Microsoft to provide a Linux version which doesn't
+   requires downloading Gigabytes of Windows virtual machines and having
+   hundreds of gigabytes of RAM to run them. We advise users of Internet
+   Explorer and Edge to consider using another browser for their own sanity
+   anyway.
 
-   Should not work on:
-    - tablets
-
-   Will probably never work on IE < 10.
+   Note that in browsers using a relatively old version of WebKit, you won't be
+   able to see line numbers when an error in a audescript program occurs. If
+   you intend to program in Audescript, you might want to use Firefox, Chromium
+   or a new version of Opera.
 
 Running Audescript programs outside of the browser?
 ---------------------------------------------------
 
-    This is possible if you have node.js installed on your system. It was only tested on Linux so far. Run:
+    This is not possible yet, but we are working on it. Everything was thought
+    to make this possible.
 
-    $ ./audescript yourprogram.ajs parameters...
+    In the meantime, you can get the Javascript output of any program by
+    running:
 
-    If you installed aude in your system, you can run
+        nodejs js/audescript/audescript.js your-program.ajs
 
-    $ audescript yourprogram.ajs parameters...
-
-	Audescript can also act as an interactive shell:
-
-     $ ./audescript
-
-    File redirections are also supported:
-
-     $ ./audescript < file.ajs
-
-    If you installed aude in your system (with make install for example), you can leave the "./" part.
+    your-program.js is produced. Running it directly is not possible yet though,
+    as it requires a package yet to be written, audescript-runtime, providing
+    function needed to run Audescript programs and a way to handle dependencies
+    between Audescript program.
 
 Installing
 ----------
 
-    Installing is not mandatory and it is only supported on Unix-like systems. It allows you to launch aude and audescript from any folder.
-    If you want to install Aude, just type:
+    This is not possible easily in this version of Aude.
 
-     $ sudo make install
-
-    in the aude folder. Two programs are installed in /usr/local/bin: “aude” and “audescript“. If you want to install to somewhere else:
-
-     $ DESTDIR=somewhere/else sudo make install
-
-    make install will then put things in somewhere/else/bin and somewhere/else/share/aude.
-
-    - To launch aude in firefox:
-        $ BROWSER=firefox aude
-    - To launch aude in chromium:
-        $ BROWSER=chromium-browser aude
-    - To launch audescript:
-        $ audescript
-
-    Opera version before 15 is not supported.
 Unit tests
 -----------
 
-    Run:
-     $ ./audescript tests/test.js
+    Run the Unit Tests algorithm in Aude. Running unit tests in a terminal is
+    coming soon.
 
 Author
 ------
+
    Raphaël Jakse (UJF) : raphael dot jakse at imag dot fr
    Supervised by Yliès Falcone : ylies dot falcone at ujf-grenoble dot fr
 
-   This program was started as a personal project around November 2012. The main goal was to get to know automata and related algorithms, and also help friends in their revisions, in the hope more people, teachers included, would find it useful.
-   As of July of 2013, however, most of the development was done during a stage at Verimag supervised by Yliès Falcone (from the LIG Laboratory) and paid by the Université Joseph Fourier, Grenoble.
+   This program was started as a personal project around November 2012. The main
+   goal was to get to know automata and related algorithms, and also help
+   friends in their revisions, in the hope more people, teachers included, would
+   find it useful.
+
+   A big part of Aude, however, was written during an internship in summer 2013
+   at Verimag, supervised by Yliès Falcone (from the LIG Laboratory) and paid by
+   the Université Joseph Fourier, Grenoble.
+
+   Since then, Aude is continued during my spare time, in coordination with
+   Yliès' lessons at UJF.
+
+   In September 2015, the user interface was refreshed. More notably, the old
+   custom scripting language based on the Javascript syntax to write Aude's
+   algorithms was dropped in favor of a new syntax, closer to pseudo code
+   language.
 
 What is the license of the program?
 -----------------------------------
 
    Some parts are under a BSD license:
-      set.js, automata.js, automatajs.js, automaton2dot.js ; these pieces of code are completely independent from other parts.
+      set.js, automata.js, automatajs.js, automaton2dot.js ; these pieces of
+      code are completely independent from other parts.
 
    Some parts are under a GPL 3+:
-      index.html, automatagui.js, automatadesigner.js
+      index.html, gui.js, automatadesigner.js, audescript.ts
 
    One file is under WTFPL (read the file's header for more information):
       mousewheel.js
 
-   If you have doubts about a license to respect for a particular file, GPLv3+ is fine. You can also contact the author.
+   If you have doubts about a license to respect for a particular file, GPLv3+
+   is fine. You can also contact the author.
 
    This program makes use of the following external projects :
-    - libD, under GPL 3+.
-    - viz.js, which is Graphviz compiled in Javascript. See lib/COPYING.viz.txt for more information
-    - fileSaver.js, which is under X11/MIT, see lib/LICENSE.fileSaver.md for more information
-    - CodeMirror, which is under a MIT-style license. see lib/codemirror/LICENSE for more information
+    - libD, under GPLv3+.
+    - viz.js, which is Graphviz compiled in Javascript. See lib/COPYING.viz.txt
+      for more information
+    - fileSaver.js, which is under X11/MIT, see lib/LICENSE.fileSaver.md for
+      more information
+    - Ace, which is under a BSD license.
     - Hammer, which is under MIT.
-    - A subset of the Oxygen iconset (http://www.oxygen-icons.org) which is dual licensed : under the Creative Common Attribution-ShareAlike 3.0 License or the GNU Library General Public License.
+    - A subset of the Oxygen iconset (http://www.oxygen-icons.org) which is dual
+      licensed : under the Creative Common Attribution-ShareAlike 3.0 License or
+      the GNU Library General Public License.
 
    The GPLv3 license can be consulted in the file gpl.txt.
    The WTFPL license can be consulted in the file wtfpl.txt.

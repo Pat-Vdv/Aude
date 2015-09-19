@@ -12,8 +12,8 @@ Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2}) a Automaton({1,2}, {a,b}, 
 
 
 <g id="QXV0b21hdG9uKHsxLDJ9LCB7YSxifSwgMSwge1RyYW5zaXRpb24oMSwgYSwgMil9LHsyfSk=" class="node"><title>Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})</title>
-<ellipse fill="transparent" stroke="black" cx="340" cy="259.8" rx="217.748" ry="217.748"></ellipse>
-<ellipse fill="transparent" stroke="black" cx="340" cy="259.8" rx="221.746" ry="221.746"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="340" cy="259.8" rx="217.748" ry="217.748"></ellipse>
+<ellipse fill="white" fill-opacity="0" stroke="black" cx="340" cy="259.8" rx="221.746" ry="221.746"></ellipse>
 <text text-anchor="middle" x="340" y="264" font-family="Times,serif" font-size="14.00">Automaton({1,2}, {a,b}, 1, {Transition(1, a, 2)},{2})</text>
 </g>
 

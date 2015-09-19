@@ -1,204 +1,242 @@
-include minimization;
+from minimization import minimize
 
-function automatonToRE(A, retStruct) {
-   A = minimize(A);
-   
-   function string(e) {
-      if(e.type === 'epsilon') {
-         return 'ε';
-      }
-      else if(e.type === 'symbol') {
-         return Set.prototype.elementToString(e.v);
-      }
-         else if(e.type === '+') {
-            let l = e.v.getSortedList();
-            let res = '';
-            for(var i = 0, len = l.length; i < len; ++i) {
-               res += (res ? '+' : '') + string(l[i]);
-            }
-            return res;
-         }
-            else if(e.type === '.') {
-               if(e.v.type === '+') {
-                  return '(' + string(e.v) + ')';
-               }
-               else {
-                  res = '';
-                  let l = e.v;
-                  for(var i = 0, len = l.length; i < len; ++i) {
-                     if(l[i].type === '+') {
-                        res += '(' + string(l[i]) + ')';
-                     }
-                     else {
-                        res += string(l[i]);
-                     }
-                  }
-                  return res;
-               }
-            }
-               else if(e.type === '*') {
-                  if(e.v.type === '.' || e.v.type === '+') {
-                     return '(' + string(e.v) + ')*';
-                  }
-                  else {
-                     return string(e.v) + '*';
-                  }
-               }
-                  else if(e.type === 'void') {
-                     return '∅';
-                  }
-                     else {
-                        return '<err>';
-                     }
-   }
-   
-   function RE_epsilon() {
-      return {type:'epsilon'};
-   }
-   
-   function RE_void() {
-      return {type:'void'};
-   }
-   
-   function RE(o) {
-      return o;
-   }
-   
-   function RE_symbol(a) {
-      return {type:'symbol', v:a};
-   }
-   
-   function RE_star(RE) {
-      if(RE.type === 'void') {
-         return RE_void();
-      }
-      if(RE.type === 'epsilon') {
-         return RE_epsilon();
-      }
-      if(RE.type === 'star') {
-         return RE;
-      }
-      if(RE.type === '+' && RE_epsilon() belongsTo RE.v) {
-         let v = RE.v minus {RE_epsilon()};
-         if(v.card() > 1) {
-            return {
-               type:'*', v: {
-                  type:'+',
-                  v:RE.v minus {RE_epsilon()}
-               }
-            };
-         }
-         else {
-            return {type:'*', v:v.getItem()};
-         }
-      }
-      return {type:'*', v:RE};
-   }
-   
-   function RE_sum(RE1, RE2) {
-      if(RE1.type === 'void' || RE1 == RE2) {
-         return RE2;
-      }
-      if(RE2.type === 'void') {
-         return RE1;
-      }
-      if(RE1.type === '+') {
-         return {type:'+', v: RE2.type === '+' ? RE2.v union RE1.v : {RE2} union RE1.v};
-      }
-      if(RE2.type === '+') {
-         return {type:'+', v: {RE1} union RE2.v};
-      }
-      return {type:'+', v:{RE1, RE2}};
-   }
-   
-   function RE_cat(RE1, RE2) {
-      if(RE1.type === 'void' || RE2.type === 'void') {
-         return RE_void();
-      }
-      if(RE1.type === 'epsilon') {
-         return RE2;
-      }
-      if(RE2.type === 'epsilon') {
-         return RE1;
-      }
-      if(RE1.type === '.') {
-         return {type: '.', v:RE2.type === '.' ?  RE1.v.concat(RE2.v) : RE1.v.concat([RE2])};
-      }
-      if(RE2.type === '.') {
-         return {type:'.', v:[RE1].concat(RE2.v)};
-      }
-      return {type: '.', v:[RE1, RE2]};
-   }
-   
-   // We implement http://www.cs.uiuc.edu/class/fa06/cs475/Lectures/lec5.pdf
-   
-   
-   let Q     = A.getStates().getList();
-   let n     = Q.length;
-   let trans = A.getTransitionFunction(true);
-   let Sigma = A.getAlphabet();
-   
-   let L = [];
-   q0 : State;
-   
-   // Base case
-   L[0] = [];
-   foreach(i in {0,...,n-1}) {
-      L[0][i] = [];
-      if(Q[i] === A.getInitialState()) {
-         q0 = i;
-      }
-      foreach(j in {0,...,n-1}) {
-         L[0][i][j] = RE_void(); 
-         foreach(a in Sigma) {
-            if(trans(Q[i], a) === Q[j]) {
-               L[0][i][j] = RE_sum(L[0][i][j], RE_symbol(a));
-            }
-            if(i === j) {
-               L[0][i][j] = RE_sum(L[0][i][j], RE_epsilon());
-            }
-         }
-      }
-   }
-   
-   foreach(k in {1,...,n-1}) {
-      L[k] = [];
-      foreach(i in {0,...,n-1}) {
-         L[k][i] = [];
-         foreach(j in {0,...,n-1}) {
-            L[k][i][j] = RE_sum(
-               L[k-1][i][j],
-               RE_cat(
-                  L[k-1][i][k],
-                  RE_cat(
-                     RE_star(L[k-1][k][k]),
-                     L[k-1][k][j]
-                  )
-               )
-            );
-         }
-      }
-   }
-   
-   let F   = A.getFinalStates();
-   let res = RE_void();
-   for(let f in Q) {
-      if(Q[f] belongsTo F) {
-         res = RE_sum(res, L[n-1][q0][f]);
-      }
-   }
-   return retStruct ? res : string(res);
-}
+export function automatonToRE(A, retStruct)
+    A := minimize(A)
 
-run(function(A) {
-   let res = automatonToRE(A);
-   if(this.MathJax) {
-      let span = document.createElement('span');
-      span.textContent = '$$\\rm{' + res.replace(/\(/g, '\\left(').replace(/\)/g, '\\right)').replace(/\*/g, '\\text{*}').replace(/∅/g, '\\emptyset') + '}$$';
-      MathJax.Hub.Queue(["Typeset",MathJax.Hub,span]);
-      return span;
-   }
-   else {
-      return res;
-   }
-}, get_automaton(currentAutomaton));
+    function string(e)
+        if e.type = "epsilon" then
+            return "ε"
+
+        else if e.type = "symbol" then
+            return Set.prototype.elementToString(e.v)
+
+        else if e.type = "+" then
+            let l := e.v.getList();
+            let res := ""
+
+            l.sort()
+
+            for i from 0 to  l.length - 1 do
+                res += (if res then "+" else "") + string(l[i])
+            done
+
+            return res
+        else if e.type = "." then
+            if e.v.type = "+" then
+                return "(" + string(e.v) + ")"
+            end if
+
+            res := ""
+            let l := e.v
+
+            for i from 0 to l.length - 1 do
+                if l[i].type = "+" then
+                    res += "(" + string(l[i]) + ")"
+                else
+                    res += string(l[i])
+                end if
+            done
+
+            return res
+        else if e.type = "*" then
+            if e.v.type = "." or e.v.type = "+" then
+                return "(" + string(e.v) + ")*"
+            end if
+
+            return string(e.v) + "*"
+        else if e.type = "void" then
+            return "∅"
+        else
+            return "<err>"
+        end if
+    end function
+
+    function type(type, val)
+        let res := new Object
+        res.type := type
+        res.v := val
+
+        return res
+    end function
+
+    function RE_epsilon()
+        return type("epsilon")
+    end function
+
+    function RE_void()
+        return type("void")
+    end function
+
+    function RE(o)
+        return o
+    end function
+
+    function RE_symbol(a)
+        return type("symbol", a)
+    end function
+
+    function RE_star(RE)
+        if RE.type = "void" then
+            return RE_void()
+        else if RE.type = "epsilon" then
+            return RE_epsilon()
+        else if RE.type = "star" then
+            return RE
+        else if RE.type = "+" and RE_epsilon() belongs to RE.v then
+            let v := RE.v minus {RE_epsilon()}
+            if v.card() > 1 then
+                return type(
+                    "*",
+                    type(
+                         "+",
+                         RE.v minus {RE_epsilon()}
+                    )
+                )
+            else
+                let v0 := v.getItem();
+                return type("*", v0)
+            end if
+        end if
+
+        return type("*", RE)
+    end function
+
+    function RE_sum(RE1, RE2)
+        if RE1.type = "void" or RE1 = RE2 then
+            return RE2
+        else if RE2.type = "void" then
+            return RE1
+        else if RE1.type = "+" then
+            return type("+", if RE2.type = "+" then RE2.v union RE1.v else {RE2} union RE1.v)
+        else if RE2.type = "+" then
+            return type("+", {RE1} union RE2.v)
+        end if
+
+        return type("+", {RE1, RE2})
+    end function
+
+    function RE_cat(RE1, RE2)
+        return (
+            if RE1.type = "void" or RE2.type = "void" then
+               RE_void()
+            else if RE1.type = "epsilon" then
+               RE2
+            else if RE2.type = "epsilon" then
+                RE1
+            else if RE1.type = "." then
+                type(
+                     ".",
+                     (
+                        if RE2.type = "." then
+                            RE1.v.concat(RE2.v)
+                        else
+                            RE1.v.concat([RE2])
+                    )
+                )
+            else if RE2.type = "." then
+                type(".", [RE1].concat(RE2.v))
+            else
+                type(".", [RE1, RE2])
+        )
+    end function
+
+    // We implement http://www.cs.uiuc.edu/class/fa06/cs475/Lectures/lec5.pdf
+
+
+    let Q     := A.getStates().getList()
+    let n     := Q.length
+    let trans := A.getTransitionFunction(true)
+    let Sigma := A.getAlphabet()
+
+    let L := []
+    let q0 := nil
+
+    // Base case
+    L[0] := []
+
+    for i from 0 to n - 1 do
+        L[0][i] := []
+
+        if Q[i] = A.getInitialState() then
+            q0 := i
+        end if
+
+        for j from 0 to n - 1 do
+            L[0][i][j] := RE_void()
+
+            foreach a in Sigma do
+                if trans(Q[i], a) = Q[j] then
+                    L[0][i][j] := RE_sum(L[0][i][j], RE_symbol(a))
+                end if
+
+                if i = j then
+                    L[0][i][j] := RE_sum(L[0][i][j], RE_epsilon())
+                end if
+            done
+        done
+    done
+
+    for k from 1 to n - 1 do
+        L[k] := []
+
+        for i from 0 to n - 1 do
+            L[k][i] := []
+
+            for j from 0 to n - 1 do
+                L[k][i][j] := RE_sum(
+                    L[k-1][i][j],
+                    RE_cat(
+                        L[k-1][i][k],
+                        RE_cat(
+                            RE_star(L[k-1][k][k]),
+                            L[k-1][k][j]
+                        )
+                    )
+                )
+            done
+        done
+    done
+
+    let F   := A.getFinalStates()
+    let res := RE_void()
+
+    for f from 0 to n - 1 do
+        if Q[f] belongs to F then
+            res := RE_sum(res, L[n-1][q0][f])
+        end if
+    done
+
+    return (
+        if retStruct then
+            res
+        else
+            string(res)
+    )
+end function
+
+run(
+    function (A)
+        let res := automatonToRE(A)
+
+        if this.MathJax then
+            let span := document.createElement("span")
+
+            span.textContent := (
+                "$$\\rm{" + (
+                    res.replace(/\(/g, "\\left(")
+                       .replace(/\)/g, "\\right)")
+                       .replace(/\*/g, "\\text{*}")
+                       .replace(/∅/g, "\\emptyset")
+                ) +
+                "}$$"
+            )
+
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, span])
+
+            return span
+        end if
+
+        return res
+    end function,
+    get_automaton(currentAutomaton)
+)

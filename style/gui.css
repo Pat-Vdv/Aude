@@ -168,10 +168,11 @@ button * {
    bottom:0;
    position:absolute;
 }
-.CodeMirror {
+
+#codeedit {
    font-size:11pt;
    line-height:16pt;
-   font-family: "Monospace", "DejaVu Sans Mono", "Liberation Mono", "Ubuntu Mono", monospace;
+   font-family: "Monaco","Menlo","Consolas","Monospace","Droid Sans Mono","DejaVu Sans Mono", "Liberation Mono", "Ubuntu Mono", monospace;
    height:100%;
 }
 
@@ -737,3 +738,13 @@ input[type=button], button, select {
 input[type=button]:active, button:active {
    background:#D5D5D5
 }
+
+.libD_notify-descr svg {
+    max-width:100%
+}
+
+.libD_notify {
+    overflow:hidden;
+    max-height:75%
+}
+

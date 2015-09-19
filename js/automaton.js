@@ -1,6 +1,6 @@
 /*kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix; */
 /*jslint browser: true, ass: true, continue: true, es5: false, forin: true, todo: true, vars: true, white: true, indent: 3 */
-/*jshint noarg:true, noempty:true, eqeqeq:true, boss:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
+/*jshint noarg:true, n.clear():true, eqeqeq:true, boss:true, bitwise:true, strict:true, undef:true, unused:true, curly:true, indent:3, maxerr:50, browser:true, es5:false, forin:false, onevar:false, white:false */
 
 /*
     Copyright (c) 2013-2014, Raphaël Jakse (Université Joseph Fourier)
@@ -30,7 +30,7 @@
 */
 
 /*jslint indent:4, plusplus:true, nomen:true */
-/*global Set:false, to_set:false */
+/*global Set:false, aude:false */
 
 /**
  * @file This is a class to manipulate automata in Javascript
@@ -64,9 +64,9 @@
     pkg.Automaton = function (states, Sigma, qInit, trans, finalStates) {
         if (states) {
             if (states instanceof pkg.Automaton) {
-                pkg.Automaton.call(this, states.states.copy(), states.Sigma.copy(), states.qInit, states.trans.copy(), states.finalStates.copy());
-                this.currentStates = states.currentStates.copy();
-                this.lastTakenTransitions = states.lastTakenTransitions.copy();
+                pkg.Automaton.call(this, new Set(states.states), new Set(states.Sigma), states.qInit, new Set(states.trans), new Set(states.finalStates));
+                this.currentStates = new Set(states.currentStates);
+                this.lastTakenTransitions = new Set(states.lastTakenTransitions);
                 return;
             }
 
@@ -75,17 +75,16 @@
             }
         }
 
-        this.states = to_set(states);
-        this.Sigma = to_set(Sigma);
+        this.states = aude.toSet(states);
+        this.Sigma = aude.toSet(Sigma);
         this.qInit = qInit;
-        this.trans =  to_set(trans);
-        this.trans.setTypeConstraint(pkg.Transition);
-        this.finalStates = to_set(finalStates);
+        this.trans =  aude.toSet(trans);
+        this.finalStates = aude.toSet(finalStates);
+
         if (!this.currentStates) {
             this.currentStates = new Set();
             this.lastTakenTransitions = new Set();
         }
-        this.lastTakenTransitions.setTypeConstraint(pkg.Transition);
     };
 
     var _      = pkg.Automaton.l10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; },
@@ -153,7 +152,7 @@
          * @param {any} state The state to add or remove, can be of any type.
          */
         toggleFinalState: function (state) {
-            if (this.finalStates.contains(state)) {
+            if (this.finalStates.has(state)) {
                 this.setNonFinalState(state);
             } else {
                 this.setFinalState(state);
@@ -197,7 +196,7 @@
          * @returns {Set} The Set of non final states
          */
         getNonFinalStates: function () {
-            return this.getStates().minus(this.getFinalStates());
+            return aude.minus(this.getStates(), this.getFinalStates());
         },
 
         /**
@@ -208,7 +207,7 @@
          * @see Automaton#getNonAcceptingStates
          */
         getNonAcceptingStates: function () {
-            return this.getStates().minus(this.getFinalStates());
+            return aude.minus(this.getStates(), this.getFinalStates());
         },
 
         /**
@@ -230,7 +229,7 @@
          */
         setStates: function (states, dontCopy) {
             if (states instanceof Set || states instanceof Array) {
-                this.states = dontCopy ? to_set(states) : new Set(states);
+                this.states = dontCopy ? aude.toSet(states) : new Set(states);
             } else {
                 throw new Error(_("Automaton.setStates(): The given argument is not a Set."));
             }
@@ -269,7 +268,7 @@
          */
         setFinalStates: function (states, dontCopy) {
             if (states instanceof Set || states instanceof Array) {
-                this.finalStates = dontCopy ? to_set(states) : new Set(states);
+                this.finalStates = dontCopy ? aude.toSet(states) : new Set(states);
             } else {
                 throw new Error(_("Automaton.setFinalStates(): The given argument is not a Set."));
             }
@@ -328,7 +327,7 @@
          * @returns {boolean} Returns true if the states is in the automaton, false otherwise.
          */
         hasState: function (state) {
-            return this.states.contains(state);
+            return this.states.has(state);
         },
 
         /**
@@ -339,7 +338,7 @@
          * @returns {boolean} Returns true if the states is in the automaton, false otherwise.
          */
         isFinalState: function (state) {
-            return this.finalStates.contains(state);
+            return this.finalStates.has(state);
         },
 
          /**
@@ -350,7 +349,7 @@
          * @see Automaton#isFinalState
          */
         isAcceptingState: function (state) {
-            return this.finalStates.contains(state);
+            return this.finalStates.has(state);
         },
 
         /**
@@ -423,7 +422,7 @@
                 return this.hasTransition(new pkg.Transition(t, t1, t2));
             }
 
-            return this.trans.contains(t);
+            return this.trans.has(t);
         },
 
         /**
@@ -483,7 +482,7 @@
          * @see Transition
          */
         getTransitionFunction: function (determinizedFunction) {
-            var transList = this.getTransitions().getList(),
+            var transList = aude.toArray(this.getTransitions()),
                 transition,
                 symbolsByState = [],
                 startState,
@@ -498,7 +497,7 @@
                 transition = transList[t];
                 startStates.add(transition.startState);
                 endStates.add(transition.endState);
-                startState = Set.prototype.elementToString(transition.startState);
+                startState = aude.elementToString(transition.startState);
                 if (!symbolsByState[startState]) {
                     symbolsByState[startState] = new Set();
                     endStatesByStartStateBySymbols[startState] = {};
@@ -514,7 +513,7 @@
                         endStatesByStartStateEpsilon[startState].add(transition.endState);
                     }
                 } else {
-                    symbol = Set.prototype.elementToString(transition.symbol);
+                    symbol = aude.elementToString(transition.symbol);
                     if (determinizedFunction) {
                         endStatesByStartStateBySymbols[startState][symbol] = transition.endState;
                     } else {
@@ -538,18 +537,18 @@
                     case 0:
                         return startStates;
                     case 1:
-                        return symbolsByState[Set.prototype.elementToString(startState)] || new Set();
+                        return symbolsByState[aude.elementToString(startState)] || new Set();
                     case 2:
                         var s;
                         if (symbol === pkg.epsilon) {
-                            s = endStatesByStartStateEpsilon[Set.prototype.elementToString(startState)];
+                            s = endStatesByStartStateEpsilon[aude.elementToString(startState)];
                             if (!determinizedFunction && s === undefined) {
                                 return new Set();
                             }
                             return s;
                         }
 
-                        s = (endStatesByStartStateBySymbols[Set.prototype.elementToString(startState)] || [])[Set.prototype.elementToString(symbol)];
+                        s = (endStatesByStartStateBySymbols[aude.elementToString(startState)] || [])[aude.elementToString(symbol)];
                         if (!determinizedFunction && s === undefined) {
                             return new Set();
                         }
@@ -593,7 +592,7 @@
          * @see Automaton#removeSymbol
          */
         addAlphabet: function (alphabet) {
-            this.Sigma.unionInPlace(alphabet);
+            aude.unionInPlace(this.Sigma, alphabet);
         },
 
         /**
@@ -608,7 +607,7 @@
          * @see Automaton#removeSymbol
          */
         removeAlphabet: function (alphabet) {
-            this.Sigma.minusInPlace(alphabet);
+            aude.minusInPlace(this.Sigma, alphabet);
         },
 
         /**
@@ -643,7 +642,7 @@
          * @see Automaton#removeSymbol
         */
         hasSymbol: function (symbol) {
-            return this.trans.contains(symbol);
+            return this.trans.has(symbol);
         },
 
         /**
@@ -669,7 +668,7 @@
          * @returns {string} Returns the string representation of the Set.
          */
         toString: function () {
-            return "Automaton(" + Set.prototype.elementToString(this.states) + ", " + Set.prototype.elementToString(this.Sigma) + ", " + Set.prototype.elementToString(this.qInit) + ", " + Set.prototype.elementToString(this.trans) + "," + Set.prototype.elementToString(this.finalStates) + ")";
+            return "Automaton(" + aude.elementToString(this.states) + ", " + aude.elementToString(this.Sigma) + ", " + aude.elementToString(this.qInit) + ", " + aude.elementToString(this.trans) + "," + aude.elementToString(this.finalStates) + ")";
         },
 
         /**
@@ -685,9 +684,9 @@
          * @see Automaton#getCurrentStates
         */
         setCurrentState: function (state) {
-            this.lastTakenTransitions.empty();
-            if (this.states.contains(state)) {
-                this.currentStates.empty();
+            this.lastTakenTransitions.clear();
+            if (this.states.has(state)) {
+                this.currentStates.clear();
                 this.currentStates.add(state);
                 this.currentStatesAddAccessiblesByEpsilon();
             }
@@ -706,11 +705,11 @@
          * @see Automaton#getCurrentStates
         */
         setCurrentStates: function (states) {
-            this.lastTakenTransitions.empty();
-            states = to_set(states);
+            this.lastTakenTransitions.clear();
+            states = aude.toSet(states);
             if (states.subsetOf(this.states)) {
-                this.currentStates.empty();
-                this.currentStates.unionInPlace(to_set(states));
+                this.currentStates.clear();
+                aude.unionInPlace(this.currentStates, aude.toSet(states));
                 this.currentStatesAddAccessiblesByEpsilon();
             }
         },
@@ -728,7 +727,7 @@
          * @see Automaton#getCurrentStates
         */
         addCurrentState: function (state) {
-            if (this.states.contains(state)) {
+            if (this.states.has(state)) {
                 this.currentStates.add(state);
                 this.currentStatesAddAccessiblesByEpsilon();
             }
@@ -763,7 +762,7 @@
          * @see Automaton#getCurrentStates
         */
         addCurrentStates: function (states) {
-            this.currentStates.unionInPlace(states);
+            aude.unionInPlace(this.currentStates, states);
         },
 
         /**
@@ -779,7 +778,7 @@
          * @see Automaton#getCurrentStates
         */
         removeCurrentStates: function (states) {
-            this.currentStates.minusInPlace(states);
+            aude.minusInPlace(this.currentStates, states);
         },
 
         /**
@@ -806,7 +805,7 @@
          * @param {Set} [visited] States that were already visited by the function.
          */
         currentStatesAddAccessiblesByEpsilon: function (transitionFunction, visited) {
-            var cs   = this.currentStates.getList(),
+            var cs   = aude.toArray(this.currentStates),
                 cont = false, // we continue if we added states
                 th   = this;
 
@@ -821,7 +820,7 @@
             var i;
 
             function browseState(state) {
-                if (!visited.contains(state)) {
+                if (!visited.has(state)) {
                     th.currentStates.add(state);
                     th.lastTakenTransitions.add(new pkg.Transition(cs[i], pkg.epsilon, state));
                     cont = true;
@@ -829,7 +828,7 @@
             }
 
             for (i = 0; i < cs.length; ++i) {
-                if (!visited.contains(cs[i])) {
+                if (!visited.has(cs[i])) {
                     visited.add(cs[i]);
                     transitionFunction(cs[i], pkg.epsilon).forEach(browseState);
                 }
@@ -878,9 +877,9 @@
 
             this.getSuccessors(state).forEach(
                 function (s) {
-                    if (s !== state && !visited.contains(s)) {
+                    if (s !== state && !visited.has(s)) {
                         visited.add(s);
-                        visited.unionInPlace(that.getReachable(s, visited));
+                        aude.unionInPlace(visited, that.getReachable(s, visited));
                     }
                 }
             );
@@ -907,9 +906,9 @@
                 throw new Error(_("Automaton.runSymbol(): epsilon is forbidden."));
             }
 
-            if (!this.Sigma.contains(symbol)) {
-                this.lastTakenTransitions.empty();
-                this.currentStates.empty();
+            if (!this.Sigma.has(symbol)) {
+                this.lastTakenTransitions.clear();
+                this.currentStates.clear();
                 return false;
             }
 
@@ -918,10 +917,10 @@
             }
 
             if (!dontEraseTakenTransitions) {
-                this.lastTakenTransitions.empty();
+                this.lastTakenTransitions.clear();
             }
 
-            var cs = this.currentStates.getList(),
+            var cs = aude.toArray(this.currentStates),
                 th = this;
 
             var i;
@@ -969,12 +968,12 @@
          * @see Automaton#runWord
         */
         acceptedWord: function (symbols) {
-            var states      = this.getCurrentStates().getList(),
-                transitions = this.getLastTakenTransitions().copy();
+            var states      = aude.toArray(this.getCurrentStates()),
+                transitions = new Set(this.getLastTakenTransitions());
 
             this.setCurrentState(this.getInitialState());
             this.runWord(symbols);
-            var accepted = !(this.currentStates.inter(this.finalStates).isEmpty());
+            var accepted = aude.inter(this.currentStates, this.finalStates).card() !== 0;
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;
             return accepted;
@@ -1013,184 +1012,11 @@
 
     pkg.Transition.prototype = {
         toString: function () {
-            return "Transition(" + Set.prototype.elementToString(this.startState) + ", " + Set.prototype.elementToString(this.symbol) + ", " + Set.prototype.elementToString(this.endState) + ")";
+            return "Transition(" + aude.elementToString(this.startState) + ", " + aude.elementToString(this.symbol) + ", " + aude.elementToString(this.endState) + ")";
         }
     };
 
     pkg.Transition.prototype.serializeElement = pkg.Transition.prototype.toString;
-
-    pkg.new_automaton = function () {
-        return new pkg.Automaton();
-    };
-
-    pkg.add_state = function (a, state, final) {
-        return a.addState(state, final);
-    };
-
-    pkg.add_final_state = function (a, state) {
-        return a.addFinalState(state);
-    };
-
-    pkg.remove_state = function (a, state) {
-        return a.removeState(state);
-    };
-
-    pkg.has_state = function (a, state) {
-        return a.hasState(state);
-    };
-
-    pkg.is_final_state = function (a, state) {
-        return a.isFinalState(state);
-    };
-
-    pkg.add_transition = function (a, startState, symbol, endState) {
-        if (arguments.length === 2 && (startState instanceof pkg.Transition)) {
-            // add_transition(a, transition)
-            a.addTransition(startState); // startState is a transition
-        } else {
-            a.addTransition(startState, symbol, endState);
-        }
-    };
-
-    pkg.new_transition = function (startState, symbol, endState) {
-        return new pkg.Transition(startState, symbol, endState);
-    };
-
-    pkg.remove_transition = function (a, startState, symbol, endState) {
-        if (arguments.length === 2 && startState instanceof pkg.Transition) {
-            a.removeTransition(startState); // startState is a transition
-        } else {
-            a.removeTransition(startState, symbol, endState);
-        }
-    };
-
-    pkg.has_transition = function (a, startState, symbol, endState) {
-        if (arguments.length === 2 && startState instanceof pkg.Transition) {
-            return a.hasTransition(startState); // startState is a transition
-        }
-        return a.hasTransition(startState, symbol, endState);
-    };
-
-    pkg.get_set_of_transitions = function (a) {
-        return a.getTransitions();
-    };
-
-    pkg.get_list_of_transitions = function (a) {
-        return a.getTransitions().getList();
-    };
-
-    pkg.get_alphabet = function (a) {
-        return a.getAlphabet();
-    };
-
-    pkg.get_symbol_list = function (a) {
-        return a.getAlphabet(a).getList();
-    };
-
-    pkg.get_sorted_symbol_list = function (a) {
-        return a.getAlphabet(a).getList().sort();
-    };
-
-    pkg.set_alphabet = function (a, alphabet) {
-        a.setAlphabet(to_set(alphabet));
-    };
-
-    pkg.remove_alphabet = function (a, alphabet) {
-        a.removeAlphabet(to_set(alphabet));
-    };
-
-    pkg.add_symbol = function (a, symbol) {
-        a.addSymbol(symbol);
-    };
-
-    pkg.remove_symbol = function (a, symbol) {
-        a.removeSymbol(symbol);
-    };
-
-    pkg.has_symbol = function (a, symbol) {
-        a.hasSymbol(symbol);
-    };
-
-    pkg.set_initial_state = function (a, state) {
-        a.setInitialState(state);
-    };
-
-    pkg.get_initial_state = function (a) {
-        return a.getInitialState();
-    };
-
-    pkg.get_set_of_states = function (a) {
-        return a.getStates();
-    };
-
-    pkg.get_list_of_states = function (a) {
-        return a.geStates().getList();
-    };
-
-    pkg.get_set_of_final_states = function (a) {
-        return a.getFinalStates();
-    };
-
-    pkg.get_list_of_final_states = function (a) {
-        return a.getFinalStates().getList();
-    };
-
-    pkg.get_set_of_non_accepting_states = function (a) {
-        return a.getNonFinalStates();
-    };
-
-    pkg.get_list_of_non_accepting_states = function (a) {
-        return a.getNonFinalStates().getList();
-    };
-
-
-    pkg.set_current_state = function (A, state) {
-        A.setCurrentState(state);
-    };
-
-    pkg.set_current_states = function (A, states) {
-        A.setCurrentStates(states);
-    };
-
-    pkg.add_current_state = function (A, state) {
-        A.addCurrentState(state);
-    };
-
-    pkg.remove_current_states = function (A, state) {
-        A.removeCurrentState(state);
-    };
-
-    pkg.remove_current_states = function (A, states) {
-        A.removeCurrentStates(states);
-    };
-
-    pkg.get_current_states = function (A) {
-        return A.currentStates;
-    };
-
-    pkg.get_current_states_list = function (A) {
-        return A.currentStates.getList();
-    };
-
-    pkg.run_symbol = function (A, symbol) {
-        return A.runSymbol(symbol);
-    };
-
-    pkg.run_word = function (A, symbols) {
-        return A.runWord(symbols);
-    };
-
-    pkg.accepted_word = function (A, symbols) {
-        return A.acceptedWord(symbols);
-    };
-
-    pkg.get_last_taken_transitions = function (A) {
-        return A.lastTakenTransitions;
-    };
-
-    pkg.get_last_taken_transitions_list = function (A) {
-        return A.lastTakenTransitions.getList();
-    };
 
     /**
      * Parses the textual representation of an automaton and returns an automaton from it.
@@ -1199,7 +1025,7 @@
      * @returns {Automaton} Returns the corresponding automaton.
      */
     pkg.read_automaton = function (code) {
-        var getNextValue = Set.prototype.getNextValue;
+        var getNextValue = aude.getNextValue;
 
         var c = code.split("\n");
         var a = new pkg.Automaton();
@@ -1239,11 +1065,11 @@
      * Returns the textual representation of an automaton
      * @alias automaton_code
      * @param {Automaton} a The automaton to get the textual representation of.
-     * @returns {String} The string representation of the Automaton. The empty string is returned if the Automaton is not correct, e.g. no initial state is Set.
+     * @returns {String} The string representation of the Automaton. The.clear() string is returned if the Automaton is not correct, e.g. no initial state is Set.
      */
     pkg.automaton_code = function (a) {
         var qInit   = a.getInitialState(),
-            toString = Set.prototype.elementToString;
+            toString = aude.elementToString;
 
         if (qInit === undefined || qInit === null) {
             return "";
@@ -1251,13 +1077,16 @@
 
         var r  = toString(qInit) + "\n",
             F  = a.getFinalStates(),
-            Fl = F.getList(),
-            Q  = a.getStates().getSortedList(),
-            T  = a.getTransitions().getSortedList(),
+            Fl = aude.toArray(F),
+            Q  = aude.toArray(a.getStates()),
+            T  = aude.toArray(a.getTransitions()),
             i;
 
+        Q.sort();
+        T.sort();
+
         for (i in Q) {
-            if (Q[i] !== qInit && !F.contains(Q[i])) {
+            if (Q[i] !== qInit && !F.has(Q[i])) {
                 r += toString(Q[i]) + "\n";
             }
         }
@@ -1286,7 +1115,7 @@
      * @returns {Array} Returns an array of symbols corresponding to the representation of the transition.
      */
     pkg.parse_transition = function (text) {
-        return Set.prototype.getValue("[" + text + "]", pkg.automataMap);
+        return aude.getValue("[" + text + "]", pkg.automataMap);
     };
 
     /**
@@ -1305,7 +1134,7 @@
             if (symbols[i] === pkg.epsilon) {
                 res += "ε";
             } else {
-                res += Set.prototype.elementToString(symbols[i], pkg.automataMap);
+                res += aude.elementToString(symbols[i], pkg.automataMap);
             }
         }
         return res;

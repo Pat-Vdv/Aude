@@ -1,27 +1,33 @@
-function normalize(A) {
-   normA   : Automaton;
-   f       : MappingFunction;
-   i       : integer = 0;
-   qA_init : State = A.getInitialState();
+export function normalize(A)
+   let normA   := new Automaton
+   let map     := new Map
+   let i       := 0
+   let qA_init := A.getInitialState()
 
-   normA.setInitialState(0);
-   if(A.isFinalState(qA_init)) {
-      normA.setFinalState(0);
-   }
+   normA.setInitialState(0)
 
-   f(qA_init, 0);
-   foreach(state in A.getStates() minus {A.getInitialState()}) {
-      f(state, ++i);
-      normA.addState(i, A.isFinalState(state));
-   }
+   if A.isFinalState(qA_init) then
+      normA.setFinalState(0)
+   end if
 
-   normA.setAlphabet(A.getAlphabet());
+   map.set(qA_init, 0)
 
-   foreach(t in A.getTransitions()) {
-      normA.addTransition(f(t.startState), t.symbol, f(t.endState));
-   }
+   foreach state in A.getStates() \ {A.getInitialState()} do
+      map.set(state, ++i)
+      normA.addState(i, A.isFinalState(state))
+   done
 
-   return normA;
-}
+   normA.setAlphabet(A.getAlphabet())
 
-run(normalize, get_automaton(currentAutomaton));
+   foreach t in A.getTransitions() do
+      normA.addTransition(
+          map.get(t.startState),
+          t.symbol,
+          map.get(t.endState)
+      )
+   done
+
+   return normA
+end function
+
+run(normalize, get_automaton(currentAutomaton))

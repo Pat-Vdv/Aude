@@ -69,18 +69,18 @@
         if (!trans && typeof s === "string") {
             s = s.trim();
             try {
-                var v = Set.prototype.getValue(s);
+                var v = aude.getValue(s);
                 if (typeof v === "string" && s[0] === s[s.length - 1] && (s[0] === "\"" || s[0] === "'")) {
                     return s.substring(1, s.length - 1);
                 }
 
-                return Set.prototype.elementToString(v);
+                return aude.elementToString(v);
             } catch (e) {
                 return s;
             }
         }
 
-        return Set.prototype.elementToString(s, trans ? {"ε": epsilon} : {});
+        return aude.elementToString(s, trans ? {"ε": epsilon} : {});
     };
 
     pkg.automaton2dot = function (a, title) {
@@ -89,10 +89,10 @@
         }
 
         var res                = catln("digraph ", JSON.stringify(title), " {\n\trankdir=LR\n\t_begin [style = invis];"),
-            nonacceptingStates = a.getNonFinalStates().getList(),
-            acceptingStates    = a.getFinalStates().getList(),
-            transitions        = a.getTransitions().getList(),
-            states             = a.getStates().getList(),
+            nonacceptingStates = aude.toArray(a.getNonFinalStates()),
+            acceptingStates    = aude.toArray(a.getFinalStates()),
+            transitions        = aude.toArray(a.getTransitions()),
+            states             = aude.toArray(a.getStates()),
             initialState       = a.getInitialState(),
             leng               = states.length,
             table              = [],
@@ -178,10 +178,12 @@
                     if (endTrans) {
                         res += cat("\t", JSON.stringify(toString(startState)).replace(/&/g, "&amp;"), " -> ", JSON.stringify(toString(endState)).replace(/&/g, "&amp;"), " [label = ");
 
-                        symbols = endTrans.getSortedList();
+                        symbols = aude.toArray(endTrans);
                         comma   = "";
                         s       = "";
                         tmp     = "";
+
+                        symbols.sort();
 
                         for (i = 0, len = symbols.length; i < len; ++i) {
                             s = toString(symbols[i], true);

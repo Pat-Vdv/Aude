@@ -1,50 +1,51 @@
-include epsElim;
+from epsElimination import epsElim
 
-function infiniteLanguage(A) {
-   A = epsElim(A);
-   let trans = A.getTransitionFunction();
+export function infiniteLanguage(A)
+    A := epsElim(A)
 
-   function onCycle(consideredState, visited, curState) {
-      if(visited contains curState) {
-         return false;
-      }
+    let trans := A.getTransitionFunction()
 
-      visited.add(curState);
+    function onCycle(consideredState, visited, curState)
+        if visited contains curState then
+            return false
+        end if
 
-      foreach(state in A.getSuccessors(curState)) {
-         if(state == consideredState || onCycle(consideredState, visited.copy(), state)) {
-            return true;
-         }
-      }
+        visited.add(curState)
 
-      return false;
-   }
+        foreach state in A.getSuccessors(curState) do
+            if state = consideredState or onCycle(consideredState, visited.copy(), state) then
+                return true
+            end if
+        done
 
-   function visit(state, visited, cycle) {
-      if(visited contains state) {
-         return false;
-      }
+        return false
+    end function
 
-      if(!cycle) {
-         cycle = onCycle(state, emptySet, state);
-      }
+    function visit(state, visited, cycle)
+        if visited contains state then
+            return false
+        end if
 
-      if(cycle && A.isFinalState(state)) {
-         return true;
-      }
+        if not cycle then
+            cycle := onCycle(state, {}, state)
+        end if
 
-      visited.add(state);
+        if cycle and A.isFinalState(state) then
+            return true
+        end if
 
-      foreach(destState in A.getSuccessors(state)) {
-         if(visit(destState, visited.copy(), cycle)) {
-            return true;
-         }
-      }
+        visited.add(state)
 
-      return false;
-   }
+        foreach destState in A.getSuccessors(state) do
+            if visit(destState, new Set(visited), cycle) then
+                return true
+            end if
+        done
 
-   return visit(A.getInitialState(), emptySet, false);
-}
+        return false
+    end function
 
-run(infiniteLanguage, get_automaton(currentAutomaton));
+    return visit(A.getInitialState(), {}, false)
+end function
+
+run(infiniteLanguage, get_automaton(currentAutomaton))
