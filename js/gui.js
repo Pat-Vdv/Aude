@@ -53,6 +53,7 @@
         svgContainer,
         fileprogram,
         offsetError,
+        loadingViz,
         switchmode,
         startQuiz,
         filequiz,
@@ -69,6 +70,34 @@
         not,
         sw,
         aceEditor;
+
+
+    function viz(code, callback) {
+        if (window.Viz) {
+            if (loadingViz) {
+                loadingViz.close(true);
+                loadingViz = null;
+            }
+            callback(window.Viz(code, "svg"));
+        } else {
+            if (!loadingViz) {
+                loadingViz = libD.notify({
+                    type: "info",
+                    content: _("Loading Graphviz, the code whith draws automata"),
+                    title: _("Wait a second..."),
+                    closable:false
+                });
+            }
+
+            var args = arguments;
+            setTimeout(
+                function () {
+                    viz.apply(window, args)
+                },
+                500
+            );
+        }
+    }
 
     audescript.console = {
         logg: function (type, printed) {
@@ -232,25 +261,38 @@
         }
     }
 
-    function automaton2svg(A) {
-        return Viz(automaton2dot(A), "svg").replace(/<\?[\s\S]*?\?>/g, "").replace(/<![\s\S]*?>/g, "");
+    function automaton2svg(A, callback) {
+        viz(
+            automaton2dot(A),
+            function (result) {
+                callback(result.replace(/<\?[\s\S]*?\?>/g, "").replace(/<![\s\S]*?>/g, ""));
+            }
+        );
     }
 
     function setAutomatonResult(A) {
         enableResults();
         automatonResult = A;
-        var svgCode = automaton2svg(A);
+        automaton2svg(
+            A,
+            function (svgCode) {
+                resultsContent.innerHTML = svgCode;
+                resultToLeft.style.display = "";
 
-        resultsContent.innerHTML = svgCode;
-        resultToLeft.style.display = "";
+                if (
+                    (not && not.displayed) ||
+                    !codeedit.classList.contains("disabled")
+                ) {
+                    notify(_("Program Result"), svgCode, "normal");
+                }
 
-        if ((not && not.displayed) || !codeedit.classList.contains("disabled")) {
-            notify(_("Program Result"), svgCode, "normal");
-        }
-        zoom.svgNode = resultsContent.querySelector("svg");
-        if (zoom.redraw) {
-            zoom.redraw();
-        }
+                zoom.svgNode = resultsContent.querySelector("svg");
+
+                if (zoom.redraw) {
+                    zoom.redraw();
+                }
+            }
+        );
     }
 
     function setResult(res) {
@@ -879,7 +921,7 @@
             notify(_("Unable to get the list of predefined algorithms"), message);
         });
 
-    libD.need(["ready", "notify", "wm", "ws", "jso2dom", "*langPack"], function () {
+    libD.need(["ready", "dom", "notify", "wm", "ws", "jso2dom", "*langPack"], function () {
         automataDesigner.standardizeStringValueFunction = automaton2dot_standardizedString;
         automataDesigner.prompt = (function () {
             var refs = {},
@@ -1453,7 +1495,12 @@
         };
 
         automataDesignerGlue.requestSVG = function (index) {
-            automataDesigner.setSVG(Viz(automaton2dot(read_automaton(automatoncodeedit.value)), "svg"), index);
+            viz(
+                automaton2dot(read_automaton(automatoncodeedit.value)),
+                function (res) {
+                    automataDesigner.setSVG(res, index);
+                }
+            );
         };
 
         function automatonFromObj(o) {
@@ -1715,7 +1762,12 @@
                             ]], refs));
 
                             if (possibilities[j].automaton) {
-                                refs[i + "content"].innerHTML = automaton2svg(automatonFromObj(possibilities[j].automaton));
+                                automaton2svg(
+                                    automatonFromObj(possibilities[j].automaton),
+                                    function (res) {
+                                        refs[i + "content"].innerHTML = res;
+                                    }
+                                );
                             } else if (possibilities[j].html) {
                                 refs[i + "content"].innerHTML = possibilities[j].html;
                             } else if (possibilities[j].text) {
@@ -1787,7 +1839,12 @@
                     ]]], refs));
 
                     if (possibilities[j].automaton) {
-                        refs[j + "content"].innerHTML = automaton2svg(automatonFromObj(possibilities[j].automaton));
+                        automaton2svg(
+                            automatonFromObj(possibilities[j].automaton),
+                            function (res) {
+                                refs[j + "content"].innerHTML = res;
+                            }
+                        );
                     } else if (possibilities[j].html) {
                         refs[j + "content"].innerHTML = possibilities[j].html;
                     } else if (possibilities[j].text) {
