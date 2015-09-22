@@ -34,6 +34,7 @@
         freader                 = new FileReader(),
         resultToLeft            = document.createElement("button"),
         zoom                    = {svgZoom: 1},
+        loadingProgNot          =  null,
         automatoncodeedit,
         automatonFileName,
         programFileName,
@@ -460,6 +461,10 @@
     }
 
     function runProgram(code, moduleName) {
+        if (loadingProgNot) {
+            loadingProgNot.close(true);
+        }
+
         runProgramCode(
             code,
             moduleName || "<program>",
@@ -469,11 +474,11 @@
         );
     }
 
-    function loadProgram(audescriptCode, moduleName) {
-        loadAudescriptCode(moduleName, audescriptCode, runProgram);
-    }
-
     function launchPredefAlgo() {
+        if (loadingProgNot) {
+            loadingProgNot.close(true);
+        }
+
         if (curAlgo.value === "id") {
             resultsConsole.textContent = "";
             setResult(automataDesigner.getAutomaton(automataDesigner.currentIndex));
@@ -482,6 +487,13 @@
             if (modules[curAlgo.value]) {
                 runProgram(modules[curAlgo.value], curAlgo.value);
             } else {
+                loadingProgNot = libD.notify({
+                    type: "info",
+                    content: (_("Loading program, please wait...")),
+                    closable: false,
+                    delay: 500
+                });
+
                 loadModule(curAlgo.value, launchPredefAlgo);
             }
         }
@@ -518,6 +530,7 @@
 
     function runProgramCode(f, moduleName, run, get_automaton, get_automata) {
         resultsConsole.textContent = "";
+
         try {
             var res = f(run, get_automaton, get_automata, automataDesigner.currentIndex);
             if (res !== undefined) {
@@ -535,6 +548,11 @@
             });
             throw e;
         }
+
+        if (loadingProgNot) {
+            loadingProgNot.close(true);
+            loadingProgNot = null;
+        }
     }
 
     function loadAudescriptCode(moduleName, audescriptCode, callback) {
@@ -548,7 +566,7 @@
             );
 
             includes = data.includes;
-        } catch (e) {
+       } catch (e) {
             notify(
                 libD.format(
                     _("Parse error (module {0})"),
@@ -557,6 +575,11 @@
                 e.toString(),
                 "error"
             );
+
+            if (loadingProgNot) {
+                loadingProgNot.close(true);
+                loadingProgNot = null;
+            }
 
             throw e;
         }
@@ -1392,7 +1415,18 @@
 
         document.getElementById("algo-exec").onclick = function () {
             if (aceEditor) {
-                loadProgram(aceEditor.getValue());
+                if (loadingProgNot) {
+                    loadingProgNot.close(true);
+                }
+
+                loadingProgNot = libD.notify({
+                    type: "info",
+                    content: (_("Loading program, please wait...")),
+                    closable: false,
+                    delay: 1000
+                });
+
+                loadAudescriptCode(null, aceEditor.getValue(), runProgram);
             }
         };
 
