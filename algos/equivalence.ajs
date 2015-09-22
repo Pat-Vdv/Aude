@@ -9,8 +9,8 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
     end if
 
 
-    let trans1 := A1.getTransitionFunction(true)
-    let trans2 := A2.getTransitionFunction(true)
+    let trans1 := A1.getTransitionFunction()
+    let trans2 := A2.getTransitionFunction()
 
     let A1Seen           := {} # set of states
     let renamingFunction := {} # [S1, S2] belongs to Renaming Function iff S1 in A1 is renamed to S2 in A2
@@ -21,6 +21,7 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
         end if
 
         if A1.isFinalState(s1) != A2.isFinalState(s2) then
+            alert("HERE3")
             return false
         end if
 
@@ -31,16 +32,18 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
             if trans1(s1, symbol).card() = trans2(s2, symbol).card() then
                 # If there is a destination state for the symbol for each state
 
-                let q1 := trans1(s1, symbol)
-                let q2 := trans2(s2, symbol)
+                let q1 := trans1(s1, symbol).getItem()
+                let q2 := trans2(s2, symbol).getItem()
 
                 if not visit(q1, q2) then
                 # we visit (s1', s2') with
                 #  - s1' the destination state of the transition (s1, symbol, dest) in A1
                 #  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
+                    alert("HERE1")
                     return false
                 end if
             else
+                alert("HERE2" + (s1, symbol).toString() + ":" + (s2, symbol).toString() + ", " + trans1(s1, symbol) + " " + trans2(s2, symbol) )
                 return false
             end if
         done
