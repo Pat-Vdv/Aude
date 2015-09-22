@@ -553,9 +553,9 @@
         runProgramCode(
             code,
             moduleName || "<program>",
-            libD.Void,
-            libD.Void,
-            libD.Void
+            libD.none,
+            libD.none,
+            libD.none
         );
     }
 
@@ -630,6 +630,11 @@
     function runProgramCode(f, moduleName, run, get_automaton, get_automata) {
         resultsConsole.textContent = "";
 
+        if (loadingProgNot) {
+            loadingProgNot.close(true);
+            loadingProgNot = null;
+        }
+
         try {
             var res = f(run, get_automaton, get_automata, automataDesigner.currentIndex);
             if (res !== undefined) {
@@ -646,11 +651,6 @@
                 )
             });
             throw e;
-        }
-
-        if (loadingProgNot) {
-            loadingProgNot.close(true);
-            loadingProgNot = null;
         }
     }
 
@@ -751,7 +751,7 @@
                             left:    "12.5%",
                             top:     "12.5%",
                             show:    true,
-                            content: libD.jso2dom(["div#loaddistantfile.libD-ws-colors-auto", [
+                            content: libD.jso2dom(["div#loaddistantfile.libD-ws-colors-auto libD-ws-size-auto", [
                                 ["div#pane-localfile", [
                                     ["p.title", _("From your computer")],
                                     ["p", ["button", {"#": "btn"}, btnText]]
@@ -936,7 +936,7 @@
                         center:      true
                     });
 
-                    win.addEvent("close", close);
+                    win.addListener("close", close);
                     win.ws.wm.handleSurface(win, winContent);
                 }
 
@@ -955,7 +955,7 @@
         head = document.querySelector("head");
 
         if (window.js18Supported) {
-            libD.jsLoad("js/setIterators.js", libD.Void, "application/javascript;version=1.8");
+            libD.jsLoad("js/setIterators.js", libD.none, "application/javascript;version=1.8");
         } else if (window.Symbol) {
             libD.jsLoad("js/setIterators.js");
         }
@@ -1113,7 +1113,7 @@
                     ]], refs)
                 });
                 executeWin.__refs = refs;
-                executeWin.addEvent("close", function () {
+                executeWin.addListener("close", function () {
                     wordDiv.textContent = "";
                     automataDesigner.cleanSVG(automataDesigner.currentIndex);
                 });
