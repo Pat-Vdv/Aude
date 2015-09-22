@@ -35,6 +35,14 @@
         resultToLeft            = document.createElement("button"),
         zoom                    = {svgZoom: 1},
         loadingProgNot          =  null,
+        automatonCount          = 0,
+        automataList            = [],
+        salc_cur_automaton      = -1,
+        automataListClose,
+        automataListIntro,
+        automataListDiv,
+        automataListBtn,
+        automataListUL,
         automatoncodeedit,
         automatonFileName,
         programFileName,
@@ -349,6 +357,97 @@
     if (!window.automataDesignerGlue) {
         window.automataDesignerGlue = {};
     }
+
+    function callWithList(count, callback) {
+        var k, automata = [];
+
+        for (k = 0; k < count; ++k) {
+            automata.push(get_automaton(automataList[k]));
+        }
+
+        /*jshint validthis: true */
+        callback.apply(this, automata);
+    }
+
+    function automataListClick(e) {
+        if (e.currentTarget.lastChild.textContent) {
+            var j = parseInt(e.currentTarget.lastChild.textContent, 10);
+            e.currentTarget.lastChild.textContent = "";
+            automataList.splice(j, 1);
+
+            var k, lastChild, l;
+
+            for (l = 0; l < automatonCount; ++l) {
+                lastChild = automataListUL.childNodes[l].firstChild.lastChild;
+                k = parseInt(lastChild.textContent, 10);
+
+                if (k >= j) {
+                    lastChild.textContent = k - 1;
+                }
+            }
+        } else {
+            e.currentTarget.lastChild.textContent = automataList.length;
+            automataList.push(e.currentTarget._index);
+        }
+    }
+
+    function automataListMouseOver(e) {
+        if (salc_cur_automaton !== -1) {
+            automataDesigner.setCurrentIndex(e.currentTarget._index);
+        }
+    }
+
+    function showAutomataListChooser(count, callback) {
+        if (callback || automataListBtn.onclick) {
+            automataListBtn.classList.remove("disabled");
+            if (callback) {
+                automataListIntro.innerHTML = libD.format(_("The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."), count);
+                automataListBtn.onclick = function () {
+                    if (automataList.length < count) {
+                        window.alert(libD.format(_("You didn’t select enough automata. Please select {0} automata."), count));
+                        return;
+                    }
+                    automataListClose.onclick();
+                    automataListBtn.onclick = null;
+                    callWithList(count, callback);
+                };
+            }
+        } else {
+            automataListBtn.classList.add("disabled");
+            automataListIntro.textContent = _("You can choose the order in which automata will be used in algorithms.");
+            count = 0;
+        }
+
+        automataListUL.textContent = "";
+        var k, li, a, number, indexInList;
+
+        for (k = 0; k < automatonCount; ++k) {
+            li = document.createElement("li");
+            a  = document.createElement("a");
+            a.href = "#";
+            a._index = k;
+            indexInList = automataList.indexOf(k);
+            number = document.createElement("span");
+            number.className = "automaton-number";
+
+            if (indexInList !== -1) {
+                number.textContent = indexInList;
+            }
+
+            a.onclick = automataListClick;
+
+            a.onmouseover = automataListMouseOver;
+
+            a.appendChild(document.createElement("span"));
+            a.lastChild.textContent = libD.format(_("Automaton #{0}"), k);
+            a.appendChild(number);
+            li.appendChild(a);
+            automataListUL.appendChild(li);
+        }
+
+        automataListDiv.classList.remove("disabled");
+    }
+
 
     function get_automaton(i) {
         if (isNaN(i)) {
@@ -862,12 +961,7 @@
         }
 
         automataDesigner.load();
-        var automataListClose = document.getElementById("automata-list-chooser-close"),
-            automataListIntro = document.getElementById("automata-list-chooser-intro"),
-            automataListDiv   = document.getElementById("automata-list-chooser"),
-            automataListBtn   = document.getElementById("automata-list-chooser-btn"),
-            automataListUL    = document.getElementById("automata-list-chooser-content"),
-            automataContainer = document.getElementById("automata-container"),
+        var automataContainer = document.getElementById("automata-container"),
             automatonMinus    = document.getElementById("automaton_minus"),
             automatoncode     = document.getElementById("automatoncode"),
             automatonPlus     = document.getElementById("automaton_plus"),
@@ -880,10 +974,7 @@
             saveas            = document.getElementById("saveas"),
             save              = document.getElementById("save"),
             localStorage      = window.localStorage || {},
-            salc_cur_automaton  = -1,
             executionTimeout    = 0,
-            automatonCount      = 0,
-            automataList        = [],
             exportFN            = "",
             CURRENT_FINAL_STATE_COLOR            = localStorage.CURRENT_FINAL_STATE_COLOR || "rgba(90, 160, 0, 0.5)",
             CURRENT_TRANSITION_COLOR             = localStorage.CURRENT_TRANSITION_COLOR  || "#BD5504",
@@ -900,6 +991,11 @@
             EXECUTION_STEP_TIME = 1200;
         }
 
+        automataListClose = document.getElementById("automata-list-chooser-close"),
+        automataListIntro = document.getElementById("automata-list-chooser-intro"),
+        automataListDiv   = document.getElementById("automata-list-chooser"),
+        automataListBtn   = document.getElementById("automata-list-chooser-btn"),
+        automataListUL    = document.getElementById("automata-list-chooser-content"),
         resultsConsole    = document.getElementById("results-console");
         automatoncodeedit = document.getElementById("automatoncodeedit");
         svgContainer      = document.getElementById("svg-container"),
@@ -1136,102 +1232,6 @@
 
         window.addEventListener("resize", onResize, false);
 
-        function callWithList(count, callback) {
-            var k, automata = [];
-
-            for (k = 0; k < count; ++k) {
-                automata.push(get_automaton(automataList[k]));
-            }
-
-            /*jshint validthis: true */
-            callback.apply(this, automata);
-        }
-
-        automataListUL.onmouseover = function () {
-            if (salc_cur_automaton === -1) {
-                salc_cur_automaton = automataDesigner.currentIndex;
-            }
-        };
-
-        function automataListClick(e) {
-            if (e.currentTarget.lastChild.textContent) {
-                var j = parseInt(e.currentTarget.lastChild.textContent, 10);
-                e.currentTarget.lastChild.textContent = "";
-                automataList.splice(j, 1);
-
-                var k, lastChild, l;
-
-                for (l = 0; l < automatonCount; ++l) {
-                    lastChild = automataListUL.childNodes[l].firstChild.lastChild;
-                    k = parseInt(lastChild.textContent, 10);
-
-                    if (k >= j) {
-                        lastChild.textContent = k - 1;
-                    }
-                }
-            } else {
-                e.currentTarget.lastChild.textContent = automataList.length;
-                automataList.push(e.currentTarget._index);
-            }
-        }
-
-        function automataListMouseOver(e) {
-            if (salc_cur_automaton !== -1) {
-                automataDesigner.setCurrentIndex(e.currentTarget._index);
-            }
-        }
-
-        function showAutomataListChooser(count, callback) {
-            if (callback || automataListBtn.onclick) {
-                automataListBtn.classList.remove("disabled");
-                if (callback) {
-                    automataListIntro.innerHTML = libD.format(_("The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."), count);
-                    automataListBtn.onclick = function () {
-                        if (automataList.length < count) {
-                            window.alert(libD.format(_("You didn’t select enough automata. Please select {0} automata."), count));
-                            return;
-                        }
-                        automataListClose.onclick();
-                        automataListBtn.onclick = null;
-                        callWithList(count, callback);
-                    };
-                }
-            } else {
-                automataListBtn.classList.add("disabled");
-                automataListIntro.textContent = _("You can choose the order in which automata will be used in algorithms.");
-                count = 0;
-            }
-
-            automataListUL.textContent = "";
-            var k, li, a, number, indexInList;
-
-            for (k = 0; k < automatonCount; ++k) {
-                li = document.createElement("li");
-                a  = document.createElement("a");
-                a.href = "#";
-                a._index = k;
-                indexInList = automataList.indexOf(k);
-                number = document.createElement("span");
-                number.className = "automaton-number";
-
-                if (indexInList !== -1) {
-                    number.textContent = indexInList;
-                }
-
-                a.onclick = automataListClick;
-
-                a.onmouseover = automataListMouseOver;
-
-                a.appendChild(document.createElement("span"));
-                a.lastChild.textContent = libD.format(_("Automaton #{0}"), k);
-                a.appendChild(number);
-                li.appendChild(a);
-                automataListUL.appendChild(li);
-            }
-
-            automataListDiv.classList.remove("disabled");
-        }
-
         window.heap = function (a) {
             Object.defineProperty(a, "top", {
                 enumerable: false,
@@ -1437,6 +1437,12 @@
             if ((e === automataListUL || e === automataListUL.parentNode) && salc_cur_automaton !== -1) {
                 automataDesigner.setCurrentIndex(salc_cur_automaton);
                 salc_cur_automaton = -1;
+            }
+        };
+
+        automataListUL.onmouseover = function () {
+            if (salc_cur_automaton === -1) {
+                salc_cur_automaton = automataDesigner.currentIndex;
             }
         };
 
