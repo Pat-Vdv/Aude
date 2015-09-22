@@ -10,7 +10,7 @@ msgstr "Veuillez donner les symboles de la transition en les séparant par des v
 msgid  "Sorry, but you can't remove the initial state."
 msgstr "Désolé, mais vous ne pouvez pas supprimer l’état initial."
 
-msgid  "Which name do you want for the state ?"
+msgid  "Which name do you want for the state?"
 msgstr "Quel nom voulez-vous donner à l’état ?"
 
 msgid  "Sorry, but a state is already named like this."

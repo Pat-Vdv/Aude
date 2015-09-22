@@ -1659,7 +1659,7 @@
             var text = node.getElementsByTagName("text")[0];
             pkg.prompt(
                 _("Name of the state"),
-                _("Which name do you want for the state ?"),
+                _("Which name do you want for the state?"),
                 text.textContent,
                 function (t) {
                     if (t) {

@@ -12,7 +12,7 @@ msgstr ""
 msgid  "Sorry, but you can't remove the initial state."
 msgstr ""
 
-msgid  "Which name do you want for the state ?"
+msgid  "Which name do you want for the state?"
 msgstr ""
 
 msgid  "Sorry, but a state is already named like this."
