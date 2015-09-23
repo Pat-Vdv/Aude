@@ -12,7 +12,7 @@
       </p>
 
       <p>
-        You can also <a href="?p=use#offline">download it</a>. Beware, <a href="?p=use#unsupported">Aude is unlikely to work in Internet Explorer or Edge</a>. The recommended browser is Firefox. Chromium (Chrome) is also supported.
+        You can also <a href="?p=use#offline">download it</a>. Beware, <a href="?p=browsers#unsupported">Aude is unlikely to work in Internet Explorer or Edge</a>. The recommended browser is Firefox. Chromium (Chrome) is also supported.
       </p>
 
       <h2> Features </h2>
