@@ -46,8 +46,8 @@ zip: /tmp/aude.zip
 
 update-www: www
 	mkdir -p www-built; \
+	rsync  --exclude aude/ -avz --delete www/ www-built/; \
 	cd www-built; \
-	rsync  --exclude aude/ -avz --delete www www-built; \
 	if [ -d aude ]; then \
 		cd aude; \
 		if [ "`git --git-dir=./.git log -n 1 --pretty=%H`" != "`git --git-dir=../../.git log -n 1 --pretty=%H`" ]; then \
