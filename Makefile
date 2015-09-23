@@ -3,7 +3,7 @@ all: dirlist.txt js/audescript/audescript.js
 .PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip update-www
 
 dirlist.txt:
-	find quiz examples-automata algos l10n/js -type f > dirlist.txt
+	find quiz examples-automata algos l10n/js -type f | sort > dirlist.txt
 
 js/audescript/audescript.js:
 	cd js/audescript/ && make
@@ -76,7 +76,7 @@ update-www: www
 	       jakser@forge.imag.fr:/var/lib/gforge/chroot/home/groups/aude/htdocs/
 
 clean:
-	rm -rf js/boot.js dirlist.txt www-built
+	rm -rf dirlist.txt www-built
 
 .PHONY:
 count-lines:
