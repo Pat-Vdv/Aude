@@ -422,7 +422,7 @@ msgid "<h2>Welcome to {0}!</h2>
 msgstr "<h2>Bienvenue sur {0}!</h2>
 <h3> Vous n’avez encore jamais utilisé {0} ? </h3>
 <ul>
-<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à droite de l'écran.</li>
+<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à gauche de l'écran.</li>
 <li>Vous pouvez appliquer un algorithme sur votre automate en cliquant sur le boutton <strong>Choisir un algo</strong> de la barre d’outils.</li>
 </ul>
 <h3> Vous utilisez un clavier et une souris ? Vous pouvez être plus rapide. </h3>
