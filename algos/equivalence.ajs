@@ -21,7 +21,6 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
         end if
 
         if A1.isFinalState(s1) != A2.isFinalState(s2) then
-            alert("HERE3")
             return false
         end if
 
@@ -39,11 +38,9 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
                 # we visit (s1', s2') with
                 #  - s1' the destination state of the transition (s1, symbol, dest) in A1
                 #  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
-                    alert("HERE1")
                     return false
                 end if
             else
-                alert("HERE2" + (s1, symbol).toString() + ":" + (s2, symbol).toString() + ", " + trans1(s1, symbol) + " " + trans2(s2, symbol) )
                 return false
             end if
         done
