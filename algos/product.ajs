@@ -1,4 +1,4 @@
-from determinization import determinize
+from determinization import determinize, isDeterminized
 from completion import complete
 
 export function product(A1, A2, deter)
