@@ -2374,26 +2374,27 @@
 
         pkg.clearSVG(pkg.currentIndex);
 
-        pkg.svgContainer.parentNode.appendChild(document.createElement("a"));
-        pkg.svgContainer.parentNode.lastChild.id = "new-state-btn";
+        pkg.svgContainer.parentNode.appendChild(document.createElement("div"));
+        pkg.svgContainer.parentNode.lastChild.id = "new-state-btn-wrap";
+        pkg.svgContainer.parentNode.lastChild.appendChild(document.createElement("a"));
+        pkg.svgContainer.parentNode.lastChild.lastChild.id = "new-state-btn";
 
-        pkg.svgContainer.parentNode.lastChild.onmousedown = function (e) {
+        pkg.svgContainer.parentNode.lastChild.lastChild.onmousedown = function (e) {
             e.target.classList.add("mouse-down");
         };
 
-        pkg.svgContainer.parentNode.lastChild.onmouseup = function (e) {
+        pkg.svgContainer.parentNode.lastChild.lastChild.onmouseup = function (e) {
             e.target.classList.remove("mouse-down");
         };
 
-        pkg.svgContainer.parentNode.lastChild.onclick = function (e) {
+        pkg.svgContainer.parentNode.lastChild.lastChild.onclick = function (e) {
             insertNodeMsg = msg({
                 title: _("New state"),
                 content: _("Click where you want to place the new state.")
             });
         };
 
-        pkg.svgContainer.parentNode.lastChild.textContent = _("New state");
-
+        pkg.svgContainer.parentNode.lastChild.lastChild.textContent = _("New state");
     };
 
     // utility function : gets the outerHTML of a node.

@@ -1098,6 +1098,7 @@
             automataDesigner.svgContainer.parentNode.appendChild(divWelcome);
             function hideWelcome() {
                 automataDesigner.svgContainer.parentNode.removeChild(divWelcome);
+                document.getElementById("new-state-btn-wrap").classList.add("welcome-hidden");
                 document.body.removeEventListener("click", hideWelcome, false);
                 automataDesigner.setViewBoxSize();
             }
