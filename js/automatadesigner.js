@@ -487,6 +487,15 @@
             }
         }
 
+        var identifiedElements = svgWorkingNode.querySelectorAll("[id]");
+
+        var nid, len = identifiedElements.length;
+        for (i = 0; i < len; i++) {
+            nid = identifiedElements[i].getAttribute("id");
+            identifiedElements[i].removeAttribute("id");
+            identifiedElements[i].setAttribute("data-id", nid);
+        }
+
         var workingInitialStateArrow = initialStateArrows[index] = byId(svgWorkingNode, "initialStateArrow");
 
         if (index === pkg.currentIndex) {
@@ -507,15 +516,6 @@
             // 8 : size of "_begin->"
         } else {
             initialState = initialStates[index] = null;
-        }
-
-        var identifiedElements = svgWorkingNode.querySelectorAll("[id]");
-
-        var nid, len = identifiedElements.length;
-        for (i = 0; i < len; i++) {
-            nid = identifiedElements[i].getAttribute("id");
-            identifiedElements[i].removeAttribute("id");
-            identifiedElements[i].setAttribute("data-id", nid);
         }
 
         pkg.setCurrentIndex(pkg.currentIndex);
