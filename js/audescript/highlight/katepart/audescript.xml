@@ -38,7 +38,7 @@
         style="ruby" indenter="ruby"
         author="Raphaël Jakse, Stefan Lang (langstefan@gmx.at), Sebastian Vuorinen (sebastian.vuorinen@helsinki.fi), Robin Pedersen (robinpeder@gmail.com), Miquel Sabaté (mikisabate@gmail.com)" license="LGPL">
 
-... <highlighting>
+    <highlighting>
 
         <list name="keywords">
             <item> and </item>
@@ -58,7 +58,7 @@
             <item> empty </item>
             <item> if </item>
             <item> fi </item>
-            item> of </item>
+            <item> of </item>
             <item> in </item>
             <item> not </item>
             <item> or </item>
