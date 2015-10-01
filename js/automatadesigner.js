@@ -1702,7 +1702,7 @@
                     if (t) {
                         t = pkg.standardizeStringValueFunction(t);
                         var tb = btoa(t);
-                        var existingNode = pkg.svgNode.byId(pkg.svgNode, tb);
+                        var existingNode = byId(pkg.svgNode, tb);
 
                         if (existingNode) {
                             if (node !== existingNode) {
