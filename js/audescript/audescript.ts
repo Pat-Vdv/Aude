@@ -2042,9 +2042,20 @@ function parseUnsignedNumber(lexer : AudescriptLexer) {
 }
 
 function tryNumber(lexer : AudescriptLexer) {
-    if (!lexer.end() && "0123456789".indexOf(lexer.curChar()) !== -1) {
-        return parseUnsignedNumber(lexer).replace(/_/g, "");
+    let sign = "";
+
+    let state = lexer.getState();
+
+    if (!lexer.end() && (lexer.curChar() === "-" || lexer.curChar() === "+")) {
+        sign = lexer.nextChar();
     }
+
+    if (!lexer.end() && "0123456789".indexOf(lexer.curChar()) !== -1) {
+        return sign + parseUnsignedNumber(lexer).replace(/_/g, "");
+    }
+
+    lexer.restoreState(state);
+
     return "";
 }
 
@@ -2253,7 +2264,7 @@ class AudescriptParser {
     static identifierStartChar : RegExp; // these two regular expressions
     static identifierPartChar  : RegExp; // are defined in audescript.identifier.js
 
-    static prefixOperators = [ "++", "--", "not", "typeof", "new", "+", "-", "u=" ];
+    static prefixOperators = [ "++", "--", "not", "~", "typeof", "new", "u=" ];
 
     static suffixOperators = [ "++", "--"];
 
