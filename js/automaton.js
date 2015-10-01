@@ -747,6 +747,7 @@
         */
         removeCurrentState: function (state) {
             this.currentStates.remove(state);
+            this.currentStatesAddAccessiblesByEpsilon();
         },
 
         /**
@@ -763,6 +764,7 @@
         */
         addCurrentStates: function (states) {
             aude.unionInPlace(this.currentStates, states);
+            this.currentStatesAddAccessiblesByEpsilon();
         },
 
         /**
@@ -779,6 +781,7 @@
         */
         removeCurrentStates: function (states) {
             aude.minusInPlace(this.currentStates, states);
+            this.currentStatesAddAccessiblesByEpsilon();
         },
 
         /**
