@@ -270,6 +270,59 @@ class AudescriptASTStatement {
         return null;
     }
 
+    static staticEvalNum(ast : AudescriptASTExpression) : number {
+        // TODO this function rejects valid static expressions.
+        // May handle more cases.
+
+        let sen = AudescriptASTStatement.staticEvalNum;
+
+        if (ast instanceof AudescriptASTParen) {
+            if (ast.expressions.length === 1) {
+                return sen(ast.expressions[0]);
+            }
+
+            return NaN;
+        }
+
+        if (ast instanceof AudescriptASTNumber) {
+            return parseFloat(ast.strNumber);
+        }
+
+        if (ast instanceof AudescriptASTPrefixedOp) {
+            switch (ast.op) {
+                case "~":
+                    return sen(ast.expr);
+                default:
+                    return NaN;
+            }
+        }
+
+        if (ast instanceof AudescriptASTInfixedOp) {
+            switch (ast.op) {
+                case "mod":
+                    return sen(ast.left) % sen(ast.right);
+                case "/":
+                    return sen(ast.left) / sen(ast.right);
+                case "*":
+                    return sen(ast.left) * sen(ast.right);
+                case "+":
+                    return sen(ast.left) + sen(ast.right);
+                case "-":
+                    return sen(ast.left) - sen(ast.right);
+                case ">>>":
+                    return sen(ast.left) >>> sen(ast.right);
+                case "<<":
+                    return sen(ast.left) << sen(ast.right);
+                case ">>":
+                    return sen(ast.left) >> sen(ast.right);
+                default:
+                    return NaN;
+            }
+        }
+
+        return NaN;
+    }
+
     static fastAndConst(ast : AudescriptASTExpression) : boolean {
         let fac = AudescriptASTStatement.fastAndConst;
 
@@ -1403,32 +1456,36 @@ class AudescriptASTFor extends AudescriptASTStatement implements AudescriptASTIn
     identifier      : AudescriptASTIdentifier;
     begin           : AudescriptASTExpression;
     end             : AudescriptASTExpression;
-    downto          : boolean;
     step            : AudescriptASTExpression;
     block           : AudescriptASTStatement;
     whiteBeforeId   : string;
     whiteAfterId    : string;
     whiteAfterBegin : string;
+    whiteBeforeEnd  : string;
     whiteAfterEnd   : string;
+    whiteBeforeStep : string;
     whiteAfterStep  : string;
 
-    constructor(lexer : AudescriptLexer, identifier : AudescriptASTIdentifier, begin : AudescriptASTExpression, end : AudescriptASTExpression, downto : boolean, step : AudescriptASTExpression, block : AudescriptASTStatement ) {
+    constructor(lexer : AudescriptLexer, identifier : AudescriptASTIdentifier, begin : AudescriptASTExpression, end : AudescriptASTExpression, step : AudescriptASTExpression, block : AudescriptASTStatement ) {
         super(lexer);
-        this.whiteAfterId = identifier.whiteAfter;
-        this.whiteBeforeId = identifier.whiteBefore;
-        this.whiteAfterBegin   = end.whiteAfter;
+        this.whiteAfterId      = identifier.whiteAfter;
+        this.whiteBeforeId     = identifier.whiteBefore;
+        this.whiteAfterBegin   = begin.whiteAfter === " " ? "" : begin.whiteAfter;
+        this.whiteBeforeEnd    = end.whiteBefore;
         this.whiteAfterEnd     = end.whiteAfter;
+        this.whiteBeforeStep   = step.whiteBefore;
         this.whiteAfterStep    = step.whiteAfter;
         identifier.whiteBefore = "";
         identifier.whiteAfter  = "";
         begin.whiteAfter       = "";
+        end.whiteBefore        = "";
         end.whiteAfter         = "";
         step.whiteAfter        = "";
+        step.whiteBefore       = "";
 
         this.identifier = identifier;
         this.begin      = begin;
         this.end        = end;
-        this.downto     = downto;
         this.step       = step;
         this.block      = block;
     }
@@ -1439,13 +1496,70 @@ class AudescriptASTFor extends AudescriptASTStatement implements AudescriptASTIn
 
     toJS() : SourceNode {
         let id = this.identifier.toJS();
-        return this.sourceNode([
-            "for (let" + this.whiteBeforeId, id, this.whiteAfterId + "=", this.begin.toJS(), ";" + (this.whiteAfterBegin || " ") +
-            id, this.downto ? " >=" : " <=", this.end.toJS(), "; ", id, (
-                this.downto ? " -=" : " +="
-            ) + this.whiteAfterEnd, this.step.toJS(), ")" + this.whiteAfterStep + "{",
-            this.block.toJS(), "}"
-        ]);
+        let end = this.end.toJS();
+        let step = this.step.toJS();
+        let fastEnd  = AudescriptASTStatement.fastAndConst(this.end)  && end.toString().indexOf("\n")  === -1;
+        let fastStep = AudescriptASTStatement.fastAndConst(this.step) && step.toString().indexOf("\n") === -1;
+        let used = null;
+
+        if (!fastEnd || !fastStep) {
+            used = AudescriptASTStatement.getUsedIdentifiers(this.block);
+            used.push(this.identifier.identifier);
+        }
+
+        let genEnd  : string | SourceNode = end;
+        let genStep : string | SourceNode = step;
+
+        if (!fastEnd) {
+            genEnd = AudescriptASTStatement.newIdentifier(used, "e");
+            used.push(genEnd);
+        }
+
+        if (!fastStep) {
+            genStep = AudescriptASTStatement.newIdentifier(used, "s");
+            used.push(genStep);
+        }
+
+        let stepValue = AudescriptASTStatement.staticEvalNum(this.step);
+        let stepSign = isNaN(stepValue) ? "?" : (stepValue < 0 ? "-" : "+");
+
+        return this.sourceNode(
+            [
+                "for (let" + (this.whiteBeforeId || " "), id, (this.whiteAfterId || " ") + "=",
+                this.begin.toJS()
+            ].concat(
+                fastEnd
+                    ? [ this.whiteAfterBegin ]
+                    : [
+                        "," + (this.whiteAfterBegin || " ") + genEnd + " =" + (this.whiteBeforeEnd || " "),
+                        end,
+                        this.whiteAfterEnd === " " ? "" : this.whiteAfterEnd
+                    ]
+            ).concat(
+                fastStep
+                    ? []
+                    : [
+                        ", " + genStep + " =" + (this.whiteBeforeStep || " "),
+                        step
+                    ]
+            ).concat([";"]).concat(
+                stepSign === "+"
+                    ? [(fastEnd ? this.whiteBeforeEnd : ""), id, " <= ", genEnd]
+                    : (
+                        stepSign === "-"
+                            ? [(fastEnd ? this.whiteBeforeEnd : ""), id, " >= ", genEnd]
+                            : [
+                                " ", genStep, " < 0" + ((fastEnd ? this.whiteBeforeEnd : "") || " ") + "? ",
+                                        id, " >= ", genEnd, " : ",
+                                        id, " <= ", genEnd
+                            ]
+                    )
+            ).concat(["; ",
+                id, " +=", (fastStep ? this.whiteBeforeStep : "") || " ", genStep, ")",
+                (fastStep ? this.whiteBeforeStep : " ") || " ", (this.whiteAfterStep === " " ? "" : this.whiteAfterStep), "{",
+                this.block.toJS(), "}"
+            ])
+        );
     }
 
     setAudescriptVar(v : [string, string]) : void {
@@ -2292,12 +2406,11 @@ class AudescriptParser {
     static keywords = [
         "not", "of", "to", "is", "until", "repeat", "times", "or", "and", "mod",
         "forever", "raise", "except", "break", "case", "class", "loop", "then",
-        "downto", "upto", "up", "down", "to", "fi", "done", "except",
-        "catch", "const", "continue", "debugger", "default", "delete", "do", "od",
-        "else", "export", "extends", "finally", "for", "function", "if", "unless",
-        "import", "in", "instanceof", "let", "new", "return", "super", "switch",
-        "throw", "raise", "try", "typeof", "var", "void", "while", "with",
-        "yield", "end", "foreach"
+        "to", "fi", "done", "except", "catch", "const", "continue", "debugger",
+        "default", "delete", "do", "od", "else", "export", "extends", "finally",
+        "for", "function", "if", "unless", "import", "in", "instanceof", "let",
+        "new", "return", "super", "switch", "throw", "raise", "try", "typeof",
+        "var", "void", "while", "with", "yield", "end", "foreach"
     ];
     // "this", "does", "contain", "subset", "element", "belongs", "contains",
 
@@ -2719,20 +2832,7 @@ class AudescriptParser {
         let begin = this.expectExpression(true);
         begin.appendWhite(this.lexer.getWhite());
 
-        let downto = !(
-            this.lexer.tryEat("to")   ||
-            this.lexer.tryEat("upto") ||
-            this.lexer.tryEat("up to")
-        );
-
-        if (downto && !this.lexer.tryEat("downto") && !this.lexer.tryEat("down to") ) {
-            this.lexer.parseError(
-                format(
-                    _("Unexpected {0}, expecting 'to', 'upto', 'up to', 'downto' or 'down to'"),
-                    this.lexer.getWord(true)
-                )
-            );
-        }
+        this.lexer.eat("to");
 
         let end = this.expectExpression(true);
         end.appendWhite(this.lexer.getWhite());
@@ -2772,7 +2872,6 @@ class AudescriptParser {
             identifier,
             begin,
             end,
-            downto,
             step,
             block
         );
