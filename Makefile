@@ -1,6 +1,6 @@
 all: dirlist.txt js/audescript/audescript.js
 
-.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip update-www
+.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip
 
 dirlist.txt:
 	find quiz examples-automata algos l10n/js -type f | sort > dirlist.txt
@@ -20,7 +20,7 @@ uncommited-zip: /tmp/aude-uncommited.zip
 	cd /tmp/aude; \
 	make; \
 	echo "Archive built on $$(date -u +%Y-%m-%dT%H:%M:%S%z)" > ARCHIVE_DATE; \
-	rm -rf .git www .gitignore; \
+	rm -rf .git .gitignore; \
 	cd ..; \
 	rm aude-uncommited.zip; \
 	zip -r9 aude-uncommited.zip aude; \
@@ -38,45 +38,14 @@ zip: /tmp/aude.zip
 	make; \
 	echo "Built from Aude's repository" > ARCHIVE_DATE; \
 	git log -n 1 --pretty=oneline >> ARCHIVE_DATE; \
-	rm -rf .git www .gitignore; \
+	rm -rf .git .gitignore; \
 	cd ..; \
 	rm aude.zip; \
 	zip -r9 aude.zip aude; \
 	rm -rf aude;
 
-update-www: www
-	mkdir -p www-built; \
-	rsync  --exclude aude/ -avz --delete www/ www-built/; \
-	cd www-built; \
-	if [ -d aude ]; then \
-		cd aude; \
-		if [ "`git --git-dir=./.git log -n 1 --pretty=%H`" != "`git --git-dir=../../.git log -n 1 --pretty=%H`" ]; then \
-			git fetch --all; \
-			git reset --hard origin/master; \
-			make; \
-			make zip; \
-			cp /tmp/aude.zip ..; \
-		fi; \
-	else \
-		git clone "$$(pwd)/../.git" aude; \
-		cd aude; \
-		make; \
-		make zip; \
-		cp /tmp/aude.zip ..; \
-	fi; \
-	cd ../..; \
-	rsync  --exclude aude/.git \
-	       --exclude aude/.gitignore \
-	       --exclude aude/www  \
-	       --exclude aude/www-built \
-	       --rsync-path="~/bin/rsync" \
-	       -vaz \
-	       --delete \
-	       www-built/ \
-	       jakser@forge.imag.fr:/var/lib/gforge/chroot/home/groups/aude/htdocs/
-
 clean:
-	rm -rf dirlist.txt www-built
+	rm -rf dirlist.txt
 
 .PHONY:
 count-lines:
