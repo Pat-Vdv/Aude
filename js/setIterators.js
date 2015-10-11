@@ -11,19 +11,12 @@ if (typeof Symbol === "undefined") {
                     yield this[i];\
                 }\
             };\
-            Object.prototype.iterator = function () {\
-                for (var i in this) {\
-                    if (this.hasOwnProperty(i)) {\
-                        yield new Tuple().fromList(i, this[i]);\
-                    }\
-                }\
-            }\
         ");
     } catch (e) {}
 }
 
-try {
-    eval("\
+(function () {
+    var iteratorCode = "\
         (function () {\
             var symbol;\
             try { symbol = Symbol.iterator; }\
@@ -40,13 +33,19 @@ try {
                     yield this[i];\
                 }\
             };\
-            Object.prototype[symbol] = function*() {\
-                for (var i in this) {\
-                    if (this.hasOwnProperty(i)) {\
-                        yield new Tuple().fromList([i, this[i]]);\
-                    }\
-                }\
-            }\
         })();\
-    ");
-} catch (e) {}
+    ";
+
+    try {
+        eval(iteratorCode);
+    } catch (e) {
+        iteratorCode = babel.transform(iteratorCode).code;
+        try {
+            eval(
+                iteratorCode
+            );
+        } catch (e) {
+            console.error(e);
+        }
+    }
+})();
