@@ -623,7 +623,7 @@
         } catch (e) {
             alert(
                 libD.format(
-                    _("Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \")."),
+                    _("Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \"). Epsilons are written '\\e' or 'ɛ' (without quotes)."),
                     f,
                     t,
                     text
@@ -1427,7 +1427,7 @@
 
             pkg.prompt(
                 _("New transition"),
-                _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."),
+                _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes.  Epsilons are written '\\e' or 'ɛ' (without quotes)."),
                 "",
                 function (trans) {
                     if (trans === null) {
