@@ -80,7 +80,7 @@ export function automatonToRE(A, retStruct)
             return RE_void()
         else if RE.type = "epsilon" then
             return RE_epsilon()
-        else if RE.type = "star" then
+        else if RE.type = "*" then
             return RE
         else if RE.type = "+" and RE_epsilon() belongs to RE.v then
             let v := RE.v minus {RE_epsilon()}
@@ -170,11 +170,22 @@ export function automatonToRE(A, retStruct)
 
             foreach a in Sigma do
                 if trans(Q[i], a) = Q[j] then
-                    L[0][i][j] := RE_sum(L[0][i][j], RE_symbol(a))
+                    L[0][i][j] := RE_sum(
+                        L[0][i][j],
+                        (
+                            if i = j then
+                                RE_star(RE_symbol(a))
+                            else
+                                RE_symbol(a)
+                        )
+                    )
                 end if
 
                 if i = j then
-                    L[0][i][j] := RE_sum(L[0][i][j], RE_star(RE_symbol(a)))
+                    L[0][i][j] := RE_sum(
+                        L[0][i][j],
+                        RE_epsilon()
+                    ) // one can go from a state to the same state with epsilon
                 end if
             done
         done
