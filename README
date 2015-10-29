@@ -137,6 +137,7 @@ What is the license of the program?
     - fileSaver.js, which is under X11/MIT, see lib/LICENSE.fileSaver.md for
       more information
     - Ace, which is under a BSD license.
+    - KaTeX, which is under a MIT.
     - Hammer, which is under MIT.
     - A subset of the Oxygen iconset (http://www.oxygen-icons.org) which is dual
       licensed : under the Creative Common Attribution-ShareAlike 3.0 License or
