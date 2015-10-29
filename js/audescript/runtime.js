@@ -194,6 +194,16 @@
         throw new Error(audescript.l10n("Union in place is only possible with sets"));
     };
 
+    pkg.o = function (a) {
+        var res = Object.create(null);
+
+        for (var i = 0; i < a.length; i += 2) {
+            res[a[i]] = a[i + 1];
+        }
+
+        return res;
+    };
+
     pkg.e = function (v) {
         if (v instanceof Set) {
             return v.card() === 0;

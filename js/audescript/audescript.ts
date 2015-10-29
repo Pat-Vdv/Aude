@@ -885,7 +885,7 @@ class AudescriptASTBracketParenBrace extends AudescriptASTExpression {
                 let value = this.values[i];
                 res.push(
                     (res.length ? "," : ""),
-                    expr.toJS(), ":",
+                    expr.toJS(), ",", // formerly ":"
                     value instanceof AudescriptASTBracketParenBrace
                         ? value.toJS("", "", assignment)
                         : value.toJS()
@@ -972,7 +972,7 @@ class AudescriptASTBrace extends AudescriptASTBracketParenBrace {
     toJS(right : string = "", left : string = "", assignment : boolean = false) : SourceNode {
         return (
             this.values
-                ? super.toJS("{", "}", assignment)
+                ? super.toJS(this.audescriptVar[0] + ".o([", "])", assignment)
                 : (
                     assignment
                         ? super.toJS("[", "]", true)
@@ -2547,6 +2547,19 @@ class AudescriptParser {
         }
     }
 
+    parseEmptyObject() : AudescriptASTBrace {
+        let state = this.lexer.getState();
+
+        if (this.lexer.tryEat("empty object") || this.lexer.tryEat("emptyobj")) {
+            return new AudescriptASTBrace(
+                state,
+                [],
+                [],
+                ""
+            );
+        }
+    }
+
     parseRegexp() : AudescriptASTRegexp {
         if (!this.lexer.end() && this.lexer.curChar() === "/") {
             let state = this.lexer.getState();
@@ -3469,6 +3482,7 @@ class AudescriptParser {
                 this.parseString()      ||
                 this.parseBool()        ||
                 this.parseRegexp()      ||
+                this.parseEmptyObject() ||
                 this.parseEmptySet()    ||
                 this.parseTernary()     ||
                 this.tryParseFunction() ||

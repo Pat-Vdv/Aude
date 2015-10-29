@@ -312,7 +312,11 @@
         } else if (HTMLElement && res instanceof HTMLElement) {
             setNodeResult(res);
         } else if (res) {
-            setTextResult(res.toString());
+            if (typeof res === "object" && !(res instanceof Object)) {
+                setTextResult(Object.prototype.toString.call(res));
+            } else {
+                setTextResult(res.toString());
+            }
         } else {
             if (res === undefined) {
                 setTextResult("undefined");

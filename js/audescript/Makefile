@@ -8,7 +8,8 @@ audescript.js: audescript.ts
 	echo -n "(function(that) {" > audescript.js
 	cat audescript.bundle.js >> audescript.js
 	echo "\n}(this));" >> audescript.js
-# 	rm audescript.bundle.js
+	mv GenericLexer.bundle.js.map GenericLexer.js.map
+	rm audescript.bundle.js
 	sed -i s/audescript.bundle.ts/audescript.ts/g audescript.js.map
 	chmod +x audescript.js
 
