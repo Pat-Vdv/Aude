@@ -233,7 +233,24 @@ run(
     function (A)
         let res := automatonToRE(A)
 
-        if this.MathJax then
+        if this.katex then
+            let span := document.createElement("span")
+
+            katex.render(
+                "\\mathrm{" + (
+                    res.replace(/\(/g, "\\left(")
+                       .replace(/\)/g, "\\right)")
+                       .replace(/\*/g, "\\text{*}")
+                       .replace(/∅/g, "\\emptyset")
+                ) +
+                "}",
+                span,
+                {"throwOnError": false, "display": true}
+            )
+
+            return span
+
+        else if this.MathJax then
             let span := document.createElement("span")
 
             span.textContent := (

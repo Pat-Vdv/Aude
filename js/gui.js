@@ -226,12 +226,23 @@
         resultsContent.textContent = "";
     }
 
+    var katexAutorenderOpts = {
+        delimiters: [
+            {left: "$$",  right: "$$",  display: true},
+            {left: "$",   right: "$",   display: false},
+            {left: "\\[", right: "\\]", display: true},
+            {left: "\\(", right: "\\)", display: false}
+        ]
+    };
+
     function textFormat(text, node, html) {
         if (!node) {
             node = document.createElement("span");
         }
+
         node[html ? "innerHTML" : "textContent"] = text instanceof Array ? text.join("") : text;
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub, node]);
+
+        renderMathInElement(node, katexAutorenderOpts);
         return node;
     }
 
