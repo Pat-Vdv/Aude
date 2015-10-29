@@ -599,7 +599,9 @@
             }
         }
 
-        callback();
+        if (callback) {
+            callback();
+        }
     }
 
     function loadLibrary(code, moduleName) {
