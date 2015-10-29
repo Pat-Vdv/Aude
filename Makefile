@@ -20,7 +20,7 @@ uncommited-zip: /tmp/aude-uncommited.zip
 	cd /tmp/aude; \
 	make; \
 	echo "Archive built on $$(date -u +%Y-%m-%dT%H:%M:%S%z)" > ARCHIVE_DATE; \
-	rm -rf .git .gitignore; \
+	rm -rf .git .gitignore js/lib/ace-builds/src-min-noconflict; \
 	cd ..; \
 	rm aude-uncommited.zip; \
 	zip -r9 aude-uncommited.zip aude; \
@@ -38,7 +38,12 @@ zip: /tmp/aude.zip
 	make; \
 	echo "Built from Aude's repository" > ARCHIVE_DATE; \
 	git log -n 1 --pretty=oneline >> ARCHIVE_DATE; \
-	rm -rf .git .gitignore; \
+	rm -rf .git .gitignore js/lib/ace-builds/src-min-noconflict js/lib/ace-builds/src-noconflict/snippets/ js/lib/ace-builds/src-noconflict/worker-*; \
+	for file in js/lib/ace-builds/src-noconflict/mode-*; do \
+		if [ "$$file" != "js/lib/ace-builds/src-noconflict/mode-audescript.js" ]; then \
+			rm "$$file"; \
+		fi; \
+	done; \
 	cd ..; \
 	rm aude.zip; \
 	zip -r9 aude.zip aude; \
