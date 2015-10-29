@@ -106,6 +106,10 @@ export function automatonToRE(A, retStruct)
             return RE2
         else if RE2.type = "void" then
             return RE1
+        else if RE1.type = "*" and (RE2.type = "epsilon" or RE2.v = RE1) then
+            return RE1
+        else if RE2.type = "*" and (RE1.type = "epsilon" or RE1 = RE2.v) then
+            return RE2
         else if RE1.type = "+" then
             return type("+", if RE2.type = "+" then RE2.v union RE1.v else {RE2} union RE1.v)
         else if RE2.type = "+" then
@@ -170,7 +174,7 @@ export function automatonToRE(A, retStruct)
                 end if
 
                 if i = j then
-                    L[0][i][j] := RE_sum(L[0][i][j], RE_epsilon())
+                    L[0][i][j] := RE_sum(L[0][i][j], RE_star(RE_symbol(a)))
                 end if
             done
         done
