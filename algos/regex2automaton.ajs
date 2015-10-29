@@ -171,6 +171,11 @@ export function regexToAutomaton(regex)
             return ""
         end if
 
+        if not regex[i].trim() then
+            ++i
+            return get_lex()
+        end if
+
         if regex[i] = "\\" then
             ++i
 
