@@ -5,7 +5,7 @@ msgid  "Name of the state"
 msgstr "Nom de l’état"
 
 msgid  "Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes.  Epsilons are written '\\e' or 'ɛ' (without quotes)."
-msgstr "Veuillez donner les symboles de la transition en les séparant par des vigules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles. Les epsilons sont notés « \\e » ou « ɛ » (sans les guillemets)."
+msgstr "Veuillez donner les symboles de la transition en les séparant par des virgules.\nVous pouvez encadrer les caractères spéciaux par des guillemets simples ou doubles. Les epsilons sont notés « \\e » ou « ɛ » (sans les guillemets)."
 
 msgid  "Sorry, but you can't remove the initial state."
 msgstr "Désolé, mais vous ne pouvez pas supprimer l’état initial."
