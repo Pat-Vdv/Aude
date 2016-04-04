@@ -63,6 +63,8 @@
                 "js/lib/ace-builds/src-noconflict/ace.js"
             ]);
 
+            if (!window.SVGPathSeg) { boot(["js/lib/pathseg.js"]); }
+
             window.addEventListener('load', function() {
                 setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
             }, false);
