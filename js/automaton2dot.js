@@ -95,23 +95,10 @@
             states             = aude.toArray(a.getStates()),
             initialState       = a.getInitialState(),
             leng               = states.length,
-            table              = [],
-            startState,
-            endState,
-            endTrans,
-            trans,
-            symbols,
-            comma,
-            trLen,
-            tmp,
-            len,
-            tr,
-            eS,
-            sS,
-            s,
-            t,
-            q,
-            i;
+            table              = [];
+
+        var startState, endState, endTrans, trans, symbols, comma, trLen, tmp,
+            len, tr, eS, sS, s, t, q, i;
 
         if (!a.hasState(initialState)) {
             throw new Error("Automaton has no initial state.");

@@ -734,6 +734,51 @@
         return A;
     };
 
+    pkg.getDot = function (index, title) {
+        pkg.cleanSVG(pkg.currentIndex);
+
+        if (!title) {
+            title = "automaton";
+        }
+
+
+        var dot = "digraph " +
+                  JSON.stringify(title) +
+                  " {\n\trankdir=LR\n\t_begin [style = invis];\n";
+
+
+        var nodes = svgs[index].querySelectorAll(".node"), i, len;
+
+        for (i = 0, len = nodes.length; i < len; ++i) {
+            if (nodes[i].querySelectorAll("ellipse").length > 1) {
+                A.addFinalState(atob(id(nodes[i])));
+            } else if (nodes[i] !== initialState) {
+                A.addState(getValue(atob(id(nodes[i]))));
+            }
+        }
+
+        A.setInitialState(getValue(atob(id(initialStates[index]))));
+
+        var symbols, leng, s, tid, f, t, text, trans = svgs[index].querySelectorAll(".edge");
+
+        for (i = 0, len = trans.length; i < len; ++i) {
+            if (trans[i] !== initialStateArrows[index]) {
+                tid  = id(trans[i]).split(" ");
+                text = trans[i].getElementsByTagName("text")[0].textContent;
+                f    = atob(tid[0]);
+                t    = atob(tid[1]);
+
+                symbols = parseTransition(text, f, t);
+
+                for (s = 0, leng = symbols.length; s < leng; ++s) {
+                    A.addTransition(getValue(f), (onlyStrings && (symbols[s] !== epsilon)) ? symbols[s].toString() : symbols[s], getValue(t));
+                }
+            }
+        }
+        return A;
+    };
+
+
     function dataIdToId(svgNode) {
         svgNode = svgNode.cloneNode(true);
         var identifiedElements = svgNode.querySelectorAll("[data-id]");

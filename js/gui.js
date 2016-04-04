@@ -1244,10 +1244,12 @@
         };
 
         document.getElementById("redraw").onclick = function () {
-            automatoncodeedit.value = automataDesigner.getAutomatonCode(automataDesigner.currentIndex, true);
-            if (automatoncodeedit.value) {
-                automataDesigner.setAutomatonCode(automatoncodeedit.value, automataDesigner.currentIndex);
-            }
+            viz(
+                automaton2dot(read_automaton(automataDesigner.getDot())),
+                function (res) {
+                    automataDesigner.setSVG(res);
+                }
+            );
         };
 
         exportResult.onclick = function () {
