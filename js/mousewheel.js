@@ -23,7 +23,28 @@ var listenMouseWheel;
     }
 
     function handleWheel(e) {
-        var i, len, delta = (e.wheelDelta ? e.wheelDelta / 120 : (e.detail ? -e.detail / 3 : 0));
+        var i, len;
+
+        var delta = (
+                ("deltaX" in e)
+                    ? (
+                        (e.deltaMode === e.DOM_DELTA_PIXEL)
+                            ? e.deltaY / -40
+                            : (
+                                (e.deltaMode === e.DOM_DELTA_LINE)
+                                    ? (e.deltaY > 0 ? -0.6 : 0.6)
+                                    : ((e.deltaMode === e.DOM_DELTA_PAGE)
+                                        ? e.deltaY / 32768
+                                        : 0
+                                    )
+                            )
+                    )
+                    : (
+                        e.wheelDelta
+                            ? e.wheelDelta / 120
+                            : (e.detail ? -e.detail / 3 : 0)
+                    )
+        );
 
         if (delta) {
             for (i = 0, len = scrollFunctions.length; i < len; ++i) {
@@ -34,7 +55,9 @@ var listenMouseWheel;
         }
     }
 
-    if ("onmousewheel" in window) {
+    if ("onwheel" in document) {
+        document.onwheel = handleWheel;
+    } else if ("onmousewheel" in window) {
         window.onmousewheel = handleWheel;
     } else if ("onmousewheel" in document) {
         document.onmousewheel = handleWheel;
