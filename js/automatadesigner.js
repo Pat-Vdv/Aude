@@ -1914,12 +1914,11 @@
                                 ellipse.setAttribute("rx", minWidth / 2);
                             }
 
+                            // FIXME terrible hack to "repair" the node after resize
+                            prepareNodeMove(node, {});
+                            fixNodeAndTransition(node);
                             snapshot();
                         }
-
-                        // FIXME terrible hack to "repair" the node after resize
-                        prepareNodeMove(node, {});
-                        fixNodeAndTransition(node);
                     }
                 }
             );
