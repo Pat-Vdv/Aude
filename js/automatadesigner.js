@@ -1123,6 +1123,7 @@
         function fixNode(node) {
             var bigEllipse   = getBigEllipse(node);
             var smallEllipse = getSmallEllipse(node);
+            var label        = node.getElementsByTagName("text")[0];
 
             if (bigEllipse !== smallEllipse) {
                 var smallBBox = smallEllipse.getBBox();
@@ -1132,6 +1133,11 @@
                 bigEllipse.setAttribute("cx", smallEllipse.getAttribute("cx"));
                 bigEllipse.setAttribute("cy", smallEllipse.getAttribute("cy"));
             }
+
+            var bcr = label.getBoundingClientRect();
+
+            label.setAttribute("x", smallEllipse.cx.baseVal.value);
+            label.setAttribute("y", smallEllipse.cy.baseVal.value + 4);
 
             if (node === initialState) {
                 setInitialState(node);
