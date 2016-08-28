@@ -428,3 +428,6 @@ msgstr ""
 
 msgid  "You need to fix the automaton in design mode before accessing its code."
 msgstr ""
+
+msgid  "Zoom and center automatically"
+msgstr ""

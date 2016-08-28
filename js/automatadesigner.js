@@ -2380,6 +2380,81 @@
                 }
             }
 
+            that.autoCenterZoom = function () {
+                var wantedRatio = 0.8;
+                var states = pkg.svgNode.querySelectorAll(".node,path,polygon,text");
+
+                var minX = Infinity;
+                var minY = Infinity;
+                var maxX = -Infinity;
+                var maxY = -Infinity;
+
+                var parentBcr = pkg.svgNode.getBoundingClientRect();
+
+                for (var state, i = 0; i < states.length; i++) {
+                    state = states[i];
+
+                    var bcr = state.getBoundingClientRect();
+                    var x = bcr.left - parentBcr.left;
+                    var y = bcr.top - parentBcr.top;
+
+                    if (x < minX) {
+                        minX = x;
+                    }
+
+                    if (y < minY) {
+                        minY = y;
+                    }
+
+                    x += bcr.width;
+                    y += bcr.height;
+
+                    if (x > maxX) {
+                        maxX = x;
+                    }
+
+                    if (y > maxY) {
+                        maxY = y;
+                    }
+                }
+
+                if (
+                    minX ===  Infinity ||
+                    minY ===  Infinity ||
+                    maxY === -Infinity ||
+                    maxX === -Infinity
+                ) {
+                    return;
+                }
+
+                var currentRatio = Math.max(
+                    (maxX - minX) / parentBcr.width,
+                    (maxY - minY) / parentBcr.height
+                );
+
+                var previousZoom = pkg.svgZoom;
+                var factorRatio = (wantedRatio / currentRatio);
+                var nz = Math.min(1, pkg.svgZoom * factorRatio);
+
+                newZoom(nz);
+
+                pkg.svgNode.viewBox.baseVal.x += (
+                    minX / previousZoom - (
+                        pkg.svgNode.viewBox.baseVal.width
+                            -
+                        (maxX - minX) / previousZoom
+                    ) / 2
+                );
+
+                pkg.svgNode.viewBox.baseVal.y += (
+                    minY / previousZoom - (
+                        pkg.svgNode.viewBox.baseVal.height
+                            -
+                        (maxY - minY) / previousZoom
+                    ) / 2
+                );
+            };
+
             listenMouseWheel(function (e, delta) {
                 if (!that.svgNode || that.disabled) {
                     return null;

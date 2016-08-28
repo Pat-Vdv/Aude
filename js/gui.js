@@ -1252,6 +1252,8 @@
             );
         };
 
+        document.getElementById("zoom_best").onclick = automataDesigner.autoCenterZoom.bind(automataDesigner);
+
         exportResult.onclick = function () {
             var fn;
             if (automatonResult) {

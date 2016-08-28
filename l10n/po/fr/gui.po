@@ -443,3 +443,6 @@ msgstr "Impossible d'accéder au code de l'automaton n°{0}"
 
 msgid  "You need to fix the automaton in design mode before accessing its code."
 msgstr "Vous devez corriger l'automate dans le mode dessin avant d'accéder à son code."
+
+msgid  "Zoom and center automatically"
+msgstr "Zoomer et centrer automatiquement"
