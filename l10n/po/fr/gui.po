@@ -446,3 +446,9 @@ msgstr "Vous devez corriger l'automate dans le mode dessin avant d'accéder à s
 
 msgid  "Zoom and center automatically"
 msgstr "Zoomer et centrer automatiquement"
+
+msgid "Undo"
+msgstr "Annuler"
+
+msgid "Redo"
+msgstr "Refaire"

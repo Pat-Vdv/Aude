@@ -1415,6 +1415,27 @@
             }
         };
 
+        (function (undo, redo) {
+            undo.onclick = automataDesigner.undo.bind(automataDesigner);
+            redo.onclick = automataDesigner.redo.bind(automataDesigner);
+
+            automataDesigner.onUndoRedoEvent = (
+                function (canUndo, canRedo) {
+                    if (canUndo) {
+                        document.getElementById("undo").classList.remove("greyed");
+                    } else {
+                        document.getElementById("undo").classList.add("greyed");
+                    }
+
+                    if (canRedo) {
+                        document.getElementById("redo").classList.remove("greyed");
+                    } else {
+                        document.getElementById("redo").classList.add("greyed");
+                    }
+                }
+            );
+        }(document.getElementById("undo"), document.getElementById("redo")));
+
         automatonPlus.onclick = function () {
             var o = document.createElement("option");
             o.value = automatonCount;

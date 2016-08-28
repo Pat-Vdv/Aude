@@ -104,14 +104,73 @@
         initialStateArrows = [], // array containing all the automata's initial state's arrow
         initialStates      = [], // array containing all the automata's initial state's node
         svgs               = [], // will contain all currently opened automata
+        snapshotStacks     = [], // contains the all the automata's snapshots to allow undo/redo
         nodeList,                // list of the states' nodes of the currently designed automaton
         initialStateArrow,       // current initial state arrow node (<g>)
         pathEditor,              // <g> to edit paths and control points of these paths
-        initialState;            // current automaton initial state's note (<g>)
+        initialState,            // current automaton initial state's note (<g>)
+        snapshotStack,
+        frameModifiedSVG = false; // If a frame modified the SVG (used for snapshots)
 
     pkg.formatTrans = function (t) {
         return t.replace(/\\e/g, "ε");
     };
+
+    function triggerUndoRedoEvent() {
+        pkg.onUndoRedoEvent(
+            !!snapshotStack.stack[snapshotStack.currentIndex - 1],
+            !!snapshotStack.stack[snapshotStack.currentIndex + 1]
+        );
+    }
+
+    function snapshot(dontSnapshot) {
+        if (!dontSnapshot || !snapshotStack.stack[snapshotStack.currentIndex]) {
+            snapshotStack.stack = snapshotStack.stack.slice(0, ++snapshotStack.currentIndex);
+            snapshotStack.stack[snapshotStack.currentIndex] = pkg.svgNode.cloneNode(true);
+        }
+
+        triggerUndoRedoEvent();
+    }
+
+    function snapshotRestore(snapshotIndex) {
+        pkg.setSVG(snapshotStack.stack[snapshotIndex], pkg.currentIndex, true);
+        snapshotStack.currentIndex = snapshotIndex;
+
+        pathEditor = null;
+        var pathEditorLocal = document.querySelector("[data-id='path-editor']");
+
+        if (pathEditorLocal) {
+            pathEditorLocal.parentNode.removeChild(pathEditorLocal);
+        }
+
+        triggerUndoRedoEvent();
+    }
+
+    pkg.redo = function () {
+        var newIndex = snapshotStack.currentIndex + 1;
+
+        if (snapshotStack.stack[newIndex]) {
+            snapshotRestore(newIndex);
+        }
+
+        triggerUndoRedoEvent();
+    };
+
+    pkg.undo = function () {
+        var newIndex = snapshotStack.currentIndex - 1;
+
+        if (snapshotStack.stack[newIndex]) {
+            if (!snapshotStack.stack[snapshotStack.currentIndex]) {
+                snapshot();
+            }
+
+            snapshotRestore(newIndex);
+        }
+
+        triggerUndoRedoEvent();
+    };
+
+    pkg.onUndoRedoEvent = function () {};
 
     // Given a node representing a state, gives the biggest ellipse of the node in case of a final state.
     // Otherwise, give the only ellipse of the node
@@ -404,8 +463,8 @@
     };
 
     // reset the automaton #<index>
-    pkg.clearSVG = function (index) {
-        pkg.setSVG("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'> <g id='graph1' class='graph' transform='scale(1 1) rotate(0) translate(0 0)'> <title>automaton</title></g></svg>", index);
+    pkg.clearSVG = function (index, dontSnapshot) {
+        pkg.setSVG("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'> <g id='graph1' class='graph' transform='scale(1 1) rotate(0) translate(0 0)'> <title>automaton</title></g></svg>", index, dontSnapshot);
     };
 
     function fixBrokenGraphvizTitle(t) {
@@ -417,7 +476,7 @@
     }
 
     // set current automaton's SVG
-    pkg.setSVG = function (svg, index) {
+    pkg.setSVG = function (svg, index, dontSnapshot) {
         if (!svg) {
             return pkg.clearSVG(index);
         }
@@ -519,6 +578,8 @@
         }
 
         pkg.setCurrentIndex(pkg.currentIndex);
+
+        snapshot(dontSnapshot);
     };
 
     // Choose the current automaton
@@ -533,6 +594,15 @@
         initialStateArrow = initialStateArrows[index];
         initialState = initialStates[index];
 
+        if (!snapshotStacks[index]) {
+            snapshotStacks[index] = {
+                currentIndex: 0,
+                stack: []
+            };
+        }
+
+        snapshotStack = snapshotStacks[index];
+
         if (pkg.svgNode) {
             pkg.svgContainer.replaceChild(svgs[index], pkg.svgNode);
         } else {
@@ -546,7 +616,7 @@
     // this function is to be called when a new automaton with index <index> must be created
     pkg.newAutomaton = function (index) {
         if (nodeLists[index]) {
-            pkg.clearSVG(index);
+            pkg.clearSVG(index, true);
         }
     };
 
@@ -554,6 +624,7 @@
     pkg.removeAutomaton = function (index) {
         svgs.splice(index, 1);
         nodeLists.splice(index, 1);
+        snapshotStacks.splice(index, 1);
         initialStateArrows.splice(index, 1);
     };
 
@@ -566,6 +637,11 @@
 
         overlayHide();
         resizeHandlesHide();
+
+        var pathEditorLocal = document.getElementById("path-editor");
+        if (pathEditorLocal) {
+            pathEditorLocal.parentNode.removeChild(pathEditorLocal);
+        }
 
         if (!dontCleanColors && svgs[index]) {
             var ellipses = svgs[index].getElementsByTagName("ellipse"),
@@ -904,6 +980,8 @@
             if (nodeMoving._arrow) {
                 posTriangleArrow(nodeMoving._arrow.points, nodeMoving._ellipse, seg);
             }
+
+            frameModifiedSVG = true;
         }
 
         // move the points of a path during a movement
@@ -956,6 +1034,7 @@
             nodeMoving.setAttribute("cx", segMove.x);
             nodeMoving.setAttribute("cy", segMove.y);
             nodeMoving._seg[3] && fixTransition(nodeMoving._seg[3]);
+            frameModifiedSVG = true;
         }
 
         function pathEditControlMoveFrame(e) {
@@ -970,6 +1049,7 @@
             nodeMoving.setAttribute("cy", nodeMoving._seg[0][nodeMoving._seg[2]] = pt.y);
             nodeMoving._seg[3] && fixTransition(nodeMoving._seg[3]);
             fixPathEditor();
+            frameModifiedSVG = true;
         }
 
         // move the visible area
@@ -993,6 +1073,7 @@
 
             that.svgNode.viewBox.baseVal.x = c.viewBoxX - (e.clientX - c.x) / that.svgZoom;
             that.svgNode.viewBox.baseVal.y = c.viewBoxY - (e.clientY - c.y) / that.svgZoom;
+            frameModifiedSVG = true;
         }
 
         function isTransitionStraight(edge) {
@@ -1201,6 +1282,7 @@
             );
 
             fixNodeAndTransition(coords.node);
+            frameModifiedSVG = true;
         }
 
         function nodeMoveFrame() {
@@ -1344,6 +1426,8 @@
                     }
                 }
             }
+
+            frameModifiedSVG = true;
         }
 
         function mouseMove(e) {
@@ -1453,6 +1537,7 @@
             pointOnEllipse(getBigEllipse(nodeEdit), p.x, p.y, po);
             p.x1 = po.x;
             p.y1 = po.y;
+            frameModifiedSVG = true;
         }
 
         function beginNewTransition(startState, e) {
@@ -1517,6 +1602,8 @@
                         if (nodeEdit !== endState) {
                             nodeList[atob(id(nodeEdit))].t.push([g, true]); // true : state is origin
                         }
+
+                        snapshot();
                     }
                 }
             );
@@ -1534,6 +1621,7 @@
             );
 
             fixPathEditor();
+            snapshot();
         }
 
         // event when a transition label is moved
@@ -1546,6 +1634,7 @@
 
             nodeMoving.setAttribute("x", (e.clientX - coords[0]) / pkg.svgZoom + coords[2]);
             nodeMoving.setAttribute("y", (e.clientY - coords[1]) / pkg.svgZoom + coords[3]);
+            frameModifiedSVG = true;
         }
 
         function beginMoveTransitionLabel(text, e) {
@@ -1557,8 +1646,14 @@
             pkg.svgContainer.cursor = "move";
         }
 
-        function fixPathEditor() {
-            if (!pathEditor) {
+        function fixPathEditor(appending) {
+            if (!appending && (!pathEditor || pathEditor !== document.getElementById("path-editor"))) {
+                var pathEditorLocal = document.getElementById("path-editor");
+                if (pathEditorLocal) {
+                    pathEditorLocal.parentNode.removeChild(pathEditorLocal);
+                }
+
+                pathEditor = null;
                 return;
             }
 
@@ -1631,7 +1726,7 @@
 
             pathEditor.id = "path-editor";
             pathEditor._path = nodeMoving.getElementsByTagName("path")[0];
-            fixPathEditor();
+            fixPathEditor(true);
             pkg.svgNode.appendChild(pathEditor);
         }
 
@@ -1717,6 +1812,8 @@
                     }
                 }
             }
+
+            snapshot();
         }
 
         // delete the transition tNode
@@ -1734,6 +1831,8 @@
                 }
             }
             tNode.parentNode.removeChild(tNode);
+
+            snapshot();
         }
 
         function removeNode(node) {
@@ -1748,6 +1847,8 @@
             }
             delete nodeList[tid];
             node.parentNode.removeChild(node);
+
+            snapshot();
         }
 
         function editNodeName(node) {
@@ -1798,6 +1899,8 @@
                             if (ellipse.getBBox().width < minWidth) {
                                 ellipse.setAttribute("rx", minWidth / 2);
                             }
+
+                            snapshot();
                         }
 
                         // FIXME terrible hack to "repair" the node after resize
@@ -1817,6 +1920,7 @@
                 function (t) {
                     if (t !== null) {
                         text.textContent = pkg.formatTrans(t || "\\e");
+                        snapshot();
                     }
                 }
             );
@@ -1935,6 +2039,7 @@
                         } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
                             pkg.stopMove = true;
                             removeNode(nodeMoving);
+                            snapshot();
                         } else if (e.shiftKey) {
                             beginNewTransition(nodeMoving, e);
                         } else {
@@ -1952,6 +2057,7 @@
                             transitionStraight(nodeMoving);
                         } else if (e.ctrlKey || e.metaKey) {
                             deleteTransition(nodeMoving, null);
+                            snapshot();
                         } else {
                             beginNewTransitionEdit(nodeMoving);
                             if (e.target.nodeName === "text") {
@@ -1972,8 +2078,10 @@
                         if (!e.shiftKey) {
                             if ((e.ctrlKey || e.metaKey)) {
                                 setInitialState(nodeMoving);
+                                snapshot();
                             } else {
                                 toggleAccepting(nodeMoving);
+                                snapshot();
                             }
                         }
                     }
@@ -1991,6 +2099,7 @@
                     } else {
                         stateResizeHandlesOn(node);
                         overlayOn(node);
+                        frameModifiedSVG = false; // block snapshot
                     }
                 }
             } else if (currentMoveAction !== nodeResizeFrame) {
@@ -2001,6 +2110,7 @@
                     if (stopOverlay) {
                         stopOverlay = false;
                     } else {
+                        frameModifiedSVG = false; // block snapshot
                         overlayOn(node);
                     }
                 } else {
@@ -2010,6 +2120,11 @@
 
             pkg.svgContainer.style.cursor = "";
             cancelMoveAction();
+
+            if (frameModifiedSVG) {
+                snapshot();
+                frameModifiedSVG = false;
+            }
         }
 
         pkg.svgContainer.addEventListener("mouseup", function (e) {
@@ -2320,6 +2435,7 @@
                 }
             } else if (!(e.button || blockNewState || e.ctrlKey || e.metaKey || e.shiftKey)) {
                 createNode(e);
+                snapshot();
             }
         }, false);
 
@@ -2544,7 +2660,7 @@
             return false;
         };
 
-        pkg.clearSVG(pkg.currentIndex);
+        pkg.clearSVG(pkg.currentIndex, true);
 
         pkg.svgContainer.parentNode.appendChild(document.createElement("div"));
         pkg.svgContainer.parentNode.lastChild.id = "new-state-btn-wrap";

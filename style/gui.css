@@ -83,9 +83,14 @@ body {
     margin:0 1px
 }
 
-#toolbar button:hover, #toolbar select:hover {
+#toolbar button:hover:not(.greyed), #toolbar select:hover:not(.greyed) {
    background-color:white
 }
+
+.greyed {
+    opacity:0.5;
+}
+
 
 #toolbar button:first-child, #toolbar select:first-child, .algomode #algo-exec {
    border-top-left-radius:4px;

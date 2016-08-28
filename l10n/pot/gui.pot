@@ -431,3 +431,9 @@ msgstr ""
 
 msgid  "Zoom and center automatically"
 msgstr ""
+
+msgid "Undo"
+msgstr ""
+
+msgid "Redo"
+msgstr ""
