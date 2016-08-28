@@ -735,6 +735,18 @@
     };
 
     pkg.getDot = function (index, title) {
+        if (index === undefined) {
+            index = pkg.currentIndex;
+        }
+
+        var A = new Automaton();
+        pkg.cleanSVG(pkg.currentIndex);
+        if (!initialStates[index]) {
+            return null; // automata without initial states are not supported
+        }
+
+        var getValue = function (v) { return pkg.getValueFunction(v).toString(); };
+
         pkg.cleanSVG(pkg.currentIndex);
 
         if (!title) {
@@ -771,11 +783,12 @@
                 symbols = parseTransition(text, f, t);
 
                 for (s = 0, leng = symbols.length; s < leng; ++s) {
-                    A.addTransition(getValue(f), (onlyStrings && (symbols[s] !== epsilon)) ? symbols[s].toString() : symbols[s], getValue(t));
+                    A.addTransition(getValue(f), (symbols[s] !== epsilon) ? symbols[s].toString() : symbols[s], getValue(t));
                 }
             }
         }
-        return A;
+
+        return automaton2dot(A);
     };
 
 

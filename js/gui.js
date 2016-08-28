@@ -1245,9 +1245,9 @@
 
         document.getElementById("redraw").onclick = function () {
             viz(
-                automaton2dot(read_automaton(automataDesigner.getDot())),
+                automataDesigner.getDot(),
                 function (res) {
-                    automataDesigner.setSVG(res);
+                    automataDesigner.setSVG(res, automataDesigner.currentIndex);
                 }
             );
         };
