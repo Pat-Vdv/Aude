@@ -143,6 +143,14 @@
             pathEditorLocal.parentNode.removeChild(pathEditorLocal);
         }
 
+        resizeHandle = null;
+        var resizeHandleLocal = document.querySelector("[data-id='resize-handle']");
+
+        if (resizeHandleLocal) {
+            resizeHandleLocal.parentNode.removeChild(resizeHandleLocal);
+        }
+
+
         triggerUndoRedoEvent();
     }
 
@@ -2172,6 +2180,7 @@
             resizeHandle.g.appendChild(resizeHandle.bottomRight);
             resizeHandle.g.appendChild(resizeHandle.left);
             resizeHandle.g.appendChild(resizeHandle.right);
+            resizeHandle.g.setAttribute("id", "resize-handle");
 
             resizeHandle.topLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
             resizeHandle.top.setAttribute("width", RESIZE_HANDLE_WIDTH);
