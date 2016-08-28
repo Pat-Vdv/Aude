@@ -363,6 +363,9 @@ msgstr ""
 msgid "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
 msgstr ""
 
+msgid "Order the parameter automata"
+msgstr ""
+
 msgid "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
 msgstr ""
 
@@ -436,4 +439,7 @@ msgid "Undo"
 msgstr ""
 
 msgid "Redo"
+msgstr ""
+
+msgid "Menu"
 msgstr ""

@@ -81,15 +81,6 @@
                     <option value="automatoncode" data-translated-content="true">Code</option>
                     </select>
                 </span>
-                <input type="file" id="fileautomaton" style="display:none" />
-                <input type="file" id="fileprogram" style="display:none" />
-                <input type="file" id="filequiz" style="display:none" />
-                <span>
-                    <button id="open" data-translated-title="true" title="Open"><img src="icons/oxygen/16x16/actions/document-open.png" alt="Open" data-translated-title="true" /></button>
-                    <button id="save" data-translated-title="true" title="Save"><img src="icons/oxygen/16x16/actions/document-save.png" alt="Save" data-translated-title="true" /></button>
-                    <button id="saveas" data-translated-title="true" title="Save As"><img src="icons/oxygen/16x16/actions/document-save-as.png" alt="Save As" data-translated-title="true" /></button>
-                    <button class="designmode-specific" id="export" data-translated-title="true" title="Export"><img src="icons/oxygen/16x16/actions/document-export.png" alt="Export" data-translated-title="true" /></button>
-                </span>
 
                 <span>
                     <button id="undo" data-translated-title="true" title="Undo"><img src="icons/oxygen/16x16/actions/edit-undo.png" alt="Undo" data-translated-title="true" /></button>
@@ -108,6 +99,8 @@
                 </span>
                 <span class="designmode-specific">
                     <button id="redraw" data-translated-content="true">Redraw</button>
+                </span>
+                <span class="designmode-specific">
                     <button class="designmode-specific" id="zoom_best" title="Zoom and center automatically" data-translated-title="true"><img alt="+" src="icons/oxygen/16x16/actions/zoom-fit-best.png" /></button>
                 </span>
                 <span>
@@ -120,16 +113,28 @@
                         <button id="algorun" class="designmode-specific" title="Run" data-translated-title="true"><img alt="Run" data-translated-title="true" src="icons/oxygen/16x16/actions/system-run.png" /></button>
                         <button id="algo-exec" data-translated-content="true">Execute Program</button>
                     </span>
-                    <span>
-                        <button id="automata-list" class="designmode-specific" title="Choose and order the parameter automata" data-translated-title="true"><img alt="#" src="icons/oxygen/16x16/actions/format-list-ordered.png" /></button>
-                    </span>
                 </span>
             </span>
             <span class="right">
                 <span>
-                    <button id="quiz" data-translated-content="true" >Load a Quiz</button>
+                    <button id="hamburger" data-translated-title="true" title="Menu"><img alt="Menu" data-translated-title="true" src="icons/hamburger.png" /></button>
                 </span>
             </span>
+        </div>
+        <div id="menu" class="disabled">
+            <input type="file" id="fileautomaton" style="display:none" />
+            <input type="file" id="fileprogram" style="display:none" />
+            <input type="file" id="filequiz" style="display:none" />
+            <span>
+                <button id="open"><img src="icons/oxygen/16x16/actions/document-open.png" alt="" /><span data-translated-content="true">Open</span></button>
+                <button id="save"><img src="icons/oxygen/16x16/actions/document-save.png" alt="" /><span data-translated-content="true">Save</span></button>
+                <button id="saveas"><img src="icons/oxygen/16x16/actions/document-save-as.png" alt="" /><span data-translated-content="true">Save As</span></button>
+                <button class="designmode-specific" id="export"><img src="icons/oxygen/16x16/actions/document-export.png" alt=""  /><span data-translated-content="true">Export</span></button>
+            </span>
+
+            <button id="automata-list" class="designmode-specific" title="Choose and order the parameter automata" data-translated-title="true"><img alt="#" src="icons/oxygen/16x16/actions/format-list-ordered.png" /><span data-translated-content="true">Order the parameter automata</span></button>
+
+            <button id="quiz" data-translated-content="true" >Load a Quiz</button>
         </div>
         <div id="content">
             <div id="automataedit" class="pane">

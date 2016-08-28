@@ -1531,6 +1531,18 @@
             }
         };
 
+        document.getElementById("hamburger").onclick = function () {
+            window.setTimeout(
+                function () {
+                    document.getElementById("menu").classList.toggle("disabled");
+                }, 0
+            );
+        };
+
+        window.addEventListener("click", function () {
+            document.getElementById("menu").classList.add("disabled");
+        });
+
         document.getElementById("automata-list").onclick = function () { showAutomataListChooser(); };
 
         document.getElementById("automata-list-chooser-close").onclick = function () {

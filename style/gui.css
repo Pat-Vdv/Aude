@@ -769,3 +769,33 @@ input[type=button]:active, button:active {
     max-height:75%
 }
 
+#menu {
+    z-index:3000;
+    position:absolute;
+    right:0;
+    background:white;
+    box-shadow:0 0 2px black;
+    color:black;
+    margin-top:5px;
+    margin-right:5px;
+    display:flex;
+    flex-direction:column;
+    text-align:left;
+}
+
+#menu button {
+    background:inherit;
+    border:0;
+    color:inherit;
+    box-shadow: none;
+    text-align:left;
+}
+
+#menu button img {
+    margin-right:3px;
+}
+
+#menu button:hover {
+    background:#7BF;
+    color:white;
+}

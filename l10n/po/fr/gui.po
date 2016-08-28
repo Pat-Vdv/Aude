@@ -400,6 +400,9 @@ msgstr "Depuis votre ordinateur"
 msgid "Choose and order the parameter automata"
 msgstr "Choisir et ordonner les automates paramètres"
 
+msgid "Order the parameter automata"
+msgstr "Ordonner les automates paramètres"
+
 msgid "<h2>Welcome to {0}!</h2>
 <h3> Never used {0} before? </h3>
 <ul>
@@ -452,3 +455,6 @@ msgstr "Annuler"
 
 msgid "Redo"
 msgstr "Refaire"
+
+msgid "Menu"
+msgstr "Menu"
