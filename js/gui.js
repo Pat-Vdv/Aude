@@ -1138,6 +1138,7 @@
                     e.preventDefault();
                     return false;
                 }
+
                 if (e.keyCode === 69) {
                     if (e.shiftKey) {
                         exportResult.onclick();
@@ -1146,6 +1147,14 @@
                     }
                     e.preventDefault();
                     return false;
+                }
+
+                if (e.keyCode == 90) {
+                    if (e.shiftKey) {
+                        automataDesigner.redo();
+                    } else {
+                        automataDesigner.undo();
+                    }
                 }
             }
         });
