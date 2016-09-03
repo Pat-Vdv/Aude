@@ -21,7 +21,7 @@
 /*jshint multistr:true*/
 /*eslint-env browser*/
 /*eslint no-underscore-dangle:0, no-alert:0*/
-/*global Set:false, FileReader:false, libD:false, automataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, aceEditor:false, automataDesignerGlue:false, read_automaton:false, automataAreEquivalent:false, regexToAutomaton:false, object2automaton:false, epsilon*/
+/*global Set:false, FileReader:false, libD:false, automataDesigner:false, Automaton:false, automataMap:false, MathJax:false, Viz:false, automaton2dot:false, HTMLElement:false, js18Supported: false, audescript:false, getFile:false, automaton2dot_standardizedString:false, saveAs:false, Blob:false, automaton_code, listenMouseWheel:false, aceEditor:false, automataDesignerGlue:false, read_automaton:false, epsilon*/
 
 // NEEDS : automataDesigner.js, automata.js, saveAs, automaton2dot.js, automataJS.js
 
@@ -71,6 +71,7 @@
         sw,
         aceEditor;
 
+    var automataAreEquivalent, regexToAutomaton, object2automaton;
 
     function viz(code, callback) {
         if (window.Viz) {
@@ -1577,7 +1578,7 @@
             }
 
             for (k = 0; k < o.finalStates.length; ++k) {
-                A.addFinalState(o.states[k]);
+                A.addFinalState(o.finalStates[k]);
             }
 
             for (k = 0; k < o.transitions.length; ++k) {
@@ -1712,6 +1713,7 @@
                             try {
                                 A = object2automaton(q.automaton);
                             } catch (e) {
+                                console.error(e);
                                 throw _("Automaton given in the quiz is not correct.");
                             }
                         } else if (q.regex) {
@@ -1970,7 +1972,14 @@
             }
 
             automataContainer.style.display = "none";
-            loadIncludes(["equivalence", "regex2automaton", "automaton2json"]);
+
+            loadIncludes(["equivalence", "regex2automaton", "automaton2json"],
+                function () {
+                    automataAreEquivalent = audescript.m("equivalence").automataAreEquivalent;
+                    object2automaton = audescript.m("automaton2json").object2automaton;
+                    regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
+                }
+            );
             automatonPlus.onclick();
 
             if (!(quiz.questions && quiz.questions instanceof Array)) {
