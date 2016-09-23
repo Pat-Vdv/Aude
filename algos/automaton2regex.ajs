@@ -5,7 +5,7 @@ export function automatonToRE(A, retStruct)
 
     function string(e)
         if e.type = "epsilon" then
-            return "ε"
+            return "\\epsilon"
 
         else if e.type = "symbol" then
             return Set.prototype.elementToString(e.v)
