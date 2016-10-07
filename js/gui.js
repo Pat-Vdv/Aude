@@ -295,7 +295,8 @@
                     (not && not.displayed) ||
                     !codeedit.classList.contains("disabled")
                 ) {
-                    notify(_("Program Result"), svgCode, "normal");
+                    var res = resultsContent.cloneNode(true);
+                    notify(_("Program Result"), res, "normal");
                 }
 
                 zoom.svgNode = resultsContent.querySelector("svg");
