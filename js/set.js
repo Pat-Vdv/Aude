@@ -392,7 +392,7 @@
                 }
             }
 
-            return pkg.union(PCompl, U);
+            return PCompl.union(U);
         },
 
         /**
