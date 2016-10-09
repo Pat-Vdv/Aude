@@ -27,7 +27,7 @@
 
 // TODO: move initial state's arrow.
 
-(function (pkg, pkgGlue, that) {
+(function (pkg, that) {
     "use strict";
 
     var svgNS = "http://www.w3.org/2000/svg";
@@ -466,8 +466,17 @@
         if (matches) {
             pkg.setSVG(matches[1], index);
         } else {
-            pkgGlue.requestSVG(index);
+            pkg.requestSVG(index);
         }
+    };
+
+    pkg.requestSVG = function () {
+        AudeGUI.viz(
+            automaton2dot(Automaton.parse(AudeGUI.AutomatonCodeEditor.getText())),
+            function (res) {
+                AudeGUI.Designer.setSVG(res, index);
+            }
+        );
     };
 
     // reset the automaton #<index>
@@ -618,7 +627,7 @@
         }
 
         pkg.svgNode = svgs[index];
-        pkg.redraw();
+        pkg.fixViewBox();
     };
 
     // this function is to be called when a new automaton with index <index> must be created
@@ -673,8 +682,8 @@
         }
     };
 
-    // pkg.redraw the editor. IMPORTANT: call this whenever you mess around with the svg container.
-    pkg.redraw = function (that) {
+    //IMPORTANT: call this whenever you mess around with the svg container.
+    pkg.fixViewBox = function (that) {
         if (!that) {
             that = pkg;
         }
@@ -932,7 +941,7 @@
         pkg.svgContainer.style.right = "0";
         pkg.svgContainer.style.bottom = "0";
 
-        window.addEventListener("resize", pkg.redraw, false);
+        window.addEventListener("resize", pkg.fixViewBox, false);
 
         // get the right coordinates of the cursor of the <svg> node
         function svgcursorPoint(evt, that) { // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
@@ -2475,9 +2484,9 @@
         (pkg.userZoom = function (that) {
             that.disabled = true;
 
-            if (!that.redraw) {
-                that.redraw = function () {
-                    pkg.redraw(that);
+            if (!that.fixViewBox) {
+                that.fixViewBox = function () {
+                    pkg.fixViewBox(that);
                 };
             }
 
@@ -2810,6 +2819,22 @@
         fun(window.prompt(title + ": " + descr, def));
     };
 
+    pkg.redraw = function () {
+//         AudeGUI.viz(
+//             AudeGUI.Designer.getDot(),
+//             function (res) {
+//                 AudeGUI.Designer.setSVG(res, AudeGUI.Designer.currentIndex);
+//             }
+//         );
+        if (!that) {
+            that = pkg;
+        }
+
+        if (that.svgNode) {
+            pkg.setViewBoxSize(that);
+        }
+    };
+
     (function () {
         var fakeMsg = {close: function () {}, addButton : function () {}};
         pkg.msg = function () {
@@ -2817,4 +2842,4 @@
         };
     }());
 
-}(window.automataDesigner = {}, window.automataDesignerGlue || (window.automataDesignerGlue = {}), this));
+}(window.AudeGUI.Designer = {}, this));
