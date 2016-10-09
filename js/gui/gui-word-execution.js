@@ -64,7 +64,7 @@
                     minimizable: false,
                     title:       _("Execute the current automaton with a word"),
                     right:       document.getElementById("results").offsetWidth  + 10, // FIXME
-                    top:         toolbar.offsetHeight + 5,
+                    top:         document.getElementById("toolbar").offsetHeight + 5,
                     content:     libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
                         ["div", {"#": "root"}, [
                             ["label", {"for":"execute-word-input"}, _("Word: ")],
