@@ -37,7 +37,7 @@
     var automataedit   = null;
     var toolbar        = null;
     var codeedit       = null;
-    var automataNumber = null;
+    var automatonSelect = null;
 
     var _ = libD.l10n();
 
@@ -159,6 +159,9 @@
 
         setCurrentAutomatonIndex: function (index) {
             AudeGUI.Designer.setCurrentIndex(index); // FIXME
+            
+            automatonSelect.value = index;
+
             if (AudeGUI.getCurrentMode() === "automatoncode") {
                 try {
                     AudeGUI.AutomatonCodeEditor.setText(AudeGUI.Designer.getAutomatonCode(index, false));
@@ -179,20 +182,20 @@
             o.value = AudeGUI.AutomataList.automatonCount;
             o.textContent = _("n°") + AudeGUI.AutomataList.automatonCount;
             o.id = "automaton_n" + AudeGUI.AutomataList.automatonCount;
-            automataNumber.appendChild(o);
-            automataNumber.value = AudeGUI.AutomataList.automatonCount;
+            automatonSelect.appendChild(o);
+            automatonSelect.value = AudeGUI.AutomataList.automatonCount;
             AudeGUI.Designer.newAutomaton(AudeGUI.AutomataList.automatonCount);
             AudeGUI.setCurrentAutomatonIndex(AudeGUI.AutomataList.automatonCount++);
             AudeGUI.AutomataList.show();
         },
 
         removeCurrentAutomaton: function () {
-            var curAutomaton = parseInt(automataNumber.value, 10);
-            automataNumber.removeChild(document.getElementById("automaton_n" + (AudeGUI.AutomataList.automatonCount - 1)));
+            var curAutomaton = parseInt(automatonSelect.value, 10);
+            automatonSelect.removeChild(document.getElementById("automaton_n" + (AudeGUI.AutomataList.automatonCount - 1)));
             AudeGUI.Designer.removeAutomaton(curAutomaton);
 
             if (curAutomaton === AudeGUI.AutomataList.automatonCount - 1) {
-                AudeGUI.setCurrentAutomatonIndex(automataNumber.value = AudeGUI.AutomataList.automatonCount - 2);
+                AudeGUI.setCurrentAutomatonIndex(automatonSelect.value = AudeGUI.AutomataList.automatonCount - 2);
             } else {
                 AudeGUI.setCurrentAutomatonIndex(curAutomaton);
             }
@@ -380,7 +383,11 @@
         toolbar           = document.getElementById("toolbar");
         switchmode        = document.getElementById("switchmode");
         codeedit          = document.getElementById("codeedit");
-        automataNumber    = document.getElementById("n-automaton");
+        automatonSelect    = document.getElementById("n-automaton");
+
+        automatonSelect.onchange = function () {
+            AudeGUI.setCurrentAutomatonIndex(parseInt(automatonSelect.value, 10));
+        };
 
         AudeGUI.automatonFileInput = document.getElementById("fileautomaton");
 
