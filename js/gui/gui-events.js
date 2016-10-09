@@ -75,13 +75,18 @@ window.AudeGUI.initEvents = function () {
     AudeGUI.Programs.fileInput.onchange   = AudeGUI.Programs.open;
     AudeGUI.automatonFileInput.onchange = AudeGUI.openAutomaton;
 
-    document.getElementById("open").onclick = function () {
-        if (AudeGUI.getCurrentMode() === "program") {
-            AudeGUI.Programs.fileInput.click();
-        } else {
-            AudeGUI.automatonFileInput.click();
+    (function () {
+        var open = document.getElementById("open")
+        if (!open.onclick) {
+            open.onclick = function () {
+                if (AudeGUI.getCurrentMode() === "program") {
+                    AudeGUI.Programs.fileInput.click();
+                } else {
+                    AudeGUI.automatonFileInput.click();
+                }
+            };
         }
-    };
+    }());
 
 
     (function (undo, redo) {

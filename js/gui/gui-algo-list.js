@@ -155,7 +155,7 @@
                         }
 
                         if (files.e.length || files.a.length) {
-                            open.onclick = function () {
+                            document.getElementById("open").onclick = function () {
                                 if (AudeGUI.getCurrentMode() === "program") {
                                     if (files.a.length) {
                                         makeWindow(
@@ -166,10 +166,10 @@
                                             "a",
                                             "algos/",
                                             "ajs",
-                                            AudeGUI.programs.fileInput
+                                            AudeGUI.Programs.fileInput
                                         );
                                     } else {
-                                        AudeGUI.programs.fileInput.click();
+                                        AudeGUI.Programs.fileInput.click();
                                     }
                                 } else if (files.e.length) {
                                     makeWindow(
@@ -183,7 +183,7 @@
                                         AudeGUI.automatonFileInput
                                     );
                                 } else {
-                                    AudeGUI.programs.fileInput.click();
+                                    AudeGUI.Programs.fileInput.click();
                                 }
                             };
                         }
