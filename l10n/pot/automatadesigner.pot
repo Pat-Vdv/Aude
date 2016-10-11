@@ -1,4 +1,4 @@
-#TranslationFunction automataDesigner
+#TranslationFunction AudeGUI.Designer
 
 msgid  "New transition"
 msgstr ""

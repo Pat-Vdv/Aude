@@ -1,4 +1,4 @@
-all: dirlist.txt js/audescript/audescript.js
+all: dirlist.txt js/audescript/audescript.js js/gui.js
 
 .PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip
 
@@ -7,6 +7,9 @@ dirlist.txt:
 
 js/audescript/audescript.js:
 	cd js/audescript/ && make
+
+js/gui.js: $(wildcard js/gui/*.js) js/gui/Makefile
+	cd js/gui/ && make
 
 uncommited-zip: /tmp/aude-uncommited.zip
 
@@ -50,7 +53,7 @@ zip: /tmp/aude.zip
 	rm -rf aude;
 
 clean:
-	rm -rf dirlist.txt
+	rm -rf dirlist.txt js/gui.js
 
 .PHONY:
 count-lines:

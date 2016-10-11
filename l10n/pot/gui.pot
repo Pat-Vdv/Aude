@@ -1,4 +1,4 @@
-#TranslationFunction audeGui
+#TranslationFunction AudeGUI
 
 msgid "Program Result"
 msgstr ""
