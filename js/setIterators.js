@@ -33,6 +33,18 @@ if (typeof Symbol === "undefined") {
                     yield this[i];\
                 }\
             };\
+            function* iter(o) {\
+                for (var i in o) {\
+                    yield new Tuple().fromList([i, o[i]]);\
+                }\
+            }\
+            audescript.iter = function(o) {\
+                return (\
+                    (typeof o === 'object' && !(o instanceof Object))\
+                        ? iter(o)\
+                        : o\
+                );\
+            }\
         })();\
     ";
 

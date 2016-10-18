@@ -178,8 +178,8 @@ function doTests(testCorrect, testFailed, testFailInfo)
         "22": evalAudeScript("(if 1 = 1 then if 2 = 3 then 3 else 2 else 1) = 2"),
         "23": evalAudeScript("(if 1 = 0 then if 2 = 2 then 3 else 2 else 1) = 1"),
 #         "24": evalAudeScript("(x=>x+1)(0) === 1"), // dont touch spaces for this one please ;-)
-        "25": evalAudeScript("{a:1,b:1} = {b:1,a:1}"),
-        "26": evalAudeScript("{a:1,b:2} != {b:1,a:1}"),
+        "25": evalAudeScript("{\"a\":1,\"b\":1} = {\"b\":1,\"a\":1}"),
+        "26": evalAudeScript("{\"a\":1,\"b\":2} != {\"b\":1,\"a\":1}"),
         "27": evalAudeScript("[1,2,3] != [1,2]"),
         "28": infiniteLanguage(
                 object2automaton(
@@ -385,14 +385,14 @@ function doTests(testCorrect, testFailed, testFailInfo)
                         res := "Failed (" + e + ")\n" + e.stack
                     end try
 
-                    audescript.console.log("Parsing " + t + ": " + res)
+                    console.log("Parsing " + t + ": " + res)
 
                     if tryParse[fileNumber + 1] then
                         parse(fileNumber + 1)
                     end if
                 end function,
                 function (err)
-                    audescript.console.error(err)
+                    console.error(err)
 
                     if tryParse[fileNumber + 1] then
                         parse(fileNumber + 1)
@@ -415,15 +415,15 @@ function doTests(testCorrect, testFailed, testFailInfo)
 end function
 
 function testCorrect(i)
-    audescript.console.log("Test " + i + ": OK")
+    console.log("Test " + i + ": OK")
 end function
 
 function testFailed(i, e)
-    audescript.console.log("Test " + i + ": Failed" + (if e then ", got : " + e else ""))
+    console.log("Test " + i + ": Failed" + (if e then ", got : " + e else ""))
 end function
 
 function testFailInfo(n, s)
-    audescript.console.log("Test " + n + ": info: " + s)
+    console.log("Test " + n + ": info: " + s)
 end function
 
 run(

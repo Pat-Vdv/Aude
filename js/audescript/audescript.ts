@@ -1436,7 +1436,7 @@ class AudescriptASTForeach extends AudescriptASTStatement implements AudescriptA
         );
 
         return this.sourceNode([
-            "for (let", expr, "of", this.iterated.toJS(), ")" + (this.whiteAfterExpr || " ") + "{",
+            "for (let", expr, "of _.iter(", this.iterated.toJS(), "))" + (this.whiteAfterExpr || " ") + "{",
             this.block.toJS(), "}"
         ]);
     }
