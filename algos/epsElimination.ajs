@@ -4,10 +4,38 @@ function add(setStates, trans, q)
     end if
 
     setStates.add(q)
-    
+
     foreach qd in trans(q, epsilon) do
         add(setStates, trans, qd)
     done
+end function
+
+function finalAccessibleByEpsilon(q, trans, F, visited)
+    if visited contains q then
+        return false
+    end if
+
+    visited.add(q)
+
+    foreach d in trans(q, epsilon) do
+        if F contains d or (finalAccessibleByEpsilon(d, trans, F, visited)) then
+            return true
+        end if
+    done
+
+    return false
+end function
+
+function el(Q, trans, F)
+    let newF := {}
+
+    foreach q in Q do
+        if (F contains q) or finalAccessibleByEpsilon(q, trans, F, {}) then
+            newF.add(q)
+        end if
+    done
+
+    return newF
 end function
 
 export function epsElim(A)
@@ -15,22 +43,17 @@ export function epsElim(A)
     let trans := A.getTransitionFunction()
 
     ElimA.setStates(A.getStates())
-    ElimA.setFinalStates(A.getFinalStates())
+    ElimA.setFinalStates(el(A.getStates(), trans, A.getFinalStates()))
     ElimA.setInitialState(A.getInitialState())
 
     foreach q1 in A.getStates() do
-        console.log(q1)
         let origStates := {}
         add(origStates, trans, q1)
 
-        console.log(q1, "=>", origStates.toString())
-
-        
         foreach a in A.getAlphabet() do
             let destStates := {}
             foreach q in origStates do
                 foreach qd in trans(q, a) do
-                    console.log(q, a, qd)
                     add(destStates, trans, qd)
                 done
             done
