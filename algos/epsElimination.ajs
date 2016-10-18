@@ -1,57 +1,66 @@
-export function epsElim(A)
+function add(setStates, trans, q)
+    if setStates contains q then
+        return
+    end if
 
+    setStates.add(q)
+
+    foreach qd in trans(q, epsilon) do
+        add(setStates, trans, qd)
+    done
+end function
+
+function finalAccessibleByEpsilon(q, trans, F, visited)
+    if visited contains q then
+        return false
+    end if
+
+    visited.add(q)
+
+    foreach d in trans(q, epsilon) do
+        if F contains d or (finalAccessibleByEpsilon(d, trans, F, visited)) then
+            return true
+        end if
+    done
+
+    return false
+end function
+
+function el(Q, trans, F)
+    let newF := {}
+
+    foreach q in Q do
+        if (F contains q) or finalAccessibleByEpsilon(q, trans, F, {}) then
+            newF.add(q)
+        end if
+    done
+
+    return newF
+end function
+
+export function epsElim(A)
     let ElimA := new Automaton
     let trans := A.getTransitionFunction()
 
     ElimA.setStates(A.getStates())
-    ElimA.setFinalStates(A.getFinalStates())
+    ElimA.setFinalStates(el(A.getStates(), trans, A.getFinalStates()))
     ElimA.setInitialState(A.getInitialState())
 
-    function canReach(q1, a, q2, alreadySeenStates)
-        if alreadySeenStates contains q1 then
-            return false
-        end if
-
-        if A.hasTransition(q1, a, q2) then
-            return true
-        end if
-
-        alreadySeenStates := alreadySeenStates union {q1}
-
-        if a != epsilon then
-            if A.hasTransition(q1, a, q1) then
-                if canReach(q1, epsilon, q2, alreadySeenStates minus {q1}) then
-                    return true
-                end if
-            end if
-
-            foreach state in trans(q1, a) do
-                if canReach(state, epsilon, q2, alreadySeenStates) then
-                    return true
-                end if
-            done
-        end if
-
-        foreach state in trans(q1, epsilon) do
-            if canReach(state, a, q2, alreadySeenStates) then
-                return true
-            end if
-        done
-
-        return false
-    end function
-
     foreach q1 in A.getStates() do
-        foreach q2 in A.getStates() do
-            foreach a in A.getAlphabet() do
-                if canReach(q1, a, q2, {}) then
-                    ElimA.addTransition(q1, a, q2)
-                end if
+        let origStates := {}
+        add(origStates, trans, q1)
+
+        foreach a in A.getAlphabet() do
+            let destStates := {}
+            foreach q in origStates do
+                foreach qd in trans(q, a) do
+                    add(destStates, trans, qd)
+                done
             done
 
-            if q1 != q2 and A.isFinalState(q2) and canReach(q1, epsilon, q2, {}) then
-                ElimA.setFinalState(q1)
-            end if
+            foreach qd in destStates do
+                ElimA.addTransition(q1, a, qd)
+            done
         done
     done
 
