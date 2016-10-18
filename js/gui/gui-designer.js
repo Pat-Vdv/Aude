@@ -981,7 +981,7 @@
             return res;
         }
 
-        function pathEditEllipseMoveFrame(e) {
+        function pathEditEllipseMoveFrame() {
             if (!mouseCoords) {
                 return;
             }
@@ -1031,7 +1031,7 @@
             }
         }
 
-        function pathEditSolidMoveFrame(e) {
+        function pathEditSolidMoveFrame() {
             if (!mouseCoords) {
                 return;
             }
@@ -1054,7 +1054,7 @@
             frameModifiedSVG = true;
         }
 
-        function pathEditControlMoveFrame(e) {
+        function pathEditControlMoveFrame() {
             if (!mouseCoords) {
                 return;
             }
@@ -1075,7 +1075,7 @@
                 return;
             }
             requestAnimationFrame(currentMoveAction);
-            var e = mouseCoords;
+            e = mouseCoords;
 
             blockNewState = true;
 
@@ -1257,7 +1257,7 @@
             }
         }
 
-        function nodeResizeFrame(e) {
+        function nodeResizeFrame() {
             if (!mouseCoords) {
                 return;
             }
@@ -1648,7 +1648,7 @@
         }
 
         // event when a transition label is moved
-        function labelMoveFrame(e) {
+        function labelMoveFrame() {
             if (!mouseCoords) {
                 return;
             }
