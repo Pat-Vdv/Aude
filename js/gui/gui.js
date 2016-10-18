@@ -37,6 +37,7 @@
     var automataedit   = null;
     var toolbar        = null;
     var codeedit       = null;
+    var svgContainer   = null;
     var automatonSelect = null;
 
     var _ = libD.l10n();
@@ -159,7 +160,7 @@
 
         setCurrentAutomatonIndex: function (index) {
             AudeGUI.Designer.setCurrentIndex(index); // FIXME
-            
+
             automatonSelect.value = index;
 
             if (AudeGUI.getCurrentMode() === "automatoncode") {
@@ -253,6 +254,7 @@
             switch (newMode) {
                 case "program":
                     toolbar.className = "algomode";
+
                     codeedit.classList.remove("disabled");
                     automataedit.classList.add("disabled");
 
@@ -274,9 +276,11 @@
                     }
 
                     codeedit.classList.add("disabled");
+
                     automataedit.classList.remove("disabled");
                     automatoncode.classList.add("disabled");
-                    AudeGUI.Designer.svgContainer.classList.remove("disabled");
+                    svgContainer.classList.remove("disabled");
+
                     AudeGUI.onResize();
                     break;
 
@@ -307,9 +311,10 @@
                     }
 
                     codeedit.classList.add("disabled");
+
                     automataedit.classList.remove("disabled");
                     automatoncode.classList.remove("disabled");
-                    AudeGUI.Designer.svgContainer.classList.add("disabled");
+                    svgContainer.classList.add("disabled");
                     AudeGUI.onResize();
                     break;
 
@@ -383,7 +388,8 @@
         toolbar           = document.getElementById("toolbar");
         switchmode        = document.getElementById("switchmode");
         codeedit          = document.getElementById("codeedit");
-        automatonSelect    = document.getElementById("n-automaton");
+        automatonSelect   = document.getElementById("n-automaton");
+        svgContainer      = document.getElementById("svg-container");
 
         automatonSelect.onchange = function () {
             AudeGUI.setCurrentAutomatonIndex(parseInt(automatonSelect.value, 10));
@@ -413,10 +419,10 @@
         AudeGUI.Runtime.load();
         AudeGUI.initEvents();
         AudeGUI.onResize();
-
-        AudeGUI.setCurrentMode(switchmode.value);
         AudeGUI.addAutomaton();
         AudeGUI.applyTranslation();
+
+        AudeGUI.setCurrentMode(switchmode.value);
 
         (function drawDivWelcome() {
             var divWelcome = document.createElement("div");
