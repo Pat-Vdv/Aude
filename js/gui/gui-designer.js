@@ -2481,9 +2481,7 @@
             th.disabled = true;
 
             if (!th.fixViewBox) {
-                th.fixViewBox = function () {
-                    pkg.fixViewBox(th);
-                };
+                th.fixViewBox = pkg.fixViewBox.bind(null, th);
             }
 
             if (!th.disable) {

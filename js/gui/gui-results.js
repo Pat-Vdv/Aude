@@ -49,8 +49,8 @@
         results.style.left =  ((e.clientX + splitter.offsetWidth) * 100 / width) + "%";
         AudeGUI.Designer.redraw();
 
-        if (zoom.redraw) {
-            zoom.redraw();
+        if (zoom.fixViewBox) {
+            zoom.fixViewBox();
         }
     }
 
@@ -78,8 +78,8 @@
             leftPane.style.right = ((width - e.clientX) * 100 / width) + "%";
             results.style.left =  ((e.clientX + splitter.offsetWidth) * 100 / width) + "%";
             AudeGUI.Designer.redraw();
-            if (zoom.redraw) {
-                zoom.redraw();
+            if (zoom.fixViewBox) {
+                zoom.fixViewBox();
             }
         },
 
@@ -90,8 +90,8 @@
                 ) + "%";
             }
 
-            if (zoom.redraw) {
-                zoom.redraw();
+            if (zoom.fixViewBox) {
+                zoom.fixViewBox();
             }
         },
 
@@ -131,8 +131,8 @@
 
                     zoom.svgNode = resultsContent.querySelector("svg");
 
-                    if (zoom.redraw) {
-                        zoom.redraw();
+                    if (zoom.fixViewBox) {
+                        zoom.fixViewBox();
                     }
                 }
             );
@@ -163,8 +163,8 @@
                 zoom.svgNode = svg;
                 results.style.overflow = "hidden";
 
-                if (zoom.redraw) {
-                    zoom.redraw();
+                if (zoom.fixViewBox) {
+                    zoom.fixViewBox();
                 }
             } else {
                 zoom.svgNode = null;
