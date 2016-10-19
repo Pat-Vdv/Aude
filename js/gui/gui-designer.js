@@ -466,17 +466,13 @@
         if (matches) {
             pkg.setSVG(matches[1], index);
         } else {
-            pkg.requestSVG(index);
+            AudeGUI.viz(
+                automaton2dot(Automaton.parse(automaton)),
+                function (res) {
+                    pkg.setSVG(res, index);
+                }
+            );
         }
-    };
-
-    pkg.requestSVG = function () {
-        AudeGUI.viz(
-            automaton2dot(Automaton.parse(AudeGUI.AutomatonCodeEditor.getText())),
-            function (res) {
-                AudeGUI.Designer.setSVG(res, index);
-            }
-        );
     };
 
     // reset the automaton #<index>
@@ -683,26 +679,26 @@
     };
 
     //IMPORTANT: call this whenever you mess around with the svg container.
-    pkg.fixViewBox = function (that) {
-        if (!that) {
-            that = pkg;
+    pkg.fixViewBox = function (th) {
+        if (!th) {
+            th = pkg;
         }
 
-        if (that.svgNode) {
-            pkg.setViewBoxSize(that);
+        if (th.svgNode) {
+            pkg.setViewBoxSize(th);
         }
     };
 
 
     // reset the viewBox size (uses the size of the svg container and the zoom level to do it)
-    pkg.setViewBoxSize = function (that) {
-        if (!that) {
-            that = pkg;
+    pkg.setViewBoxSize = function (th) {
+        if (!th) {
+            th = pkg;
         }
 
-        if (!that.svgContainer || that.svgContainer.offsetWidth) {
-            that.svgNode.viewBox.baseVal.width  = (that.svgNode.width.baseVal.value  = that.svgContainer.offsetWidth) / that.svgZoom;
-            that.svgNode.viewBox.baseVal.height = (that.svgNode.height.baseVal.value = that.svgContainer.offsetHeight) / that.svgZoom;
+        if (!th.svgContainer || th.svgContainer.offsetWidth) {
+            th.svgNode.viewBox.baseVal.width  = (th.svgNode.width.baseVal.value  = th.svgContainer.offsetWidth) / th.svgZoom;
+            th.svgNode.viewBox.baseVal.height = (th.svgNode.height.baseVal.value = th.svgContainer.offsetHeight) / th.svgZoom;
         }
     };
 
@@ -944,15 +940,15 @@
         window.addEventListener("resize", pkg.fixViewBox, false);
 
         // get the right coordinates of the cursor of the <svg> node
-        function svgcursorPoint(evt, that) { // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
-            if (!that) {
-                that = pkg;
+        function svgcursorPoint(evt, th) { // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
+            if (!th) {
+                th = pkg;
             }
 
-            var pt = that.svgNode.createSVGPoint();
+            var pt = th.svgNode.createSVGPoint();
             pt.x = evt.clientX;
             pt.y = evt.clientY;
-            var a = that.svgNode.getScreenCTM();
+            var a = th.svgNode.getScreenCTM();
             if (!a) {
                 throw new Error("coordinates unavailable");
             }
@@ -1070,7 +1066,7 @@
         }
 
         // move the visible area
-        function viewBoxMoveFrame(e, that) {
+        function viewBoxMoveFrame(e, th) {
             if (!mouseCoords) {
                 return;
             }
@@ -1081,15 +1077,15 @@
 
             var c;
 
-            if (that) {
-                c = that;
+            if (th) {
+                c = th;
             } else {
                 c = coords;
-                that = pkg;
+                th = pkg;
             }
 
-            that.svgNode.viewBox.baseVal.x = c.viewBoxX - (e.clientX - c.x) / that.svgZoom;
-            that.svgNode.viewBox.baseVal.y = c.viewBoxY - (e.clientY - c.y) / that.svgZoom;
+            th.svgNode.viewBox.baseVal.x = c.viewBoxX - (e.clientX - c.x) / th.svgZoom;
+            th.svgNode.viewBox.baseVal.y = c.viewBoxY - (e.clientY - c.y) / th.svgZoom;
             frameModifiedSVG = true;
         }
 
@@ -1953,7 +1949,7 @@
             g.setAttribute("class", "node");
             var nid = 0;
 
-            while (nodeList[nid]) {
+            while (nodeList.hasOwnProperty(nid)) {
                 ++nid;
             }
 
@@ -2481,24 +2477,24 @@
             }
         }, false);
 
-        (pkg.userZoom = function (that) {
-            that.disabled = true;
+        (pkg.userZoom = function (th) {
+            th.disabled = true;
 
-            if (!that.fixViewBox) {
-                that.fixViewBox = function () {
-                    pkg.fixViewBox(that);
+            if (!th.fixViewBox) {
+                th.fixViewBox = function () {
+                    pkg.fixViewBox(th);
                 };
             }
 
-            if (!that.disable) {
-                that.disable = function () {
-                    that.disabled = true;
+            if (!th.disable) {
+                th.disable = function () {
+                    th.disabled = true;
                 };
             }
 
-            if (!that.enable) {
-                that.enable = function () {
-                    that.disabled = false;
+            if (!th.enable) {
+                th.enable = function () {
+                    th.disabled = false;
                 };
             }
 
@@ -2506,20 +2502,20 @@
 
             function newZoom(zoom, x, y) {
                 if (!zoom) {
-                    that.svgZoom = 0.1;
+                    th.svgZoom = 0.1;
                     return;
                 }
 
-                that.svgZoom = zoom;
-                pkg.setViewBoxSize(that);
+                th.svgZoom = zoom;
+                pkg.setViewBoxSize(th);
 
                 if (!isNaN(x)) {
-                    that.svgNode.viewBox.baseVal.x = x - (x - that.svgNode.viewBox.baseVal.x) * oldZoom / that.svgZoom;
-                    that.svgNode.viewBox.baseVal.y = y - (y - that.svgNode.viewBox.baseVal.y) * oldZoom / that.svgZoom;
+                    th.svgNode.viewBox.baseVal.x = x - (x - th.svgNode.viewBox.baseVal.x) * oldZoom / th.svgZoom;
+                    th.svgNode.viewBox.baseVal.y = y - (y - th.svgNode.viewBox.baseVal.y) * oldZoom / th.svgZoom;
                 }
             }
 
-            that.autoCenterZoom = function () {
+            th.autoCenterZoom = function () {
                 var wantedRatio = 0.8;
                 var states = pkg.svgNode.querySelectorAll(".node,path,polygon,text");
 
@@ -2595,58 +2591,58 @@
             };
 
             listenMouseWheel(function (e, delta) {
-                if (!that.svgNode || that.disabled) {
+                if (!th.svgNode || th.disabled) {
                     return null;
                 }
 
-                var pt = svgcursorPoint(e, that);
-                oldZoom = that.svgZoom;
-                newZoom(Math.round((that.svgZoom + delta * 0.1) * 10) / 10, pt.x, pt.y);
+                var pt = svgcursorPoint(e, th);
+                oldZoom = th.svgZoom;
+                newZoom(Math.round((th.svgZoom + delta * 0.1) * 10) / 10, pt.x, pt.y);
 
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
-            }, that.svgContainer);
+            }, th.svgContainer);
 
             function drag(e) {
                 if (lastDeltaX || lastDeltaY) {
-                    that.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / that.svgZoom;
-                    that.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / that.svgZoom;
+                    th.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / th.svgZoom;
+                    th.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / th.svgZoom;
                 }
                 lastDeltaX = e.gesture.deltaX;
                 lastDeltaY = e.gesture.deltaY;
             }
 
             if (window.Hammer) {
-                window.Hammer(that.svgContainer).on("touch", function () {
-                    if (that.disabled) {
+                window.Hammer(th.svgContainer).on("touch", function () {
+                    if (th.disabled) {
                         return;
                     }
 
-                    initialZoom = that.svgZoom;
+                    initialZoom = th.svgZoom;
                     lastDeltaX = 0;
                     lastDeltaY = 0;
                 });
 
-                window.Hammer(that.svgContainer).on("pinch", function (e) {
-                    if (that.disabled) {
+                window.Hammer(th.svgContainer).on("pinch", function (e) {
+                    if (th.disabled) {
                         return;
                     }
 
-                    if (that === pkg) {
+                    if (th === pkg) {
                         blockNewState = true;
                     }
-                    that.stopMove = true;
-                    that.stopMoveNode = true;
+                    th.stopMove = true;
+                    th.stopMoveNode = true;
 
-                    oldZoom = that.svgZoom;
+                    oldZoom = th.svgZoom;
                     var nz = initialZoom * e.gesture.scale;
 
-                    if (nz !== that.svgZoom) {
+                    if (nz !== th.svgZoom) {
                         var pt = svgcursorPoint({
                             clientX: e.gesture.center.pageX,
                             clientY: e.gesture.center.pageY
-                        }, that);
+                        }, th);
 
                         newZoom(nz, pt.x, pt.y);
                     }
@@ -2654,24 +2650,24 @@
                     drag(e);
                 });
 
-                window.Hammer(that.svgContainer).on("drag", function (e) {
-                    if (that.disabled) {
+                window.Hammer(th.svgContainer).on("drag", function (e) {
+                    if (th.disabled) {
                         return;
                     }
 
-                    if (!that.stopMove) {
+                    if (!th.stopMove) {
                         blockNewState = true;
                         drag(e);
                     }
                 });
 
-                window.Hammer(that.svgContainer).on("release", function () {
-                    if (that.disabled) {
+                window.Hammer(th.svgContainer).on("release", function () {
+                    if (th.disabled) {
                         return;
                     }
 
-                    that.stopMove = false;
-                    that.stopMoveNode = false;
+                    th.stopMove = false;
+                    th.stopMoveNode = false;
                 });
             }
         })(pkg);
@@ -2820,18 +2816,8 @@
     };
 
     pkg.redraw = function () {
-//         AudeGUI.viz(
-//             AudeGUI.Designer.getDot(),
-//             function (res) {
-//                 AudeGUI.Designer.setSVG(res, AudeGUI.Designer.currentIndex);
-//             }
-//         );
-        if (!that) {
-            that = pkg;
-        }
-
-        if (that.svgNode) {
-            pkg.setViewBoxSize(that);
+        if (pkg.svgNode) {
+            pkg.setViewBoxSize(pkg);
         }
     };
 

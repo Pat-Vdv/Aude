@@ -38,8 +38,11 @@
             automatoncodeedit.spellcheck = false;
 
             automatoncodeedit.onchange = function () {
-                if (this.value) {
-                    AudeGUI.Designer.setAutomatonCode(this.value, AudeGUI.Designer.currentIndex);
+                if (automatoncodeedit.value) {
+                    AudeGUI.Designer.setAutomatonCode(
+                        automatoncodeedit.value,
+                        AudeGUI.Designer.currentIndex
+                    );
                 }
             };
         }

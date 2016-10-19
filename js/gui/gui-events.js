@@ -63,7 +63,16 @@ window.AudeGUI.initEvents = function () {
     window.addEventListener("resize", AudeGUI.onResize, false);
     document.getElementById("execute").onclick = AudeGUI.WordExecution.run;
     document.getElementById("export").onclick = AudeGUI.export;
-    document.getElementById("redraw").onclick = AudeGUI.Designer.fixViewBox;
+
+    document.getElementById("redraw").onclick = function () {
+        AudeGUI.viz(
+            AudeGUI.Designer.getDot(),
+            function (res) {
+                AudeGUI.Designer.setSVG(res, AudeGUI.Designer.currentIndex);
+            }
+        );
+    };
+
     document.getElementById("zoom_best").onclick = AudeGUI.Designer.autoCenterZoom.bind(AudeGUI.Designer);
     document.getElementById("save").onclick = AudeGUI.save;
     document.getElementById("saveas").onclick = AudeGUI.saveAs;

@@ -324,7 +324,6 @@
         },
 
         onResize: function () {
-//             var width = document.body.offsetWidth;
             AudeGUI.Results.redraw();
             AudeGUI.Designer.redraw();
         },
