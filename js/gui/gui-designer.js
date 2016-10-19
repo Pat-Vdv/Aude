@@ -462,7 +462,7 @@
 
     // set the automaton #<index>'s code
     pkg.setAutomatonCode = function (automaton, index) {
-        var matches = automaton.match(/<representation type="image\/svg\+xml">([\s\S]+)<\/representation>/);
+        var matches = automaton.match(/<representation type=['"]image\/svg\+xml['"]>([\s\S]+)<\/representation>/);
         if (matches) {
             pkg.setSVG(matches[1], index);
         } else {
