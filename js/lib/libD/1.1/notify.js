@@ -54,7 +54,7 @@ libD.need(["fx"], function () {
  <libD.notify>
 */
 	libD.Notify = function (o, autoclose) { // call with "new"
-		if (this === libD) {
+		if (!(this instanceof libD.Notify)) {
 			return new libD.Notify(o, autoclose);
 		}
 
@@ -422,7 +422,7 @@ libD.need(["fx"], function () {
 	 Class: libD
 
 	Value: libD.notify
-		if availble, pointq to a libD-compliant notifier, see libD.Notify for the reference implementation.
+		if available, points to a libD-compliant notifier, see libD.Notify for the reference implementation.
 		set to lib.Notify by notify.js
 	*/
 	libD.notify = libD.Notify;

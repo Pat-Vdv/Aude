@@ -2824,6 +2824,12 @@
         pkg.msg = function () {
             return fakeMsg;
         };
+
+        if (libD.need) {
+            libD.need(["notify"], function () {
+                pkg.msg = libD.notify;
+            });
+        }
     }());
 
 }(window.AudeGUI.Designer = {}, this));
