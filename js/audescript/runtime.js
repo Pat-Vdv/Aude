@@ -55,9 +55,11 @@
     }
 
     function objEq(v1, v2, dontMirror) {
+        var hv1 = Object.hasOwnProperty.bind(v1);
+        var hv2 = Object.hasOwnProperty.bind(v2);
         for (var i in v1) {
-            if (v1.hasOwnProperty(i)) {
-                if (!(v2.hasOwnProperty(i) && (dontMirror || pkg.eq(v1[i], v2[i])))) {
+            if (hv1(i)) {
+                if (!(hv2(i) && (dontMirror || pkg.eq(v1[i], v2[i])))) {
                     return false;
                 }
             }
@@ -98,7 +100,7 @@
                         : (v1 instanceof pkg.Tuple
                             ? tuplesEq(v1, v2)
                             : (
-                                (v1.constructor === Object || v1.constructor === Array
+                                ((typeof v1 === "object" && !(v1 instanceof Object)) || v1.constructor === Object || v1.constructor === Array
                                     ? objEq(v1, v2)
                                     : JSON.stringify(v1) === JSON.stringify(v2)
                                 )
