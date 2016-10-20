@@ -1023,11 +1023,11 @@
 
     /**
      * Parses the textual representation of an automaton and returns an automaton from it.
-     * @alias read_automaton
+     * @alias Automaton.parse
      * @param {String} code the code of an automaton.
      * @returns {Automaton} Returns the corresponding automaton.
      */
-    pkg.read_automaton = function (code) {
+    pkg.Automaton.parse = function (code) {
         var getNextValue = aude.getNextValue;
 
         var c = code.split("\n");
