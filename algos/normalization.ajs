@@ -1,16 +1,16 @@
-export function normalize(A)
+export function normalize(A, start)
    let normA   := new Automaton
    let map     := new Map
-   let i       := 0
+   let i       := start or 0;
    let qA_init := A.getInitialState()
 
-   normA.setInitialState(0)
+   normA.setInitialState(i)
 
    if A.isFinalState(qA_init) then
-      normA.setFinalState(0)
+      normA.setFinalState(i)
    end if
 
-   map.set(qA_init, 0)
+   map.set(qA_init, i)
 
    foreach state in A.getStates() \ {A.getInitialState()} do
       map.set(state, ++i)
