@@ -3,77 +3,94 @@ from normalization import normalize
 
 # Implementation using path equations technique ("équations aux chemins")
 
-function RE(type, v1, v2)
-    this.type := type or "void"
-    this.v1 := v1
-    this.v2 := v2
-end function
-
+let epsilonRE := {"type":"epsilon"}
+let emptyRE   := {"type":"void"}
 
 function symbol(s)
-    return new RE("symbol", s)
+    return {"type":"symbol", "v1":s}
 end function
 
+function plusRE(newSet)
+    let c := newSet.card()
+
+    if c = 0 then
+        return emptyRE
+    end if
+
+    if c = 1 then
+        return newSet.getItem()
+    end if
+
+    return {"type":"+", "v1":newSet}
+end function
 
 function star(e)
-    if e.type = "void" or (e.type = "symbol" and e.v1 = epsilon) then
+    if e.type = "void" then
+        return epsilonRE
+    end if
+
+    if e.type = "*" or e = epsilonRE then
         return e
     end if
 
-    if e.type = "+" then
-        if e.v1.type = "symbol" and e.v1.v1 = epsilon then
-            return star(e.v2)
-        end if
-
-        if e.v2.type = "symbol" and e.v2.v1 = epsilon then
-            return star(e.v1)
-        end if
+    if e.type = "+" and e.v1 contains epsilonRE then
+        return star(plusRE(e.v1 minus {epsilonRE}))
     end if
 
-    return new RE("*", e)
+    return {"type":"*", "v1":e}
 end function
-
 
 function add(e1, e2)
-    if e1.type = "void" then
+    if e1 = emptyRE or e1 = e2 then
         return e2
     end if
 
-    if e2.type = "void" then
+    if e2 = emptyRE then
         return e1
     end if
 
-    return new RE("+", e1, e2)
+    if e1.type = "+" and e2.type = "+" then
+        return plusRE(e1.v1 union e2.v1)
+    end if
+
+    return {"type":"+", "v1":{e1, e2}}
 end function
 
-
 function cat(e1, e2)
-    if e1.type = "void" or e2.type = "void" then
-        return new RE
+    if e1 = emptyRE or e2 = emptyRE then
+        return emptyRE
     end if
 
-    if e1.type = "symbol" and e1.v1 = epsilon then
+    if e1 = epsilonRE then
         return e2
     end if
 
-    if e2.type = "symbol" and e2.v1 = epsilon then
+    if e2 = epsilonRE then
         return e1
     end if
 
-    return new RE(".", e1, e2)
+    return {"type":".", "v1":e1, "v2":e2}
 end function
 
 
 function string(e)
-    if e.type = "symbol" then
-        return (
-            if e.v1 = epsilon then
-                "ε"
-            else
-                e.v1
-        )
+    if e = epsilonRE then
+        return "ε"
+    else if e = emptyRE then
+        return "ø"
+    else if e.type = "symbol" then
+        return e.v1
     else if e.type = "+" then
-        return string(e.v1) + "+" + string(e.v2)
+        let l := e.v1.getSortedList()
+        let res := ""
+
+        foreach e in l do
+            if res != "" then
+                res += " + "
+            end if
+            res += string(e)
+        done
+        return res
     else if e.type = "." then
         let s1 := string(e.v1)
         let s2 := string(e.v2)
@@ -88,21 +105,15 @@ function string(e)
 
         return s1 + s2
     else if e.type = "*" then
-        if e.v1.type = "*" then
-            return string(e.v1)
-        else if e.v1.type = "symbol" then
+        if e.v1.type = "symbol" then
             return string(e.v1) + "*"
-        else
-            return "(" + string(e.v1) + ")*"
         end if
-    else if e.type = "void" then
-        return "ø"
+        return "(" + string(e.v1) + ")*"
     end if
 
     # Should not happen
     return e.type + "(" + string(e.v1) + ", " + string(e.v2) + ")"
 end function
-
 
 export function automatonToRE(A, retStruct)
     A := normalize(minimize(A), 1)
@@ -112,9 +123,9 @@ export function automatonToRE(A, retStruct)
         if k = 0 then
             let e := (
                 if i = j then
-                    symbol(epsilon)
+                    epsilonRE
                 else
-                    new RE
+                    emptyRE
             )
 
             foreach s in trans(i) do
@@ -139,7 +150,7 @@ export function automatonToRE(A, retStruct)
         )
     end function
 
-    let res := new RE
+    let res := emptyRE
 
     let n := A.getStates().card()
 
