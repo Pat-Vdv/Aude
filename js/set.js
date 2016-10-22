@@ -42,6 +42,22 @@
 (function (pkg, that) {
     "use strict";
 
+    function sort(a, b) {
+        // FIXME continue
+        if (typeof a === "number") {
+            if (typeof b === "number") {
+                return a - b;
+            }
+            return 1;
+        }
+
+        if (typeof b === "number") {
+            return -1;
+        }
+
+        return pkg.Set.prototype.elementToString(a) > pkg.Set.prototype.elementToString(b);
+    }
+
     /**
      * A class to manipulate sets in Javascript.
      *
@@ -422,7 +438,7 @@
          * @see Set#getSortedList
          */
         getSortedList: function () {
-            return this.getList().sort();
+            return this.getList().sort(sort);
         },
 
         /**
@@ -627,13 +643,16 @@
                     return "Date(\"" + e.toString() + "\")";
                 }
 
-                if (typeof e === "object" && e.serializeElement) {
-                    return e.serializeElement();
-                }
 
                 if (typeof e === "object") {
-                    if (e.toJSON) {
-                        return JSON.stringify(e);
+                    if (e instanceof Object) {
+                        if (e.serializeElement) {
+                            return e.serializeElement();
+                        }
+
+                        if (e.toJSON) {
+                            return JSON.stringify(e);
+                        }
                     }
 
                     var i, res = "", keys = Object.keys(e).sort();

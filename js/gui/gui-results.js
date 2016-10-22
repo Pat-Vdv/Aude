@@ -143,18 +143,8 @@
                 AudeGUI.Results.setAutomaton(res);
             } else if (HTMLElement && res instanceof HTMLElement) {
                 AudeGUI.Results.setDOM(res);
-            } else if (res) {
-                if (typeof res === "object" && !(res instanceof Object)) {
-                    AudeGUI.Results.setText(Object.prototype.toString.call(res));
-                } else {
-                    AudeGUI.Results.setText(res.toString());
-                }
-            } else if (typeof res === "undefined") {
-                AudeGUI.Results.setText("undefined");
-            } else if (res === null) {
-                AudeGUI.Results.setText("null");
             } else {
-                AudeGUI.Results.setText(res);
+                AudeGUI.Results.setText(Set.prototype.elementToString(res));
             }
 
             var svg = resultsContent.getElementsByTagName("svg")[0];
