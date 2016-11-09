@@ -187,7 +187,6 @@
             automatonSelect.value = AudeGUI.AutomataList.automatonCount;
             AudeGUI.Designer.newAutomaton(AudeGUI.AutomataList.automatonCount);
             AudeGUI.setCurrentAutomatonIndex(AudeGUI.AutomataList.automatonCount++);
-            AudeGUI.AutomataList.show();
         },
 
         removeCurrentAutomaton: function () {

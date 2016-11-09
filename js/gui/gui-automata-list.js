@@ -118,7 +118,7 @@
         },
 
         show: function (count, callback) {
-            if (automataListDiv.classList.contains("disabled")) {
+            if (!automataListDiv.classList.contains("disabled")) {
                 return;
             }
 
