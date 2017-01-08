@@ -14,9 +14,18 @@ function automaton2HTMLTable(A)
     star.textContent := "*"
     star.style.color := "red"
 
+    let init := A.getInitialState()
+
     foreach s in states do
         let stateTH := document.createElement("th")
         stateTH.textContent := s;
+
+        if s = init then
+            let span := document.createElement("span")
+            span.textContent := "→"
+            span.style.color := "blue"
+            stateTH.insertBefore(span, stateTH.firstChild)
+        fi
 
         if s belongs to F then
             stateTH.appendChild(star.cloneNode(true))
