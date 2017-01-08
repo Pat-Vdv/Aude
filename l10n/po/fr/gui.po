@@ -208,6 +208,9 @@ msgstr "Tester language infini"
 msgid "JSON representation"
 msgstr "Représentation JSON"
 
+msgid "Table representation"
+msgstr "Représentation en tableau"
+
 msgid "Load a Quiz"
 msgstr "Charger un Quiz"
 

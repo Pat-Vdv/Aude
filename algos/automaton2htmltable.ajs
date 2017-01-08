@@ -1,0 +1,51 @@
+function automaton2HTMLTable(A)
+    let f := A.getTransitionFunction()
+    let F := A.getFinalStates()
+
+    let table := document.createElement("table")
+
+    let states := A.getStates().getSortedList()
+
+    let statesLine := document.createElement("tr")
+
+    statesLine.appendChild(document.createElement("tr"))
+
+    let star := document.createElement("span")
+    star.textContent := "*"
+    star.style.color := "red"
+
+    foreach s in states do
+        let stateTH := document.createElement("th")
+        stateTH.textContent := s;
+
+        if s belongs to F then
+            stateTH.appendChild(star.cloneNode(true))
+        fi
+
+        statesLine.appendChild(stateTH)
+    done
+
+    table.appendChild(statesLine)
+
+    foreach a in A.getAlphabet().getSortedList() do
+        let line := document.createElement("tr")
+
+        let cell := document.createElement("th")
+        cell.textContent := a
+        line.appendChild(cell)
+
+        foreach s in states do
+            cell := document.createElement("td")
+            cell.textContent := f(s, a).getSortedList()
+            if not cell.textContent then
+                cell.textContent := ""
+            fi
+            line.appendChild(cell)
+        done
+        table.appendChild(line)
+    done
+
+    return table
+end function
+
+run(automaton2HTMLTable, get_automaton(currentAutomaton))

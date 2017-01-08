@@ -210,6 +210,11 @@ msgstr ""
 msgid "JSON representation"
 msgstr ""
 
+
+msgid "Table representation"
+msgstr ""
+
+
 msgid "Load a Quiz"
 msgstr ""
 
