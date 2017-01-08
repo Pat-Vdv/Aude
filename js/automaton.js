@@ -44,11 +44,11 @@
 
     /**
      * epsilon: Represents epsilon to manipulate epsilon transitions.
-     * epsilon is a function to enforce equality to be true when and only when comparing explicitely with epsilon.
+     * epsilon is a function to enforce equality to be true when and only when comparing explicitly with epsilon.
      * @alias epsilon
      */
     pkg.epsilon = function () { return; };
-
+    pkg.epsilon.toString = function () { return "ε"; };
 
     pkg.automataMap = {
         "\\e":pkg.epsilon,
