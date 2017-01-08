@@ -37,6 +37,7 @@
                     document.write('<script src="' + files[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
                 }
             }
+
             boot([
                 "js/lib/source-map.min.js",
                 "js/lib/libD/1.1/core.js",
@@ -75,13 +76,13 @@
             <span class="left">
                 <span>
                     <select id="switchmode">
-                    <option value="design" data-translated-content="true">Design</option>
-                    <option value="program" data-translated-content="true">Program</option>
-                    <option value="automatoncode" data-translated-content="true">Code</option>
+                        <option value="design" data-translated-content="true">Design</option>
+                        <option value="program" data-translated-content="true">Program</option>
+                        <option value="automatoncode" data-translated-content="true">Code</option>
                     </select>
                 </span>
 
-                <span>
+                <span class="designmode-specific">
                     <button id="undo" data-translated-title="true" title="Undo"><img src="icons/oxygen/16x16/actions/edit-undo.png" alt="Undo" data-translated-title="true" /></button>
                     <button id="redo" data-translated-title="true" title="Redo"><img src="icons/oxygen/16x16/actions/edit-redo.png" alt="Redo" data-translated-title="true" /></button>
                 </span>
@@ -158,8 +159,7 @@
                 <div id="automata-list-chooser" class="disabled">
                     <p id="automata-list-chooser-intro"></p>
                     <a href="#" data-translated-content="true" id="automata-list-chooser-close">Close</a>
-                    <ul id="automata-list-chooser-content">
-                    </ul>
+                    <ul id="automata-list-chooser-content"></ul>
                     <button id="automata-list-chooser-btn" data-translated-content="true">Continue execution</button>
                     <p></p>
                 </div>
