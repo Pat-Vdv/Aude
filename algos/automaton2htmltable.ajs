@@ -27,7 +27,7 @@ function automaton2HTMLTable(A)
 
     table.appendChild(statesLine)
 
-    foreach a in A.getAlphabet().getSortedList() do
+    foreach a in [epsilon].concat(A.getAlphabet().getSortedList()) do
         let line := document.createElement("tr")
 
         let cell := document.createElement("th")
@@ -49,3 +49,4 @@ function automaton2HTMLTable(A)
 end function
 
 run(automaton2HTMLTable, get_automaton(currentAutomaton))
+
