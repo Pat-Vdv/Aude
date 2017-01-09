@@ -1,4 +1,4 @@
-function automaton2HTMLTable(A)
+export function automaton2HTMLTable(A)
     let f := A.getTransitionFunction()
     let F := A.getFinalStates()
 
