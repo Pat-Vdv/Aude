@@ -25,6 +25,12 @@
 
                 throw new Error("this require is dummy and is only for requiring audescript");
             }
+
+            if (!SVGElement.prototype.getElementsByClassName) {
+                SVGElement.prototype.getElementsByClassName = function(className) {
+                    return this.querySelectorAll('.' + className);
+                };
+            }
         </script>
         <script>
         /*<!--//*/
