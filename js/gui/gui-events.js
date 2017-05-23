@@ -174,6 +174,6 @@ window.AudeGUI.initEvents = function () {
     };
 
     document.getElementById("quiz").onclick = function () {
-        AudeGUI.quiz.fileInput.click();
+        AudeGUI.Quiz.fileInput.click();
     };
 };
