@@ -184,8 +184,8 @@ Rules that must be followed are:
         reallyLongFunctionCall(isTrue ? iftrue : iffalse)
 
  - Don't fear of using parentheses. There is no shortage of them yet.
-   - If something spreads accross several lines, put parentheses.
-   - Ternaries should be inside parentheses
+   - If something spreads across several lines, put parentheses.
+   - Ternaries should be inside parentheses.
    - Use parentheses in complex logical expressions, even if they are not
      strictly necessary because of precedence rules.
 
