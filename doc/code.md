@@ -33,7 +33,7 @@ language.
 ## Coding Standards
 
 A few rules must be respected when writing code in Aude.
-See (coding-standards.md)[coding-standards.md).
+See [coding-standards.md](coding-standards.md).
 
 # Code Organization
 
