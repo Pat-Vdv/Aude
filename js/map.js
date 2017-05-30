@@ -37,7 +37,7 @@
 (function (pkg) {
     "use strict";
 
-    pkg.Map = function () {
+    pkg.Map = function (keyValueArray) {
         var m = {}, f = function (a1, a2, a3) {
             switch (arguments.length) {
             case 1:
@@ -90,6 +90,12 @@
         };
 
         this.f = f;
+
+        if (keyValueArray) {
+            for (let keyValue of keyValueArray) {
+                f.setKey(keyValue[0], keyValue[1]);
+            }
+        }
     };
 
     pkg.Map.prototype.get = function (k) {
