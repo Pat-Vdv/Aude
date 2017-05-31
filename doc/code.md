@@ -104,6 +104,53 @@ Notable parts of `libD` used in Aude are:
    The source code of this module is also quite simple and straightforward and
    skimming it is encouraged (js/lib/libD/1.1/notify.js).
 
+ - `libD.Set`, `libD.Map`, `libD.Tuple`, `libD.elementToString` (`libD/set`).
+   This is a library to handle sets, maps and tuples.
+   Javascript already provides built-in sets and maps (but not tuples). However,
+   specific functionality provided by this custom implementation is needed in
+   Aude and Audescript. e.g.
+   `new Set([1, new Set([4,5,6]), 3]).has(new Set([4,5,6]))` is true with this
+   implementation and false with native sets.
+
+   This implementation actually extends native sets and maps instead of
+   completely ignoring them. As a consequence, most documentation about
+   Javascript [native sets](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)
+   and [native maps](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
+   apply, but they still breaks compatibility with them by design.
+
+   In Aude, `Set` and `Map` refer to this implementation and not to native
+   Javascript implementations. See `js/aude.js`.
+   
+   `libD.elementToString` creates a unique string representation of any non
+   circular object in javascript. This is used in the implementations of `Set`
+   and `Map`, as well as at various places in Aude and Aude algorithms. 
+
+Examples:
+
+    let s = new Set();
+    s.add(2);
+
+    if (s.contains(3)) {
+        let s2 = s.union(new Set([5,6,7]));
+    }
+
+    if (s.card() == 3) {
+        let p = s.powerset();
+    }
+    
+    let s3 = s.inter(new Set([5,6,7]));
+    
+    let m = new Map();
+    m.set({1: "hello"}, "hi");
+    
+    if (m.has({1: "hello"})) {
+        let h = m.get({1: "hello"});
+        m.set("hola", h);
+        m.remove({1: "hello"});
+    }
+
+For a comprehensive list of supported methods, look at the source.
+
 
 ## js/lib/hammer.min.js, js/touch2click.js
 
@@ -134,60 +181,6 @@ This is getting less and less relevent as time passes.
 
 This is Javascript generated version of the Audescript Transpiler. The actual source code of Audescript is in `audescript.ts`, written in Typescript.
 To generate the javascript version, type `make` in the folder `js/audescript/`.
-
-## js/set.js
-
-`set.js` is a library to handle sets in Javascript and Audescript.
-Javascript now provides built-in sets, we should consider using them.
-For the moment, specific functionality provided by this custom implementation
-is not trivial to port to native javascript sets. e.g. `new Set([1, new Set([4,5,6]), 3]).has(new Set([4,5,6]))` is true with this implementation and false with native sets.
-
-Examples:
-
-    let s = new Set();
-    s.add(2);
-
-    if (s.contains(3)) {
-        let s2 = s.union(new Set([5,6,7]));
-    }
-
-    if (s.card() == 3) {
-        let p = s.powerset();
-    }
-    
-    let s3 = s.inter(new Set([5,6,7]));
-    
-For a comprehensive list of supported methods, look at the source.
-
-## js/setIterators.js
-
-This is a code to support iterating over sets like this:
-
-    for (let e of new Set([1,2,3,4])) {
-        alert(e);
-    }
-
-## js/map.js
-
-`map.js` is a library that provides a way create maps from arbitrary objects to
-values. This functionality is covered by Javascript native objects but they come
-with some caveats:
- - keys can only be strings
- - the set of strings that can be used is limited. In particular, one cannot use
-   strings that are names of methods of objects.
-
-Javascript now provides built-in maps, we should consider using them.
-For the moment, specific functionality provided by this custom implementation
-is not trivial to port to native javascript maps.
-
-    let m = new Map();
-    m.set({1: "hello"}, "hi");
-    
-    if (m.has({1: "hello"})) {
-        let h = m.get({1: "hello"});
-        m.set("hola", h);
-        m.remove({1: "hello"});
-    }
 
 ## js/audescript/runtime.js
 

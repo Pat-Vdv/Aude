@@ -196,7 +196,7 @@
          * @returns {Set} The Set of non final states
          */
         getNonFinalStates: function () {
-            return aude.minus(this.getStates(), this.getFinalStates());
+            return (this.getStates()).minus(this.getFinalStates());
         },
 
         /**
@@ -207,7 +207,7 @@
          * @see Automaton#getNonAcceptingStates
          */
         getNonAcceptingStates: function () {
-            return aude.minus(this.getStates(), this.getFinalStates());
+            return (this.getStates()).minus(this.getFinalStates());
         },
 
         /**
@@ -592,7 +592,7 @@
          * @see Automaton#removeSymbol
          */
         addAlphabet: function (alphabet) {
-            aude.unionInPlace(this.Sigma, alphabet);
+            this.Sigma.unionInPlace(alphabet);
         },
 
         /**
@@ -607,7 +607,7 @@
          * @see Automaton#removeSymbol
          */
         removeAlphabet: function (alphabet) {
-            aude.minusInPlace(this.Sigma, alphabet);
+            this.Sigma.minusInPlace(alphabet);
         },
 
         /**
@@ -709,7 +709,7 @@
             states = aude.toSet(states);
             if (states.subsetOf(this.states)) {
                 this.currentStates.clear();
-                aude.unionInPlace(this.currentStates, aude.toSet(states));
+                this.currentStates.unionInPlace(aude.toSet(states));
                 this.currentStatesAddAccessiblesByEpsilon();
             }
         },
@@ -763,7 +763,7 @@
          * @see Automaton#getCurrentStates
         */
         addCurrentStates: function (states) {
-            aude.unionInPlace(this.currentStates, states);
+            this.currentStates.unionInPlace(states);
             this.currentStatesAddAccessiblesByEpsilon();
         },
 
@@ -780,7 +780,7 @@
          * @see Automaton#getCurrentStates
         */
         removeCurrentStates: function (states) {
-            aude.minusInPlace(this.currentStates, states);
+            this.currentStates.minusInPlace(states);
             this.currentStatesAddAccessiblesByEpsilon();
         },
 
@@ -882,7 +882,7 @@
                 function (s) {
                     if (s !== state && !visited.has(s)) {
                         visited.add(s);
-                        aude.unionInPlace(visited, that.getReachable(s, visited));
+                        visited.unionInPlace(that.getReachable(s, visited));
                     }
                 }
             );
@@ -976,7 +976,7 @@
 
             this.setCurrentState(this.getInitialState());
             this.runWord(symbols);
-            var accepted = aude.inter(this.currentStates, this.finalStates).card() !== 0;
+            var accepted = (this.currentStates.inter(this.finalStates)).card() !== 0;
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;
             return accepted;

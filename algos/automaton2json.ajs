@@ -8,7 +8,7 @@ export function automaton2json(A)
             return "\\\\e"
         end if
 
-        return JSON.stringify(Set.prototype.elementToString(e, map))
+        return JSON.stringify(aude.elementToString(e, map))
     end function
 
     let finalStates := A.getFinalStates()

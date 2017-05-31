@@ -1,5 +1,5 @@
 var aude = {
-    elementToString : Set.prototype.elementToString,
+    elementToString : libD.elementToString,
 
     getNextValue: function (s, j, len, map) {
         if (len === undefined) {
@@ -245,10 +245,11 @@ var aude = {
         throw new Error(_("Cannot make an array from arbitrary type"));
     },
 
-    inter : audescript.inter,
-    union : audescript.union,
-    unionInPlace : audescript.unionInPlace,
-    minus : audescript.minus,
-    minusInPlace : audescript.minusInPlace,
-    toSet : Set.prototype.toSet
+    toSet : libD.toSet
 };
+
+// required in Aude as well as in Audescript.
+
+Set   = libD.Set;
+Map   = libD.Map;
+Tuple = libD.Tuple;

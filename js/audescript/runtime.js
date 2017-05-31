@@ -35,7 +35,6 @@
 
     function notdef() {}
 
-    var Tuple      = that.Tuple      || notdef;
     var Automaton  = that.Automaton  || notdef;
     var Transition = that.Transition || notdef;
 
@@ -181,7 +180,12 @@
         return pkg.toSet(container1).symDiff(container2);
     },
 
-    pkg.toSet = Set.prototype.toSet;
+    pkg.toSet = function (set) {
+        if (!(set instanceof Set)) {
+            return new Set(set);
+        }
+        return set;
+    };
 
     pkg.set = function(l) {
         return new Set(l);
@@ -238,6 +242,21 @@
 
     pkg.tuple = function (arr) {
         return (new Tuple()).fromList(arr);
+    };
+
+    function* iterObj(o) {
+        for (var i in o) {
+            yield new Tuple().fromList([i, o[i]]);
+        }
+    }
+
+    pkg.iter = function (o) {
+//         console.log("o: " + o);
+        return (
+            (typeof o === 'object' && !(o instanceof Object))
+                ? iterObj(o)
+                : o
+        );
     };
 
     pkg.console = console;

@@ -144,7 +144,7 @@
             } else if (HTMLElement && res instanceof HTMLElement) {
                 AudeGUI.Results.setDOM(res);
             } else {
-                AudeGUI.Results.setText(Set.prototype.elementToString(res));
+                AudeGUI.Results.setText(aude.elementToString(res));
             }
 
             var svg = resultsContent.getElementsByTagName("svg")[0];

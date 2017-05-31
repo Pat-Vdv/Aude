@@ -45,7 +45,7 @@ if typeof Node = "function" and typeof document = "object" and document instance
                 let row := table.insertRow()
                 let col := document.createElement("th")
 
-                col.textContent := Set.prototype.elementToString(states[i])
+                col.textContent := aude.elementToString(states[i])
                 row.appendChild(col)
 
                 for j from 0 to i - 1 do
@@ -62,7 +62,7 @@ if typeof Node = "function" and typeof document = "object" and document instance
 
             for j from 0 to len - 2 do
                 let col := document.createElement("th")
-                col.textContent := Set.prototype.elementToString(states[j])
+                col.textContent := aude.elementToString(states[j])
                 row.appendChild(col)
             done
 

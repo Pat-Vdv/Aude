@@ -111,7 +111,7 @@ export function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndCompl
             MinA.setAcceptingState(newStates[s])
         end if
 
-        if newStates[s].contains(A.getInitialState()) then
+        if newStates[s] contains A.getInitialState() then
             MinA.setInitialState(newStates[s])
         end if
 
@@ -119,7 +119,7 @@ export function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndCompl
     done
 
     foreach t in A.getTransitions() do
-        if oldStates.has(t.startState) and oldStates.has(t.endState) then
+        if oldStates contains t.startState and oldStates contains t.endState then
             MinA.addTransition(
                 newStates[oldStates.get(t.startState)],
                 t.symbol,

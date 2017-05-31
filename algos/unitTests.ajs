@@ -15,6 +15,7 @@ function evalAudeScript(s)
 end function
 
 function doTests(testCorrect, testFailed, testFailInfo)
+    console.log(doTests);
     let tests := {
         "1": automataAreEquivalent( // test minimization
             minimize(
@@ -97,7 +98,7 @@ function doTests(testCorrect, testFailed, testFailInfo)
                                 + ", "
                                 + transition[1]
                                 + ") is "
-                                + Set.prototype.elementToString(f(transition[0], transition[1]))
+                                + aude.elementToString(f(transition[0], transition[1]))
                                 + " instead of "
                                 + transition[2]
                         )
@@ -349,7 +350,9 @@ function doTests(testCorrect, testFailed, testFailInfo)
                     }
                 )
             )
-        )
+        ),
+
+        "35": evalAudeScript("(function() let S := {1}; S.delete(1); return S does not contain 1 end function)()")
     }
 
     let tryParse := [
