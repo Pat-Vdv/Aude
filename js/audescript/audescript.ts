@@ -2770,23 +2770,23 @@ class AudescriptParser {
                 expressions,
                 innerWhite
             );
-        } else if (end === ")") {
+        }
+
+        if (end === ")") {
             return new AudescriptASTParen(
                 state,
                 allowTuple,
                 expressions,
                 innerWhite
             );
-        } else {
-            return new AudescriptASTBrace(
-                state,
-                expressions,
-                values,
-                innerWhite
-            );
         }
 
-        return null;
+        return new AudescriptASTBrace(
+            state,
+            expressions,
+            values,
+            innerWhite
+        );
     }
 
     parseDestructuringExpression() : AudescriptASTExpression {
@@ -3679,7 +3679,7 @@ declare var require  : any;
 
         let fs = require('fs');
 
-        function writeResult(content : string, filename? : string) {
+        let writeResult = function (content : string, filename? : string) {
             let moduleName = "", newFile;
             if (filename) {
                 moduleName = filename.replace(/\.[^/.]+$/, "");

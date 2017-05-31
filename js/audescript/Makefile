@@ -5,7 +5,7 @@ audescript.js: audescript.ts
 	echo >> audescript.bundle.ts
 	cat audescript.identifier.js >> audescript.bundle.ts
 	tsc audescript.bundle.ts --sourceMap --module commonjs
-	echo -n "(function(that) {" > audescript.js
+	echo -n "(function(that) {let exports = {};" > audescript.js
 	cat audescript.bundle.js >> audescript.js
 	echo "\n}(this));" >> audescript.js
 	mv audescript.bundle.js.map audescript.js.map

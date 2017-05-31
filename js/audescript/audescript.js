@@ -1,4 +1,4 @@
-(function(that) {/// <reference path="./typings/tsd.d.ts" />
+(function(that) {let exports = {};/// <reference path="./typings/tsd.d.ts" />
 /*
     Copyright (C) 2015 JAKSE Raphaël
 
@@ -16,11 +16,18 @@
     section 4, provided you include this license notice and a URL
     through which recipients can access the Corresponding Source.
 */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
 var SourceMap = require("source-map");
 var SourceNode = SourceMap.SourceNode;
 function format(message) {
@@ -494,34 +501,35 @@ var AudescriptASTStatement = (function () {
     AudescriptASTStatement.prototype.setAudescriptVar = function (v) {
         throw Error(_("Not implemented"));
     };
-    AudescriptASTStatement.opOrder = [
-        ["."],
-        ["index"],
-        ["call"],
-        ["not", "~"],
-        ["++", "--"],
-        ["new"],
-        ["instanceof", "typeof"],
-        ["/", "*"],
-        ["mod"],
-        ["+", "-"],
-        [">>>", "<<", ">>"],
-        ["cross"],
-        ["union", "inter", "\\"],
-        ["symdiff"],
-        ["does not contain", "contains", "does not belong to", "belongs to", "not subset of", "subset of", "not in", "in"],
-        ["<", "<=", ">=", ">", "=", "is not", "is", "!="],
-        ["and"],
-        ["or"],
-        [">>>=", "+=", "-=", ":=", "&=", "|=", "*=", "%=", "^="]
-    ];
     return AudescriptASTStatement;
-})();
+}());
+AudescriptASTStatement.opOrder = [
+    ["."],
+    ["index"],
+    ["call"],
+    ["not", "~"],
+    ["++", "--"],
+    ["new"],
+    ["instanceof", "typeof"],
+    ["/", "*"],
+    ["mod"],
+    ["+", "-"],
+    [">>>", "<<", ">>"],
+    ["cross"],
+    ["union", "inter", "\\"],
+    ["symdiff"],
+    ["does not contain", "contains", "does not belong to", "belongs to", "not subset of", "subset of", "not in", "in"],
+    ["<", "<=", ">=", ">", "=", "is not", "is", "!="],
+    ["and"],
+    ["or"],
+    [">>>=", "+=", "-=", ":=", "&=", "|=", "*=", "%=", "^="]
+];
 var AudescriptASTRoot = (function (_super) {
     __extends(AudescriptASTRoot, _super);
     function AudescriptASTRoot(lexer, root) {
-        _super.call(this, lexer);
-        this.root = root;
+        var _this = _super.call(this, lexer) || this;
+        _this.root = root;
+        return _this;
     }
     AudescriptASTRoot.prototype.toJS = function () {
         var identifiers = AudescriptASTStatement.getUsedIdentifiers(this.root);
@@ -536,20 +544,20 @@ var AudescriptASTRoot = (function (_super) {
         this.root.setAudescriptVar(v);
     };
     return AudescriptASTRoot;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTFromImport = (function (_super) {
     __extends(AudescriptASTFromImport, _super);
     function AudescriptASTFromImport(lexer, moduleName, importList) {
-        _super.call(this, lexer);
-        this.initialWhite = "";
-        this.importList = importList;
-        this.importListWhite = [];
-        this.moduleName = moduleName;
-        this.whiteBeforeModuleName = moduleName.whiteBefore;
-        this.whiteAfterModuleName = moduleName.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.initialWhite = "";
+        _this.importList = importList;
+        _this.importListWhite = [];
+        _this.moduleName = moduleName;
+        _this.whiteBeforeModuleName = moduleName.whiteBefore;
+        _this.whiteAfterModuleName = moduleName.whiteAfter;
         moduleName.whiteBefore = "";
         moduleName.whiteAfter = "";
-        for (var _i = 0, _a = this.importList; _i < _a.length; _i++) {
+        for (var _i = 0, _a = _this.importList; _i < _a.length; _i++) {
             var imp = _a[_i];
             var w0 = imp[0].whiteBefore || "";
             var w1 = imp[0].whiteAfter || "";
@@ -567,8 +575,9 @@ var AudescriptASTFromImport = (function (_super) {
                 imp[1].whiteBefore = "";
                 imp[1].whiteAfter = "";
             }
-            this.importListWhite.push([w0, w1, w2, w3]);
+            _this.importListWhite.push([w0, w1, w2, w3]);
         }
+        return _this;
     }
     AudescriptASTFromImport.prototype.getModuleName = function () {
         var res = this.moduleName.toJS().toStringWithSourceMap().code.trim();
@@ -615,7 +624,7 @@ var AudescriptASTFromImport = (function (_super) {
         this.initialWhite = AudescriptASTStatement.commentToJS(white);
     };
     return AudescriptASTFromImport;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTExpressionListOp = (function () {
     function AudescriptASTExpressionListOp(state, op, white) {
         if (white === void 0) { white = ""; }
@@ -637,22 +646,23 @@ var AudescriptASTExpressionListOp = (function () {
         }
     }
     return AudescriptASTExpressionListOp;
-})();
+}());
 var AudescriptASTExpression = (function (_super) {
     __extends(AudescriptASTExpression, _super);
     function AudescriptASTExpression() {
-        _super.apply(this, arguments);
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     return AudescriptASTExpression;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTBracketParenBrace = (function (_super) {
     __extends(AudescriptASTBracketParenBrace, _super);
     function AudescriptASTBracketParenBrace(lexer, expressions, values, innerWhite) {
-        _super.call(this, lexer);
-        this.values = null;
-        this.expressions = expressions;
-        this.values = values;
-        this.innerWhite = innerWhite;
+        var _this = _super.call(this, lexer) || this;
+        _this.values = null;
+        _this.expressions = expressions;
+        _this.values = values;
+        _this.innerWhite = innerWhite;
+        return _this;
     }
     AudescriptASTBracketParenBrace.prototype.expressionsToJS = function (assignment) {
         var res = [];
@@ -660,7 +670,8 @@ var AudescriptASTBracketParenBrace = (function (_super) {
             var expr = this.expressions[i];
             if (this.values) {
                 var value = this.values[i];
-                res.push((res.length ? "," : ""), expr.toJS(), ",", value instanceof AudescriptASTBracketParenBrace
+                res.push((res.length ? "," : ""), expr.toJS(), ",", // formerly ":"
+                value instanceof AudescriptASTBracketParenBrace
                     ? value.toJS("", "", assignment)
                     : value.toJS());
             }
@@ -696,11 +707,11 @@ var AudescriptASTBracketParenBrace = (function (_super) {
         }
     };
     return AudescriptASTBracketParenBrace;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTBracket = (function (_super) {
     __extends(AudescriptASTBracket, _super);
     function AudescriptASTBracket(lexer, expressions, innerWhite) {
-        _super.call(this, lexer, expressions, null, innerWhite);
+        return _super.call(this, lexer, expressions, null, innerWhite) || this;
     }
     AudescriptASTBracket.prototype.toJS = function (right, left, assignment) {
         if (right === void 0) { right = ""; }
@@ -709,12 +720,13 @@ var AudescriptASTBracket = (function (_super) {
         return _super.prototype.toJS.call(this, "[", "]", assignment);
     };
     return AudescriptASTBracket;
-})(AudescriptASTBracketParenBrace);
+}(AudescriptASTBracketParenBrace));
 var AudescriptASTParen = (function (_super) {
     __extends(AudescriptASTParen, _super);
     function AudescriptASTParen(lexer, tuple, expressions, innerWhite) {
-        _super.call(this, lexer, expressions, null, innerWhite);
-        this.tuple = tuple;
+        var _this = _super.call(this, lexer, expressions, null, innerWhite) || this;
+        _this.tuple = tuple;
+        return _this;
     }
     AudescriptASTParen.prototype.toJS = function (left, right, assignment) {
         if (left === void 0) { left = ""; }
@@ -727,11 +739,11 @@ var AudescriptASTParen = (function (_super) {
                 : _super.prototype.toJS.call(this, "(", ")", false)));
     };
     return AudescriptASTParen;
-})(AudescriptASTBracketParenBrace);
+}(AudescriptASTBracketParenBrace));
 var AudescriptASTBrace = (function (_super) {
     __extends(AudescriptASTBrace, _super);
     function AudescriptASTBrace(lexer, expressions, values, innerWhite) {
-        _super.call(this, lexer, expressions, values, innerWhite);
+        return _super.call(this, lexer, expressions, values, innerWhite) || this;
     }
     AudescriptASTBrace.prototype.toJS = function (right, left, assignment) {
         if (right === void 0) { right = ""; }
@@ -744,14 +756,15 @@ var AudescriptASTBrace = (function (_super) {
                 : _super.prototype.toJS.call(this, this.audescriptVar[0] + ".set([", "])", assignment)));
     };
     return AudescriptASTBrace;
-})(AudescriptASTBracketParenBrace);
+}(AudescriptASTBracketParenBrace));
 var AudescriptASTReturnThrow = (function (_super) {
     __extends(AudescriptASTReturnThrow, _super);
     function AudescriptASTReturnThrow(lexer, keyword, expr) {
-        _super.call(this, lexer);
-        this.initialWhite = "";
-        this.expr = expr;
-        this.keyword = keyword;
+        var _this = _super.call(this, lexer) || this;
+        _this.initialWhite = "";
+        _this.expr = expr;
+        _this.keyword = keyword;
+        return _this;
     }
     AudescriptASTReturnThrow.prototype.toJS = function () {
         return this.sourceNode([this.keyword, this.initialWhite, this.expr ? this.expr.toJS() : ""]);
@@ -766,12 +779,13 @@ var AudescriptASTReturnThrow = (function (_super) {
         }
     };
     return AudescriptASTReturnThrow;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTExport = (function (_super) {
     __extends(AudescriptASTExport, _super);
     function AudescriptASTExport(lexer, exported) {
-        _super.call(this, lexer);
-        this.exported = exported;
+        var _this = _super.call(this, lexer) || this;
+        _this.exported = exported;
+        return _this;
     }
     AudescriptASTExport.prototype.toJS = function () {
         var res;
@@ -813,14 +827,15 @@ var AudescriptASTExport = (function (_super) {
         this.exported.setAudescriptVar(v);
     };
     return AudescriptASTExport;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTDecl = (function (_super) {
     __extends(AudescriptASTDecl, _super);
     function AudescriptASTDecl(lexer, keyword, declared, expr) {
-        _super.call(this, lexer);
-        this.keyword = keyword;
-        this.declared = declared;
-        this.expr = expr;
+        var _this = _super.call(this, lexer) || this;
+        _this.keyword = keyword;
+        _this.declared = declared;
+        _this.expr = expr;
+        return _this;
     }
     AudescriptASTDecl.prototype.toJS = function () {
         var declared;
@@ -846,23 +861,24 @@ var AudescriptASTDecl = (function (_super) {
         this.expr.setAudescriptVar(v);
     };
     return AudescriptASTDecl;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTTernary = (function (_super) {
     __extends(AudescriptASTTernary, _super);
     function AudescriptASTTernary(lexer, expr, blockIf, blockElse) {
-        _super.call(this, lexer);
-        this.whiteBefore += (expr.whiteAfter === " " ? "" : expr.whiteAfter);
-        this.whiteAfterExpr = expr.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.whiteBefore += (expr.whiteAfter === " " ? "" : expr.whiteAfter);
+        _this.whiteAfterExpr = expr.whiteAfter;
         expr.whiteBefore = expr.whiteAfter = "";
-        this.whiteBeforeIf = blockIf.whiteBefore;
-        this.whiteAfterIf = blockIf.whiteAfter;
+        _this.whiteBeforeIf = blockIf.whiteBefore;
+        _this.whiteAfterIf = blockIf.whiteAfter;
         blockIf.whiteBefore = blockIf.whiteAfter = "";
-        this.whiteBeforeElse = blockElse.whiteBefore;
-        this.whiteAfter += (blockElse.whiteAfter === " " ? "" : blockElse.whiteAfter);
+        _this.whiteBeforeElse = blockElse.whiteBefore;
+        _this.whiteAfter += (blockElse.whiteAfter === " " ? "" : blockElse.whiteAfter);
         blockElse.whiteBefore = blockElse.whiteAfter = "";
-        this.expr = expr;
-        this.blockIf = blockIf;
-        this.blockElse = blockElse;
+        _this.expr = expr;
+        _this.blockIf = blockIf;
+        _this.blockElse = blockElse;
+        return _this;
     }
     AudescriptASTTernary.prototype.toJS = function () {
         var needParen = AudescriptASTStatement.needParentheses(this.expr);
@@ -879,18 +895,19 @@ var AudescriptASTTernary = (function (_super) {
         this.expr.setAudescriptVar(v);
     };
     return AudescriptASTTernary;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTIf = (function (_super) {
     __extends(AudescriptASTIf, _super);
     function AudescriptASTIf(lexer, unless, expr, blockIf, blockElse) {
-        _super.call(this, lexer);
-        this.unless = unless;
-        this.whiteBeforeExpr = expr.whiteBefore;
-        this.whiteAfterExpr = expr.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.unless = unless;
+        _this.whiteBeforeExpr = expr.whiteBefore;
+        _this.whiteAfterExpr = expr.whiteAfter;
         expr.whiteBefore = expr.whiteAfter = "";
-        this.expr = expr;
-        this.blockIf = blockIf;
-        this.blockElse = blockElse;
+        _this.expr = expr;
+        _this.blockIf = blockIf;
+        _this.blockElse = blockElse;
+        return _this;
     }
     AudescriptASTIf.prototype.toJS = function () {
         var expr = (this.unless ? ["!(", this.expr.toJS(), ")"] : [this.expr.toJS()]);
@@ -919,20 +936,21 @@ var AudescriptASTIf = (function (_super) {
         this.expr.setAudescriptVar(v);
     };
     return AudescriptASTIf;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTTry = (function (_super) {
     __extends(AudescriptASTTry, _super);
     function AudescriptASTTry(lexer, blockTry, blockCatch, exc, blockFinally) {
-        _super.call(this, lexer);
+        var _this = _super.call(this, lexer) || this;
         if (exc) {
-            this.whiteBeforeExc = exc.whiteBefore;
-            this.whiteAfterExc = exc.whiteAfter;
+            _this.whiteBeforeExc = exc.whiteBefore;
+            _this.whiteAfterExc = exc.whiteAfter;
             exc.whiteBefore = exc.whiteAfter = "";
         }
-        this.blockTry = blockTry;
-        this.blockCatch = blockCatch;
-        this.blockFinally = blockFinally;
-        this.exc = exc;
+        _this.blockTry = blockTry;
+        _this.blockCatch = blockCatch;
+        _this.blockFinally = blockFinally;
+        _this.exc = exc;
+        return _this;
     }
     AudescriptASTTry.prototype.toJS = function () {
         var s = [
@@ -961,11 +979,11 @@ var AudescriptASTTry = (function (_super) {
         }
     };
     return AudescriptASTTry;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTBreak = (function (_super) {
     __extends(AudescriptASTBreak, _super);
     function AudescriptASTBreak(lexer) {
-        _super.call(this, lexer);
+        return _super.call(this, lexer) || this;
     }
     AudescriptASTBreak.prototype.toJS = function () {
         return this.sourceNode(["break"]);
@@ -977,11 +995,11 @@ var AudescriptASTBreak = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTBreak;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTContinue = (function (_super) {
     __extends(AudescriptASTContinue, _super);
     function AudescriptASTContinue(lexer) {
-        _super.call(this, lexer);
+        return _super.call(this, lexer) || this;
     }
     AudescriptASTContinue.prototype.toJS = function () {
         return this.sourceNode(["continue"]);
@@ -993,12 +1011,13 @@ var AudescriptASTContinue = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTContinue;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTNumber = (function (_super) {
     __extends(AudescriptASTNumber, _super);
     function AudescriptASTNumber(lexer, strNumber) {
-        _super.call(this, lexer);
-        this.strNumber = strNumber;
+        var _this = _super.call(this, lexer) || this;
+        _this.strNumber = strNumber;
+        return _this;
     }
     AudescriptASTNumber.prototype.toJS = function () {
         return this.sourceNode([this.strNumber]);
@@ -1007,12 +1026,13 @@ var AudescriptASTNumber = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTNumber;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTString = (function (_super) {
     __extends(AudescriptASTString, _super);
     function AudescriptASTString(lexer, strString) {
-        _super.call(this, lexer);
-        this.strString = strString;
+        var _this = _super.call(this, lexer) || this;
+        _this.strString = strString;
+        return _this;
     }
     AudescriptASTString.prototype.toJS = function () {
         return this.sourceNode([this.strString]);
@@ -1021,12 +1041,13 @@ var AudescriptASTString = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTString;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTRegexp = (function (_super) {
     __extends(AudescriptASTRegexp, _super);
     function AudescriptASTRegexp(lexer, regexp) {
-        _super.call(this, lexer);
-        this.regexp = regexp;
+        var _this = _super.call(this, lexer) || this;
+        _this.regexp = regexp;
+        return _this;
     }
     AudescriptASTRegexp.prototype.toJS = function () {
         return this.sourceNode([this.regexp]);
@@ -1035,12 +1056,13 @@ var AudescriptASTRegexp = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTRegexp;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTIdentifier = (function (_super) {
     __extends(AudescriptASTIdentifier, _super);
     function AudescriptASTIdentifier(lexer, identifier) {
-        _super.call(this, lexer);
-        this.identifier = identifier;
+        var _this = _super.call(this, lexer) || this;
+        _this.identifier = identifier;
+        return _this;
     }
     AudescriptASTIdentifier.prototype.toJS = function () {
         return this.sourceNode([this.identifier]);
@@ -1049,12 +1071,13 @@ var AudescriptASTIdentifier = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTIdentifier;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTChar = (function (_super) {
     __extends(AudescriptASTChar, _super);
     function AudescriptASTChar(lexer, strChar) {
-        _super.call(this, lexer);
-        this.strChar = strChar;
+        var _this = _super.call(this, lexer) || this;
+        _this.strChar = strChar;
+        return _this;
     }
     AudescriptASTChar.prototype.toJS = function () {
         return this.sourceNode([this.strChar]);
@@ -1063,12 +1086,13 @@ var AudescriptASTChar = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTChar;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTBool = (function (_super) {
     __extends(AudescriptASTBool, _super);
     function AudescriptASTBool(lexer, b) {
-        _super.call(this, lexer);
-        this.b = b;
+        var _this = _super.call(this, lexer) || this;
+        _this.b = b;
+        return _this;
     }
     AudescriptASTBool.prototype.toJS = function () {
         return this.sourceNode([this.b]);
@@ -1077,16 +1101,17 @@ var AudescriptASTBool = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTBool;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTForeach = (function (_super) {
     __extends(AudescriptASTForeach, _super);
     function AudescriptASTForeach(lexer, expr, iterated, block) {
-        _super.call(this, lexer);
-        this.whiteAfterExpr = iterated.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.whiteAfterExpr = iterated.whiteAfter;
         iterated.whiteAfter = "";
-        this.expr = expr;
-        this.iterated = iterated;
-        this.block = block;
+        _this.expr = expr;
+        _this.iterated = iterated;
+        _this.block = block;
+        return _this;
     }
     AudescriptASTForeach.prototype.setInitialWhite = function (white) {
         this.expr.prependWhite(white);
@@ -1108,18 +1133,18 @@ var AudescriptASTForeach = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTForeach;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTFor = (function (_super) {
     __extends(AudescriptASTFor, _super);
     function AudescriptASTFor(lexer, identifier, begin, end, step, block) {
-        _super.call(this, lexer);
-        this.whiteAfterId = identifier.whiteAfter;
-        this.whiteBeforeId = identifier.whiteBefore;
-        this.whiteAfterBegin = begin.whiteAfter === " " ? "" : begin.whiteAfter;
-        this.whiteBeforeEnd = end.whiteBefore;
-        this.whiteAfterEnd = end.whiteAfter;
-        this.whiteBeforeStep = step.whiteBefore;
-        this.whiteAfterStep = step.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.whiteAfterId = identifier.whiteAfter;
+        _this.whiteBeforeId = identifier.whiteBefore;
+        _this.whiteAfterBegin = begin.whiteAfter === " " ? "" : begin.whiteAfter;
+        _this.whiteBeforeEnd = end.whiteBefore;
+        _this.whiteAfterEnd = end.whiteAfter;
+        _this.whiteBeforeStep = step.whiteBefore;
+        _this.whiteAfterStep = step.whiteAfter;
         identifier.whiteBefore = "";
         identifier.whiteAfter = "";
         begin.whiteAfter = "";
@@ -1127,11 +1152,12 @@ var AudescriptASTFor = (function (_super) {
         end.whiteAfter = "";
         step.whiteAfter = "";
         step.whiteBefore = "";
-        this.identifier = identifier;
-        this.begin = begin;
-        this.end = end;
-        this.step = step;
-        this.block = block;
+        _this.identifier = identifier;
+        _this.begin = begin;
+        _this.end = end;
+        _this.step = step;
+        _this.block = block;
+        return _this;
     }
     AudescriptASTFor.prototype.setInitialWhite = function (white) {
         this.whiteBeforeId = white + this.whiteBeforeId;
@@ -1196,17 +1222,18 @@ var AudescriptASTFor = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTFor;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTWhile = (function (_super) {
     __extends(AudescriptASTWhile, _super);
     function AudescriptASTWhile(lexer, expr, until, block) {
-        _super.call(this, lexer);
-        this.whiteBeforeExpr = expr.whiteBefore;
-        this.whiteAfterExpr = expr.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.whiteBeforeExpr = expr.whiteBefore;
+        _this.whiteAfterExpr = expr.whiteAfter;
         expr.whiteBefore = expr.whiteAfter = "";
-        this.until = until;
-        this.expr = expr;
-        this.block = block;
+        _this.until = until;
+        _this.expr = expr;
+        _this.block = block;
+        return _this;
     }
     AudescriptASTWhile.prototype.setInitialWhite = function (white) {
         this.whiteBeforeExpr = white + this.whiteBeforeExpr;
@@ -1222,17 +1249,18 @@ var AudescriptASTWhile = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTWhile;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTDoWhile = (function (_super) {
     __extends(AudescriptASTDoWhile, _super);
     function AudescriptASTDoWhile(lexer, block, until, expr) {
-        _super.call(this, lexer);
-        this.block = block;
-        this.expr = expr;
-        this.until = until;
-        this.whiteBeforeExpr = expr.whiteBefore;
-        this.whiteAfterExpr = expr.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.block = block;
+        _this.expr = expr;
+        _this.until = until;
+        _this.whiteBeforeExpr = expr.whiteBefore;
+        _this.whiteAfterExpr = expr.whiteAfter;
         expr.whiteBefore = expr.whiteAfter = "";
+        return _this;
     }
     AudescriptASTDoWhile.prototype.setInitialWhite = function (white) {
         this.block.prependWhite(white);
@@ -1248,12 +1276,13 @@ var AudescriptASTDoWhile = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTDoWhile;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTRepeatForever = (function (_super) {
     __extends(AudescriptASTRepeatForever, _super);
     function AudescriptASTRepeatForever(lexer, block) {
-        _super.call(this, lexer);
-        this.block = block;
+        var _this = _super.call(this, lexer) || this;
+        _this.block = block;
+        return _this;
     }
     AudescriptASTRepeatForever.prototype.setInitialWhite = function (white) {
         this.initialWhite = AudescriptASTStatement.commentToJS(white);
@@ -1268,16 +1297,17 @@ var AudescriptASTRepeatForever = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTRepeatForever;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTRepeatTimes = (function (_super) {
     __extends(AudescriptASTRepeatTimes, _super);
     function AudescriptASTRepeatTimes(lexer, expr, block) {
-        _super.call(this, lexer);
-        this.whiteBeforeExpr = expr.whiteBefore;
-        this.whiteAfterExpr = expr.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.whiteBeforeExpr = expr.whiteBefore;
+        _this.whiteAfterExpr = expr.whiteAfter;
         expr.whiteBefore = expr.whiteAfter = "";
-        this.block = block;
-        this.expr = expr;
+        _this.block = block;
+        _this.expr = expr;
+        return _this;
     }
     AudescriptASTRepeatTimes.prototype.setInitialWhite = function (white) {
         this.expr.prependWhite(white);
@@ -1305,15 +1335,16 @@ var AudescriptASTRepeatTimes = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTRepeatTimes;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTFunction = (function (_super) {
     __extends(AudescriptASTFunction, _super);
     function AudescriptASTFunction(lexer, isProcedure, id, params, block) {
-        _super.call(this, lexer);
-        this.isProcedure = isProcedure;
-        this.funName = id;
-        this.params = params;
-        this.block = block;
+        var _this = _super.call(this, lexer) || this;
+        _this.isProcedure = isProcedure;
+        _this.funName = id;
+        _this.params = params;
+        _this.block = block;
+        return _this;
     }
     AudescriptASTFunction.prototype.setInitialWhite = function (white) {
         if (this.funName) {
@@ -1338,11 +1369,11 @@ var AudescriptASTFunction = (function (_super) {
         this.block.setAudescriptVar(v);
     };
     return AudescriptASTFunction;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTComposition = (function (_super) {
     __extends(AudescriptASTComposition, _super);
     function AudescriptASTComposition(lexer, left, right) {
-        _super.call(this, lexer);
+        var _this = _super.call(this, lexer) || this;
         if (!(right instanceof AudescriptASTComposition || right instanceof AudescriptASTNullStatement)) {
             throw Error("BUG: second element of a AST composition node should be an ast composition or null node");
         }
@@ -1352,10 +1383,11 @@ var AudescriptASTComposition = (function (_super) {
             left instanceof AudescriptASTContinue) && !(right instanceof AudescriptASTNullStatement)) {
             lexer.parseError(_("Unreachable code after a break or a return statement"));
         }
-        this.whiteAfterLeft = left.whiteAfter;
+        _this.whiteAfterLeft = left.whiteAfter;
         left.whiteAfter = "";
-        this.left = left;
-        this.right = right;
+        _this.left = left;
+        _this.right = right;
+        return _this;
     }
     AudescriptASTComposition.prototype.toJS = function () {
         return this.sourceNode([this.left.toJS(), (AudescriptASTStatement.needsSemicolon(this.left) ? ";" : ""), this.whiteAfterLeft, this.right.toJS()]); //TODO check JS's automatic semicolon insertion
@@ -1366,17 +1398,18 @@ var AudescriptASTComposition = (function (_super) {
         this.right.setAudescriptVar(v);
     };
     return AudescriptASTComposition;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var AudescriptASTInfixedOp = (function (_super) {
     __extends(AudescriptASTInfixedOp, _super);
     function AudescriptASTInfixedOp(lexer, left, op, right) {
-        _super.call(this, lexer);
-        this.whiteBefore += left.whiteBefore;
-        this.whiteAfter += right.whiteAfter;
+        var _this = _super.call(this, lexer) || this;
+        _this.whiteBefore += left.whiteBefore;
+        _this.whiteAfter += right.whiteAfter;
         left.whiteBefore = right.whiteAfter = "";
-        this.left = left;
-        this.op = op;
-        this.right = right;
+        _this.left = left;
+        _this.op = op;
+        _this.right = right;
+        return _this;
     }
     AudescriptASTInfixedOp.prototype.toJS = function () {
         var res;
@@ -1436,135 +1469,136 @@ var AudescriptASTInfixedOp = (function (_super) {
         this.left.setAudescriptVar(v);
         this.right.setAudescriptVar(v);
     };
-    AudescriptASTInfixedOp.operatorsToJS = {
-        "and": "&&",
-        "or": "||",
-        "not": "!",
-        "is not": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            if (right.toString().trim() === "empty") {
-                return [leftlspace, "!" + a + ".e(", left, (leftrspace === " " ? "" : leftrspace) + (rightlspace === " " ? "" : rightlspace) + ")", rightrspace];
-            }
-            else {
-                return [leftlspace, left, leftrspace + "!==" + rightlspace, right, rightrspace];
-            }
-        },
-        "is": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            if (right.toString().trim() === "empty") {
-                return [leftlspace, a + ".e(", left, (leftrspace === " " ? "" : leftrspace) + (rightlspace === " " ? "" : rightlspace) + ")", rightrspace];
-            }
-            else {
-                return [leftlspace, left, leftrspace + "===" + rightlspace, right, rightrspace];
-            }
-        },
-        ":=": "=",
-        "!=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return ([
-                leftlspace, "!",
-                AudescriptASTInfixedOp.operatorsToJS["="](a, left, right, "", leftrspace, rightlspace, ""),
-                rightrspace
-            ]);
-        },
-        "/=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return AudescriptASTInfixedOp.operatorsToJS["!="](a, left, right, leftlspace, leftrspace, rightlspace, rightrspace);
-        },
-        "<>": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return AudescriptASTInfixedOp.operatorsToJS["!="](a, left, right, leftlspace, leftrspace, rightlspace, rightrspace);
-        },
-        "=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".eq(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "U": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".U(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "U=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".Ui(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "union": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".U(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "inter": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".I(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "cross": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".X(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "symdiff": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".symDiff(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "minus": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".M(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "\\": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".M(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "sym diff": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".sd(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "does not contain": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return ([
-                leftlspace, "!",
-                AudescriptASTInfixedOp.operatorsToJS["contains"](a, left, right, "", leftrspace, rightlspace, ""),
-                rightrspace
-            ]);
-        },
-        "not subset of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return ([
-                leftlspace, "!",
-                AudescriptASTInfixedOp.operatorsToJS["subset of"](a, left, right, "", leftrspace, rightlspace, ""),
-                rightrspace
-            ]);
-        },
-        "not element of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return ([
-                leftlspace, "!",
-                AudescriptASTInfixedOp.operatorsToJS["element of"](a, left, right, "", leftrspace, rightlspace, ""),
-                rightrspace
-            ]);
-        },
-        "does not belong to": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return ([
-                leftlspace, "!",
-                AudescriptASTInfixedOp.operatorsToJS["belongs to"](a, left, right, "", leftrspace, rightlspace, ""),
-                rightrspace
-            ]);
-        },
-        "not in": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return ([
-                leftlspace, "!",
-                AudescriptASTInfixedOp.operatorsToJS["in"](a, left, right, "", leftrspace, rightlspace, ""),
-                rightrspace
-            ]);
-        },
-        "contains": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".ct(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "subset of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".subsetof(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "element of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".ict(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "belongs to": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".ict(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")" + rightrspace];
-        },
-        "in": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, a + ".has(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
-        },
-        "call": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, left, leftrspace, rightlspace, right, rightrspace];
-        },
-        "index": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
-            return [leftlspace, left, leftrspace, rightlspace, right, rightrspace];
-        }
-    };
     return AudescriptASTInfixedOp;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
+AudescriptASTInfixedOp.operatorsToJS = {
+    "and": "&&",
+    "or": "||",
+    "not": "!",
+    "is not": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        if (right.toString().trim() === "empty") {
+            return [leftlspace, "!" + a + ".e(", left, (leftrspace === " " ? "" : leftrspace) + (rightlspace === " " ? "" : rightlspace) + ")", rightrspace];
+        }
+        else {
+            return [leftlspace, left, leftrspace + "!==" + rightlspace, right, rightrspace];
+        }
+    },
+    "is": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        if (right.toString().trim() === "empty") {
+            return [leftlspace, a + ".e(", left, (leftrspace === " " ? "" : leftrspace) + (rightlspace === " " ? "" : rightlspace) + ")", rightrspace];
+        }
+        else {
+            return [leftlspace, left, leftrspace + "===" + rightlspace, right, rightrspace];
+        }
+    },
+    ":=": "=",
+    "!=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return ([
+            leftlspace, "!",
+            AudescriptASTInfixedOp.operatorsToJS["="](a, left, right, "", leftrspace, rightlspace, ""),
+            rightrspace
+        ]);
+    },
+    "/=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return AudescriptASTInfixedOp.operatorsToJS["!="](a, left, right, leftlspace, leftrspace, rightlspace, rightrspace);
+    },
+    "<>": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return AudescriptASTInfixedOp.operatorsToJS["!="](a, left, right, leftlspace, leftrspace, rightlspace, rightrspace);
+    },
+    "=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".eq(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "U": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".U(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "U=": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".Ui(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "union": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".U(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "inter": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".I(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "cross": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".X(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "symdiff": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".symDiff(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "minus": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".M(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "\\": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".M(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "sym diff": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".sd(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "does not contain": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return ([
+            leftlspace, "!",
+            AudescriptASTInfixedOp.operatorsToJS["contains"](a, left, right, "", leftrspace, rightlspace, ""),
+            rightrspace
+        ]);
+    },
+    "not subset of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return ([
+            leftlspace, "!",
+            AudescriptASTInfixedOp.operatorsToJS["subset of"](a, left, right, "", leftrspace, rightlspace, ""),
+            rightrspace
+        ]);
+    },
+    "not element of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return ([
+            leftlspace, "!",
+            AudescriptASTInfixedOp.operatorsToJS["element of"](a, left, right, "", leftrspace, rightlspace, ""),
+            rightrspace
+        ]);
+    },
+    "does not belong to": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return ([
+            leftlspace, "!",
+            AudescriptASTInfixedOp.operatorsToJS["belongs to"](a, left, right, "", leftrspace, rightlspace, ""),
+            rightrspace
+        ]);
+    },
+    "not in": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return ([
+            leftlspace, "!",
+            AudescriptASTInfixedOp.operatorsToJS["in"](a, left, right, "", leftrspace, rightlspace, ""),
+            rightrspace
+        ]);
+    },
+    "contains": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".ct(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "subset of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".subsetof(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "element of": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".ict(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "belongs to": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".ict(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")" + rightrspace];
+    },
+    "in": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, a + ".has(", left, (leftrspace === " " ? "" : leftrspace) + "," + rightlspace, right, ")", rightrspace];
+    },
+    "call": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, left, leftrspace, rightlspace, right, rightrspace];
+    },
+    "index": function (a, left, right, leftlspace, leftrspace, rightlspace, rightrspace) {
+        return [leftlspace, left, leftrspace, rightlspace, right, rightrspace];
+    }
+};
 var AudescriptASTPrefixedOp = (function (_super) {
     __extends(AudescriptASTPrefixedOp, _super);
     function AudescriptASTPrefixedOp(lexer, expr, op) {
-        _super.call(this, lexer);
-        this.expr = expr;
-        this.op = op;
+        var _this = _super.call(this, lexer) || this;
+        _this.expr = expr;
+        _this.op = op;
+        return _this;
     }
     AudescriptASTPrefixedOp.prototype.toJS = function () {
         var op = this.op;
@@ -1581,13 +1615,14 @@ var AudescriptASTPrefixedOp = (function (_super) {
         this.expr.setAudescriptVar(v);
     };
     return AudescriptASTPrefixedOp;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTSuffixedOp = (function (_super) {
     __extends(AudescriptASTSuffixedOp, _super);
     function AudescriptASTSuffixedOp(lexer, expr, op) {
-        _super.call(this, lexer);
-        this.expr = expr;
-        this.op = op;
+        var _this = _super.call(this, lexer) || this;
+        _this.expr = expr;
+        _this.op = op;
+        return _this;
     }
     AudescriptASTSuffixedOp.prototype.toJS = function () {
         return this.sourceNode([this.expr.toJS(), this.op]);
@@ -1597,11 +1632,11 @@ var AudescriptASTSuffixedOp = (function (_super) {
         this.expr.setAudescriptVar(v);
     };
     return AudescriptASTSuffixedOp;
-})(AudescriptASTExpression);
+}(AudescriptASTExpression));
 var AudescriptASTNullStatement = (function (_super) {
     __extends(AudescriptASTNullStatement, _super);
     function AudescriptASTNullStatement(lexer) {
-        _super.call(this, lexer);
+        return _super.call(this, lexer) || this;
     }
     AudescriptASTNullStatement.prototype.toJS = function () {
         return this.sourceNode([""]);
@@ -1610,24 +1645,25 @@ var AudescriptASTNullStatement = (function (_super) {
         this.audescriptVar = v;
     };
     return AudescriptASTNullStatement;
-})(AudescriptASTStatement);
+}(AudescriptASTStatement));
 var audescriptParseError = (function () {
     function audescriptParseError(message) {
         this.name = "ParseError";
         this.message = message || "Parse error";
-        this.stack = (new Error(message)).stack;
+        this.stack = new Error(message).stack;
     }
     return audescriptParseError;
-})();
+}());
 audescriptParseError.prototype.toString = Error.prototype.toString;
 var audescriptUnexpectedEndParseError = (function (_super) {
     __extends(audescriptUnexpectedEndParseError, _super);
     function audescriptUnexpectedEndParseError(message) {
-        _super.call(this, message || _("Unexpected end"));
-        this.name = "UnexpectedEndParseError";
+        var _this = _super.call(this, message || _("Unexpected end")) || this;
+        _this.name = "UnexpectedEndParseError";
+        return _this;
     }
     return audescriptUnexpectedEndParseError;
-})(audescriptParseError);
+}(audescriptParseError));
 function parseUnsignedNumber(lexer) {
     var dotEncountered = false, begin = lexer.curPos();
     if (!lexer.end() && lexer.curChar() === "0") {
@@ -1681,6 +1717,7 @@ var AudescriptLexer = (function () {
             this.str = lexer.str;
             this.moduleName = lexer.moduleName;
             this.source = lexer.source;
+            //             this.lexer = lexer;
         }
         else {
             this.str = str.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
@@ -1689,6 +1726,7 @@ var AudescriptLexer = (function () {
             this.i = 0;
             this.moduleName = moduleName;
             this.source = source;
+            //             this.lexer = null;
         }
     }
     AudescriptLexer.prototype.getState = function () {
@@ -1808,7 +1846,7 @@ var AudescriptLexer = (function () {
         throw new audescriptUnexpectedEndParseError(this.formatError(message || _("Unexpected end")));
     };
     return AudescriptLexer;
-})();
+}());
 var AudescriptParser = (function () {
     // "this", "does", "contain", "subset", "element", "belongs", "contains",
     function AudescriptParser(lexer) {
@@ -1887,6 +1925,7 @@ var AudescriptParser = (function () {
                     this.lexer.nextChar();
                     this.lexer.nextChar();
                 }
+                //TODO check characters for \u and \x
             }
             this.lexer.nextChar();
             if (this.lexer.curChar() === "'") {
@@ -1973,6 +2012,7 @@ var AudescriptParser = (function () {
                         this.lexer.nextChar();
                     }
                     this.lexer.nextChar();
+                    //TODO handle \u and \x
                 }
                 this.lexer.nextChar();
             }
@@ -2087,13 +2127,10 @@ var AudescriptParser = (function () {
         if (end === "]") {
             return new AudescriptASTBracket(state, expressions, innerWhite);
         }
-        else if (end === ")") {
+        if (end === ")") {
             return new AudescriptASTParen(state, allowTuple, expressions, innerWhite);
         }
-        else {
-            return new AudescriptASTBrace(state, expressions, values, innerWhite);
-        }
-        return null;
+        return new AudescriptASTBrace(state, expressions, values, innerWhite);
         var _a;
     };
     AudescriptParser.prototype.parseDestructuringExpression = function () {
@@ -2487,8 +2524,8 @@ var AudescriptParser = (function () {
         this.lexer.parseError();
     };
     AudescriptParser.prototype.parseOperator = function (operators) {
-        for (var _i = 0; _i < operators.length; _i++) {
-            var op = operators[_i];
+        for (var _i = 0, operators_1 = operators; _i < operators_1.length; _i++) {
+            var op = operators_1[_i];
             if (this.lexer.tryEat(op, true)) {
                 return op;
             }
@@ -2632,39 +2669,39 @@ var AudescriptParser = (function () {
         }
         return new AudescriptASTComposition(state, res, this.parseStatement(flags));
     };
-    AudescriptParser.EXPECT_WHILE_UNTIL = 1;
-    AudescriptParser.prefixOperators = ["++", "--", "not", "~", "typeof", "new", "u="];
-    AudescriptParser.suffixOperators = ["++", "--"];
-    AudescriptParser.operators = [
-        "does not contain", "not subset of", "not element of",
-        "does not belong to", "contains", "subset of", "element of",
-        "belongs to", "instance of", "union", "inter", "symdiff", "minus",
-        "instanceof", "cross", "u", "x",
-        ">>>=",
-        "+=", "-=", ":=",
-        "&=", "|=", "*=", "%=", "^=",
-        "!=", "/=", "<>",
-        "=", "is not", "is",
-        "<=", ">=",
-        ">>>",
-        "<<=", ">>=",
-        "<<", ">>",
-        "or", "and", "mod",
-        "&", "|", "*", "^", "~",
-        "<", ">",
-        "+", "-", ".", "\\"
-    ];
-    AudescriptParser.keywords = [
-        "not", "of", "to", "is", "until", "repeat", "times", "or", "and", "mod",
-        "forever", "raise", "except", "break", "case", "class", "loop", "then",
-        "to", "fi", "done", "except", "catch", "const", "continue", "debugger",
-        "default", "delete", "do", "od", "else", "export", "extends", "finally",
-        "for", "function", "if", "unless", "import", "in", "instanceof", "let",
-        "new", "return", "super", "switch", "throw", "raise", "try", "typeof",
-        "var", "void", "while", "with", "yield", "end", "foreach"
-    ];
     return AudescriptParser;
-})();
+}());
+AudescriptParser.EXPECT_WHILE_UNTIL = 1;
+AudescriptParser.prefixOperators = ["++", "--", "not", "~", "typeof", "new", "u="];
+AudescriptParser.suffixOperators = ["++", "--"];
+AudescriptParser.operators = [
+    "does not contain", "not subset of", "not element of",
+    "does not belong to", "contains", "subset of", "element of",
+    "belongs to", "instance of", "union", "inter", "symdiff", "minus",
+    "instanceof", "cross", "u", "x",
+    ">>>=",
+    "+=", "-=", ":=",
+    "&=", "|=", "*=", "%=", "^=",
+    "!=", "/=", "<>",
+    "=", "is not", "is",
+    "<=", ">=",
+    ">>>",
+    "<<=", ">>=",
+    "<<", ">>",
+    "or", "and", "mod",
+    "&", "|", "*", "^", "~",
+    "<", ">",
+    "+", "-", ".", "\\"
+];
+AudescriptParser.keywords = [
+    "not", "of", "to", "is", "until", "repeat", "times", "or", "and", "mod",
+    "forever", "raise", "except", "break", "case", "class", "loop", "then",
+    "to", "fi", "done", "except", "catch", "const", "continue", "debugger",
+    "default", "delete", "do", "od", "else", "export", "extends", "finally",
+    "for", "function", "if", "unless", "import", "in", "instanceof", "let",
+    "new", "return", "super", "switch", "throw", "raise", "try", "typeof",
+    "var", "void", "while", "with", "yield", "end", "foreach"
+];
 (function (that) {
     var audescript = that.audescript = {
         parse: function (str, moduleName, fname) {
@@ -2687,8 +2724,8 @@ var AudescriptParser = (function () {
     };
     if (typeof module !== "undefined" && typeof require !== "undefined" && require.main === module) {
         require('source-map-support').install();
-        var fs = require('fs');
-        function writeResult(content, filename) {
+        var fs_1 = require('fs');
+        var writeResult_1 = function (content, filename) {
             var moduleName = "", newFile;
             if (filename) {
                 moduleName = filename.replace(/\.[^/.]+$/, "");
@@ -2699,12 +2736,12 @@ var AudescriptParser = (function () {
             }
             var codemap = audescript.toJS(content, moduleName, filename || "<stdin>");
             if (filename) {
-                fs.writeFile(newFile, codemap.code, function (err) {
+                fs_1.writeFile(newFile, codemap.code, function (err) {
                     if (err) {
                         return console.error(err);
                     }
                 });
-                fs.writeFile(newFile + ".map", codemap.map.toString(), function (err) {
+                fs_1.writeFile(newFile + ".map", codemap.map.toString(), function (err) {
                     if (err) {
                         return console.error(err);
                     }
@@ -2713,24 +2750,24 @@ var AudescriptParser = (function () {
             else {
                 console.log(codemap.code);
             }
-        }
+        };
         if (process.argv[2] && process.argv[2] !== "-") {
-            fs.readFile(process.argv[2], function (err, data) {
+            fs_1.readFile(process.argv[2], function (err, data) {
                 if (err) {
                     return console.error(err);
                 }
-                writeResult(data.toString(), process.argv[2]);
+                writeResult_1(data.toString(), process.argv[2]);
             });
             return;
         }
-        var script = "";
+        var script_1 = "";
         process.stdin.resume();
         process.stdin.setEncoding('utf8');
         process.stdin.on('data', function (chunk) {
-            script += chunk;
+            script_1 += chunk;
         });
         process.stdin.on("end", function () {
-            writeResult(script);
+            writeResult_1(script_1);
         });
     }
 }(typeof that.exports === "object" ? that.exports : this));
