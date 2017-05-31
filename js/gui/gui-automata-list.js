@@ -55,7 +55,7 @@
 
     function automataListMouseOver(e) {
         if (salc_cur_automaton !== -1) {
-            AudeGUI.Designerf.setCurrentIndex(e.currentTarget._index);
+            AudeGUI.Designer.setCurrentIndex(e.currentTarget._index);
         }
     }
 
