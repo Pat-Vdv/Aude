@@ -32,10 +32,10 @@
     function audescript2js(code, moduleName, fileName, data) {
         var res = audescript.toJS(code, moduleName, fileName);
         data.includes = res.neededModules;
-        return babel.transform(
+        return (
             "(function (run, get_automaton, get_automata, currentAutomaton) {" +
-            res.code + "})", {retainLines: true}
-        ).code;
+            res.code + "})"
+        );
     }
 
     AudeGUI.Runtime = {
