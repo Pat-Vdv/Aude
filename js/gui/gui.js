@@ -400,12 +400,6 @@
             return false;
         };
 
-        if (window.js18Supported) {
-            libD.jsLoad("js/setIterators.js", libD.none, "application/javascript;version=1.8");
-        } else if (window.Symbol) {
-            libD.jsLoad("js/setIterators.js");
-        }
-
         AudeGUI.Quiz.load();
         AudeGUI.Designer.load();
         AudeGUI.Programs.load();
