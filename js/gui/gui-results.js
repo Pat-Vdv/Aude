@@ -194,7 +194,7 @@
             };
 
             var img = new Image();
-            img.src = "icons/oxygen/16x16/actions/arrow-left.png";
+            img.src = libD.getIcon("actions/arrow-left");
             var span = document.createElement("span");
             span.textContent = _("Edit this automaton");
             resultToLeft.appendChild(img);

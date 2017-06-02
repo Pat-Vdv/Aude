@@ -253,3 +253,8 @@ var aude = {
 Set   = libD.Set;
 Map   = libD.Map;
 Tuple = libD.Tuple;
+
+// icons
+libD.iconPack = "icons/breeze/";
+libD.iconSize = "16x16";
+libD.iconExtension = "svg";

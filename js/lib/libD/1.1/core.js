@@ -519,6 +519,7 @@
 		icon - the name of the icon needed
 		iconSize (optional) - string representating the size needed. Defaults to <libD.iconSize>.
 		iconPack (optional) - path to the icon theme to use. Should follow the freedesktop naming convension, see <http://standards.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html>. Defaults to <libD.iconPack>. *Do not forget the trailing slash*.
+		iconExtension (optional) - File extension to use for the icon. Defaults to <libD.iconExtension>.
 	 Usage:
 		> var redo = libD.getIcon("actions/edit-redo");
 		> // redo is : "/share/icons/oxigen/22x22/actions/edit-redo.png"
@@ -533,7 +534,7 @@
 	 See Also:
 		<libD.iconIMG>
 	*/
-	libD.getIcon = function (icon, iconSize, iconPack) {
+	libD.getIcon = function (icon, iconSize, iconPack, iconExtension) {
 		if (libD.getExtStart(icon, true) === -1) {
 			if (!iconPack) {
 				iconPack = libD.iconPack;
@@ -542,7 +543,12 @@
 			if (!iconSize) {
 				iconSize = libD.iconSize;
 			}
-			return iconPack + iconSize + "/" + icon + ".png";
+
+			if (!iconExtension) {
+				iconExtension = libD.iconExtension;
+			}
+
+			return iconPack + iconSize + "/" + icon + "." + iconExtension;
 		}
 		return icon;
 	};
@@ -806,6 +812,15 @@
 	*/
 	if (!libD.iconSize) {
 		libD.iconSize = "22x22";
+	}
+
+	/*
+		Value: iconExtension
+			The default icon extension to use, when needed. Third party scripts / apps are encouraged to use this value as a fallback.
+	*/
+
+	if (!libD.iconExtension) {
+		libD.iconExtension = "png";
 	}
 
 	/*

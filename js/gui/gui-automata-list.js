@@ -88,7 +88,7 @@
                 AudeGUI.l10n(
                     "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
                 ),
-                "icons/oxygen/16x16/actions/format-list-ordered.png"
+                libD.getIcon("actions/format-list-ordered")
             );
         },
 
