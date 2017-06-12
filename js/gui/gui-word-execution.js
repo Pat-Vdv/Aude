@@ -52,7 +52,7 @@
                 clearTimeout(executionTimeout);
                 executionTimeout = 0;
                 wordDiv.textContent = "";
-                AudeGUI.Designer.cleanSVG(index);
+                AudeGUI.mainDesigner.cleanSVG(index);
             }
         },
 
@@ -81,15 +81,15 @@
                 executeWin.__refs = refs;
                 executeWin.addListener("close", function () {
                     wordDiv.textContent = "";
-                    AudeGUI.Designer.cleanSVG(AudeGUI.Designer.currentIndex);
+                    AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
                 });
                 libD.wm.handleSurface(executeWin, refs.root);
                 refs.run.onclick = function () {
                     refs.run.focus(); // make the virtual keyboard disappear on tablets
                     AudeGUI.WordExecution.stop();
-                    AudeGUI.Designer.cleanSVG(AudeGUI.Designer.currentIndex);
+                    AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
                     refs.delay.onchange();
-                    execute(false, refs.word.value, AudeGUI.Designer.currentIndex);
+                    execute(false, refs.word.value, AudeGUI.mainDesigner.currentIndex);
                 };
 
                 refs.step.onclick = function () {
@@ -97,7 +97,7 @@
                         clearTimeout(executionTimeout);
                         execute(true);
                     } else {
-                        execute(true, refs.word.value, AudeGUI.Designer.currentIndex);
+                        execute(true, refs.word.value, AudeGUI.mainDesigner.currentIndex);
                     }
                 };
 
@@ -142,7 +142,7 @@
                 if (stepNumber % 2) {
                     if (currentStates) {
                         for (i = 0, len = currentStates.length; i < len; ++i) {
-                            AudeGUI.Designer.stateRemoveBackgroundColor(index, currentStates[i].toString());
+                            AudeGUI.mainDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
                         }
                     }
 
@@ -154,7 +154,7 @@
                             accepting = true;
                         }
 
-                        AudeGUI.Designer.stateSetBackgroundColor(
+                        AudeGUI.mainDesigner.stateSetBackgroundColor(
                             index,
                             currentStates[i],
                             accepted
@@ -170,7 +170,7 @@
                     currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
                     for (i = 0, len = currentTransitions.length; i < len; ++i) {
-                        AudeGUI.Designer.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
+                        AudeGUI.mainDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
                     }
                 }
             } else {
@@ -182,7 +182,7 @@
             stepNumber = 0; // we start everything.
 
             if (index === undefined) {
-                index = AudeGUI.Designer.currentIndex;
+                index = AudeGUI.mainDesigner.currentIndex;
             }
 
             wordDiv.textContent = "";
@@ -204,7 +204,7 @@
             layer2.id = "word-layer2";
             wordDiv.appendChild(layer2);
 
-            currentAutomaton = AudeGUI.Designer.getAutomaton(index, true);
+            currentAutomaton = AudeGUI.mainDesigner.getAutomaton(index, true);
             var q_init = currentAutomaton.getInitialState();
             listOfExecutions = [[[q_init, epsilon]]];
             currentAutomaton.setCurrentState(q_init);
@@ -221,7 +221,7 @@
                 }
 
                 if (EXECUTION_STEP_TIME || executionByStep) {
-                    AudeGUI.Designer.stateSetBackgroundColor(
+                    AudeGUI.mainDesigner.stateSetBackgroundColor(
                         index,
                         currentStates[i],
                         accepted

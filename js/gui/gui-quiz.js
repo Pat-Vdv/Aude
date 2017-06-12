@@ -117,8 +117,8 @@
         automataContainer.style.top     = "";
         divQuiz.textContent = "";
         divQuiz.classList.remove("enabled");
-        AudeGUI.Designer.fixViewBox();
-        AudeGUI.Results.fixViewBox();
+        AudeGUI.mainDesigner.redraw();
+        AudeGUI.Results.redraw();
     }
 
     var nextQuizQuestion;
@@ -187,12 +187,12 @@
 
                 break;
             case "word":
-                respA = AudeGUI.Designer.getAutomaton(AudeGUI.Designer.currentIndex);
+                respA = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
 
                 var words = q.words;
                 var regex = "";
 
-                r.userResponse = AudeGUI.Designer.getSVG(AudeGUI.Designer.currentIndex);
+                r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
 
                 if (respA) {
                     for (i = 0, len = words.length; i < len; ++i) {
@@ -227,9 +227,9 @@
                 }
                 break;
             case "automatonEquiv":
-                respA = AudeGUI.Designer.getAutomaton(AudeGUI.Designer.currentIndex);
+                respA = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
 
-                r.userResponse = AudeGUI.Designer.getSVG(AudeGUI.Designer.currentIndex);
+                r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
 
                 if (respA) {
                     var A;
@@ -450,13 +450,17 @@
         case "word":
         case "automatonEquiv":
             refs.answers.innerHTML = "<p>" +  _("You can draw the automaton bellow.") + "</p>";
-            AudeGUI.Designer.setSVG(quiz.answers[quiz.currentQuestion].userResponse, AudeGUI.Designer.currentIndex);
+
+            AudeGUI.mainDesigner.setSVG(
+                quiz.answers[quiz.currentQuestion].userResponse,
+                AudeGUI.mainDesigner.currentIndex
+            );
 
             setTimeout(function () {
                 automataContainer.style.top = (divQuiz.offsetHeight + divQuiz.offsetTop) + "px";
                 automataContainer.style.display = "";
-                AudeGUI.Designer.fixViewBox();
-                AudeGUI.Results.fixViewBox();
+                AudeGUI.mainDesigner.redraw();
+                AudeGUI.Results.redraw();
             }, 0);
 
             break;

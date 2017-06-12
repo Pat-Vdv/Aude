@@ -35,7 +35,9 @@
     var splitter       = null;
     var leftPane       = null;
 
-    var zoom = {svgZoom: 1};
+    var resultsContentDesigner = null;
+
+    var resultDesigner = null;
 
     function clean() {
         resultToLeft.style.display = "none";
@@ -47,10 +49,10 @@
         splitter.style.left = (e.clientX * 100 / width) + "%";
         leftPane.style.right = ((width - e.clientX) * 100 / width) + "%";
         results.style.left =  ((e.clientX + splitter.offsetWidth) * 100 / width) + "%";
-        AudeGUI.Designer.redraw();
+        AudeGUI.mainDesigner.redraw();
 
-        if (zoom.fixViewBox) {
-            zoom.fixViewBox();
+        if (resultDesigner) {
+            resultDesigner.redraw();
         }
     }
 
@@ -63,11 +65,11 @@
                     AudeGUI.Results.deferedResultShow = true;
                     return;
                 }
+
                 results.classList.remove("disabled");
                 splitter.classList.remove("disabled");
                 AudeGUI.Results.splitterMove({clientX: splitter.offsetLeft});
-                AudeGUI.Designer.userZoom(zoom);
-                zoom.enable();
+                resultDesigner.enable();
                 AudeGUI.onResize();
             }
         },
@@ -77,10 +79,8 @@
             splitter.style.left = (e.clientX * 100 / width) + "%";
             leftPane.style.right = ((width - e.clientX) * 100 / width) + "%";
             results.style.left =  ((e.clientX + splitter.offsetWidth) * 100 / width) + "%";
-            AudeGUI.Designer.redraw();
-            if (zoom.fixViewBox) {
-                zoom.fixViewBox();
-            }
+            AudeGUI.mainDesigner.redraw();
+            resultDesigner.redraw();
         },
 
         redraw: function () {
@@ -90,9 +90,7 @@
                 ) + "%";
             }
 
-            if (zoom.fixViewBox) {
-                zoom.fixViewBox();
-            }
+            resultDesigner.redraw();
         },
 
         setText: function (t, dontNotify) {
@@ -119,20 +117,15 @@
             automaton2svg(
                 A,
                 function (svgCode) {
-                    resultsContent.innerHTML = svgCode;
+                    resultsContent.textContent = "";
+                    resultsContent.appendChild(resultsContentDesigner);
                     resultToLeft.style.display = "";
-
+                    resultDesigner.setSVG(svgCode);
                     if (
                         (AudeGUI.notifier && AudeGUI.notifier.displayed) ||
                         !document.getElementById("codeedit").classList.contains("disabled") //FIXME
                     ) {
                         AudeGUI.notify(_("Program Result"), resultsContent.cloneNode(true), "normal");
-                    }
-
-                    zoom.svgNode = resultsContent.querySelector("svg");
-
-                    if (zoom.fixViewBox) {
-                        zoom.fixViewBox();
                     }
                 }
             );
@@ -141,29 +134,16 @@
         set: function (res) {
             if (res instanceof Automaton) {
                 AudeGUI.Results.setAutomaton(res);
-            } else if (HTMLElement && res instanceof HTMLElement) {
-                AudeGUI.Results.setDOM(res);
-            } else {
-                AudeGUI.Results.setText(aude.elementToString(res));
-            }
-
-            var svg = resultsContent.getElementsByTagName("svg")[0];
-
-            if (svg) {
-                zoom.svgNode = svg;
                 results.style.overflow = "hidden";
-
-                if (zoom.fixViewBox) {
-                    zoom.fixViewBox();
-                }
             } else {
-                zoom.svgNode = null;
-
-                if (zoom.disable) {
-                    zoom.disable();
+                if (HTMLElement && res instanceof HTMLElement) {
+                    AudeGUI.Results.setDOM(res);
+                } else {
+                    AudeGUI.Results.setText(aude.elementToString(res));
                 }
 
                 results.style.overflow = "";
+                resultDesigner.disable();
             }
         },
 
@@ -174,7 +154,8 @@
             leftPane       = document.getElementById("left-pane");
             resultsContent = document.getElementById("results-content");
 
-            zoom.svgContainer = results;
+            resultsContentDesigner = document.createElement("div");
+            resultDesigner = new AudeDesigner(resultsContentDesigner, true);
 
             splitter.onmousedown = function () {
                 window.onmousemove = splitterMove;
@@ -188,7 +169,7 @@
             resultToLeft.onclick = function () {
                 if (automatonResult) {
                     AudeGUI.addAutomaton();
-                    AudeGUI.Designer.setSVG(resultsContent.querySelector("svg"), AudeGUI.Designer.currentIndex);
+                    AudeGUI.mainDesigner.setSVG(resultsContent.querySelector("svg"), AudeGUI.mainDesigner.currentIndex);
                     AudeGUI.AutomatonCodeEditor.setText(Automaton.toString(automatonResult));
                 }
             };
@@ -215,7 +196,7 @@
 
                     switch (format) {
                     case ".svg":
-                        saveAs(new Blob([AudeGUI.Designer.outerHTML(resultsContent.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
+                        saveAs(new Blob([AudeDesigner.outerHTML(resultsContent.querySelector("svg"))], {type: "text/plain;charset=utf-8"}), fn);
                         break;
                     case ".dot":
                         saveAs(new Blob([automaton2dot(automatonResult)], {type: "text/plain;charset=utf-8"}), fn);
@@ -234,10 +215,8 @@
             }
         },
 
-        fixViewBox: function () {
-            if (zoom.fixViewBox) {
-                zoom.fixViewBox();
-            }
+        redraw: function () {
+            resultDesigner.redraw();
         }
     };
 }(window));

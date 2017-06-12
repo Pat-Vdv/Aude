@@ -52,6 +52,10 @@ function parseString() {
 
 for(var l in langs) {
    var lang = langs[l];
+   if (!fs.existsSync("js")) {
+       fs.mkdirSync("js");
+   }
+
    var jsFile = fs.openSync("js/" + lang + ".js", "w");
    fs.writeSync(jsFile, "(function(){var ");
    var poFiles = fs.readdirSync("po/" + lang);

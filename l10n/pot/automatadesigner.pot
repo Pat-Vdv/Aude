@@ -1,4 +1,4 @@
-#TranslationFunction AudeGUI.Designer
+#TranslationFunction AudeDesigner
 
 msgid  "New transition"
 msgstr ""
