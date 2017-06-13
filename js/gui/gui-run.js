@@ -82,7 +82,7 @@
             var A = null;
 
             try {
-                A = AudeGUI.Designer.getAutomaton(i);
+                A = AudeGUI.mainDesigner.getAutomaton(i);
             } catch (e) {
                 console.error(e);
                 throw new Error(libD.format(_("get_automaton: automaton n°{0} could not be understood."), JSON.stringify(i)));
@@ -123,7 +123,7 @@
             }
 
             if (curAlgo.value === "id") {
-                AudeGUI.Results.set(AudeGUI.Designer.getAutomaton(AudeGUI.Designer.currentIndex));
+                AudeGUI.Results.set(AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex));
                 return;
             }
 
@@ -211,7 +211,7 @@
                     run,
                     get_automaton,
                     get_automata,
-                    AudeGUI.Designer.currentIndex
+                    AudeGUI.mainDesigner.currentIndex
                 );
 
                 if (typeof res !== "undefined") {

@@ -39,9 +39,9 @@
 
             automatoncodeedit.onchange = function () {
                 if (automatoncodeedit.value) {
-                    AudeGUI.Designer.setAutomatonCode(
+                    AudeGUI.mainDesigner.setAutomatonCode(
                         automatoncodeedit.value,
-                        AudeGUI.Designer.currentIndex
+                        AudeGUI.mainDesigner.currentIndex
                     );
                 }
             };

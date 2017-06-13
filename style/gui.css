@@ -153,6 +153,13 @@ button * {
    bottom:0;
    position:absolute;
    overflow:auto;
+   display:flex;
+   flex-direction:column;
+}
+
+#results-content {
+   flex:1;
+   position:relative;
 }
 
 #results pre, .libD_notify-area pre {

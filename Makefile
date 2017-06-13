@@ -1,6 +1,9 @@
-all: dirlist.txt js/audescript/audescript.js js/gui.js
+all: l10n dirlist.txt js/audescript/audescript.js js/gui.js
 
-.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip
+.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n
+
+l10n:
+	cd l10n && make
 
 dirlist.txt:
 	find quiz examples-automata algos l10n/js -type f | sort > dirlist.txt

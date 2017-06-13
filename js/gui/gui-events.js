@@ -42,9 +42,9 @@ window.AudeGUI.initEvents = function () {
 
             if (e.keyCode === 90) {
                 if (e.shiftKey) {
-                    AudeGUI.Designer.redo();
+                    AudeGUI.mainDesigner.redo();
                 } else {
-                    AudeGUI.Designer.undo();
+                    AudeGUI.mainDesigner.undo();
                 }
             }
         }
@@ -66,14 +66,14 @@ window.AudeGUI.initEvents = function () {
 
     document.getElementById("redraw").onclick = function () {
         AudeGUI.viz(
-            AudeGUI.Designer.getDot(),
+            AudeGUI.mainDesigner.getDot(),
             function (res) {
-                AudeGUI.Designer.setSVG(res, AudeGUI.Designer.currentIndex);
+                AudeGUI.mainDesigner.setSVG(res, AudeGUI.mainDesigner.currentIndex);
             }
         );
     };
 
-    document.getElementById("zoom_best").onclick = AudeGUI.Designer.autoCenterZoom.bind(AudeGUI.Designer);
+    document.getElementById("zoom_best").onclick = AudeGUI.mainDesigner.autoCenterZoom.bind(AudeGUI.mainDesigner);
     document.getElementById("save").onclick = AudeGUI.save;
     document.getElementById("saveas").onclick = AudeGUI.saveAs;
     document.getElementById("export-result").onclick = AudeGUI.Results.export;
@@ -99,10 +99,10 @@ window.AudeGUI.initEvents = function () {
 
 
     (function (undo, redo) {
-        undo.onclick = AudeGUI.Designer.undo.bind(AudeGUI.Designer);
-        redo.onclick = AudeGUI.Designer.redo.bind(AudeGUI.Designer);
+        undo.onclick = AudeGUI.mainDesigner.undo.bind(AudeGUI.mainDesigner);
+        redo.onclick = AudeGUI.mainDesigner.redo.bind(AudeGUI.mainDesigner);
 
-        AudeGUI.Designer.onUndoRedoEvent = (
+        AudeGUI.mainDesigner.onUndoRedoEvent = (
             function (canUndo, canRedo) {
                 if (canUndo) {
                     document.getElementById("undo").classList.remove("greyed");
@@ -120,10 +120,10 @@ window.AudeGUI.initEvents = function () {
     }(document.getElementById("undo"), document.getElementById("redo")));
 
     (function (undo, redo) {
-        undo.onclick = AudeGUI.Designer.undo.bind(AudeGUI.Designer);
-        redo.onclick = AudeGUI.Designer.redo.bind(AudeGUI.Designer);
+        undo.onclick = AudeGUI.mainDesigner.undo.bind(AudeGUI.mainDesigner);
+        redo.onclick = AudeGUI.mainDesigner.redo.bind(AudeGUI.mainDesigner);
 
-        AudeGUI.Designer.onUndoRedoEvent = (
+        AudeGUI.mainDesigner.onUndoRedoEvent = (
             function (canUndo, canRedo) {
                 if (canUndo) {
                     document.getElementById("undo").classList.remove("greyed");

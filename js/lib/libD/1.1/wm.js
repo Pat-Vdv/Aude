@@ -86,6 +86,8 @@ libD.need(["fx", "sizepos", "ws", "selection", "domEssential"], function () {
 				s.top = 0;
 				s.width = "auto";
 				s.height = "auto";
+				wsWin.content.classList.add("fixed-size");
+				wsWin.content.classList.remove("auto-size");
 				wsWin._keepAreaOverflow = wsWin.ws.area.style.overflow;
 				wsWin.ws.area.style.overflow = "hidden";
 			} else {
@@ -274,6 +276,7 @@ libD.need(["fx", "sizepos", "ws", "selection", "domEssential"], function () {
 		},
 
 		show: function (wsWin) {
+			libD.wm.fullscreen(wsWin, wsWin.fullscreen);
 			wsWin.dom.style.display = "block";
 			libD.showSmoothly(wsWin.dom, 200);
 		},

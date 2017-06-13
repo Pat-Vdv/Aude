@@ -54,7 +54,7 @@ We plan to fix this and this should not be too hard, but at the time being,
 Few things are loaded directly in the HTML code: `gui.css`, a big stylesheet to
 style the whole User Interface, and `katex.min.css`, the CSS file for KaTeX.
 
-Javascript code is loaded using function `boot`. 
+Javascript code is loaded using function `boot`.
 
 ## js/lib/source-map.min.js
 
@@ -96,7 +96,7 @@ Notable parts of `libD` used in Aude are:
    The main advantage of `jso2dom` compared to JSX is that it can be used with
    native Javascript (and is dead simple and lightweight).
    Using JSX should be considered though.
-   
+
  - `libD.notify`. This module provides a desktop-like popup notification and is
    used in various places to display results and messages. This module also
    supports notifications with buttons. Please grep the code of Aude for good
@@ -120,10 +120,10 @@ Notable parts of `libD` used in Aude are:
 
    In Aude, `Set` and `Map` refer to this implementation and not to native
    Javascript implementations. See `js/aude.js`.
-   
+
    `libD.elementToString` creates a unique string representation of any non
    circular object in javascript. This is used in the implementations of `Set`
-   and `Map`, as well as at various places in Aude and Aude algorithms. 
+   and `Map`, as well as at various places in Aude and Aude algorithms.
 
 Examples:
 
@@ -137,12 +137,12 @@ Examples:
     if (s.card() == 3) {
         let p = s.powerset();
     }
-    
+
     let s3 = s.inter(new Set([5,6,7]));
-    
+
     let m = new Map();
     m.set({1: "hello"}, "hi");
-    
+
     if (m.has({1: "hello"})) {
         let h = m.get({1: "hello"});
         m.set("hola", h);
@@ -173,7 +173,7 @@ read a file stored from the working folder of Aude.
 ## js/lib/babel-core/*
 
 The Audescript transpiler outputs modern Javascript that might not be understood by all browsers.
-Babel is used to transpile newer Javascript constructs to a Javascript version that is understood by today's browsers. 
+Babel is used to transpile newer Javascript constructs to a Javascript version that is understood by today's browsers.
 
 This is getting less and less relevent as time passes.
 
@@ -222,6 +222,25 @@ This provides a function that can be called to save files locally.
 
 Ace is the program editor used in Aude. We used to use CodeMirror.
 
+### js/designer.js
+
+This defines the module `AudeDesigner`, handling automata drawing in SVG.
+This is complex code in which everything is tangled, containing geometry that
+tries to resemble and be compatible with Graphviz output.
+
+Usage examples in `js/gui.js` and `js/gui/gui-results.js`.
+
+A designer can be created by using `let designer = AudeDesigner(someDiv)` where
+`someDiv` is a DOM div (`created using document.createElement("div")` for
+example).
+
+`let designer = AudeDesigner(someDiv, true)` will create a readonly designer
+that allows to show an automaton with zoom and pan features.
+`designer.getAutomaton()` returns the automaton that is currently drawn.
+`designer.getAutomatonCode()` returns the code of the automaton.
+`designer.redraw()` should be called whenever the container (`someDiv`) is
+resized, except if the container is resized because the browser is resized.
+
 ## js/gui.js
 
 `gui.js` is a file that contains everything related to the User Interface of
@@ -253,12 +272,6 @@ appears in the namespace `AudeGUI`.
 This defines the module `AudeGUI.AutomataList`, handling the part of the
 interface that allows the user to choose on which automata algorithms should
 run.
-
-### js/gui/gui-designer.js
-
-This defines the module `AudeGUI.Designer`, handling automata drawing in SVG.
-This is complex code in which everything is tangled, containing geometry that
-tries to resemble and be compatible with Graphviz output.
 
 ### js/gui/gui-editors.js
 
