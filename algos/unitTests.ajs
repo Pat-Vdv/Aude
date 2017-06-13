@@ -3,8 +3,13 @@
 from minimization     import minimize
 from equivalence      import automataAreEquivalent
 from automaton2json   import object2automaton
+from automaton2json   import object2mealymoore
+from automaton2json   import object2mealy
+from automaton2json   import object2moore
 from infiniteLanguage import infiniteLanguage
 from epsElimination   import epsElim
+from MooreToMealy     import MooretoMealy
+from MealyToMoore     import mealy2moore
 
 function evalAudeScript(s)
     try
@@ -352,7 +357,55 @@ function doTests(testCorrect, testFailed, testFailInfo)
             )
         ),
 
-        "35": evalAudeScript("(function() let S := {1}; S.delete(1); return S does not contain 1 end function)()")
+        "35": evalAudeScript("(function() let S := {1}; S.delete(1); return S does not contain 1 end function)()"),
+
+       // mealy1 is defined in mydirectory/mealy_moore_examples.js
+        "36": mealy1 = object2mealy(
+            {
+                "states": ["0c","5c","10c","15c"],
+                "initialState": "0c",
+                "inputAlph": ["n","d","q"],
+                "outputAlph": ["c0","c1","c2","c3","c4"],
+                "transitions":[
+                    ["0c","n","5c"],   ["0c","d","10c"], ["0c","q","0c"],
+                    ["5c","n","10c"],  ["5c","d","15c"], ["5c","q","0c"],
+                    ["10c","n","15c"], ["10c","d","0c"], ["10c","q","0c"],
+                    ["15c","n","0c"],  ["15c","d","0c"], ["15c","q","0c"]
+                ],
+                "outputs":[
+                    ["0c","n",""],    ["0c","d",""], ["0c","q","c1"],
+                    ["5c","n",""],    ["5c","d",""], ["5c","q","c2"],
+                    ["10c","n",""],   ["10c","d","c0"], ["10c","q","c3"],
+                    ["15c","n","c0"], ["15c","d","c1"], ["15c","q","c4"]
+                ]
+            }
+        ),
+
+        // moore1 is defined in mydirectory/mealy_moore_examples.js
+       "37": moore1 = object2moore(
+           {
+            "states": ["00","01","10","11"],
+            "initialState": "00",
+            "inputAlph": ["0","1"],
+            "outputAlph": ["0","1"],
+            "transitions":[
+                ["00","0","00"],
+                ["00","1","01"],
+                ["01","0","10"],
+                ["01","1","11"],
+                ["10","0","00"],
+                ["10","1","01"],
+                ["11","0","10"],
+                ["11","1","11"]
+            ],
+            "outputs":[
+                ["00","0"],
+                ["01","0"],
+                ["10","1"],
+                ["11","1"]
+            ]
+          }
+        )
     }
 
     let tryParse := [
@@ -372,7 +425,9 @@ function doTests(testCorrect, testFailed, testFailInfo)
         "normalization.ajs",
         "product.ajs",
         "regex2automaton.ajs",
-        "regex2minautomaton.ajs"
+        "regex2minautomaton.ajs",
+        "MooreToMealy.ajs",
+        "MealyToMoore.ajs"
     ];
 
     function parse(fileNumber)
