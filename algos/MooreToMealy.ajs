@@ -1,0 +1,60 @@
+// transformation of a moore machine to an equivalent mealy machine
+//the only thing that has to change is the output function
+// algorithm : source https://www.tutorialspoint.com/automata_theory/moore_and_mealy_machines.htm
+/* Algorithm 4
+
+Input − Moore Machine
+
+Output − Mealy Machine
+
+Step 1 − Take a blank Mealy Machine transition table format.
+
+Step 2 − Copy all the Moore Machine transition states into this table format.
+
+Step 3 − Check the present states and their corresponding outputs in the Moore Machine state table; if for a state Qi output is m, copy it into the output columns of the Mealy Machine state table wherever Qi appears in the next state.
+*/
+
+// using the transition function, we're going to examine the next state of a transition
+// and we're going to create a new outputMealy function that associates to each state and input
+// an output related to the next state, following the output function of the moore machine
+function transform_output (states, input, transition, outputMoore)
+    let outputMealy := new Map()
+
+    foreach x in states do
+        foreach y in input do
+            let next:=transition.get([x,y])
+            let out :=outputMoore.get(next)
+            outputMealy.set([x,y],out)
+        end foreach
+    end foreach
+
+    return outputMealy
+end function
+
+
+// takes in argument a moore machine and returns the equivalent mealy machine
+export function MooreToMealy (moore)
+    let output := transform_output(moore.states, moore.input_alphabet, moore.transition, moore.output);
+    let mealy := new Mealy(moore.states, moore.initial_state, moore.input_alphabet, moore.output_alphabet, moore.transition, output);
+    return mealy
+end function
+
+
+
+
+
+
+//Test in aude's site
+/*
+from MooreToMealy     import MooreToMealy
+
+var mealy3 := new Mealy
+mealy3 := MooreToMealy(moore1)
+console.log(mealy3)
+console.log(mealy3.execute(["1","0","0","1","1"]))
+*/
+
+
+
+
+
