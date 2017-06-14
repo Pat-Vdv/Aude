@@ -27,7 +27,7 @@
 
 // TODO: move initial state's arrow.
 
-(function (pkg, that) {
+(function (pkg) {
     "use strict";
 
     var svgNS = "http://www.w3.org/2000/svg";
@@ -100,85 +100,18 @@
         }
     }
 
-    var nodeLists          = [], // array containing all the automata's "nodeList"s
-        initialStateArrows = [], // array containing all the automata's initial state's arrow
-        initialStates      = [], // array containing all the automata's initial state's node
-        svgs               = [], // will contain all currently opened automata
-        snapshotStacks     = [], // contains the all the automata's snapshots to allow undo/redo
-        nodeList,                // list of the states' nodes of the currently designed automaton
-        initialStateArrow,       // current initial state arrow node (<g>)
-        pathEditor,              // <g> to edit paths and control points of these paths
-        initialState,            // current automaton initial state's note (<g>)
-        snapshotStack,
-        frameModifiedSVG = false; // If a frame modified the SVG (used for snapshots)
-
-    pkg.formatTrans = function (t) {
-        return t.replace(/\\e/g, "ε");
-    };
-
-    function triggerUndoRedoEvent() {
-        pkg.onUndoRedoEvent(
-            !!snapshotStack.stack[snapshotStack.currentIndex - 1],
-            !!snapshotStack.stack[snapshotStack.currentIndex + 1]
-        );
+    // get the right coordinates of the cursor of the <svg> node
+    function svgcursorPoint(svgNode, evt) { // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
+        var pt = svgNode.createSVGPoint();
+        pt.x = evt.clientX;
+        pt.y = evt.clientY;
+        var a = svgNode.getScreenCTM();
+        if (!a) {
+            throw new Error("coordinates unavailable");
+        }
+        var b = a.inverse();
+        return pt.matrixTransform(b);
     }
-
-    function snapshot(dontSnapshot) {
-        if (!dontSnapshot || !snapshotStack.stack[snapshotStack.currentIndex]) {
-            snapshotStack.stack = snapshotStack.stack.slice(0, ++snapshotStack.currentIndex);
-            snapshotStack.stack[snapshotStack.currentIndex] = pkg.svgNode.cloneNode(true);
-        }
-
-        triggerUndoRedoEvent();
-    }
-
-    function snapshotRestore(snapshotIndex) {
-        pkg.setSVG(snapshotStack.stack[snapshotIndex], pkg.currentIndex, true);
-        snapshotStack.currentIndex = snapshotIndex;
-
-        pathEditor = null;
-        var pathEditorLocal = document.querySelector("[data-id='path-editor']");
-
-        if (pathEditorLocal) {
-            pathEditorLocal.parentNode.removeChild(pathEditorLocal);
-        }
-
-        resizeHandle = null;
-        var resizeHandleLocal = document.querySelector("[data-id='resize-handle']");
-
-        if (resizeHandleLocal) {
-            resizeHandleLocal.parentNode.removeChild(resizeHandleLocal);
-        }
-
-
-        triggerUndoRedoEvent();
-    }
-
-    pkg.redo = function () {
-        var newIndex = snapshotStack.currentIndex + 1;
-
-        if (snapshotStack.stack[newIndex]) {
-            snapshotRestore(newIndex);
-        }
-
-        triggerUndoRedoEvent();
-    };
-
-    pkg.undo = function () {
-        var newIndex = snapshotStack.currentIndex - 1;
-
-        if (snapshotStack.stack[newIndex]) {
-            if (!snapshotStack.stack[snapshotStack.currentIndex]) {
-                snapshot();
-            }
-
-            snapshotRestore(newIndex);
-        }
-
-        triggerUndoRedoEvent();
-    };
-
-    pkg.onUndoRedoEvent = function () {};
 
     // Given a node representing a state, gives the biggest ellipse of the node in case of a final state.
     // Otherwise, give the only ellipse of the node
@@ -200,85 +133,6 @@
             }
         }
         return null;
-    }
-
-    //set the initial state for the current automaton
-    function setInitialState(node) {
-        var path, polygon, title;
-
-        if (initialStateArrow) {
-            path    = initialStateArrow.getElementsByTagName("path")[0];
-            polygon = initialStateArrow.querySelector("polygon");
-            title   = initialStateArrow.querySelector("title");
-        } else {
-            initialStateArrow = initialStateArrows[pkg.currentIndex] = document.createElementNS(svgNS, "g");
-            id(initialStateArrow, "initialStateArrow");
-            title = document.createElementNS(svgNS, "title");
-            path =  document.createElementNS(svgNS, "path");
-            polygon = document.createElementNS(svgNS, "polygon");
-            path.setAttribute("stroke", "black");
-            polygon.setAttribute("stroke", "black");
-            polygon.setAttribute("fill", "black");
-            initialStateArrow.appendChild(title);
-            initialStateArrow.appendChild(path);
-            initialStateArrow.appendChild(polygon);
-            pkg.svgNode.querySelector("g").appendChild(initialStateArrow);
-        }
-
-        var ellipse = getBigEllipse(node),
-            cy   = ellipse.cy.baseVal.value,
-            cx   = ellipse.cx.baseVal.value,
-            rx   = ellipse.rx.baseVal.value,
-            dx   = cx - rx,
-            dx10 = dx - 10,
-            dx5  = dx - 5;
-
-        path.setAttribute("d",
-            "M" + (dx - 38)           + "," + cy +
-            "C" + (dx - (28 * 2 / 3)) + "," + cy +
-            " " + (dx - (28 / 3))     + "," + cy +
-            " " + dx10                + "," + cy);
-
-        polygon.setAttribute("points",
-                  dx   + "," + cy       +
-            " " + dx10 + "," + (cy - 4) +
-            " " + dx5  + "," + cy       +
-            " " + dx10 + "," + cy       +
-            " " + dx10 + "," + cy       +
-            " " + dx10 + "," + cy       +
-            " " + dx5  + "," + cy       +
-            " " + dx10 + "," + (cy + 4) +
-            " " + dx   + "," + cy       +
-            " " + dx   + "," + cy);
-
-        title.textContent = "_begin->" + atob(id(node));
-        initialState = initialStates[pkg.currentIndex] = node;
-    }
-
-    var resizeHandle = null, resizeHandledElement = null;
-    var currentOverlay = null, overlay = null, stateOverlay = null, transitionOverlay = null;
-
-    function overlayHide() {
-        if (overlay) {
-            if (overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
-            }
-            currentOverlay = null;
-        }
-    }
-
-    function resizeHandlesHide() {
-        if (!resizeHandle || !resizeHandle.g.parentNode) {
-            return;
-        }
-
-        var p = resizeHandle.g.parentNode;
-        p.removeChild(resizeHandle.g);
-
-        if (resizeHandledElement) {
-            resizeHandledElement.classList.remove(CSSP + "resize-handled");
-            resizeHandledElement = null;
-        }
     }
 
     function addDist(p, cx, cy, dist) {
@@ -334,7 +188,7 @@
     //  - polygonPoints : points of the SVG node representing the triangle
     //  - ellipse : the SVG node representing the ellipse
     //  - cx, cy (optional) : the center of the ellipse, if already known
-    function posTriangleArrow(polygonPoints, ellipse, p, cx, cy) {
+    function posTriangleArrow(svgNode, polygonPoints, ellipse, p, cx, cy) {
 
         if (!cy) {
             cy = ellipse.cy.baseVal.value;
@@ -345,10 +199,10 @@
         }
 
         var beta    = Math.PI / 2 - (Math.atan((cx - p.x) / (cy - p.y)) || 0),
-            top     = pkg.svgNode.createSVGPoint(),
-            bot     = pkg.svgNode.createSVGPoint(),
-            top2    = pkg.svgNode.createSVGPoint(),
-            peak    = pkg.svgNode.createSVGPoint(),
+            top     = svgNode.createSVGPoint(),
+            bot     = svgNode.createSVGPoint(),
+            top2    = svgNode.createSVGPoint(),
+            peak    = svgNode.createSVGPoint(),
             cosBeta = 3.5 * (Math.cos(beta) || 1),
             sinBeta = 3.5 * (Math.sin(beta) || 0),
             i;
@@ -381,7 +235,7 @@
     //  - text: the <text /> label node of the transition
     //  - stateOrig: the node representing the start state of the transition
     //  - stateDest: the node representing the end state of the transition
-    function cleanTransitionPos(path, polygonPoints, text, stateOrig, stateDest) {
+    function cleanTransitionPos(svgNode, path, polygonPoints, text, stateOrig, stateDest) {
         var pathSegList = path.pathSegList,
             ellipseD    = getBigEllipse(stateDest),
             cx          = ellipseD.cx.baseVal.value,
@@ -420,7 +274,7 @@
             p.y1  = pi.y;
             p.x2  = p.x - 1;
             p.y2  = p.y - 6;
-            posTriangleArrow(polygonPoints, ellipseD, p, cx, cy);
+            posTriangleArrow(svgNode, polygonPoints, ellipseD, p, cx, cy);
 
             text.setAttribute("x", pi.x);
             text.setAttribute("y", pi.y - 5);
@@ -446,39 +300,13 @@
         p.x2 = po.x + (p.x - po.x) * 2 / 3;
         p.y2 = po.y + (p.y - po.y) * 2 / 3;
 
-        posTriangleArrow(polygonPoints, ellipseD, p);
+        posTriangleArrow(svgNode, polygonPoints, ellipseD, p);
 
         if (text) {
             text.setAttribute("x", (p.x + po.x) / 2);
             text.setAttribute("y", (p.y + po.y) / 2 - 5);
         }
     }
-
-    var _ = pkg.l10n = that.libD && that.libD.l10n ? that.libD.l10n() : function (s) { return s; };
-
-    pkg.svgNode      = null;      // <svg> editor
-    pkg.svgZoom      = 1;         // current zoom level
-    pkg.currentIndex = 0;         // index of the currently designed automaton
-
-    // set the automaton #<index>'s code
-    pkg.setAutomatonCode = function (automaton, index) {
-        var matches = automaton.match(/<representation type=['"]image\/svg\+xml['"]>([\s\S]+)<\/representation>/);
-        if (matches) {
-            pkg.setSVG(matches[1], index);
-        } else {
-            AudeGUI.viz(
-                automaton2dot(Automaton.parse(automaton)),
-                function (res) {
-                    pkg.setSVG(res, index);
-                }
-            );
-        }
-    };
-
-    // reset the automaton #<index>
-    pkg.clearSVG = function (index, dontSnapshot) {
-        pkg.setSVG("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'> <g id='graph1' class='graph' transform='scale(1 1) rotate(0) translate(0 0)'> <title>automaton</title></g></svg>", index, dontSnapshot);
-    };
 
     function fixBrokenGraphvizTitle(t) {
         return t.replace(/\\\\/g, "\\");
@@ -488,34 +316,363 @@
         return t.toString().replace(/\\/g, "\\\\");
     }
 
+    function dataIdToId(svgNode) {
+        svgNode = svgNode.cloneNode(true);
+        var identifiedElements = svgNode.querySelectorAll("[data-id]");
+
+        for (var nid, i = 0, len = identifiedElements.length; i < len; i++) {
+            nid = identifiedElements[i].getAttribute("data-id");
+            identifiedElements[i].removeAttribute("data-id");
+            identifiedElements[i].setAttribute("id", nid);
+        }
+
+        return svgNode;
+    }
+
+    // utility function to position a point at the right place during a movement.
+    // see movePoints for usage
+    function newPos(origCoord, origCoord0, origCoordFin, otherCoord, otherOrigCoord0, otherOrigCoordFin, size, d, otherSize) {
+        var percent;
+
+        if (!otherSize) {
+            percent = (origCoord - origCoord0) / size;
+        } else if (!size) {
+            percent = (otherCoord - otherOrigCoord0) / otherSize;
+        } else if (otherSize > size) {
+            percent = (otherCoord - otherOrigCoord0) / otherSize;
+        } else {
+            percent = (origCoord - origCoord0) / size;
+        }
+
+        return origCoord + Math.abs(percent) * d;
+    }
+
+
+    function handlePulse(text, polygon, path, step, pulseTime) {
+        if (step) {
+            text.style.transition = text.style.webkitTransition = text.style.msTransition = polygon.style.transition = polygon.style.webkitTransition = polygon.style.msTransition = path.style.transition = path.style.webkitTransition = path.style.msTransition = "";
+        } else {
+            text.removeAttribute("fill");
+            polygon.setAttribute("fill", "black");
+            polygon.setAttribute("stroke", "black");
+            path.setAttribute("stroke", "black");
+            text.style.transition = text.style.webkitTransition = text.style.msTransition = polygon.style.transition = polygon.style.webkitTransition = polygon.style.msTransition = path.style.transition = path.style.webkitTransition = path.style.msTransition = pulseTime + "ms";
+            setTimeout(handlePulse, pulseTime / 2, text, polygon, path, 1);
+        }
+    }
+
+    function parseTransition(text, f, t) {
+        try {
+            return parse_transition(text);
+        } catch (e) {
+            alert(
+                libD.format(
+                    _("Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \"). Epsilons are written '\\e' or 'ɛ' (without quotes)."),
+                    f,
+                    t,
+                    text
+                )
+            );
+            throw e;
+        }
+    }
+
+    function AudeDesigner(svgContainer, readOnly) {
+        this.nodeLists            = [];    // array containing all the automata's "nodeList"s
+        this.initialStateArrows   = [];    // array containing all the automata's initial state's arrow
+        this.initialStates        = [];    // array containing all the automata's initial state's node
+        this.svgs                 = [];    // will contain all currently opened automata
+        this.snapshotStacks       = [];    // contains the all the automata's snapshots to allow undo/redo
+        this.nodeList             = null;  // list of the states' nodes of the currently designed automaton
+        this.initialStateArrow    = null;  // current initial state arrow node (<g>)
+        this.pathEditor           = null;  // <g> to edit paths and control points of these paths
+        this.initialState         = null;  // current automaton initial state's note (<g>)
+        this.snapshotStack        = null;
+
+        this.resizeHandle         = null;
+        this.resizeHandledElement = null;
+        this.currentOverlay       = null;
+        this.overlay              = null;
+        this.blockNewState        = false;
+
+        this.svgNode              = null;      // <svg> editor
+        this.svgZoom              = 1;         // current zoom level
+        this.oldZoom              = 1;
+        this.currentIndex         = 0;         // index of the currently designed automaton
+
+        this.load(svgContainer, readOnly);
+    }
+
+    AudeDesigner.prototype.transitionPulseColor = function (index, startState, symbol, endState, color, pulseTime) {
+        var s = this.svgs[index];
+
+        if (s) {
+            var edge = byId(s, btoa(startState) + " " + btoa(endState));
+
+            if (edge) {
+                var text     = edge.getElementsByTagName("text")[0],
+                    polygon  = edge.querySelector("polygon"),
+                    path     = edge.getElementsByTagName("path")[0];
+
+                text.setAttribute("fill", color);
+                polygon.setAttribute("fill", color);
+                polygon.setAttribute("stroke", color);
+                path.setAttribute("stroke", color);
+                setTimeout(handlePulse, pulseTime / 2, text, polygon, path, 0, pulseTime);
+            }
+        }
+    };
+
+    AudeDesigner.getStringValueFunction = function (s) {
+        return s === "ε" ? "\\e" : JSON.stringify(s);
+    };
+
+    AudeDesigner.getValueFunction = AudeDesigner.standardizeStringValueFunction = function (s) {
+        return s === "\\e" ? "ε" : s;
+    };
+
+    // utility function : gets the outerHTML of a node.
+    // WARNING: please don"t use this function for anything,
+    //          it's not universal and could break your code.
+    //          Check its implementation for more details.
+    AudeDesigner.outerHTML = function (node) {
+        // webkit does not support inner/AudeDesigner.outerHTML for pure XML nodes
+        if ("outerHTML" in node) {
+            return node.outerHTML;
+        }
+
+        if (node.parentNode && node.parentNode.childNodes.length === 1) {
+            return node.parentNode.innerHTML;
+        }
+
+        var ns = node.nextSibling;
+        var pn = node.parentNode;
+        var div = document.createElement("div");
+        div.appendChild(node);
+        var o = div.innerHTML;
+
+        if (pn) {
+            pn.insertBefore(node, ns);
+        } else {
+            div.removeChild(node);
+        }
+
+        div = null;
+        return o;
+    };
+
+    AudeDesigner.prompt = function (title, descr, def, fun) {
+        fun(window.prompt(title + ": " + descr, def));
+    };
+
+    pkg.AudeDesigner = AudeDesigner;
+    var _ = AudeDesigner.l10n = pkg.libD && pkg.libD.l10n ? pkg.libD.l10n() : function (s) { return s; };
+
+
+    AudeDesigner.formatTrans = function (t) {
+        return t.replace(/\\e/g, "ε");
+    };
+
+    AudeDesigner.prototype.triggerUndoRedoEvent = function triggerUndoRedoEvent() {
+        if (this.onUndoRedoEvent) {
+            let snapshotStack = this.snapshotStack;
+            this.onUndoRedoEvent(
+                !!snapshotStack.stack[snapshotStack.currentIndex - 1],
+                !!snapshotStack.stack[snapshotStack.currentIndex + 1]
+            );
+        }
+    };
+
+     AudeDesigner.prototype.snapshot = function snapshot(dontSnapshot) {
+        let snapshotStack = this.snapshotStack;
+        if (!dontSnapshot || !snapshotStack.stack[snapshotStack.currentIndex]) {
+            snapshotStack.stack = snapshotStack.stack.slice(0, ++snapshotStack.currentIndex);
+            snapshotStack.stack[snapshotStack.currentIndex] = this.svgNode.cloneNode(true);
+        }
+
+        this.triggerUndoRedoEvent();
+    };
+
+    AudeDesigner.prototype.snapshotRestore = function snapshotRestore(snapshotIndex) {
+        let snapshotStack = this.snapshotStack;
+
+        this.setSVG(snapshotStack.stack[snapshotIndex], this.currentIndex, true);
+        snapshotStack.currentIndex = snapshotIndex;
+
+        this.pathEditor = null;
+        var pathEditorLocal = this.svgContainer.querySelector("[data-id='path-editor']");
+
+        if (pathEditorLocal) {
+            pathEditorLocal.parentNode.removeChild(pathEditorLocal);
+        }
+
+        this.resizeHandle = null;
+        var resizeHandleLocal = document.querySelector("[data-id='resize-handle']");
+
+        if (resizeHandleLocal) {
+            resizeHandleLocal.parentNode.removeChild(resizeHandleLocal);
+        }
+
+
+        this.triggerUndoRedoEvent();
+    }
+
+    AudeDesigner.prototype.redo = function () {
+        var newIndex = this.snapshotStack.currentIndex + 1;
+
+        if (this.snapshotStack.stack[newIndex]) {
+            this.snapshotRestore(newIndex);
+        }
+
+        this.triggerUndoRedoEvent();
+    };
+
+    AudeDesigner.prototype.undo = function () {
+        var newIndex = this.snapshotStack.currentIndex - 1;
+
+        if (this.snapshotStack.stack[newIndex]) {
+            if (!this.snapshotStack.stack[this.snapshotStack.currentIndex]) {
+                this.snapshot();
+            }
+
+            this.snapshotRestore(newIndex);
+        }
+
+        this.triggerUndoRedoEvent();
+    };
+
+    //set the initial state for the current automaton
+    AudeDesigner.prototype.setInitialState = function (node) {
+        var path, polygon, title;
+
+        if (this.initialStateArrow) {
+            path    = this.initialStateArrow.getElementsByTagName("path")[0];
+            polygon = this.initialStateArrow.querySelector("polygon");
+            title   = this.initialStateArrow.querySelector("title");
+        } else {
+            this.initialStateArrow = this.initialStateArrows[this.currentIndex] = document.createElementNS(svgNS, "g");
+            id(this.initialStateArrow, "initialStateArrow");
+            title = document.createElementNS(svgNS, "title");
+            path =  document.createElementNS(svgNS, "path");
+            polygon = document.createElementNS(svgNS, "polygon");
+            path.setAttribute("stroke", "black");
+            polygon.setAttribute("stroke", "black");
+            polygon.setAttribute("fill", "black");
+            this.initialStateArrow.appendChild(title);
+            this.initialStateArrow.appendChild(path);
+            this.initialStateArrow.appendChild(polygon);
+            this.svgNode.querySelector("g").appendChild(this.initialStateArrow);
+        }
+
+        let ellipse = getBigEllipse(node);
+
+        let cy   = ellipse.cy.baseVal.value;
+        let cx   = ellipse.cx.baseVal.value;
+        let rx   = ellipse.rx.baseVal.value;
+        let dx   = cx - rx;
+        let dx10 = dx - 10;
+        let dx5  = dx - 5;
+
+        path.setAttribute("d",
+            "M" + (dx - 38)           + "," + cy +
+            "C" + (dx - (28 * 2 / 3)) + "," + cy +
+            " " + (dx - (28 / 3))     + "," + cy +
+            " " + dx10                + "," + cy);
+
+        polygon.setAttribute("points",
+                  dx   + "," + cy       +
+            " " + dx10 + "," + (cy - 4) +
+            " " + dx5  + "," + cy       +
+            " " + dx10 + "," + cy       +
+            " " + dx10 + "," + cy       +
+            " " + dx10 + "," + cy       +
+            " " + dx5  + "," + cy       +
+            " " + dx10 + "," + (cy + 4) +
+            " " + dx   + "," + cy       +
+            " " + dx   + "," + cy);
+
+        title.textContent = "_begin->" + atob(id(node));
+        this.initialState = this.initialStates[this.currentIndex] = node;
+    };
+
+    AudeDesigner.prototype.overlayHide = function overlayHide() {
+        if (this.overlay) {
+            if (this.overlay.parentNode) {
+                this.overlay.parentNode.removeChild(this.overlay);
+            }
+
+            this.currentOverlay = null;
+        }
+    };
+
+    AudeDesigner.prototype.resizeHandlesHide = function () {
+        if (!this.resizeHandle || !this.resizeHandle.g.parentNode) {
+            return;
+        }
+
+        var p = this.resizeHandle.g.parentNode;
+        p.removeChild(this.resizeHandle.g);
+
+        if (this.resizeHandledElement) {
+            this.resizeHandledElement.classList.remove(CSSP + "resize-handled");
+            this.resizeHandledElement = null;
+        }
+    };
+
+    // set the automaton #<index>'s code
+    AudeDesigner.prototype.setAutomatonCode = function (automaton, index) {
+        var matches = automaton.match(/<representation type=['"]image\/svg\+xml['"]>([\s\S]+)<\/representation>/);
+        if (matches) {
+            this.setSVG(matches[1], index);
+        } else {
+            var that = this;
+            AudeGUI.viz(
+                automaton2dot(Automaton.parse(automaton)),
+                function (res) {
+                    that.setSVG(res, index);
+                }
+            );
+        }
+    };
+
+    // reset the automaton #<index>
+    AudeDesigner.prototype.clearSVG = function (index, dontSnapshot) {
+        this.setSVG("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'> <g id='graph1' class='graph' transform='scale(1 1) rotate(0) translate(0 0)'> <title>automaton</title></g></svg>", index, dontSnapshot);
+    };
+
     // set current automaton's SVG
-    pkg.setSVG = function (svg, index, dontSnapshot) {
+    AudeDesigner.prototype.setSVG = function (svg, index, dontSnapshot = false) {
         if (!svg) {
-            return pkg.clearSVG(index);
+            return this.clearSVG(index);
+        }
+
+        if (index === undefined) {
+            index = this.currentIndex;
         }
 
         var svgWorkingNode;
-        if (index === pkg.currentIndex) {
+        if (index === this.currentIndex) {
             if (typeof svg === "string") {
-                pkg.svgContainer.innerHTML = svg.replace(/<\?[\s\S]*\?>/g, "").replace(/<![\s\S]*?>/g, "");
+                this.svgContainer.innerHTML = svg.replace(/<\?[\s\S]*\?>/g, "").replace(/<![\s\S]*?>/g, "");
             } else {
-                pkg.svgContainer.textContent = "";
-                pkg.svgContainer.appendChild(svg.cloneNode(true));
+                this.svgContainer.textContent = "";
+                this.svgContainer.appendChild(svg.cloneNode(true));
             }
 
-            svgWorkingNode = pkg.svgNode = svgs[index] = pkg.svgContainer.querySelector("svg");
+            svgWorkingNode = this.svgNode = this.svgContainer.querySelector("svg");
         } else {
-            svgWorkingNode = svgs[index] = new DOMParser().parseFromString(svg, "image/svg+xml").querySelector("svg");
+            svgWorkingNode = new DOMParser().parseFromString(svg, "image/svg+xml").querySelector("svg");
         }
 
-        svgWorkingNode.setAttribute("width",  pkg.svgContainer.offsetWidth);
-        svgWorkingNode.setAttribute("height", pkg.svgContainer.offsetHeight);
+        this.svgs[index] = svgWorkingNode;
+        svgWorkingNode.setAttribute("width",  this.svgContainer.offsetWidth);
+        svgWorkingNode.setAttribute("height", this.svgContainer.offsetHeight);
 
         if (!svgWorkingNode.viewBox.baseVal) {
-            svgWorkingNode.setAttribute("viewBox", "0 0 " + pkg.svgContainer.offsetWidth + " " + pkg.svgContainer.offsetHeight);
+            svgWorkingNode.setAttribute("viewBox", "0 0 " + this.svgContainer.offsetWidth + " " + this.svgContainer.offsetHeight);
         }
 
-        var workingNodeList = nodeLists[index] =  {},
+        var workingNodeList = this.nodeLists[index] = Object.create(null),
             states = svgWorkingNode.querySelectorAll(".node"),
             len,
             i;
@@ -568,14 +725,14 @@
             identifiedElements[i].setAttribute("data-id", nid);
         }
 
-        var workingInitialStateArrow = initialStateArrows[index] = byId(svgWorkingNode, "initialStateArrow");
+        var workingInitialStateArrow = this.initialStateArrows[index] = byId(svgWorkingNode, "initialStateArrow");
 
-        if (index === pkg.currentIndex) {
-            initialStateArrow = workingInitialStateArrow;
+        if (index === this.currentIndex) {
+            this.initialStateArrow = workingInitialStateArrow;
         }
 
         if (workingInitialStateArrow) {
-            setInitialState(
+            this.setInitialState(
                 byId(svgWorkingNode,
                     btoa(
                         fixBrokenGraphvizTitle(
@@ -587,78 +744,78 @@
 
             // 8 : size of "_begin->"
         } else {
-            initialState = initialStates[index] = null;
+            this.initialState = this.initialStates[index] = null;
         }
 
-        pkg.setCurrentIndex(pkg.currentIndex);
-
-        snapshot(dontSnapshot);
+        this.setCurrentIndex(this.currentIndex);
+        this.redraw();
+        this.snapshot(dontSnapshot);
     };
 
     // Choose the current automaton
-    pkg.setCurrentIndex = function (index) {
-        pkg.cleanSVG(pkg.currentIndex, true);
-        pkg.currentIndex = index;
-        if (!svgs[index]) {
-            pkg.clearSVG(pkg.currentIndex);
+    AudeDesigner.prototype.setCurrentIndex = function (index) {
+        this.cleanSVG(this.currentIndex, true);
+        this.currentIndex = index;
+        if (!this.svgs[index]) {
+            this.clearSVG(this.currentIndex);
         }
 
-        nodeList = nodeLists[index];
-        initialStateArrow = initialStateArrows[index];
-        initialState = initialStates[index];
+        this.nodeList = this.nodeLists[index];
+        this.initialStateArrow = this.initialStateArrows[index];
+        this.initialState = this.initialStates[index];
 
-        if (!snapshotStacks[index]) {
-            snapshotStacks[index] = {
+        if (!this.snapshotStacks[index]) {
+            this.snapshotStacks[index] = {
                 currentIndex: 0,
                 stack: []
             };
         }
 
-        snapshotStack = snapshotStacks[index];
+        this.snapshotStack = this.snapshotStacks[index];
 
-        if (pkg.svgNode) {
-            pkg.svgContainer.replaceChild(svgs[index], pkg.svgNode);
+        if (this.svgNode) {
+            this.svgContainer.replaceChild(this.svgs[index], this.svgNode);
         } else {
-            pkg.svgContainer.appendChild(svgs[index]);
+            this.svgContainer.appendChild(this.svgs[index]);
         }
 
-        pkg.svgNode = svgs[index];
-        pkg.fixViewBox();
+        this.svgNode = this.svgs[index];
+        this.redraw();
     };
 
     // this function is to be called when a new automaton with index <index> must be created
-    pkg.newAutomaton = function (index) {
-        if (nodeLists[index]) {
-            pkg.clearSVG(index, true);
+    AudeDesigner.prototype.newAutomaton = function (index) {
+        if (this.nodeLists[index]) {
+            this.clearSVG(index, true);
         }
     };
 
     // remove the automaton #<index>
-    pkg.removeAutomaton = function (index) {
-        svgs.splice(index, 1);
-        nodeLists.splice(index, 1);
-        snapshotStacks.splice(index, 1);
-        initialStateArrows.splice(index, 1);
+    AudeDesigner.prototype.removeAutomaton = function (index) {
+        this.svgs.splice(index, 1);
+        this.nodeLists.splice(index, 1);
+        this.snapshotStacks.splice(index, 1);
+        this.initialStateArrows.splice(index, 1);
     };
 
     // this function is to be called when the SVG code of an automaton has to be retrieved
-    pkg.cleanSVG = function (index, dontCleanColors) {
-        if (pathEditor && pathEditor.parentNode) {
-            pathEditor.parentNode.removeChild(pathEditor);
-            pathEditor = null;
+    AudeDesigner.prototype.cleanSVG = function (index, dontCleanColors) {
+        if (this.pathEditor && this.pathEditor.parentNode) {
+            this.pathEditor.parentNode.removeChild(this.pathEditor);
+            this.pathEditor = null;
         }
 
-        overlayHide();
-        resizeHandlesHide();
+        this.overlayHide();
+        this.resizeHandlesHide();
 
-        var pathEditorLocal = document.getElementById("path-editor");
+        var pathEditorLocal = this.svgContainer.querySelector("[data-id=path-editor]");
         if (pathEditorLocal) {
             pathEditorLocal.parentNode.removeChild(pathEditorLocal);
         }
 
-        if (!dontCleanColors && svgs[index]) {
-            var ellipses = svgs[index].getElementsByTagName("ellipse"),
-                edges    = svgs[index].getElementsByClassName("edge"),
+        if (!dontCleanColors && this.svgs[index]) {
+            var ellipses = this.svgs[index].getElementsByTagName("ellipse"),
+                edges    = this.svgs[index].getElementsByClassName("edge"),
                 len,
                 i;
 
@@ -679,75 +836,47 @@
     };
 
     //IMPORTANT: call this whenever you mess around with the svg container.
-    pkg.fixViewBox = function (th) {
-        if (!th) {
-            th = pkg;
-        }
-
-        if (th.svgNode) {
-            pkg.setViewBoxSize(th);
+    AudeDesigner.prototype.redraw = function () {
+        if (this.svgNode) {
+            this.setViewBoxSize();
         }
     };
 
 
     // reset the viewBox size (uses the size of the svg container and the zoom level to do it)
-    pkg.setViewBoxSize = function (th) {
-        if (!th) {
-            th = pkg;
-        }
-
-        if (!th.svgContainer || th.svgContainer.offsetWidth) {
-            th.svgNode.viewBox.baseVal.width  = (th.svgNode.width.baseVal.value  = th.svgContainer.offsetWidth) / th.svgZoom;
-            th.svgNode.viewBox.baseVal.height = (th.svgNode.height.baseVal.value = th.svgContainer.offsetHeight) / th.svgZoom;
+    AudeDesigner.prototype.setViewBoxSize = function () {
+        if (!this.svgContainer || this.svgContainer.offsetWidth) { // FIXME seems broken
+            this.svgNode.viewBox.baseVal.width  = (this.svgNode.width.baseVal.value  = this.svgContainer.offsetWidth) / this.svgZoom;
+            this.svgNode.viewBox.baseVal.height = (this.svgNode.height.baseVal.value = this.svgContainer.offsetHeight) / this.svgZoom;
         }
     };
-
-    pkg.getStringValueFunction = function (s) {
-        return s === "ε" ? "\\e" : JSON.stringify(s);
-    };
-
-    function parseTransition(text, f, t) {
-        try {
-            return parse_transition(text);
-        } catch (e) {
-            alert(
-                libD.format(
-                    _("Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \"). Epsilons are written '\\e' or 'ɛ' (without quotes)."),
-                    f,
-                    t,
-                    text
-                )
-            );
-            throw e;
-        }
-    }
 
     // Retrieve the code of the automaton #index, svg code included.
     // if the <svg> representation is not desired (e.g. you need a cleaner visual representation of the automaton),
     // set withoutSVG to true
-    pkg.getAutomatonCode = function (index, withoutSVG) {
-        var getStringValue = pkg.getStringValueFunction;
+    AudeDesigner.prototype.getAutomatonCode = function (index, withoutSVG) {
+        var getStringValue = AudeDesigner.getStringValueFunction;
 
-        pkg.cleanSVG(pkg.currentIndex);
-        if (!initialStates[index]) {
+        this.cleanSVG(this.currentIndex);
+        if (!this.initialStates[index]) {
             return ""; // automata without initial states are not supported
         }
 
         var states      = [],
             finalStates = [],
-            nodes       = svgs[index].querySelectorAll(".node"),
+            nodes       = this.svgs[index].querySelectorAll(".node"),
             len,
             i;
 
         for (i = 0, len = nodes.length; i < len; ++i) {
             if (nodes[i].querySelectorAll("ellipse").length > 1) {
                 finalStates.push(atob(id(nodes[i])));
-            } else if (nodes[i] !== initialState) {
+            } else if (nodes[i] !== this.initialState) {
                 states.push(atob(id(nodes[i])));
             }
         }
 
-        var code = getStringValue(atob(id(initialStates[index]))) + "\n";
+        var code = getStringValue(atob(id(this.initialStates[index]))) + "\n";
 
         for (i = 0, len = states.length; i < len; ++i) {
             code += getStringValue(states[i]) + "\n";
@@ -761,10 +890,10 @@
 
         code += "\n";
 
-        var s, leng, symbols, tid, f, t, text, trans = svgs[index].querySelectorAll(".edge");
+        var s, leng, symbols, tid, f, t, text, trans = this.svgs[index].querySelectorAll(".edge");
 
         for (i = 0, len = trans.length; i < len; ++i) {
-            if (trans[i] !== initialStateArrows[index]) {
+            if (trans[i] !== this.initialStateArrows[index]) {
                 tid  = id(trans[i]).split(" ");
                 text = trans[i].getElementsByTagName("text")[0].textContent;
                 f = atob(tid[0]);
@@ -776,67 +905,69 @@
                 }
             }
         }
-        return code + (withoutSVG ? "" : "\n<representation type='image/svg+xml'>\n" + pkg.outerHTML(svgs[index]).trim() + "\n</representation>\n");
+        return code + (withoutSVG ? "" : "\n<representation type='image/svg+xml'>\n" + this.outerHTML(this.svgs[index]).trim() + "\n</representation>\n");
     };
 
-    pkg.getValueFunction = pkg.standardizeStringValueFunction = function (s) {
-        return s === "\\e" ? "ε" : s;
-    };
-
-    pkg.getAutomaton = function (index, onlyStrings) {
+    AudeDesigner.prototype.getAutomaton = function (index, onlyStrings) {
         var A = new Automaton();
-        pkg.cleanSVG(pkg.currentIndex);
-        if (!initialStates[index]) {
+        this.cleanSVG(this.currentIndex);
+
+        if (!this.initialStates[index]) {
             return null; // automata without initial states are not supported
         }
 
-        var getValue = onlyStrings ? function (v) { return pkg.getValueFunction(v).toString(); } : pkg.getValueFunction;
+        var getValue = (
+            onlyStrings
+                ? v => AudeDesigner.getValueFunction(v).toString()
+                : AudeDesigner.getValueFunction
+        );
 
-        var nodes = svgs[index].querySelectorAll(".node"), i, len;
+        var nodes = this.svgs[index].querySelectorAll(".node");
 
-        for (i = 0, len = nodes.length; i < len; ++i) {
+        for (let i = 0, len = nodes.length; i < len; ++i) {
             if (nodes[i].querySelectorAll("ellipse").length > 1) {
                 A.addFinalState(getValue(atob(id(nodes[i]))));
-            } else if (nodes[i] !== initialState) {
+            } else if (nodes[i] !== this.initialState) {
                 A.addState(getValue(atob(id(nodes[i]))));
             }
         }
 
-        A.setInitialState(getValue(atob(id(initialStates[index]))));
+        A.setInitialState(getValue(atob(id(this.initialStates[index]))));
 
-        var symbols, leng, s, tid, f, t, text, trans = svgs[index].querySelectorAll(".edge");
+        var trans = this.svgs[index].querySelectorAll(".edge");
 
-        for (i = 0, len = trans.length; i < len; ++i) {
-            if (trans[i] !== initialStateArrows[index]) {
-                tid  = id(trans[i]).split(" ");
-                text = trans[i].getElementsByTagName("text")[0].textContent;
-                f    = atob(tid[0]);
-                t    = atob(tid[1]);
+        for (let i = 0, len = trans.length; i < len; ++i) {
+            if (trans[i] !== this.initialStateArrows[index]) {
+                let tid  = id(trans[i]).split(" ");
+                let text = trans[i].getElementsByTagName("text")[0].textContent;
+                let f    = atob(tid[0]);
+                let t    = atob(tid[1]);
 
-                symbols = parseTransition(text, f, t);
+                let symbols = parseTransition(text, f, t);
 
-                for (s = 0, leng = symbols.length; s < leng; ++s) {
+                for (let s = 0, leng = symbols.length; s < leng; ++s) {
                     A.addTransition(getValue(f), (onlyStrings && (symbols[s] !== epsilon)) ? symbols[s].toString() : symbols[s], getValue(t));
                 }
             }
         }
+
         return A;
     };
 
-    pkg.getDot = function (index, title) {
+    AudeDesigner.prototype.getDot = function (index, title) {
         if (index === undefined) {
-            index = pkg.currentIndex;
+            index = this.currentIndex;
         }
 
         var A = new Automaton();
-        pkg.cleanSVG(pkg.currentIndex);
-        if (!initialStates[index]) {
+        this.cleanSVG(this.currentIndex);
+        if (!this.initialStates[index]) {
             return null; // automata without initial states are not supported
         }
 
-        var getValue = function (v) { return pkg.getValueFunction(v).toString(); };
+        var getValue = function (v) { return AudeDesigner.getValueFunction(v).toString(); };
 
-        pkg.cleanSVG(pkg.currentIndex);
+        this.cleanSVG(this.currentIndex);
 
         if (!title) {
             title = "automaton";
@@ -848,30 +979,30 @@
                   " {\n\trankdir=LR\n\t_begin [style = invis];\n";
 
 
-        var nodes = svgs[index].querySelectorAll(".node"), i, len;
+        var nodes = this.svgs[index].querySelectorAll(".node");
 
-        for (i = 0, len = nodes.length; i < len; ++i) {
+        for (let i = 0, len = nodes.length; i < len; ++i) {
             if (nodes[i].querySelectorAll("ellipse").length > 1) {
                 A.addFinalState(atob(id(nodes[i])));
-            } else if (nodes[i] !== initialState) {
+            } else if (nodes[i] !== this.initialState) {
                 A.addState(getValue(atob(id(nodes[i]))));
             }
         }
 
-        A.setInitialState(getValue(atob(id(initialStates[index]))));
+        A.setInitialState(getValue(atob(id(this.initialStates[index]))));
 
-        var symbols, leng, s, tid, f, t, text, trans = svgs[index].querySelectorAll(".edge");
+        var trans = this.svgs[index].querySelectorAll(".edge");
 
-        for (i = 0, len = trans.length; i < len; ++i) {
-            if (trans[i] !== initialStateArrows[index]) {
-                tid  = id(trans[i]).split(" ");
-                text = trans[i].getElementsByTagName("text")[0].textContent;
-                f    = atob(tid[0]);
-                t    = atob(tid[1]);
+        for (let i = 0, len = trans.length; i < len; ++i) {
+            if (trans[i] !== this.initialStateArrows[index]) {
+                let tid  = id(trans[i]).split(" ");
+                let text = trans[i].getElementsByTagName("text")[0].textContent;
+                let f    = atob(tid[0]);
+                let t    = atob(tid[1]);
 
-                symbols = parseTransition(text, f, t);
+                let symbols = parseTransition(text, f, t);
 
-                for (s = 0, leng = symbols.length; s < leng; ++s) {
+                for (let s = 0, leng = symbols.length; s < leng; ++s) {
                     A.addTransition(getValue(f), (symbols[s] !== epsilon) ? symbols[s].toString() : symbols[s], getValue(t));
                 }
             }
@@ -880,83 +1011,49 @@
         return automaton2dot(A);
     };
 
-
-    function dataIdToId(svgNode) {
-        svgNode = svgNode.cloneNode(true);
-        var identifiedElements = svgNode.querySelectorAll("[data-id]");
-
-        for (var nid, i = 0, len = identifiedElements.length; i < len; i++) {
-            nid = identifiedElements[i].getAttribute("data-id");
-            identifiedElements[i].removeAttribute("data-id");
-            identifiedElements[i].setAttribute("id", nid);
+    AudeDesigner.prototype.getSVG = function (index) {
+        if (this.svgs[index]) {
+            this.cleanSVG(index);
+            return this.outerHTML(dataIdToId(this.svgs[index])).trim();
         }
 
-        return svgNode;
-    }
-
-    pkg.getSVG = function (index) {
-        if (svgs[index]) {
-            pkg.cleanSVG(index);
-            return pkg.outerHTML(dataIdToId(svgs[index])).trim();
-        }
         return "";
     };
 
-    pkg.getSVGNode = function (index) {
-        return svgs[index];
+    AudeDesigner.prototype.getSVGNode = function (index) {
+        return this.svgs[index];
     };
 
-    // utility function to position a point at the right place during a movement.
-    // see movePoints for usage
-    function newPos(origCoord, origCoord0, origCoordFin, otherCoord, otherOrigCoord0, otherOrigCoordFin, size, d, otherSize) {
-        var percent;
+    AudeDesigner.prototype.load = function (svgContainer, readOnly) {
+        svgContainer.appendChild(document.createElement("div"));
+        this.svgContainer = svgContainer.lastChild;
+        this.svgContainer.style.position = "absolute";
+        this.svgContainer.style.top = "0";
+        this.svgContainer.style.left = "0";
+        this.svgContainer.style.right = "0";
+        this.svgContainer.style.bottom = "0";
 
-        if (!otherSize) {
-            percent = (origCoord - origCoord0) / size;
-        } else if (!size) {
-            percent = (otherCoord - otherOrigCoord0) / otherSize;
-        } else if (otherSize > size) {
-            percent = (otherCoord - otherOrigCoord0) / otherSize;
-        } else {
-            percent = (origCoord - origCoord0) / size;
+        this.redraw();
+
+        window.addEventListener("resize", this.redraw.bind(this), false);
+
+        var that = this;
+
+        that.userZoom();
+        that.enable();
+
+        that.svgContainer.ondragstart = that.svgContainer.onselectstart = that.svgContainer.oncontextmenu = function (e) {
+            e.preventDefault();
+            return false;
+        };
+
+        that.clearSVG(that.currentIndex, true);
+
+        if (readOnly) {
+            return;
         }
 
-        return origCoord + Math.abs(percent) * d;
-    }
-
-    pkg.load = function () {
-        if (!pkg.svgContainer) {
-            pkg.svgContainer = document.getElementById("svg-container");
-        }
-
-        pkg.svgContainer.appendChild(document.createElement("div"));
-        pkg.svgContainer = pkg.svgContainer.lastChild;
-        pkg.svgContainer.style.position = "absolute";
-        pkg.svgContainer.style.top = "0";
-        pkg.svgContainer.style.left = "0";
-        pkg.svgContainer.style.right = "0";
-        pkg.svgContainer.style.bottom = "0";
-
-        window.addEventListener("resize", pkg.fixViewBox, false);
-
-        // get the right coordinates of the cursor of the <svg> node
-        function svgcursorPoint(evt, th) { // thx http://stackoverflow.com/questions/5901607/svg-coordiantes
-            if (!th) {
-                th = pkg;
-            }
-
-            var pt = th.svgNode.createSVGPoint();
-            pt.x = evt.clientX;
-            pt.y = evt.clientY;
-            var a = th.svgNode.getScreenCTM();
-            if (!a) {
-                throw new Error("coordinates unavailable");
-            }
-            var b = a.inverse();
-            return pt.matrixTransform(b);
-        }
-
-        var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockNewState, blockClick, mouseCoords = null, origMouseCoords = null, currentMoveAction = null, insertNodeMsg = null, newTransitionMsg = null;
+        var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockClick, mouseCoords = null, origMouseCoords = null, currentMoveAction = null, insertNodeMsg = null, newTransitionMsg = null, stateOverlay = null, transitionOverlay = null, frameModifiedSVG = false;
 
         function cancelMsg() {
             if (insertNodeMsg) {
@@ -972,7 +1069,7 @@
 
         function msg(o, tip) {
             cancelMsg();
-            var res = pkg.msg(o);
+            var res = AudeDesigner.msg(o);
             res.addButton(_("Cancel"), cancelMsg);
             return res;
         }
@@ -986,12 +1083,12 @@
 
             var e = mouseCoords;
 
-            var pt = svgcursorPoint(e);
+            var pt = svgcursorPoint(that.svgNode, e);
             var seg = pointOnEllipse(nodeMoving._ellipse, pt.x, pt.y, nodeMoving._seg[0].getItem(nodeMoving._seg[1]), nodeMoving._seg[1] ? 10 : 0);
             nodeMoving.setAttribute("cx", seg.x);
             nodeMoving.setAttribute("cy", seg.y);
             if (nodeMoving._arrow) {
-                posTriangleArrow(nodeMoving._arrow.points, nodeMoving._ellipse, seg);
+                posTriangleArrow(that.svgNode, nodeMoving._arrow.points, nodeMoving._ellipse, seg);
             }
 
             frameModifiedSVG = true;
@@ -1038,8 +1135,8 @@
             var origSegStart = nodeMoving._seg[2].getItem(0);
             var origSegEnd   = nodeMoving._seg[2].getItem(nodeMoving._seg[1]);
 
-            var dx = (e.clientX - coords.x) / pkg.svgZoom,
-                dy = (e.clientY - coords.y) / pkg.svgZoom;
+            var dx = (e.clientX - coords.x) / that.svgZoom,
+                dy = (e.clientY - coords.y) / that.svgZoom;
 
             movePoints(origSegStart, origSegEnd, nodeMoving._seg[0], nodeMoving._seg[2], 1, nodeMoving._seg[1], dx, dy);
             origSegStart = nodeMoving._seg[2].getItem(nodeMoving._seg[2].numberOfItems - 1);
@@ -1057,7 +1154,7 @@
             requestAnimationFrame(currentMoveAction);
             var e = mouseCoords;
 
-            var pt = svgcursorPoint(e);
+            var pt = svgcursorPoint(that.svgNode, e);
             nodeMoving.setAttribute("cx", nodeMoving._seg[0][nodeMoving._seg[1]] = pt.x);
             nodeMoving.setAttribute("cy", nodeMoving._seg[0][nodeMoving._seg[2]] = pt.y);
             nodeMoving._seg[3] && fixTransition(nodeMoving._seg[3]);
@@ -1066,26 +1163,19 @@
         }
 
         // move the visible area
-        function viewBoxMoveFrame(e, th) {
+        function viewBoxMoveFrame(e) {
             if (!mouseCoords) {
                 return;
             }
             requestAnimationFrame(currentMoveAction);
             e = mouseCoords;
 
-            blockNewState = true;
+            var c = coords;
 
-            var c;
+            that.blockNewState = true;
 
-            if (th) {
-                c = th;
-            } else {
-                c = coords;
-                th = pkg;
-            }
-
-            th.svgNode.viewBox.baseVal.x = c.viewBoxX - (e.clientX - c.x) / th.svgZoom;
-            th.svgNode.viewBox.baseVal.y = c.viewBoxY - (e.clientY - c.y) / th.svgZoom;
+            that.svgNode.viewBox.baseVal.x = c.viewBoxX - (e.clientX - c.x) / that.svgZoom;
+            that.svgNode.viewBox.baseVal.y = c.viewBoxY - (e.clientY - c.y) / that.svgZoom;
             frameModifiedSVG = true;
         }
 
@@ -1094,8 +1184,8 @@
 
             var errorMargin = 1,
                 path        = edge.getElementsByTagName("path")[0].pathSegList,
-                state1      = byId(pkg.svgNode, tid[0]).querySelector("ellipse"),
-                state2      = byId(pkg.svgNode, tid[1]).querySelector("ellipse"),
+                state1      = byId(that.svgNode, tid[0]).querySelector("ellipse"),
+                state2      = byId(that.svgNode, tid[1]).querySelector("ellipse"),
                 cx1         = state1.cx.baseVal.value,
                 cy1         = state1.cy.baseVal.value,
                 cx2         = state2.cx.baseVal.value,
@@ -1144,8 +1234,8 @@
             label.setAttribute("x", smallEllipse.cx.baseVal.value);
             label.setAttribute("y", smallEllipse.cy.baseVal.value + 4);
 
-            if (node === initialState) {
-                setInitialState(node);
+            if (node === that.initialState) {
+                that.setInitialState(node);
             }
         }
 
@@ -1153,11 +1243,11 @@
             var segs = path.pathSegList;
 
             var origEllipse = getBigEllipse(
-                byId(pkg.svgNode, id(path.parentNode).split(" ")[0])
+                byId(that.svgNode, id(path.parentNode).split(" ")[0])
             );
 
             var targetEllipse = getBigEllipse(
-                byId(pkg.svgNode, id(path.parentNode).split(" ")[1])
+                byId(that.svgNode, id(path.parentNode).split(" ")[1])
             );
 
             var p0 = segs.getItem(0)
@@ -1207,6 +1297,7 @@
             );
 
             posTriangleArrow(
+                that.svgNode,
                 path.parentNode.getElementsByTagName("polygon")[0].points,
                 targetEllipse,
                 seg
@@ -1240,7 +1331,7 @@
         }
 
         function fixNodeAndTransition(node) {
-            resizeHandlesOn(resizeHandledElement);
+            resizeHandlesOn(that.resizeHandledElement);
 
             fixNode(node);
 
@@ -1262,14 +1353,14 @@
 
             requestAnimationFrame(currentMoveAction);
 
-            if (e === true || pkg.stopMoveNode) {
+            if (e === true || that.stopMoveNode) {
                 return;
             }
 
             mouseCoords = true;
 
-            var dx = (e.clientX - coords.x) / pkg.svgZoom,
-                dy = (e.clientY - coords.y) / pkg.svgZoom;
+            var dx = (e.clientX - coords.x) / that.svgZoom,
+                dy = (e.clientY - coords.y) / that.svgZoom;
 
             var newBBox = {
                 x:      coords.left   ? coords.bbox.x + dx : coords.bbox.x,
@@ -1313,15 +1404,15 @@
 
             requestAnimationFrame(currentMoveAction);
 
-            if (e === true || pkg.stopMoveNode) {
+            if (e === true || that.stopMoveNode) {
                 return;
             }
 
             mouseCoords = true;
 
 
-            var dx = (e.clientX - coords.x) / pkg.svgZoom,
-                dy = (e.clientY - coords.y) / pkg.svgZoom;
+            var dx = (e.clientX - coords.x) / that.svgZoom,
+                dy = (e.clientY - coords.y) / that.svgZoom;
 
             coords.text.setAttribute("x", coords.tx + dx);
             coords.text.setAttribute("y", coords.ty + dy);
@@ -1332,9 +1423,9 @@
                 coords.ellipse[1].setAttribute("cy", coords.cy1 + dy);
             }
 
-            if (initialState === nodeMoving) {
+            if (that.initialState === nodeMoving) {
                 // moving the initial state arrow
-                setInitialState(nodeMoving);
+                that.setInitialState(nodeMoving);
             }
 
             var coefTextX = 1,
@@ -1419,11 +1510,12 @@
 
                     if (coords.t[i].transitionStraight) {
                         cleanTransitionPos(
+                            that.svgNode,
                             path,
                             polygonPoints,
                             null,
-                            byId(pkg.svgNode, nodes[0]),
-                            byId(pkg.svgNode, nodes[1])
+                            byId(that.svgNode, nodes[0]),
+                            byId(that.svgNode, nodes[1])
                         );
                     } else {
                         for (s = 0, leng = segs.numberOfItems; s < leng; ++s) {
@@ -1465,20 +1557,20 @@
         }
 
         function cancelMoveAction() {
-            pkg.svgContainer.onmousemove = null;
-            currentMoveAction            = null;
-            mouseCoords                  = null;
+            that.svgContainer.onmousemove = null;
+            currentMoveAction             = null;
+            mouseCoords                   = null;
         }
 
         function setMoveAction(frameFunction, e) {
-            pkg.svgContainer.onmousemove = mouseMove;
+            that.svgContainer.onmousemove = mouseMove;
             currentMoveAction = frameFunction;
             mouseCoords = e;
             requestAnimationFrame(currentMoveAction);
         }
 
         function prepareNodeMove(nodeMoving, e) {
-            pkg.stopMove = true;
+            that.stopMove = true;
             coords = {
                 ellipse: nodeMoving.getElementsByTagName("ellipse"),
                 text:    nodeMoving.getElementsByTagName("text")[0],
@@ -1497,7 +1589,7 @@
             }
 
             coords.t = [];
-            var i, len, n = nodeList[atob(id(nodeMoving))];
+            var i, len, n = that.nodeList[atob(id(nodeMoving))];
 
             nodeMovingData = n;
 
@@ -1535,7 +1627,7 @@
         function beginNodeMoving(nodeMoving, e) {
             origMouseCoords = e;
             prepareNodeMove(nodeMoving, e);
-            pkg.svgContainer.style.cursor = "move";
+            that.svgContainer.style.cursor = "move";
             setMoveAction(nodeMoveFrame, e);
         }
 
@@ -1544,11 +1636,12 @@
             if (!mouseCoords) {
                 return;
             }
+
             requestAnimationFrame(currentMoveAction);
             var e = mouseCoords;
 
-            blockNewState = false;
-            var pt = svgcursorPoint(e);
+            that.blockNewState = false;
+            var pt = svgcursorPoint(that.svgNode, e);
             var p = pathEdit.pathSegList.getItem(1);
             var po = pathEdit.pathSegList.getItem(0);
             p.x = p.x2 = pt.x - (p.x - po.x > 0 ? 1 : -1);
@@ -1560,7 +1653,7 @@
         }
 
         function beginNewTransition(startState, e) {
-            pkg.stopMove = true;
+            that.stopMove = true;
             nodeEdit = startState;
             setMoveAction(nodeBindingFrame, e);
 
@@ -1569,25 +1662,25 @@
             pathEdit.setAttribute("stroke", "black");
 
             var ellipse = getBigEllipse(startState);
-            var pt = svgcursorPoint(e), p = pointOnEllipse(ellipse, pt.x, pt.y);
+            var pt = svgcursorPoint(that.svgNode, e), p = pointOnEllipse(ellipse, pt.x, pt.y);
             pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegMovetoAbs(p.x, p.y));
             pathEdit.pathSegList.appendItem(pathEdit.createSVGPathSegCurvetoCubicAbs(pt.x, pt.y, p.x, p.y, pt.x, pt.y));
-            pkg.svgNode.appendChild(pathEdit);
+            that.svgNode.appendChild(pathEdit);
         }
 
         function endNewTransition(endState) {
-            pkg.stopMove = true;
+            that.stopMove = true;
             var nid = id(nodeEdit) + " " + id(endState);
-            if (byId(pkg.svgNode, nid)) {
+            if (byId(that.svgNode, nid)) {
                 window.alert(_("Sorry, there is already a transition between these states in this way."));
-                pkg.svgNode.removeChild(pathEdit);
+                that.svgNode.removeChild(pathEdit);
                 cancelMoveAction();
                 return;
             }
 
             cancelMoveAction();
 
-            pkg.prompt(
+            AudeDesigner.prompt(
                 _("New transition"),
                 _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes.  Epsilons are written '\\e' or 'ɛ' (without quotes)."),
                 "",
@@ -1608,21 +1701,21 @@
                         polygon.setAttribute("stroke", "black");
 
                         var text = document.createElementNS(svgNS, "text");
-                        text.textContent = pkg.formatTrans(trans || "\\e");
+                        text.textContent = AudeDesigner.formatTrans(trans || "\\e");
                         text.setAttribute("text-anchor", "middle");
                         text.setAttribute("font-family", "Times Roman,serif");
                         text.setAttribute("font-size", "14.00");
-                        cleanTransitionPos(pathEdit, polygon.points, text, nodeEdit, endState);
+                        cleanTransitionPos(that.svgNode, pathEdit, polygon.points, text, nodeEdit, endState);
                         g.appendChild(pathEdit);
                         g.appendChild(polygon);
                         g.appendChild(text);
-                        pkg.svgNode.querySelector("g").appendChild(g);
-                        nodeList[atob(id(endState))].t.push([g, false]); // false : state is not origin
+                        that.svgNode.querySelector("g").appendChild(g);
+                        that.nodeList[atob(id(endState))].t.push([g, false]); // false : state is not origin
                         if (nodeEdit !== endState) {
-                            nodeList[atob(id(nodeEdit))].t.push([g, true]); // true : state is origin
+                            that.nodeList[atob(id(nodeEdit))].t.push([g, true]); // true : state is origin
                         }
 
-                        snapshot();
+                        that.snapshot();
                     }
                 }
             );
@@ -1632,15 +1725,16 @@
             var tid = id(edge).split(" ");
 
             cleanTransitionPos(
+                that.svgNode,
                 edge.getElementsByTagName("path")[0],
                 edge.querySelector("polygon").points,
                 edge.getElementsByTagName("text")[0],
-                byId(pkg.svgNode, tid[0]),
-                byId(pkg.svgNode, tid[1])
+                byId(that.svgNode, tid[0]),
+                byId(that.svgNode, tid[1])
             );
 
             fixPathEditor();
-            snapshot();
+            that.snapshot();
         }
 
         // event when a transition label is moved
@@ -1651,38 +1745,38 @@
             requestAnimationFrame(currentMoveAction);
             var e = mouseCoords;
 
-            nodeMoving.setAttribute("x", (e.clientX - coords[0]) / pkg.svgZoom + coords[2]);
-            nodeMoving.setAttribute("y", (e.clientY - coords[1]) / pkg.svgZoom + coords[3]);
+            nodeMoving.setAttribute("x", (e.clientX - coords[0]) / that.svgZoom + coords[2]);
+            nodeMoving.setAttribute("y", (e.clientY - coords[1]) / that.svgZoom + coords[3]);
             frameModifiedSVG = true;
         }
 
         function beginMoveTransitionLabel(text, e) {
-            pkg.stopMove = true;
+            that.stopMove = true;
             origMouseCoords = e;
             nodeMoving = text;
             coords = [e.clientX, e.clientY, e.target.x.baseVal.getItem(0).value, e.target.y.baseVal.getItem(0).value];
             setMoveAction(labelMoveFrame, e);
-            pkg.svgContainer.cursor = "move";
+            that.svgContainer.cursor = "move";
         }
 
         function fixPathEditor(appending) {
-            if (!appending && (!pathEditor || pathEditor !== document.getElementById("path-editor"))) {
+            if (!appending && (!that.pathEditor || that.pathEditor !== document.getElementById("path-editor"))) {
                 var pathEditorLocal = document.getElementById("path-editor");
                 if (pathEditorLocal) {
                     pathEditorLocal.parentNode.removeChild(pathEditorLocal);
                 }
 
-                pathEditor = null;
+                that.pathEditor = null;
                 return;
             }
 
-            var p = pathEditor._path;
+            var p = that.pathEditor._path;
 
             var segs = p.pathSegList;
             var tid = id(p.parentNode).split(" ");
 
-            while (pathEditor.firstChild) {
-                pathEditor.removeChild(pathEditor.firstChild);
+            while (that.pathEditor.firstChild) {
+                that.pathEditor.removeChild(that.pathEditor.firstChild);
             }
             var handle, seg, i, len;
             for (i = 0, len = segs.numberOfItems; i < len; ++i) {
@@ -1698,7 +1792,7 @@
                         handle.setAttribute("cx", seg.x1);
                         handle.setAttribute("cy", seg.y1);
                         handle._seg = [seg, "x1", "y1", p];
-                        pathEditor.appendChild(handle);
+                        that.pathEditor.appendChild(handle);
                     }
                     if (seg.x2 !== seg.x || seg.y2 !== seg.y) {
                         handle = document.createElementNS(svgNS, "circle");
@@ -1710,7 +1804,7 @@
                         handle.setAttribute("cx", seg.x2);
                         handle.setAttribute("cy", seg.y2);
                         handle._seg = [seg, "x2", "y2", p];
-                        pathEditor.appendChild(handle);
+                        that.pathEditor.appendChild(handle);
                     }
                 }
 
@@ -1721,11 +1815,11 @@
                 handle.setAttribute("r", TRANSITION_HANDLE_WIDTH);
                 if (i === len - 1) {
                     handle._moveFrame = pathEditEllipseMoveFrame;
-                    handle._ellipse   = getBigEllipse(byId(pkg.svgNode, tid[1]));
+                    handle._ellipse   = getBigEllipse(byId(that.svgNode, tid[1]));
                     handle._arrow     = p.parentNode.querySelector("polygon");
                 } else if (!i) {
                     handle._moveFrame = pathEditEllipseMoveFrame;
-                    handle._ellipse   = getBigEllipse(byId(pkg.svgNode, tid[0]));
+                    handle._ellipse   = getBigEllipse(byId(that.svgNode, tid[0]));
                 } else {
                     handle._moveFrame = pathEditSolidMoveFrame;
                 }
@@ -1734,32 +1828,32 @@
 
                 handle.setAttribute("fill", "#4AF");
                 handle.setAttribute("stroke", "black");
-                pathEditor.appendChild(handle);
+                that.pathEditor.appendChild(handle);
             }
         }
 
         function beginNewTransitionEdit(nodeMoving) {
-            if (!pathEditor) {
-                pathEditor = document.createElementNS(svgNS, "g");
+            if (!that.pathEditor) {
+                that.pathEditor = document.createElementNS(svgNS, "g");
             }
 
-            pathEditor.id = "path-editor";
-            pathEditor._path = nodeMoving.getElementsByTagName("path")[0];
+            that.pathEditor.setAttribute("data-id", "path-editor");
+            that.pathEditor._path = nodeMoving.getElementsByTagName("path")[0];
             fixPathEditor(true);
-            pkg.svgNode.appendChild(pathEditor);
+            that.svgNode.appendChild(that.pathEditor);
         }
 
         function endNewTransitionEdit() {
-            if (pathEditor) {
-                pkg.svgNode.removeChild(pathEditor);
-                pathEditor = null;
+            if (that.pathEditor) {
+                that.svgNode.removeChild(that.pathEditor);
+                that.pathEditor = null;
             }
         }
 
         function beginViewBoxMove(e) {
             coords = {
-                viewBoxX: pkg.svgNode.viewBox.baseVal.x,
-                viewBoxY: pkg.svgNode.viewBox.baseVal.y,
+                viewBoxX: that.svgNode.viewBox.baseVal.x,
+                viewBoxY: that.svgNode.viewBox.baseVal.y,
                 x:        e.clientX,
                 y:        e.clientY
             };
@@ -1769,7 +1863,7 @@
 
         function toggleAccepting(nodeMoving) {
             var ellipses = nodeMoving.querySelectorAll("ellipse"),
-                tl       = nodeList[atob(id(nodeMoving))].t,
+                tl       = that.nodeList[atob(id(nodeMoving))].t,
                 segs,
                 ellipse,
                 path,
@@ -1832,16 +1926,16 @@
                 }
             }
 
-            snapshot();
+            that.snapshot();
         }
 
         // delete the transition tNode
         // if tstate is given, dont handle the state which tid is <tstate>
         function deleteTransition(tNode, tstate) {
             var j, k, n, len;
-            for (j in nodeList) {
-                if (nodeList.hasOwnProperty(j) && j !== tstate) {
-                    for (k = 0, n = nodeList[j], len = n.t.length; k < len; ++k) {
+            for (j in that.nodeList) {
+                if (j !== tstate) {
+                    for (k = 0, n = that.nodeList[j], len = n.t.length; k < len; ++k) {
                         if (n.t[k][0] === tNode) {
                             n.t.splice(k, 1);
                             --len;
@@ -1849,38 +1943,41 @@
                     }
                 }
             }
+
             tNode.parentNode.removeChild(tNode);
 
-            snapshot();
+            that.snapshot();
         }
 
         function removeNode(node) {
-            if (node === initialState) {
-                initialStateArrow.parentNode.removeChild(initialStateArrow);
-                initialState = initialStates[pkg.currentIndex] = initialStateArrows[pkg.currentIndex] = initialStateArrow = null;
+            if (node === that.initialState) {
+                that.initialStateArrow.parentNode.removeChild(that.initialStateArrow);
+                that.initialState = that.initialStates[that.currentIndex] = that.initialStateArrows[that.currentIndex] = that.initialStateArrow = null;
             }
 
-            var tid = atob(id(node)), n = nodeList[tid], i, len;
+            var tid = atob(id(node)), n = that.nodeList[tid], i, len;
+
             for (i = 0, len = n.t.length; i < len; ++i) {
                 deleteTransition(n.t[i][0], tid);
             }
-            delete nodeList[tid];
+
+            delete that.nodeList[tid];
             node.parentNode.removeChild(node);
 
-            snapshot();
+            that.snapshot();
         }
 
         function editNodeName(node) {
             var text = node.getElementsByTagName("text")[0];
-            pkg.prompt(
+            AudeDesigner.prompt(
                 _("Name of the state"),
                 _("Which name do you want for the state?"),
                 text.textContent,
                 function (t) {
                     if (t) {
-                        t = pkg.standardizeStringValueFunction(t);
+                        t = AudeDesigner.standardizeStringValueFunction(t);
                         var tb = btoa(t);
-                        var existingNode = byId(pkg.svgNode, tb);
+                        var existingNode = byId(that.svgNode, tb);
 
                         if (existingNode) {
                             if (node !== existingNode) {
@@ -1888,7 +1985,7 @@
                             }
                         } else {
                             var oldid = atob(id(node)),
-                                n     = nodeList[oldid],
+                                n     = that.nodeList[oldid],
                                 tid,
                                 len,
                                 i;
@@ -1907,8 +2004,9 @@
                                     n.t[i][0].querySelector("title").textContent = toBrokenGraphvizTitle(atob(tid[0])) + "->" + toBrokenGraphvizTitle(t);
                                 }
                             }
-                            nodeList[t] = nodeList[oldid];
-                            delete nodeList[oldid];
+
+                            that.nodeList[t] = that.nodeList[oldid];
+                            delete that.nodeList[oldid];
                             node.querySelector("title").textContent = toBrokenGraphvizTitle(text.textContent = t);
                             id(node, tb);
 
@@ -1922,7 +2020,7 @@
                             // FIXME terrible hack to "repair" the node after resize
                             prepareNodeMove(node, {});
                             fixNodeAndTransition(node);
-                            snapshot();
+                            that.snapshot();
                         }
                     }
                 }
@@ -1931,14 +2029,14 @@
 
         function editTransitionSymbols(edge) {
             var text = edge.getElementsByTagName("text")[0];
-            pkg.prompt(
+            AudeDesigner.prompt(
                 _("Transitions' symbols"),
                 _("Please give a comma-separated list of labels.\nYou can suround special characters with simple or double quotes."),
                 text.textContent,
                 function (t) {
                     if (t !== null) {
-                        text.textContent = pkg.formatTrans(t || "\\e");
-                        snapshot();
+                        text.textContent = AudeDesigner.formatTrans(t || "\\e");
+                        that.snapshot();
                     }
                 }
             );
@@ -1949,7 +2047,7 @@
             g.setAttribute("class", "node");
             var nid = 0;
 
-            while (nodeList.hasOwnProperty(nid)) {
+            while (nid in that.nodeList) {
                 ++nid;
             }
 
@@ -1958,7 +2056,7 @@
             title.textContent = toBrokenGraphvizTitle(nid);
             var ellipse = document.createElementNS(svgNS, "ellipse");
 
-            var pt = svgcursorPoint(e);
+            var pt = svgcursorPoint(that.svgNode, e);
             var ry = 18.3848;
             var cy = pt.y;
             fill(ellipse, "none");
@@ -1977,27 +2075,27 @@
             g.appendChild(title);
             g.appendChild(ellipse);
             g.appendChild(text);
-            pkg.svgNode.querySelector("g").appendChild(g);
+            that.svgNode.querySelector("g").appendChild(g);
 
-            if (!initialState) {
-                setInitialState(g);
+            if (!that.initialState) {
+                that.setInitialState(g);
             }
 
-            nodeList[nid] = {
+            that.nodeList[nid] = {
                 t: []
             };
 
             return g;
         }
 
-        // checks if the node or one of its parent has class c. Specific to the AutomatonDesigner.
+        // checks if the node or one of its parent has class c. Specific to the AutomatonAudeDesigner.
         function parentWithClass(node, c) {
             do {
                 if (node.getAttribute("class") === c) {
                     return node;
                 }
                 node = node.parentNode;
-            } while (node && node !== pkg.svgContainer);
+            } while (node && node !== that.svgContainer);
             return false;
         }
 
@@ -2011,8 +2109,8 @@
         }
 
         var stopOverlay = false;
-        pkg.svgContainer.addEventListener("mousedown", function (e) {
-            blockNewState = true;
+        that.svgContainer.addEventListener("mousedown", function (e) {
+            that.blockNewState = true;
             if (blockClick) {
                 return;
             }
@@ -2026,7 +2124,7 @@
 
                 nodeMoving = parentWithClass(e.target, "pathedit-handle");
                 if (nodeMoving) {
-                    overlayHide();
+                    that.overlayHide();
 
                     // handle path editing
                     coords = {
@@ -2034,14 +2132,14 @@
                         y: e.clientY
                     };
 
-                    pkg.stopMove = true;
+                    that.stopMove = true;
                     setMoveAction(nodeMoving._moveFrame, e);
                 } else if (e.target.classList.contains(CSSP + "resize-handle")) {
-                    overlayHide();
+                    that.overlayHide();
                     beginNodeResizing(parentWithClass(resizeHandledElement, "node"), e);
                 } else if (!parentWithClass(e.target, CSSP + "overlay")) {
-                    var cso = currentOverlay;
-                    pkg.cleanSVG(pkg.currentIndex, true);
+                    var cso = that.currentOverlay;
+                    that.cleanSVG(that.currentIndex, true);
 
                     if ( (nodeMoving = parentWithClass(e.target, "node")) ) {
                         if (newTransitionMsg) {
@@ -2055,9 +2153,9 @@
                             ); // setTimeout: workaround to get focus
                             stopOverlay = true;
                         } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
-                            pkg.stopMove = true;
+                            that.stopMove = true;
                             removeNode(nodeMoving);
-                            snapshot();
+                            that.snapshot();
                         } else if (e.shiftKey) {
                             beginNewTransition(nodeMoving, e);
                         } else {
@@ -2075,7 +2173,7 @@
                             transitionStraight(nodeMoving);
                         } else if (e.ctrlKey || e.metaKey) {
                             deleteTransition(nodeMoving, null);
-                            snapshot();
+                            that.snapshot();
                         } else {
                             beginNewTransitionEdit(nodeMoving);
                             if (e.target.nodeName === "text") {
@@ -2083,7 +2181,7 @@
                             }
                         }
                     } else if (!currentMoveAction) {
-                        blockNewState = false;
+                        that.blockNewState = false;
                     }
                 }
             } else {
@@ -2095,11 +2193,11 @@
                     if ( (nodeMoving = parentWithClass(e.target, "node")) ) {
                         if (!e.shiftKey) {
                             if ((e.ctrlKey || e.metaKey)) {
-                                setInitialState(nodeMoving);
-                                snapshot();
+                                that.setInitialState(nodeMoving);
+                                that.snapshot();
                             } else {
                                 toggleAccepting(nodeMoving);
-                                snapshot();
+                                that.snapshot();
                             }
                         }
                     }
@@ -2121,7 +2219,7 @@
                     }
                 }
             } else if (currentMoveAction !== nodeResizeFrame) {
-                resizeHandlesHide();
+                that.resizeHandlesHide();
 
                 node = parentWithClass(e.target, "edge");
                 if (node) {
@@ -2132,20 +2230,20 @@
                         overlayOn(node);
                     }
                 } else {
-                    overlayHide();
+                    that.overlayHide();
                 }
             }
 
-            pkg.svgContainer.style.cursor = "";
+            that.svgContainer.style.cursor = "";
             cancelMoveAction();
 
             if (frameModifiedSVG) {
-                snapshot();
+                that.snapshot();
                 frameModifiedSVG = false;
             }
         }
 
-        pkg.svgContainer.addEventListener("mouseup", function (e) {
+        that.svgContainer.addEventListener("mouseup", function (e) {
             blockClick = false;
 
             if (parentWithClass(e.target, CSSP + "overlay")) {
@@ -2153,14 +2251,14 @@
             }
 
             if (currentMoveAction === nodeBindingFrame) {
-                if (!blockNewState && (nodeMoving = parentWithClass(e.target, "node"))) {
+                if (!that.blockNewState && (nodeMoving = parentWithClass(e.target, "node"))) {
                     endNewTransition(nodeMoving);
                     stopOverlay = false;
                 }
             } else {
                 nodeMouseUp(e);
 
-                if (pathEditor) {
+                if (that.pathEditor) {
                     fixPathEditor();
                 }
             }
@@ -2168,7 +2266,7 @@
 
         function makeResizeHandle() {
             var rect = document.createElementNS(svgNS, "rect");
-            resizeHandle = {
+            that.resizeHandle = {
                 g: document.createElementNS(svgNS, "g"),
                 rect: rect,
                 topLeft    : rect.cloneNode(false),
@@ -2181,65 +2279,65 @@
                 right      : rect.cloneNode(false)
             };
 
-            resizeHandle.g.appendChild(resizeHandle.rect);
-            resizeHandle.g.appendChild(resizeHandle.topLeft);
-            resizeHandle.g.appendChild(resizeHandle.top);
-            resizeHandle.g.appendChild(resizeHandle.topRight);
-            resizeHandle.g.appendChild(resizeHandle.bottomLeft);
-            resizeHandle.g.appendChild(resizeHandle.bottom);
-            resizeHandle.g.appendChild(resizeHandle.bottomRight);
-            resizeHandle.g.appendChild(resizeHandle.left);
-            resizeHandle.g.appendChild(resizeHandle.right);
-            resizeHandle.g.setAttribute("id", "resize-handle");
+            that.resizeHandle.g.appendChild(that.resizeHandle.rect);
+            that.resizeHandle.g.appendChild(that.resizeHandle.topLeft);
+            that.resizeHandle.g.appendChild(that.resizeHandle.top);
+            that.resizeHandle.g.appendChild(that.resizeHandle.topRight);
+            that.resizeHandle.g.appendChild(that.resizeHandle.bottomLeft);
+            that.resizeHandle.g.appendChild(that.resizeHandle.bottom);
+            that.resizeHandle.g.appendChild(that.resizeHandle.bottomRight);
+            that.resizeHandle.g.appendChild(that.resizeHandle.left);
+            that.resizeHandle.g.appendChild(that.resizeHandle.right);
+            that.resizeHandle.g.setAttribute("class", "resize-handle");
 
-            resizeHandle.topLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.top.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.topRight.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.bottomLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.bottom.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.bottomRight.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.left.setAttribute("width", RESIZE_HANDLE_WIDTH);
-            resizeHandle.right.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.topLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.top.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.topRight.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.bottomLeft.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.bottom.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.bottomRight.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.left.setAttribute("width", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.right.setAttribute("width", RESIZE_HANDLE_WIDTH);
 
-            resizeHandle.topLeft.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.top.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.topRight.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.bottomLeft.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.bottom.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.bottomRight.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.left.setAttribute("height", RESIZE_HANDLE_WIDTH);
-            resizeHandle.right.setAttribute("height", RESIZE_HANDLE_WIDTH);
-
-
-            resizeHandle.topLeft.classList.add(CSSP + "resize-handle");
-            resizeHandle.top.classList.add(CSSP + "resize-handle");
-            resizeHandle.topRight.classList.add(CSSP + "resize-handle");
-            resizeHandle.bottomLeft.classList.add(CSSP + "resize-handle");
-            resizeHandle.bottom.classList.add(CSSP + "resize-handle");
-            resizeHandle.bottomRight.classList.add(CSSP + "resize-handle");
-            resizeHandle.left.classList.add(CSSP + "resize-handle");
-            resizeHandle.right.classList.add(CSSP + "resize-handle");
-
-            resizeHandle.topLeft.classList.add(CSSP + "resize-top-left");
-            resizeHandle.top.classList.add(CSSP + "resize-top");
-            resizeHandle.topRight.classList.add(CSSP + "resize-top-right");
-            resizeHandle.bottomLeft.classList.add(CSSP + "resize-bottom-left");
-            resizeHandle.bottom.classList.add(CSSP + "resize-bottom");
-            resizeHandle.bottomRight.classList.add(CSSP + "resize-bottom-right");
-            resizeHandle.left.classList.add(CSSP + "resize-left");
-            resizeHandle.right.classList.add(CSSP + "resize-right");
+            that.resizeHandle.topLeft.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.top.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.topRight.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.bottomLeft.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.bottom.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.bottomRight.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.left.setAttribute("height", RESIZE_HANDLE_WIDTH);
+            that.resizeHandle.right.setAttribute("height", RESIZE_HANDLE_WIDTH);
 
 
-            resizeHandle.topLeft.style.cursor = "nw-resize";
-            resizeHandle.top.style.cursor = "n-resize";
-            resizeHandle.topRight.style.cursor = "ne-resize";
-            resizeHandle.bottomLeft.style.cursor = "sw-resize";
-            resizeHandle.bottom.style.cursor = "s-resize";
-            resizeHandle.bottomRight.style.cursor = "se-resize";
-            resizeHandle.left.style.cursor = "w-resize";
-            resizeHandle.right.style.cursor = "e-resize";
+            that.resizeHandle.topLeft.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.top.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.topRight.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.bottomLeft.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.bottom.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.bottomRight.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.left.classList.add(CSSP + "resize-handle");
+            that.resizeHandle.right.classList.add(CSSP + "resize-handle");
 
-            resizeHandle.rect.classList.add(CSSP + "resize-handle-rect");
+            that.resizeHandle.topLeft.classList.add(CSSP + "resize-top-left");
+            that.resizeHandle.top.classList.add(CSSP + "resize-top");
+            that.resizeHandle.topRight.classList.add(CSSP + "resize-top-right");
+            that.resizeHandle.bottomLeft.classList.add(CSSP + "resize-bottom-left");
+            that.resizeHandle.bottom.classList.add(CSSP + "resize-bottom");
+            that.resizeHandle.bottomRight.classList.add(CSSP + "resize-bottom-right");
+            that.resizeHandle.left.classList.add(CSSP + "resize-left");
+            that.resizeHandle.right.classList.add(CSSP + "resize-right");
+
+
+            that.resizeHandle.topLeft.style.cursor = "nw-resize";
+            that.resizeHandle.top.style.cursor = "n-resize";
+            that.resizeHandle.topRight.style.cursor = "ne-resize";
+            that.resizeHandle.bottomLeft.style.cursor = "sw-resize";
+            that.resizeHandle.bottom.style.cursor = "s-resize";
+            that.resizeHandle.bottomRight.style.cursor = "se-resize";
+            that.resizeHandle.left.style.cursor = "w-resize";
+            that.resizeHandle.right.style.cursor = "e-resize";
+
+            that.resizeHandle.rect.classList.add(CSSP + "resize-handle-rect");
         }
 
         function makeStateOverlay() {
@@ -2252,8 +2350,8 @@
             stateOverlay.lastChild.lastChild.textContent = _("Toggle accepting");
 
             stateOverlay.lastChild.lastChild.onclick = function () {
-                toggleAccepting(currentOverlay);
-                overlayHide();
+                toggleAccepting(that.currentOverlay);
+                that.overlayHide();
             };
 
             stateOverlay.appendChild(document.createElement("li"));
@@ -2262,8 +2360,8 @@
             stateOverlay.lastChild.lastChild.textContent = _("Rename");
 
             stateOverlay.lastChild.lastChild.onclick = function () {
-                editNodeName(currentOverlay);
-                overlayHide();
+                editNodeName(that.currentOverlay);
+                that.overlayHide();
             };
 
             stateOverlay.appendChild(document.createElement("li"));
@@ -2272,8 +2370,8 @@
             stateOverlay.lastChild.lastChild.textContent = _("Make initial");
 
             stateOverlay.lastChild.lastChild.onclick = function () {
-                setInitialState(currentOverlay);
-                overlayHide();
+                that.setInitialState(that.currentOverlay);
+                that.overlayHide();
             };
 
             stateOverlay.appendChild(document.createElement("li"));
@@ -2282,9 +2380,9 @@
             stateOverlay.lastChild.lastChild.textContent = _("Delete");
 
             stateOverlay.lastChild.lastChild.onclick = function () {
-                removeNode(currentOverlay);
-                overlayHide();
-                resizeHandlesHide();
+                removeNode(that.currentOverlay);
+                that.overlayHide();
+                that.resizeHandlesHide();
             };
 
             stateOverlay.appendChild(document.createElement("li"));
@@ -2297,8 +2395,8 @@
                     title: _("New transition"),
                     content: _("Click on the destination state of the new transition."),
                 });
-                newTransitionMsg.beginState = currentOverlay;
-                overlayHide();
+                newTransitionMsg.beginState = that.currentOverlay;
+                that.overlayHide();
             };
 
             transitionOverlay = document.createElement("ul");
@@ -2310,8 +2408,8 @@
             transitionOverlay.lastChild.lastChild.textContent = _("Modify symbols");
 
             transitionOverlay.lastChild.lastChild.onclick = function () {
-                editTransitionSymbols(currentOverlay);
-                overlayHide();
+                editTransitionSymbols(that.currentOverlay);
+                that.overlayHide();
             };
 
             transitionOverlay.appendChild(document.createElement("li"));
@@ -2320,8 +2418,8 @@
             transitionOverlay.lastChild.lastChild.textContent = _("Make straight");
 
             transitionOverlay.lastChild.lastChild.onclick = function () {
-                transitionStraight(currentOverlay);
-                overlayHide();
+                transitionStraight(that.currentOverlay);
+                that.overlayHide();
             };
             transitionOverlay.appendChild(document.createElement("li"));
             transitionOverlay.lastChild.appendChild(document.createElement("a"));
@@ -2329,51 +2427,51 @@
             transitionOverlay.lastChild.lastChild.textContent = _("Delete");
 
             transitionOverlay.lastChild.lastChild.onclick = function () {
-                deleteTransition(currentOverlay);
+                deleteTransition(that.currentOverlay);
                 endNewTransitionEdit();
-                overlayHide();
+                that.overlayHide();
             };
         }
 
-       function setOverlayOn(node) {
-            currentOverlay = node;
+        function setOverlayOn(node) {
+            that.currentOverlay = node;
 
             var elem;
 
             if (node.classList.contains("edge")) {
                 elem = node.getElementsByTagName("text")[0];
-                overlay = transitionOverlay;
+                that.overlay = transitionOverlay;
             } else {
                 elem = node;
-                overlay = stateOverlay;
+                that.overlay = stateOverlay;
             }
 
             var bcr = elem.getBoundingClientRect();
-            var parentBcr = pkg.svgNode.parentNode.getBoundingClientRect();
+            var parentBcr = that.svgNode.parentNode.getBoundingClientRect();
             var x = bcr.left - parentBcr.left;
             var y = bcr.top - parentBcr.top;
 
             if (bcr.left < parentBcr.width - bcr.right) {
-                overlay.style.left = Math.max(0, x) + "px";
-                overlay.style.right = "";
+                that.overlay.style.left = Math.max(0, x) + "px";
+                that.overlay.style.right = "";
             } else {
-                overlay.style.right = Math.max(0, parentBcr.width - x - bcr.width) + "px";
-                overlay.style.left = "";
+                that.overlay.style.right = Math.max(0, parentBcr.width - x - bcr.width) + "px";
+                that.overlay.style.left = "";
             }
 
             if (bcr.top < parentBcr.height - bcr.bottom) {
-                overlay.style.top  = Math.max(0, OVERLAY_TOP_OFFSET + bcr.height + y + RESIZE_HANDLE_WIDTH * pkg.svgZoom) + "px";
-                overlay.style.bottom = "";
+                that.overlay.style.top  = Math.max(0, OVERLAY_TOP_OFFSET + bcr.height + y + RESIZE_HANDLE_WIDTH * that.svgZoom) + "px";
+                that.overlay.style.bottom = "";
             } else {
-                overlay.style.bottom = Math.max(0, parentBcr.height - y + RESIZE_HANDLE_WIDTH * pkg.svgZoom + OVERLAY_TOP_OFFSET) + "px";
-                overlay.style.top = "";
+                that.overlay.style.bottom = Math.max(0, parentBcr.height - y + RESIZE_HANDLE_WIDTH * that.svgZoom + OVERLAY_TOP_OFFSET) + "px";
+                that.overlay.style.top = "";
             }
 
-            pkg.svgNode.parentNode.appendChild(overlay);
+            that.svgNode.parentNode.appendChild(that.overlay);
         }
 
         function overlayOn(node) {
-            if (!overlay) {
+            if (!that.overlay) {
                 makeStateOverlay();
             }
 
@@ -2397,53 +2495,53 @@
             };
 
 
-            resizeHandle.rect.setAttribute("x",        r.left);
-            resizeHandle.left.setAttribute("x",        r.left - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.topLeft.setAttribute("x",     r.left - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.bottomLeft.setAttribute("x",  r.left - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.rect.setAttribute("x",        r.left);
+            that.resizeHandle.left.setAttribute("x",        r.left - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.topLeft.setAttribute("x",     r.left - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.bottomLeft.setAttribute("x",  r.left - (RESIZE_HANDLE_WIDTH / 2));
 
-            resizeHandle.rect.setAttribute("width",    r.width);
-            resizeHandle.right.setAttribute("x",       r.right - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.topRight.setAttribute("x",    r.right - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.bottomRight.setAttribute("x", r.right - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.rect.setAttribute("width",    r.width);
+            that.resizeHandle.right.setAttribute("x",       r.right - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.topRight.setAttribute("x",    r.right - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.bottomRight.setAttribute("x", r.right - (RESIZE_HANDLE_WIDTH / 2));
 
-            resizeHandle.rect.setAttribute("y",        r.top);
-            resizeHandle.top.setAttribute("y",         r.top - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.topLeft.setAttribute("y",     r.top - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.topRight.setAttribute("y",    r.top - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.rect.setAttribute("y",        r.top);
+            that.resizeHandle.top.setAttribute("y",         r.top - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.topLeft.setAttribute("y",     r.top - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.topRight.setAttribute("y",    r.top - (RESIZE_HANDLE_WIDTH / 2));
 
-            resizeHandle.rect.setAttribute("height",   r.height);
-            resizeHandle.bottom.setAttribute("y",      r.bottom - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.bottomLeft.setAttribute("y",  r.bottom - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.bottomRight.setAttribute("y", r.bottom - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.rect.setAttribute("height",   r.height);
+            that.resizeHandle.bottom.setAttribute("y",      r.bottom - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.bottomLeft.setAttribute("y",  r.bottom - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.bottomRight.setAttribute("y", r.bottom - (RESIZE_HANDLE_WIDTH / 2));
 
-            resizeHandle.bottom.setAttribute("x",      r.left + r.width  / 2 - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.top.setAttribute("x",         r.left + r.width  / 2 - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.left.setAttribute("y",        r.top  + r.height / 2 - (RESIZE_HANDLE_WIDTH / 2));
-            resizeHandle.right.setAttribute("y",       r.top  + r.height / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.bottom.setAttribute("x",      r.left + r.width  / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.top.setAttribute("x",         r.left + r.width  / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.left.setAttribute("y",        r.top  + r.height / 2 - (RESIZE_HANDLE_WIDTH / 2));
+            that.resizeHandle.right.setAttribute("y",       r.top  + r.height / 2 - (RESIZE_HANDLE_WIDTH / 2));
 
-            if (resizeHandledElement !== ele) {
+            if (that.resizeHandledElement !== ele) {
 
-                if (resizeHandledElement) {
-                    resizeHandledElement.classList.remove(CSSP + "resize-handled");
+                if (that.resizeHandledElement) {
+                    that.resizeHandledElement.classList.remove(CSSP + "resize-handled");
                 }
 
-                resizeHandledElement = ele;
+                that.resizeHandledElement = ele;
                 ele.classList.add(CSSP + "resize-handled");
 
-                pkg.svgNode.appendChild(resizeHandle.g);
+                that.svgNode.appendChild(that.resizeHandle.g);
             }
         }
 
         function stateResizeHandlesOn(state) {
-            if (!resizeHandle) {
+            if (!that.resizeHandle) {
                 makeResizeHandle();
             }
 
             resizeHandlesOn(getBigEllipse(state));
         }
 
-        pkg.svgContainer.addEventListener("dblclick", function (e) {
+        that.svgContainer.addEventListener("dblclick", function (e) {
             if ( (nodeEdit = parentWithClass(e.target, "node")) ) {
                 if (!(e.button || e.shiftKey || e.ctrlKey || e.metaKey)) {
                     editNodeName(nodeEdit);
@@ -2452,9 +2550,9 @@
                 if (!(e.ctrlKey || e.metaKey || e.shiftKey)) { // delete transition
                     editTransitionSymbols(nodeEdit);
                 }
-            } else if (!(e.button || blockNewState || e.ctrlKey || e.metaKey || e.shiftKey)) {
+            } else if (!(e.button || that.blockNewState || e.ctrlKey || e.metaKey || e.shiftKey)) {
                 createNode(e);
-                snapshot();
+                that.snapshot();
             }
         }, false);
 
@@ -2476,280 +2574,213 @@
                 }
             }
         }, false);
+    };
 
-        (pkg.userZoom = function (th) {
-            th.disabled = true;
 
-            if (!th.fixViewBox) {
-                th.fixViewBox = pkg.fixViewBox.bind(null, th);
+    AudeDesigner.prototype.newZoom = function (zoom, x, y) {
+        if (!zoom) {
+            this.svgZoom = 0.1;
+            return;
+        }
+
+        this.svgZoom = zoom;
+        this.setViewBoxSize();
+
+        if (!isNaN(x)) {
+            this.svgNode.viewBox.baseVal.x = x - (x - this.svgNode.viewBox.baseVal.x) * this.oldZoom / this.svgZoom;
+            this.svgNode.viewBox.baseVal.y = y - (y - this.svgNode.viewBox.baseVal.y) * this.oldZoom / this.svgZoom;
+        }
+    }
+
+    AudeDesigner.prototype.autoCenterZoom = function () {
+        var wantedRatio = 0.8;
+        var states = this.svgNode.querySelectorAll(".node,path,polygon,text");
+
+        var minX = Infinity;
+        var minY = Infinity;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
+
+        var parentBcr = this.svgNode.getBoundingClientRect();
+
+        for (var state, i = 0; i < states.length; i++) {
+            state = states[i];
+
+            var bcr = state.getBoundingClientRect();
+            var x = bcr.left - parentBcr.left;
+            var y = bcr.top - parentBcr.top;
+
+            if (x < minX) {
+                minX = x;
             }
 
-            if (!th.disable) {
-                th.disable = function () {
-                    th.disabled = true;
-                };
+            if (y < minY) {
+                minY = y;
             }
 
-            if (!th.enable) {
-                th.enable = function () {
-                    th.disabled = false;
-                };
+            x += bcr.width;
+            y += bcr.height;
+
+            if (x > maxX) {
+                maxX = x;
             }
 
-            var oldZoom, initialZoom, lastDeltaX, lastDeltaY;
+            if (y > maxY) {
+                maxY = y;
+            }
+        }
 
-            function newZoom(zoom, x, y) {
-                if (!zoom) {
-                    th.svgZoom = 0.1;
-                    return;
-                }
+        if (
+            minX ===  Infinity ||
+            minY ===  Infinity ||
+            maxY === -Infinity ||
+            maxX === -Infinity
+        ) {
+            return;
+        }
 
-                th.svgZoom = zoom;
-                pkg.setViewBoxSize(th);
+        var currentRatio = Math.max(
+            (maxX - minX) / parentBcr.width,
+            (maxY - minY) / parentBcr.height
+        );
 
-                if (!isNaN(x)) {
-                    th.svgNode.viewBox.baseVal.x = x - (x - th.svgNode.viewBox.baseVal.x) * oldZoom / th.svgZoom;
-                    th.svgNode.viewBox.baseVal.y = y - (y - th.svgNode.viewBox.baseVal.y) * oldZoom / th.svgZoom;
-                }
+        var previousZoom = that.svgZoom;
+        var factorRatio = (wantedRatio / currentRatio);
+        var nz = Math.min(1, that.svgZoom * factorRatio);
+
+        that.newZoom(nz);
+
+        that.svgNode.viewBox.baseVal.x += (
+            minX / previousZoom - (
+                that.svgNode.viewBox.baseVal.width
+                    -
+                (maxX - minX) / previousZoom
+            ) / 2
+        );
+
+        that.svgNode.viewBox.baseVal.y += (
+            minY / previousZoom - (
+                that.svgNode.viewBox.baseVal.height
+                    -
+                (maxY - minY) / previousZoom
+            ) / 2
+        );
+    };
+
+    AudeDesigner.prototype.disable = function () {
+        this.disabled = true;
+    };
+
+    AudeDesigner.prototype.enable = function () {
+        this.disabled = false;
+    };
+
+    AudeDesigner.prototype.userZoom = function () {
+        var that = this;
+
+        this.disabled = true;
+
+        var initialZoom, lastDeltaX, lastDeltaY;
+
+        listenMouseWheel(function (e, delta) {
+            if (!that.svgNode || that.disabled) {
+                return null;
             }
 
-            th.autoCenterZoom = function () {
-                var wantedRatio = 0.8;
-                var states = pkg.svgNode.querySelectorAll(".node,path,polygon,text");
+            var pt = svgcursorPoint(that.svgNode, e);
+            that.oldZoom = that.svgZoom;
+            that.newZoom(Math.round((that.svgZoom + delta * 0.1) * 10) / 10, pt.x, pt.y);
 
-                var minX = Infinity;
-                var minY = Infinity;
-                var maxX = -Infinity;
-                var maxY = -Infinity;
-
-                var parentBcr = pkg.svgNode.getBoundingClientRect();
-
-                for (var state, i = 0; i < states.length; i++) {
-                    state = states[i];
-
-                    var bcr = state.getBoundingClientRect();
-                    var x = bcr.left - parentBcr.left;
-                    var y = bcr.top - parentBcr.top;
-
-                    if (x < minX) {
-                        minX = x;
-                    }
-
-                    if (y < minY) {
-                        minY = y;
-                    }
-
-                    x += bcr.width;
-                    y += bcr.height;
-
-                    if (x > maxX) {
-                        maxX = x;
-                    }
-
-                    if (y > maxY) {
-                        maxY = y;
-                    }
-                }
-
-                if (
-                    minX ===  Infinity ||
-                    minY ===  Infinity ||
-                    maxY === -Infinity ||
-                    maxX === -Infinity
-                ) {
-                    return;
-                }
-
-                var currentRatio = Math.max(
-                    (maxX - minX) / parentBcr.width,
-                    (maxY - minY) / parentBcr.height
-                );
-
-                var previousZoom = pkg.svgZoom;
-                var factorRatio = (wantedRatio / currentRatio);
-                var nz = Math.min(1, pkg.svgZoom * factorRatio);
-
-                newZoom(nz);
-
-                pkg.svgNode.viewBox.baseVal.x += (
-                    minX / previousZoom - (
-                        pkg.svgNode.viewBox.baseVal.width
-                            -
-                        (maxX - minX) / previousZoom
-                    ) / 2
-                );
-
-                pkg.svgNode.viewBox.baseVal.y += (
-                    minY / previousZoom - (
-                        pkg.svgNode.viewBox.baseVal.height
-                            -
-                        (maxY - minY) / previousZoom
-                    ) / 2
-                );
-            };
-
-            listenMouseWheel(function (e, delta) {
-                if (!th.svgNode || th.disabled) {
-                    return null;
-                }
-
-                var pt = svgcursorPoint(e, th);
-                oldZoom = th.svgZoom;
-                newZoom(Math.round((th.svgZoom + delta * 0.1) * 10) / 10, pt.x, pt.y);
-
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }, th.svgContainer);
-
-            function drag(e) {
-                if (lastDeltaX || lastDeltaY) {
-                    th.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / th.svgZoom;
-                    th.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / th.svgZoom;
-                }
-                lastDeltaX = e.gesture.deltaX;
-                lastDeltaY = e.gesture.deltaY;
-            }
-
-            if (window.Hammer) {
-                window.Hammer(th.svgContainer).on("touch", function () {
-                    if (th.disabled) {
-                        return;
-                    }
-
-                    initialZoom = th.svgZoom;
-                    lastDeltaX = 0;
-                    lastDeltaY = 0;
-                });
-
-                window.Hammer(th.svgContainer).on("pinch", function (e) {
-                    if (th.disabled) {
-                        return;
-                    }
-
-                    if (th === pkg) {
-                        blockNewState = true;
-                    }
-                    th.stopMove = true;
-                    th.stopMoveNode = true;
-
-                    oldZoom = th.svgZoom;
-                    var nz = initialZoom * e.gesture.scale;
-
-                    if (nz !== th.svgZoom) {
-                        var pt = svgcursorPoint({
-                            clientX: e.gesture.center.pageX,
-                            clientY: e.gesture.center.pageY
-                        }, th);
-
-                        newZoom(nz, pt.x, pt.y);
-                    }
-
-                    drag(e);
-                });
-
-                window.Hammer(th.svgContainer).on("drag", function (e) {
-                    if (th.disabled) {
-                        return;
-                    }
-
-                    if (!th.stopMove) {
-                        blockNewState = true;
-                        drag(e);
-                    }
-                });
-
-                window.Hammer(th.svgContainer).on("release", function () {
-                    if (th.disabled) {
-                        return;
-                    }
-
-                    th.stopMove = false;
-                    th.stopMoveNode = false;
-                });
-            }
-        })(pkg);
-
-        pkg.enable();
-
-        pkg.svgContainer.ondragstart = pkg.svgContainer.onselectstart = pkg.svgContainer.oncontextmenu = function (e) {
             e.preventDefault();
+            e.stopPropagation();
             return false;
-        };
+        }, that.svgContainer);
 
-        pkg.clearSVG(pkg.currentIndex, true);
+        function drag(e) {
+            if (lastDeltaX || lastDeltaY) {
+                that.svgNode.viewBox.baseVal.x -= (e.gesture.deltaX - lastDeltaX) / that.svgZoom;
+                that.svgNode.viewBox.baseVal.y -= (e.gesture.deltaY - lastDeltaY) / that.svgZoom;
+            }
+            lastDeltaX = e.gesture.deltaX;
+            lastDeltaY = e.gesture.deltaY;
+        }
 
-        pkg.svgContainer.parentNode.appendChild(document.createElement("div"));
-        pkg.svgContainer.parentNode.lastChild.id = "new-state-btn-wrap";
-        pkg.svgContainer.parentNode.lastChild.appendChild(document.createElement("a"));
-        pkg.svgContainer.parentNode.lastChild.lastChild.id = "new-state-btn";
+        if (window.Hammer) {
+            window.Hammer(that.svgContainer).on("touch", function () {
+                if (that.disabled) {
+                    return;
+                }
 
-        pkg.svgContainer.parentNode.lastChild.lastChild.onmousedown = function (e) {
-            e.target.classList.add("mouse-down");
-        };
-
-        pkg.svgContainer.parentNode.lastChild.lastChild.onmouseup = function (e) {
-            e.target.classList.remove("mouse-down");
-        };
-
-        pkg.svgContainer.parentNode.lastChild.lastChild.onclick = function (e) {
-            insertNodeMsg = msg({
-                title: _("New state"),
-                content: _("Click where you want to place the new state.")
+                initialZoom = that.svgZoom;
+                lastDeltaX = 0;
+                lastDeltaY = 0;
             });
-        };
 
-        pkg.svgContainer.parentNode.lastChild.lastChild.textContent = _("New state");
+            window.Hammer(that.svgContainer).on("pinch", function (e) {
+                if (that.disabled) {
+                    return;
+                }
+
+                that.blockNewState = true;
+                that.stopMove = true;
+                that.stopMoveNode = true;
+
+                that.oldZoom = that.svgZoom;
+                var nz = initialZoom * e.gesture.scale;
+
+                if (nz !== that.svgZoom) {
+                    var pt = svgcursorPoint(that.svgNode, {
+                        clientX: e.gesture.center.pageX,
+                        clientY: e.gesture.center.pageY
+                    });
+
+                    that.newZoom(nz, pt.x, pt.y);
+                }
+
+                drag(e);
+            });
+
+            window.Hammer(that.svgContainer).on("drag", function (e) {
+                if (that.disabled) {
+                    return;
+                }
+
+                if (!that.stopMove) {
+                    that.blockNewState = true;
+                    drag(e);
+                }
+            });
+
+            window.Hammer(that.svgContainer).on("release", function () {
+                if (that.disabled) {
+                    return;
+                }
+
+                that.stopMove = false;
+                that.stopMoveNode = false;
+            });
+        }
     };
 
-    // utility function : gets the outerHTML of a node.
-    // WARNING: please don"t use this function for anything,
-    //          it's not universal and could break your code.
-    //          Check its implementation for more details.
-    pkg.outerHTML = function (node) {
-        // webkit does not support inner/pkg.outerHTML for pure XML nodes
-        if ("outerHTML" in node) {
-            return node.outerHTML;
-        }
+    AudeDesigner.prototype.stateSetBackgroundColor = function (index, state, color) {
+        var s = that.svgs[index];
 
-        if (node.parentNode && node.parentNode.childNodes.length === 1) {
-            return node.parentNode.innerHTML;
-        }
-
-        var ns = node.nextSibling;
-        var pn = node.parentNode;
-        var div = document.createElement("div");
-        div.appendChild(node);
-        var o = div.innerHTML;
-
-        if (pn) {
-            pn.insertBefore(node, ns);
-        } else {
-            div.removeChild(node);
-        }
-
-        div = null;
-        return o;
-    };
-
-    pkg.stateSetBackgroundColor = function (index, state, color) {
-        var s = svgs[index];
         if (s) {
-            state = byId(s, btoa(pkg.getStringValueFunction(state)));
+            state = byId(s, btoa(AudeDesigner.getStringValueFunction(state)));
             if (state) {
                 fill(getBigEllipse(state), color);
             }
         }
     };
 
-    pkg.stateRemoveBackgroundColor = function (index, state) {
-        pkg.stateSetBackgroundColor(index, state, "none") ;
+    AudeDesigner.prototype.stateRemoveBackgroundColor = function (index, state) {
+        AudeDesigner.prototype.stateSetBackgroundColor(index, state, "none") ;
     };
 
-    pkg.transitionSetColor = function (index, startState, symbol, endState, color) {
-        var s = svgs[index];
-        startState = pkg.getStringValueFunction(startState);
-        endState   = pkg.getStringValueFunction(endState);
+    AudeDesigner.prototype.transitionSetColor = function (index, startState, symbol, endState, color) {
+        var s = that.svgs[index];
+        startState = AudeDesigner.getStringValueFunction(startState);
+        endState   = AudeDesigner.getStringValueFunction(endState);
 
         if (s) {
             var edge = byId(s, btoa(startState) + " " + btoa(endState));
@@ -2762,40 +2793,8 @@
         }
     };
 
-    function handlePulse(text, polygon, path, step, pulseTime) {
-        if (step) {
-            text.style.transition = text.style.webkitTransition = text.style.msTransition = polygon.style.transition = polygon.style.webkitTransition = polygon.style.msTransition = path.style.transition = path.style.webkitTransition = path.style.msTransition = "";
-        } else {
-            text.removeAttribute("fill");
-            polygon.setAttribute("fill", "black");
-            polygon.setAttribute("stroke", "black");
-            path.setAttribute("stroke", "black");
-            text.style.transition = text.style.webkitTransition = text.style.msTransition = polygon.style.transition = polygon.style.webkitTransition = polygon.style.msTransition = path.style.transition = path.style.webkitTransition = path.style.msTransition = pulseTime + "ms";
-            setTimeout(handlePulse, pulseTime / 2, text, polygon, path, 1);
-        }
-    }
-    pkg.transitionPulseColor = function (index, startState, symbol, endState, color, pulseTime) {
-        var s = svgs[index];
-
-        if (s) {
-            var edge = byId(s, btoa(startState) + " " + btoa(endState));
-
-            if (edge) {
-                var text     = edge.getElementsByTagName("text")[0],
-                    polygon  = edge.querySelector("polygon"),
-                    path     = edge.getElementsByTagName("path")[0];
-
-                text.setAttribute("fill", color);
-                polygon.setAttribute("fill", color);
-                polygon.setAttribute("stroke", color);
-                path.setAttribute("stroke", color);
-                setTimeout(handlePulse, pulseTime / 2, text, polygon, path, 0, pulseTime);
-            }
-        }
-    };
-
-    pkg.transitionRemoveColor = function (index, startState, symbol, endState) {
-        var s = svgs[index];
+    AudeDesigner.prototype.transitionRemoveColor = function (index, startState, symbol, endState) {
+        var s = this.svgs[index];
 
         if (s) {
             var edge = byId(s, btoa(startState) + " " + btoa(endState));
@@ -2809,27 +2808,16 @@
         }
     };
 
-    pkg.prompt = function (title, descr, def, fun) {
-        fun(window.prompt(title + ": " + descr, def));
-    };
-
-    pkg.redraw = function () {
-        if (pkg.svgNode) {
-            pkg.setViewBoxSize(pkg);
-        }
-    };
-
     (function () {
         var fakeMsg = {close: function () {}, addButton : function () {}};
-        pkg.msg = function () {
+        AudeDesigner.msg = function () {
             return fakeMsg;
         };
 
         if (libD.need) {
             libD.need(["notify"], function () {
-                pkg.msg = libD.notify;
+                AudeDesigner.msg = libD.notify;
             });
         }
     }());
-
-}(window.AudeGUI.Designer = {}, this));
+}(this));

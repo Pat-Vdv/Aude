@@ -28,7 +28,7 @@
     }
 
     function saveAutomaton(fname) {
-        saveAs(new Blob([AudeGUI.Designer.getAutomatonCode(AudeGUI.Designer.currentIndex, false)], {type: "text/plain"}), fname);
+        saveAs(new Blob([AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false)], {type: "text/plain"}), fname);
     }
 
 
@@ -98,7 +98,7 @@
                 }
             } else {
                 if (AudeGUI.getCurrentMode() === "automatoncode") {
-                    AudeGUI.Designer.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.Designer.currentIndex);
+                    AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
                 }
 
                 if (!automatonFileName) {
@@ -119,18 +119,18 @@
 
                 if (fn.length > EXTENSION_SIZE && fn.substr(fn.length - EXTENSION_SIZE) === ".svg") {
                     if (AudeGUI.getCurrentMode() !== "design") {
-                        AudeGUI.Designer.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.Designer.currentIndex);
+                        AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
                     }
 
-                    saveAs(new Blob([AudeGUI.Designer.getSVG(AudeGUI.Designer.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
+                    saveAs(new Blob([AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
                 } else {
                     if (AudeGUI.getCurrentMode() === "design") {
-                        AudeGUI.AutomatonCodeEditor.setText(AudeGUI.Designer.getAutomatonCode(AudeGUI.Designer.currentIndex, false));
+                        AudeGUI.AutomatonCodeEditor.setText(AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false));
                     } else {
-                        AudeGUI.Designer.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.Designer.currentIndex);
+                        AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
                     }
 
-                    var A = AudeGUI.Designer.getAutomaton(AudeGUI.Designer.currentIndex);
+                    var A = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
 
                     if (A) {
                         saveAs(new Blob([automaton2dot(A)], {type: "text/plain;charset=utf-8"}), fn);
@@ -144,7 +144,7 @@
         openAutomaton: function (code) {
             if (typeof code === "string") {
                 AudeGUI.AutomatonCodeEditor.setText(code);
-                AudeGUI.Designer.setAutomatonCode(code, AudeGUI.Designer.currentIndex);
+                AudeGUI.mainDesigner.setAutomatonCode(code, AudeGUI.mainDesigner.currentIndex);
                 return;
             }
 
@@ -159,19 +159,19 @@
         },
 
         setCurrentAutomatonIndex: function (index) {
-            AudeGUI.Designer.setCurrentIndex(index); // FIXME
+            AudeGUI.mainDesigner.setCurrentIndex(index); // FIXME
 
             automatonSelect.value = index;
 
             if (AudeGUI.getCurrentMode() === "automatoncode") {
                 try {
-                    AudeGUI.AutomatonCodeEditor.setText(AudeGUI.Designer.getAutomatonCode(index, false));
+                    AudeGUI.AutomatonCodeEditor.setText(AudeGUI.mainDesigner.getAutomatonCode(index, false));
                 } catch (e) {
                     AudeGUI.setCurrentMode("design");
                     switchmode.onchange();
                     libD.notify({
                         type:    "error",
-                        title:   libD.format(_("Unable to access the code of automaton n°{0}"), AudeGUI.Designer.currentIndex),
+                        title:   libD.format(_("Unable to access the code of automaton n°{0}"), AudeGUI.mainDesigner.currentIndex),
                         content: _("You need to fix the automaton in design mode before accessing its code.")
                     });
                 }
@@ -185,14 +185,14 @@
             o.id = "automaton_n" + AudeGUI.AutomataList.automatonCount;
             automatonSelect.appendChild(o);
             automatonSelect.value = AudeGUI.AutomataList.automatonCount;
-            AudeGUI.Designer.newAutomaton(AudeGUI.AutomataList.automatonCount);
+            AudeGUI.mainDesigner.newAutomaton(AudeGUI.AutomataList.automatonCount);
             AudeGUI.setCurrentAutomatonIndex(AudeGUI.AutomataList.automatonCount++);
         },
 
         removeCurrentAutomaton: function () {
             var curAutomaton = parseInt(automatonSelect.value, 10);
             automatonSelect.removeChild(document.getElementById("automaton_n" + (AudeGUI.AutomataList.automatonCount - 1)));
-            AudeGUI.Designer.removeAutomaton(curAutomaton);
+            AudeGUI.mainDesigner.removeAutomaton(curAutomaton);
 
             if (curAutomaton === AudeGUI.AutomataList.automatonCount - 1) {
                 AudeGUI.setCurrentAutomatonIndex(automatonSelect.value = AudeGUI.AutomataList.automatonCount - 2);
@@ -285,11 +285,11 @@
 
                 case "automatoncode":
                     try {
-                        AudeGUI.AutomatonCodeEditor.setText(AudeGUI.Designer.getAutomatonCode(AudeGUI.Designer.currentIndex, false));
+                        AudeGUI.AutomatonCodeEditor.setText(AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false));
                     } catch (e) {
                         libD.notify({
                             type:    "error",
-                            title:   libD.format(_("Unable to access the code of automaton n°{0}"), AudeGUI.Designer.currentIndex),
+                            title:   libD.format(_("Unable to access the code of automaton n°{0}"), AudeGUI.mainDesigner.currentIndex),
                             content: _("You need to fix the automaton in design mode before accessing its code."),
                         });
                         this.value = "design";
@@ -324,7 +324,7 @@
 
         onResize: function () {
             AudeGUI.Results.redraw();
-            AudeGUI.Designer.redraw();
+            AudeGUI.mainDesigner.redraw();
         },
 
         viz: function viz(code, callback) {
@@ -380,6 +380,30 @@
         }
     };
 
+    function createNewStateButton(svgContainer) {
+        svgContainer.parentNode.appendChild(document.createElement("div"));
+        svgContainer.parentNode.lastChild.id = "new-state-btn-wrap";
+        svgContainer.parentNode.lastChild.appendChild(document.createElement("a"));
+        svgContainer.parentNode.lastChild.lastChild.id = "new-state-btn";
+
+        svgContainer.parentNode.lastChild.lastChild.onmousedown = function (e) {
+            e.target.classList.add("mouse-down");
+        };
+
+        svgContainer.parentNode.lastChild.lastChild.onmouseup = function (e) {
+            e.target.classList.remove("mouse-down");
+        };
+
+        svgContainer.parentNode.lastChild.lastChild.onclick = function (e) {
+            insertNodeMsg = AudeDesigner.msg({
+                title: _("New state"),
+                content: _("Click where you want to place the new state.")
+            });
+        };
+
+        svgContainer.parentNode.lastChild.lastChild.textContent = _("New state");
+    }
+
     libD.need(["ready", "dom", "notify", "wm", "ws", "jso2dom", "*langPack"], function () {
         automatoncode     = document.getElementById("automatoncode");
         automataedit      = document.getElementById("automataedit");
@@ -400,8 +424,10 @@
             return false;
         };
 
+        AudeGUI.mainDesigner = new AudeDesigner(svgContainer);
+        createNewStateButton(svgContainer);
+
         AudeGUI.Quiz.load();
-        AudeGUI.Designer.load();
         AudeGUI.Programs.load();
         AudeGUI.Results.load();
         AudeGUI.WordExecution.load();
@@ -441,12 +467,12 @@
                 "<p> Now it’s your turn!</p>"
             ), "Aude");
 
-            AudeGUI.Designer.svgContainer.parentNode.appendChild(divWelcome);
+            AudeGUI.mainDesigner.svgContainer.parentNode.appendChild(divWelcome);
             function hideWelcome() {
-                AudeGUI.Designer.svgContainer.parentNode.removeChild(divWelcome);
+                AudeGUI.mainDesigner.svgContainer.parentNode.removeChild(divWelcome);
                 document.getElementById("new-state-btn-wrap").classList.add("welcome-hidden");
                 document.body.removeEventListener("click", hideWelcome, false);
-                AudeGUI.Designer.setViewBoxSize();
+                AudeGUI.mainDesigner.setViewBoxSize();
             }
             document.body.addEventListener("click", hideWelcome, false);
         }());
@@ -469,7 +495,7 @@
             };
         }());
 
-        AudeGUI.Designer.getValueFunction = function (s) {
+        AudeDesigner.getValueFunction = function (s) {
             try {
                 var v = aude.getValue(s, automataMap);
                 return v;
@@ -478,7 +504,7 @@
             }
         };
 
-        AudeGUI.Designer.getStringValueFunction = function (s) {
+        AudeDesigner.getStringValueFunction = function (s) {
             try {
                 aude.getValue(s, automataMap); // s is a legal value
                 return s;

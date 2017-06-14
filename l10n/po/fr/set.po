@@ -1,8 +1,0 @@
-msgid  "Set.checkConstraint(element): The element does not satisfies the type constraint."
-msgstr "Set.checkConstraint(element) : L'élément ne satisfait pas la contrainte de type."
-
-msgid  "Value is malformed."
-msgstr "La valeur est malformée."
-
-msgid  "Constructor name in value refers to unkown class."
-msgstr "Le nom de constructeur dans la valeur fait référence à une classe inconnue."

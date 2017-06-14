@@ -55,7 +55,7 @@
 
     function automataListMouseOver(e) {
         if (salc_cur_automaton !== -1) {
-            AudeGUI.Designer.setCurrentIndex(e.currentTarget._index);
+            AudeGUI.mainDesigner.setCurrentIndex(e.currentTarget._index);
         }
     }
 
@@ -73,14 +73,14 @@
                 var e = ev.toElement || ev.relatedTarget;
 
                 if ((e === automataListUL || e === automataListUL.parentNode) && salc_cur_automaton !== -1) {
-                    AudeGUI.Designer.setCurrentIndex(salc_cur_automaton);
+                    AudeGUI.mainDesigner.setCurrentIndex(salc_cur_automaton);
                     salc_cur_automaton = -1;
                 }
             };
 
             automataListUL.onmouseover = function () {
                 if (salc_cur_automaton === -1) {
-                    salc_cur_automaton = AudeGUI.Designer.currentIndex;
+                    salc_cur_automaton = AudeGUI.mainDesigner.currentIndex;
                 }
             };
 
