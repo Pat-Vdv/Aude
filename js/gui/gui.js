@@ -409,6 +409,7 @@
         AudeGUI.AutomatonCodeEditor.load();
         AudeGUI.AutomataList.load();
         AudeGUI.Runtime.load();
+        AudeGUI.QuizEditor.load();
         AudeGUI.initEvents();
         AudeGUI.onResize();
         AudeGUI.addAutomaton();

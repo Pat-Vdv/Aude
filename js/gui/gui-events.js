@@ -176,4 +176,8 @@ window.AudeGUI.initEvents = function () {
     document.getElementById("quiz").onclick = function () {
         AudeGUI.Quiz.fileInput.click();
     };
+
+    document.getElementById("quizEditor").onclick = function () {
+        AudeGUI.QuizEditor.run();
+    }
 };
