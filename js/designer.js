@@ -905,7 +905,7 @@
                 }
             }
         }
-        return code + (withoutSVG ? "" : "\n<representation type='image/svg+xml'>\n" + this.outerHTML(this.svgs[index]).trim() + "\n</representation>\n");
+        return code + (withoutSVG ? "" : "\n<representation type='image/svg+xml'>\n" + AudeDesigner.outerHTML(this.svgs[index]).trim() + "\n</representation>\n");
     };
 
     AudeDesigner.prototype.getAutomaton = function (index, onlyStrings) {
@@ -1014,7 +1014,7 @@
     AudeDesigner.prototype.getSVG = function (index) {
         if (this.svgs[index]) {
             this.cleanSVG(index);
-            return this.outerHTML(dataIdToId(this.svgs[index])).trim();
+            return AudeDesigner.outerHTML(dataIdToId(this.svgs[index])).trim();
         }
 
         return "";
