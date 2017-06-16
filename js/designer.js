@@ -1602,8 +1602,8 @@
         function beginNodeResizing(nodeMoving, e) {
             prepareNodeMove(nodeMoving, e);
 
-            var bbox = resizeHandledElement.getBBox();
-            var node = parentWithClass(resizeHandledElement, "node");
+            var bbox = that.resizeHandledElement.getBBox();
+            var node = parentWithClass(that.resizeHandledElement, "node");
 
             coords.top    = e.target.className.baseVal.indexOf("-top") !== -1;
             coords.left   = e.target.className.baseVal.indexOf("-left") !== -1;
