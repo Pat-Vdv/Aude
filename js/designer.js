@@ -845,7 +845,7 @@
 
     // reset the viewBox size (uses the size of the svg container and the zoom level to do it)
     AudeDesigner.prototype.setViewBoxSize = function () {
-        if (!this.svgContainer || this.svgContainer.offsetWidth) { // FIXME seems broken
+        if (this.svgContainer && this.svgContainer.offsetWidth) {
             this.svgNode.viewBox.baseVal.width  = (this.svgNode.width.baseVal.value  = this.svgContainer.offsetWidth) / this.svgZoom;
             this.svgNode.viewBox.baseVal.height = (this.svgNode.height.baseVal.value = this.svgContainer.offsetHeight) / this.svgZoom;
         }
@@ -2763,7 +2763,7 @@
     };
 
     AudeDesigner.prototype.stateSetBackgroundColor = function (index, state, color) {
-        var s = that.svgs[index];
+        var s = this.svgs[index];
 
         if (s) {
             state = byId(s, libD.b64EncodeUnicode(AudeDesigner.getStringValueFunction(state)));
@@ -2774,11 +2774,11 @@
     };
 
     AudeDesigner.prototype.stateRemoveBackgroundColor = function (index, state) {
-        AudeDesigner.prototype.stateSetBackgroundColor(index, state, "none") ;
+        this.stateSetBackgroundColor(index, state, "none");
     };
 
     AudeDesigner.prototype.transitionSetColor = function (index, startState, symbol, endState, color) {
-        var s = that.svgs[index];
+        var s = this.svgs[index];
         startState = AudeDesigner.getStringValueFunction(startState);
         endState   = AudeDesigner.getStringValueFunction(endState);
 
