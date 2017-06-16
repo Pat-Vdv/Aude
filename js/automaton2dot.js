@@ -28,7 +28,7 @@
 */
 
 /*jslint indent: 4, plusplus: true, ass:true */
-/*global Automaton:false, btoa:false, atob:false, Set:false, epsilon:false */
+/*global Automaton:false, Set:false, epsilon:false */
 
 (function (pkg) {
     "use strict";
@@ -42,7 +42,7 @@
 
     function dotState(q) {
         var s = toString(q);
-        return JSON.stringify(s).replace(/&/g, "&amp;") + "[id=\"" + btoa(s) + "\"]";
+        return JSON.stringify(s).replace(/&/g, "&amp;") + "[id=\"" + libD.b64EncodeUnicode(s) + "\"]";
     }
 
     function catln() {
@@ -181,7 +181,7 @@
                             }
                         }
 
-                        res += JSON.stringify(tmp).replace(/&/g, "&amp;") + catln(", id=\"", btoa(toString(startState)), " ", btoa(toString(endState)), "\"]");
+                        res += JSON.stringify(tmp).replace(/&/g, "&amp;") + catln(", id=\"", libD.b64EncodeUnicode(toString(startState)), " ", libD.b64EncodeUnicode(toString(endState)), "\"]");
                     }
                 }
             }
