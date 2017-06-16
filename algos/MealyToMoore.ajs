@@ -43,8 +43,9 @@ parcours de la liste des etats:
         fin pour
     fin pour
 */
-// initial_output is the output of the initial state
-// since it depends on the mealy machine, it is to be determined each time
+
+// initial_output is the output of the initial state for the Moore machine
+// since it depends on the mealy machine, it is to be deetermined each time
 // initial_output is an element of input_alphabet
 export function mealy2moore ( mealy, initial_output)
 
@@ -52,10 +53,14 @@ export function mealy2moore ( mealy, initial_output)
 
      M.input_alphabet := mealy.input_alphabet
      M.output_alphabet := mealy.output_alphabet
-     M.initial_state := [mealy.initial_state,initial_output].toString()
+     if initial_output = undefined then
+         initial_output:="ε"
+     end if
+     M.initial_state := [mealy.initial_state,initial_output].join("")
      M.states := new Set()
      M.transition := new Map()
      M.output := new Map()
+
     // a set containing all the [next_state,output] couples
     // that we've deduced from the Mealy machine
     // they represent the new Moore machine states
@@ -65,45 +70,38 @@ export function mealy2moore ( mealy, initial_output)
         foreach a in mealy.input_alphabet do
             var ns_o := mealy.next(s,a) // next() returns an array: [next_state, output]
             ns_o_set.add(ns_o)
-            M.output.set(ns_o.toString(), ns_o[1])
+            M.states.add(ns_o.join(""))
+            M.output.set(ns_o.join(""), ns_o[1])
         done
     done
 
-    // BIG BUG THAT NEEDS FIXING !
-    // adding the states that have no transition coming towards them
-    // therefore not present in ns_o_set
-    ns_o_set.add([mealy.initial_state,initial_output])
-    M.output.set(M.initial_state,initial_output)
-
-    // construction of new states of the Moore machine
-    foreach n in ns_o_set do
-         M.states.add(n.toString())
-    done
-
-    let new_transitions := new Map()
+    // if the initial state has no transition coming towards it
+    // then it is not present in the ns_o_set, nor is it a state for M
+    if ns_o_set does not contain [mealy.initial_state,initial_output] then
+        ns_o_set.add([mealy.initial_state,initial_output])
+        M.states.add(M.initial_state)
+        M.output.set(M.initial_state,initial_output)
+    end if
 
     // now we add the new transitions
     foreach c in ns_o_set do
         foreach a in M.input_alphabet do
             var next_c := mealy.next(c[0], a)
-            new_transitions.set([ c.toString() , a ], next_c.toString() )
+            M.transition.set([c.join(""),a], next_c.join("") )
         done
     done
-
-    M.transition := new_transitions
 
     return M
 
 end function
 
+run(mealy2moore, get_mealy(currentAutomaton))
 /*
  from automaton2json   import object2mealymoore
 from automaton2json   import object2mealy
-from automaton2json   import object2moore
 from MealyToMoore     import mealy2moore
 
-let mooore := mealy2moore(
-            object2mealy(
+let mealyEx := object2mealy(
                 {
                 "states": ["q0","q1","q2"],
                 "initialState": "q0",
@@ -119,9 +117,9 @@ let mooore := mealy2moore(
                     ["q1","0","0"],   ["q1","1","1"],
                     ["q2","0","1"],   ["q2","1","0"]
                 ]
-                }
+                },0
             )
-          )
+let mooore := mealy2moore(mealyEx)
 console.log(mooore.states)
 foreach x in mooore.transition do
     foreach y in x do

@@ -33,7 +33,7 @@
         var res = audescript.toJS(code, moduleName, fileName);
         data.includes = res.neededModules;
         return (
-            "(function (run, get_automaton, get_automata, currentAutomaton) {" +
+            "(function (run, get_automaton, get_automata, get_mealy, get_moore, currentAutomaton) {" +
             res.code + "})"
         );
     }
@@ -73,7 +73,159 @@
             /*jshint validthis: true */
             callback.apply(this, automata);
         },
+/********************************* NEW FUNCTIONS ******************************************/
+        get_mealy: function (i) {
 
+            // Automaton ---> Mealy
+            let A = AudeGUI.Runtime.get_automaton(i);
+
+            if (isNaN(i)) {
+                return null;
+            }
+
+            var M = new Mealy;
+
+            // defining the initial state for M
+            M.initialState(A.getInitialState());
+
+            A.getAlphabet().forEach( function (a) {
+                // a is in the form of "input_instance/output_instance"
+                // so we're going to separate it
+                var input = [];
+                var output = [];
+                var i=0;
+                while (a[i] !== '/') {
+                    input[i]=a[i];
+                    i++;
+                }
+                i++;
+                var j=0;
+                while (i<a.length) {
+                    output[j]=a[i];
+                    j++;
+                    i++;
+                }
+                M.addInAlphabet(input.join(""));
+                M.addOutAlphabet(output.join(""));
+            });
+
+            // defining the states for M
+            A.getStates().forEach( function (s) {
+                M.addState(s);
+            });
+
+            // defining the transition and output function for M
+            var f = A.getTransitionFunction();
+
+
+            f().forEach(function (startState) {
+                 f(startState).forEach(function (symbol) {
+                      f(startState, symbol).forEach(function (endState) {
+
+                       // we split the symbol (ex. "2/a")
+                       // into the input and the output (ex. input = "2", output="a")
+                       var input = [];
+                       var output = [];
+                       var i=0;
+                       while(symbol[i]!=='/'){
+                            input[i] = symbol[i];
+                            i++;
+                       }
+                       var j=0;
+                       i=i+1;
+                       while(i<symbol.length){
+                           output[j]=symbol[i];
+                           j++;
+                           i++;
+                       }
+                       M.addTransition(startState,input.join(""),endState);
+                       M.addOutput(startState,input.join(""),output);
+                       M.addOutAlphabet(output.join(""));
+                    });
+                });
+            });
+
+            return M;
+        },
+        get_moore: function (i){
+
+            // Automaton ---> Moore
+            let A = AudeGUI.Runtime.get_automaton(i);
+
+            if (isNaN(i)) {
+                return null;
+            }
+
+            var M = new Moore;
+
+            // defining the initial state for M
+            var I = A.getInitialState();
+            var init = [];
+            var i=0;
+            while (I[i] !== '/'){
+                init[i]=I[i];
+                i++;
+            }
+            M.initial_state = init.join("");
+
+            // defining the input alphabet for M
+            A.getAlphabet().forEach(
+                function(a) {
+                    M.addInAlphabet(a);
+                }
+            );
+
+            A.getStates().forEach(
+                function(s) {
+                    // separating the actual state from its output
+                    var state = [];
+                    var output = [];
+                    var i=0;
+                    while ( s[i] !== '/' ) {
+                        state[i] = s[i];
+                        i++;
+                    }
+                    i++; // skipping the '/'
+                    var j=0;
+                    while ( i < s.length ) {
+                        output[j]=s[i];
+                        i++;
+                        j++;
+                    }
+                    M.addState(state.join(""));
+                    M.addOutAlphabet(output);
+                    M.addOutput(state.join(""),output);
+                }
+            );
+
+            // defining the transition function for M
+            var f = A.getTransitionFunction();
+
+            f().forEach(function (startState) {
+                 f(startState).forEach(function (symbol) {
+                      f(startState, symbol).forEach(function (endState) {
+                            // we extranct from the startState and ensState (ex. s = "q/a")
+                            // the actual states, leaving behind their outputs (ex. state = "q")
+                            var state = [];
+                            var endSt = [];
+                            var i=0;
+                            while(startState[i]!=='/'){
+                                state[i] = startState[i];
+                                i++;
+                            }
+                            var i=0;
+                            while(endState[i]!=='/'){
+                                endSt[i] = endState[i];
+                                i++;
+                            }
+                            M.addTransition(state.join(""),symbol,endSt.join(""));
+                    });
+                });
+            });
+
+            return M;
+
+        },
         get_automaton: function (i) {
             if (isNaN(i)) {
                 return null;
@@ -113,7 +265,9 @@
                 moduleName || "<program>",
                 AudeGUI.Runtime.run,
                 AudeGUI.Runtime.get_automaton,
-                AudeGUI.Runtime.get_automata
+                AudeGUI.Runtime.get_automata,
+                AudeGUI.Runtime.get_mealy,
+                AudeGUI.Runtime.get_moore
             );
         },
 
@@ -167,6 +321,8 @@
                 moduleName || "<program>",
                 libD.none,
                 libD.none,
+                libD.none,
+                libD.none,
                 libD.none
             );
         },
@@ -200,7 +356,7 @@
             return res;
         },
 
-        runProgramCode: function (f, moduleName, run, get_automaton, get_automata) {
+        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore) {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
                 loadingProgNot = null;
@@ -211,6 +367,8 @@
                     run,
                     get_automaton,
                     get_automata,
+                    get_mealy,
+                    get_moore,
                     AudeGUI.mainDesigner.currentIndex
                 );
 

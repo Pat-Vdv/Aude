@@ -125,7 +125,7 @@
                         (AudeGUI.notifier && AudeGUI.notifier.displayed) ||
                         !document.getElementById("codeedit").classList.contains("disabled") //FIXME
                     ) {
-                        AudeGUI.notify(_("Program Result"), resultsContent.cloneNode(true), "normal");
+                        AudeGUI.notify(_("Program Result"), resultsContentDesigner.cloneNode(true), "normal");
                     }
                 }
             );
@@ -135,6 +135,10 @@
             if (res instanceof Automaton) {
                 AudeGUI.Results.setAutomaton(res);
                 results.style.overflow = "hidden";
+            } else if (res instanceof Mealy) {
+                AudeGUI.Results.setMealy(res);
+            } else if (res instanceof Moore) {
+                AudeGUI.Results.setMoore(res);
             } else {
                 if (HTMLElement && res instanceof HTMLElement) {
                     AudeGUI.Results.setDOM(res);
@@ -145,6 +149,72 @@
                 results.style.overflow = "";
                 resultDesigner.disable();
             }
+        },
+/*************************** NEW FUNCTIONS *****************************/
+         setMealy : function (M) {
+
+            // Mealy ---> Automaton
+            var A = new Automaton;
+
+            // defining the initial state of A
+            A.setInitialState (M.initial_state);
+
+            // defining the states of A
+            M.states.forEach(function (s) {
+                A.addState(s);
+            });
+
+            // defining the transitions for A
+            // defining the alphabet for A
+
+            M.states.forEach(function (s) {
+                M.input_alphabet.forEach(function (a) {
+                    var n = M.next(s,a);
+                        A.addTransition(
+                            s,
+                            a+'/'+n[1],
+                            n[0]
+                        );
+                        A.setAlphabet(a+'/'+n[1]);
+                });
+            });
+
+            AudeGUI.Results.set(A);
+        },
+
+        setMoore : function (M) {
+
+            // Moore ---> Automaton
+            var A = new Automaton;
+
+            // defining the input alphabet for A
+            M.input_alphabet.forEach( function(a){
+                 A.addSymbol(a);
+            });
+
+            // defining the initial state of A
+            var init = M.initial_state + '/' +  M.output.get(M.initial_state);
+            A.setInitialState(init);
+
+            // defining the states of A
+            M.states.forEach(function (s) {
+                var newst = s +'/'+ M.output.get(s);
+                A.addState(newst);
+            });
+
+            // defining the transitions for A
+            M.states.forEach(function (s) {
+                M.input_alphabet.forEach(function (a) {
+                    var n = M.next(s,a);
+                        A.addTransition(
+                            s+'/'+ M.output.get(s),
+                            a,
+                            n[0] + '/' + n[1]
+                        );
+                });
+            });
+
+             AudeGUI.Results.set(A);
         },
 
         load: function () {

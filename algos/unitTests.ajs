@@ -8,7 +8,7 @@ from automaton2json   import object2mealy
 from automaton2json   import object2moore
 from infiniteLanguage import infiniteLanguage
 from epsElimination   import epsElim
-from MooreToMealy     import MooretoMealy
+from MooreToMealy     import moore2mealy
 from MealyToMoore     import mealy2moore
 
 function evalAudeScript(s)

@@ -20,11 +20,7 @@ Moore.prototype ={
     next: function (currentState, currentInput) {
         var next_state = this.transition.get([currentState,currentInput]);
         var output = this.output.get(next_state);
-        console.log("delete this in moore_ver3.js");
-        console.log(currentState, currentInput);
-        console.log(next_state, output);
         return [next_state, output];
-
     },
 
     // execution of the moore machine M
