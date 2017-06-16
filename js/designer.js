@@ -1602,8 +1602,8 @@
         function beginNodeResizing(nodeMoving, e) {
             prepareNodeMove(nodeMoving, e);
 
-            var bbox = resizeHandledElement.getBBox();
-            var node = parentWithClass(resizeHandledElement, "node");
+            var bbox = that.resizeHandledElement.getBBox();
+            var node = parentWithClass(that.resizeHandledElement, "node");
 
             coords.top    = e.target.className.baseVal.indexOf("-top") !== -1;
             coords.left   = e.target.className.baseVal.indexOf("-left") !== -1;
@@ -2091,11 +2091,11 @@
         // checks if the node or one of its parent has class c. Specific to the AutomatonAudeDesigner.
         function parentWithClass(node, c) {
             do {
-                if (node.getAttribute("class") === c) {
+                if (node.classList.contains(c)) {
                     return node;
                 }
                 node = node.parentNode;
-            } while (node && node !== that.svgContainer);
+            } while (node && node.classList && node !== that.svgContainer);
             return false;
         }
 
@@ -2136,7 +2136,7 @@
                     setMoveAction(nodeMoving._moveFrame, e);
                 } else if (e.target.classList.contains(CSSP + "resize-handle")) {
                     that.overlayHide();
-                    beginNodeResizing(parentWithClass(resizeHandledElement, "node"), e);
+                    beginNodeResizing(parentWithClass(that.resizeHandledElement, "node"), e);
                 } else if (!parentWithClass(e.target, CSSP + "overlay")) {
                     var cso = that.currentOverlay;
                     that.cleanSVG(that.currentIndex, true);
