@@ -21,7 +21,7 @@
 /*jshint boss: true*/
 /*eslint-env browser*/
 /*eslint no-console:0, no-alert:0, no-underscore-dangle:0 */
-/*global atob:false, btoa:false, DOMParser:false, SVGPathSeg: false, parse_transition: false, pkg.formatTrans: false, listenMouseWheel: false, epsilon: false, Set: false, automataMap:false, Automaton: false*/
+/*global libD.b64DecodeUnicode:false, DOMParser:false, SVGPathSeg: false, parse_transition: false, pkg.formatTrans: false, listenMouseWheel: false, epsilon: false, Set: false, automataMap:false, Automaton: false*/
 
 // NEEDS: automaton.js, mousewheel.js;
 
@@ -407,7 +407,7 @@
         var s = this.svgs[index];
 
         if (s) {
-            var edge = byId(s, btoa(startState) + " " + btoa(endState));
+            var edge = byId(s, libD.b64EncodeUnicode(startState) + " " + libD.b64EncodeUnicode(endState));
 
             if (edge) {
                 var text     = edge.getElementsByTagName("text")[0],
@@ -591,7 +591,7 @@
             " " + dx   + "," + cy       +
             " " + dx   + "," + cy);
 
-        title.textContent = "_begin->" + atob(id(node));
+        title.textContent = "_begin->" + libD.b64DecodeUnicode(id(node));
         this.initialState = this.initialStates[this.currentIndex] = node;
     };
 
@@ -679,7 +679,7 @@
 
         for (i = 0, len = states.length; i < len; ++i) {
             fill(states[i].querySelector("ellipse"), "none");
-            workingNodeList[atob(id(states[i]))] = {
+            workingNodeList[libD.b64DecodeUnicode(id(states[i]))] = {
                 t: []
             };
         }
@@ -688,9 +688,9 @@
         for (i = 0, len = edges.length; i < len; ++i) {
             if (id(edges[i]) !== "initialStateArrow") {
                 states = id(edges[i]).split(" ");
-                workingNodeList[atob(states[1])].t.push([edges[i], false]); // false : state is not origin
+                workingNodeList[libD.b64DecodeUnicode(states[1])].t.push([edges[i], false]); // false : state is not origin
                 if (states[1] !==  states[0]) {
-                    workingNodeList[atob(states[0])].t.push([edges[i], true]); // true : state is origin
+                    workingNodeList[libD.b64DecodeUnicode(states[0])].t.push([edges[i], true]); // true : state is origin
                 }
             }
         }
@@ -734,7 +734,7 @@
         if (workingInitialStateArrow) {
             this.setInitialState(
                 byId(svgWorkingNode,
-                    btoa(
+                    libD.b64EncodeUnicode(
                         fixBrokenGraphvizTitle(
                             workingInitialStateArrow.querySelector("title").textContent.substr(8)
                         )
@@ -870,13 +870,13 @@
 
         for (i = 0, len = nodes.length; i < len; ++i) {
             if (nodes[i].querySelectorAll("ellipse").length > 1) {
-                finalStates.push(atob(id(nodes[i])));
+                finalStates.push(libD.b64DecodeUnicode(id(nodes[i])));
             } else if (nodes[i] !== this.initialState) {
-                states.push(atob(id(nodes[i])));
+                states.push(libD.b64DecodeUnicode(id(nodes[i])));
             }
         }
 
-        var code = getStringValue(atob(id(this.initialStates[index]))) + "\n";
+        var code = getStringValue(libD.b64DecodeUnicode(id(this.initialStates[index]))) + "\n";
 
         for (i = 0, len = states.length; i < len; ++i) {
             code += getStringValue(states[i]) + "\n";
@@ -896,8 +896,8 @@
             if (trans[i] !== this.initialStateArrows[index]) {
                 tid  = id(trans[i]).split(" ");
                 text = trans[i].getElementsByTagName("text")[0].textContent;
-                f = atob(tid[0]);
-                t = atob(tid[1]);
+                f = libD.b64DecodeUnicode(tid[0]);
+                t = libD.b64DecodeUnicode(tid[1]);
 
                 symbols = parseTransition(text, f, t);
                 for (s = 0, leng = symbols.length; s < leng; ++s) {
@@ -926,13 +926,13 @@
 
         for (let i = 0, len = nodes.length; i < len; ++i) {
             if (nodes[i].querySelectorAll("ellipse").length > 1) {
-                A.addFinalState(getValue(atob(id(nodes[i]))));
+                A.addFinalState(getValue(libD.b64DecodeUnicode(id(nodes[i]))));
             } else if (nodes[i] !== this.initialState) {
-                A.addState(getValue(atob(id(nodes[i]))));
+                A.addState(getValue(libD.b64DecodeUnicode(id(nodes[i]))));
             }
         }
 
-        A.setInitialState(getValue(atob(id(this.initialStates[index]))));
+        A.setInitialState(getValue(libD.b64DecodeUnicode(id(this.initialStates[index]))));
 
         var trans = this.svgs[index].querySelectorAll(".edge");
 
@@ -940,8 +940,8 @@
             if (trans[i] !== this.initialStateArrows[index]) {
                 let tid  = id(trans[i]).split(" ");
                 let text = trans[i].getElementsByTagName("text")[0].textContent;
-                let f    = atob(tid[0]);
-                let t    = atob(tid[1]);
+                let f    = libD.b64DecodeUnicode(tid[0]);
+                let t    = libD.b64DecodeUnicode(tid[1]);
 
                 let symbols = parseTransition(text, f, t);
 
@@ -983,13 +983,13 @@
 
         for (let i = 0, len = nodes.length; i < len; ++i) {
             if (nodes[i].querySelectorAll("ellipse").length > 1) {
-                A.addFinalState(atob(id(nodes[i])));
+                A.addFinalState(libD.b64DecodeUnicode(id(nodes[i])));
             } else if (nodes[i] !== this.initialState) {
-                A.addState(getValue(atob(id(nodes[i]))));
+                A.addState(getValue(libD.b64DecodeUnicode(id(nodes[i]))));
             }
         }
 
-        A.setInitialState(getValue(atob(id(this.initialStates[index]))));
+        A.setInitialState(getValue(libD.b64DecodeUnicode(id(this.initialStates[index]))));
 
         var trans = this.svgs[index].querySelectorAll(".edge");
 
@@ -997,8 +997,8 @@
             if (trans[i] !== this.initialStateArrows[index]) {
                 let tid  = id(trans[i]).split(" ");
                 let text = trans[i].getElementsByTagName("text")[0].textContent;
-                let f    = atob(tid[0]);
-                let t    = atob(tid[1]);
+                let f    = libD.b64DecodeUnicode(tid[0]);
+                let t    = libD.b64DecodeUnicode(tid[1]);
 
                 let symbols = parseTransition(text, f, t);
 
@@ -1589,7 +1589,7 @@
             }
 
             coords.t = [];
-            var i, len, n = that.nodeList[atob(id(nodeMoving))];
+            var i, len, n = that.nodeList[libD.b64DecodeUnicode(id(nodeMoving))];
 
             nodeMovingData = n;
 
@@ -1692,7 +1692,7 @@
                         id(g, nid);
                         g.setAttribute("class", "edge");
                         var title = document.createElementNS(svgNS, "title");
-                        title.textContent = toBrokenGraphvizTitle(atob(id(nodeEdit))) + "->" + toBrokenGraphvizTitle(atob(id(endState)));
+                        title.textContent = toBrokenGraphvizTitle(libD.b64DecodeUnicode(id(nodeEdit))) + "->" + toBrokenGraphvizTitle(libD.b64DecodeUnicode(id(endState)));
                         g.appendChild(title);
 
                         var polygon = document.createElementNS(svgNS, "polygon");
@@ -1710,9 +1710,9 @@
                         g.appendChild(polygon);
                         g.appendChild(text);
                         that.svgNode.querySelector("g").appendChild(g);
-                        that.nodeList[atob(id(endState))].t.push([g, false]); // false : state is not origin
+                        that.nodeList[libD.b64DecodeUnicode(id(endState))].t.push([g, false]); // false : state is not origin
                         if (nodeEdit !== endState) {
-                            that.nodeList[atob(id(nodeEdit))].t.push([g, true]); // true : state is origin
+                            that.nodeList[libD.b64DecodeUnicode(id(nodeEdit))].t.push([g, true]); // true : state is origin
                         }
 
                         that.snapshot();
@@ -1863,7 +1863,7 @@
 
         function toggleAccepting(nodeMoving) {
             var ellipses = nodeMoving.querySelectorAll("ellipse"),
-                tl       = that.nodeList[atob(id(nodeMoving))].t,
+                tl       = that.nodeList[libD.b64DecodeUnicode(id(nodeMoving))].t,
                 segs,
                 ellipse,
                 path,
@@ -1955,7 +1955,7 @@
                 that.initialState = that.initialStates[that.currentIndex] = that.initialStateArrows[that.currentIndex] = that.initialStateArrow = null;
             }
 
-            var tid = atob(id(node)), n = that.nodeList[tid], i, len;
+            var tid = libD.b64DecodeUnicode(id(node)), n = that.nodeList[tid], i, len;
 
             for (i = 0, len = n.t.length; i < len; ++i) {
                 deleteTransition(n.t[i][0], tid);
@@ -1976,7 +1976,7 @@
                 function (t) {
                     if (t) {
                         t = AudeDesigner.standardizeStringValueFunction(t);
-                        var tb = btoa(t);
+                        var tb = libD.b64EncodeUnicode(t);
                         var existingNode = byId(that.svgNode, tb);
 
                         if (existingNode) {
@@ -1984,7 +1984,7 @@
                                 window.alert(_("Sorry, but a state is already named like this."));
                             }
                         } else {
-                            var oldid = atob(id(node)),
+                            var oldid = libD.b64DecodeUnicode(id(node)),
                                 n     = that.nodeList[oldid],
                                 tid,
                                 len,
@@ -1998,10 +1998,10 @@
                                     n.t[i][0].querySelector("title").textContent = toBrokenGraphvizTitle(t) + "->" + toBrokenGraphvizTitle(t);
                                 } else if (n.t[i][1]) {// if node is origin
                                     id(n.t[i][0], tb + " " + tid[1]);
-                                    n.t[i][0].querySelector("title").textContent = toBrokenGraphvizTitle(t) + "->" + toBrokenGraphvizTitle(atob(tid[1]));
+                                    n.t[i][0].querySelector("title").textContent = toBrokenGraphvizTitle(t) + "->" + toBrokenGraphvizTitle(libD.b64DecodeUnicode(tid[1]));
                                 } else {
                                     id(n.t[i][0], tid[0] + " " + tb);
-                                    n.t[i][0].querySelector("title").textContent = toBrokenGraphvizTitle(atob(tid[0])) + "->" + toBrokenGraphvizTitle(t);
+                                    n.t[i][0].querySelector("title").textContent = toBrokenGraphvizTitle(libD.b64DecodeUnicode(tid[0])) + "->" + toBrokenGraphvizTitle(t);
                                 }
                             }
 
@@ -2051,7 +2051,7 @@
                 ++nid;
             }
 
-            id(g, btoa(nid));
+            id(g, libD.b64EncodeUnicode(nid));
             var title = document.createElementNS(svgNS, "title");
             title.textContent = toBrokenGraphvizTitle(nid);
             var ellipse = document.createElementNS(svgNS, "ellipse");
@@ -2766,7 +2766,7 @@
         var s = that.svgs[index];
 
         if (s) {
-            state = byId(s, btoa(AudeDesigner.getStringValueFunction(state)));
+            state = byId(s, libD.b64EncodeUnicode(AudeDesigner.getStringValueFunction(state)));
             if (state) {
                 fill(getBigEllipse(state), color);
             }
@@ -2783,7 +2783,7 @@
         endState   = AudeDesigner.getStringValueFunction(endState);
 
         if (s) {
-            var edge = byId(s, btoa(startState) + " " + btoa(endState));
+            var edge = byId(s, libD.b64EncodeUnicode(startState) + " " + libD.b64EncodeUnicode(endState));
             if (edge) {
                 edge.getElementsByTagName("text")[0].setAttribute("fill", color);
                 edge.querySelector("polygon").setAttribute("fill", color);
@@ -2797,7 +2797,7 @@
         var s = this.svgs[index];
 
         if (s) {
-            var edge = byId(s, btoa(startState) + " " + btoa(endState));
+            var edge = byId(s, libD.b64EncodeUnicode(startState) + " " + libD.b64EncodeUnicode(endState));
 
             if (edge) {
                 edge.getElementsByTagName("text")[0].removeAttribute("fill");
