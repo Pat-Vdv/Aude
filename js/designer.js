@@ -2136,7 +2136,7 @@
                     setMoveAction(nodeMoving._moveFrame, e);
                 } else if (e.target.classList.contains(CSSP + "resize-handle")) {
                     that.overlayHide();
-                    beginNodeResizing(parentWithClass(resizeHandledElement, "node"), e);
+                    beginNodeResizing(parentWithClass(that.resizeHandledElement, "node"), e);
                 } else if (!parentWithClass(e.target, CSSP + "overlay")) {
                     var cso = that.currentOverlay;
                     that.cleanSVG(that.currentIndex, true);
