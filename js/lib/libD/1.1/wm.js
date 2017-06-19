@@ -276,7 +276,10 @@ libD.need(["fx", "sizepos", "ws", "selection", "domEssential"], function () {
 		},
 
 		show: function (wsWin) {
-			libD.wm.fullscreen(wsWin, wsWin.fullscreen);
+			if (wsWin.fullscreen) {
+				libD.wm.fullscreen(wsWin, true);
+			}
+
 			wsWin.dom.style.display = "block";
 			libD.showSmoothly(wsWin.dom, 200);
 		},
