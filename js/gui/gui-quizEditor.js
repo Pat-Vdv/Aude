@@ -22,16 +22,18 @@
     var _ = function (textToTranslate) {        // var _ != AudeGUI.l10n; before add the quizEditor's translate
         return textToTranslate;
     };
-    var AudeGUI    = pkg.AudeGUI;
-    var quizeditor = null;                      // quizeditor element in the HTML DOM
-    var win        = null;                      // Quiz editor's window
-    var refs       = {};
-    var mcqR       = {};                        // Multiple choice questions' object
+    var AudeGUI         = pkg.AudeGUI;
+    var quizeditor      = null;                      // quizeditor element in the HTML DOM
+    var win             = null;                      // Quiz editor's window
+    var refs            = {};
+    var designerAns     = null;
+    var designerQue     = null;
+    var mcqR            = {};                        // Multiple choice questions' object
     var mcqNumberOfChoices = 0;
-    var automatonR = {};                        // Automaton research questions' object
-    var languageR  = {};                        // language research questions' object
-    var expregR    = {};                        // regular expr research questions' object
-    var quiz       = {
+    var automatonR      = {};                        // Automaton research questions' object
+    var languageR       = {};                        // language research questions' object
+    var expregR         = {};                        // regular expr research questions' object
+    var quiz = {
         title:  "",
         author: "",
         date:   "",
@@ -59,7 +61,7 @@
                 languageR  = {};
                 expregR    = {};
                 quiz = JSON.parse(code);
-                showQuizeditorPane("open");
+                showQuizeditorPane("shift");
             } catch (e) {
                 AudeGUI.notify(
                     _("Loading the quiz failed"),
@@ -113,7 +115,7 @@
                 var fileinput = document.getElementById("quizeditor-file");
                 fileinput.onclick = openQuiz;
                 fileinput.click();
-            };
+            };  
 
             // New question pane
             document.getElementById("quizeditor-newquestion").onclick = function () {
@@ -134,80 +136,7 @@
                     hideEverybody();
                     showSavePane();
                 }
-            };
-
-            // Validation of the quiz's save
-            if (document.getElementById("quizeditor_saveValidation") != null) {
-                document.getElementById("quizeditor_saveValidation").onclick = function () { 
-                    var tableMonth = [
-                        _("January"),
-                        _("February"),
-                        _("March"),
-                        _("April"),
-                        _("May"),
-                        _("June"),
-                        _("July"),
-                        _("August"),
-                        _("September"),
-                        _("October"),
-                        _("November"),
-                        _("December")
-                    ];
-                    var quizTitleInput      = document.getElementById("quizeditor-titleInput");
-                    var authorInput         = document.getElementById("quizeditor-authorInput");
-                    var descriptionTextarea = document.getElementById("quizeditor-descriptionTextarea");
-                    var date         = new Date();
-                    quiz.title       = quizTitleInput.value;
-                    quiz.author      = authorInput.value;
-                    quiz.date        = "" + (date.getDate() + " " + tableMonth[date.getMonth()] + " " + date.getFullYear());
-                    quiz.description = descriptionTextarea.value;
-                    AudeGUI.QuizEditor.save();
-                    AudeGUI.QuizEditor.close();
-                };
-            }
-
-            // Close the quiz
-            document.getElementById("close-quiz").onclick = function () {
-                AudeGUI.QuizEditor.close();
-            };
-            
-            // Show MCQ pane
-            if (document.getElementById("quizeditor-category0") != null) {
-                document.getElementById("quizeditor-category0").onclick = function () {
-                    hideEverybody();
-                    showMcqPane();
-                };
-            }
-
-            // Add a choice
-            if (document.getElementById("quizeditor-addChoice")!= null) {
-                document.getElementById("quizeditor-addChoice").onclick = 
-                    function () { 
-                        addChoice();
-                    };
-            }
-
-            // Remove a choice
-            if (document.getElementById("quizeditor-choiceArea") != null) {    
-                var choiceArea = document.getElementById("quizeditor-choiceArea").childNodes;
-                for (var i = 0, choice; i < choiceArea.length; i++) {
-                    choice = choiceArea[i];
-                    choice.lastChild.onclick = function () {
-                        removeChoice(choice);
-                    }; 
-                }
-            }
-
-
-            // Validate a mcq
-            if (document.getElementById("quizeditor-validate") != null) {
-                document.getElementById("quizeditor-validate").onclick = function () {
-                    mcqValidation();
-                    hideEverybody();
-                    showQuizeditorPane("");
-                };
-
-            }            
+            };                 
         }
     };
 
@@ -249,21 +178,20 @@
 
         win = libD.newWin({
             title:      _("Quiz editor"),
-            height:     "100%",
-            width:      "100%",
-            left:       "0%",
-            top:        "0%",
             show:       true,
             fullscreen: true,
             content: libD.jso2dom(quizeditorPaneContent, refs)
         });
-        win.setFullscreen();
         
+        document.getElementById("close-quiz").onclick = function () {
+            AudeGUI.QuizEditor.close();
+        };
+
         var quizeditorPane = document.createElement("div");
         quizeditorPane.id  = "quizeditorPane";
         var previewTable   = document.createElement("table");
         previewTable.id    = "quizeditor-preview";
-        previewTable.style     = "position: relative; width:90%; top:25px; display:none";
+        previewTable.style     = "display:none; position: relative; width:90%; top:25px";
 
         quizeditorPane.appendChild(previewTable);
         refs.root.appendChild(quizeditorPane);
@@ -287,14 +215,18 @@
         previewTable.appendChild(tr);
     }
 
-    function showQuizeditorPane (choice) {
+    /*
+     * Add the last edit question to the preview table if (mode = "") 
+     * else show the preview table from alll the object quiz if (mode = shift) 
+     */
+    function showQuizeditorPane (mode) {
 
-        switch (choice) {
+        switch (mode) {
             case "":
                 questionPreview(quiz.questions.length-1);
                 break;
 
-            case "open":
+            case "shift":
                 if (quiz.questions != []) {
                     for (var i = 0; i < quiz.questions.length; i++) {
                         questionPreview(i); 
@@ -308,7 +240,7 @@
     }
 
     function questionPreview (index) {
-        var previewTable       = document.getElementById("quizeditor-preview");
+        var previewTable = document.getElementById("quizeditor-preview");
 
         var tr           = document.createElement("tr");
         var td           = document.createElement("td");
@@ -316,16 +248,59 @@
         var quesDiv      = document.createElement("div");
         var answDiv      = document.createElement("div");
         var modification = document.createElement("div");
+        var modifButton  = document.createElement("button");
+        var removeButton = document.createElement("button");
+
+        quesNumber.textContent = index + 1;
+
+        modifButton.id    = "quizeditor-modifQuestion" + index;
+        modifButton.title = _("remove");
+        var modifImg = document.createElement("img");
+        modifImg.src = libD.getIcon("actions/draw-brush");
+        modifImg.alt = "Remove";
+        modifButton.appendChild(modifImg);
+
+        removeButton.id    = "quizeditor-removeQuestion" + index;
+        removeButton.title = _("remove");
+        var removeImg = document.createElement("img");
+        removeImg.src = libD.getIcon("actions/list-remove");
+        removeImg.alt = "Remove";
+        removeButton.appendChild(removeImg);
+
+        modification.appendChild(modifButton);
+        modification.appendChild(removeButton);
+
+        td.appendChild(quesNumber);
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.appendChild(quesDiv);
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.appendChild(answDiv);
+        tr.appendChild(td);
+        td = document.createElement("td");
+        td.appendChild(modification);
+        tr.appendChild(td);
+        previewTable.appendChild(tr);
+
         var newQuestion = quiz.questions[index];
         switch (newQuestion.type) {
             case "mcq":
+                modifButton.onclick = function () {
+                    modifyMcQuestion(this);
+                }
+
+                removeButton.onclick = function () {
+                    grainPreviewTable();
+                    removeQuestion(this);
+                    showQuizeditorPane("shift");
+                }
+
                 var contentQue   = document.createElement("p");
                 var contentAns   = document.createElement("p");
                 var quesSubDiv   = document.createElement("div");
                 var list         = document.createElement("ul");
                 list.style       = "list-style-type: none;"
-
-                quesNumber.textContent = index + 1;
 
                 contentQue.textContent = newQuestion.instruction;
                 for (var i = 0, li, span; i < newQuestion.possibilities.length; i++) {
@@ -353,43 +328,50 @@
             break;
 
             case "automatonEquiv":
-                
-            break;
+                modifButton.onclick = function () {
+                    modifyAutomatonR(this);
+                }
 
-            default: alert("error");
+                removeButton.onclick = function () {
+                    grainPreviewTable();
+                    removeQuestion(this);
+                    showQuizeditorPane("shift");
+                }
+                var contentQue = document.createElement("p");
+                contentQue.textContent = newQuestion.instructionHTML;
+                quesDiv.appendChild(contentQue);
+                var quesAutomatonDiv = document.createElement("div");
+                var answAutomatonDiv = document.createElement("div");
+                quesDiv.appendChild(quesAutomatonDiv);
+                answDiv.appendChild(answAutomatonDiv);
+                answAutomatonDiv.style = "min-height: 100px; position:relative";
+                quesAutomatonDiv.style = "min-height: 100px; position:relative";
+                
+                if (newQuestion.automatonQuestion !== null) {
+                    designerQue = new AudeDesigner(quesAutomatonDiv, true);
+                    designerQue.setAutomatonCode( 
+                        newQuestion.automatonQuestion,
+                        designerQue.currentIndex
+                    );
+                    setTimeout(function () {
+                        designerQue.redraw();
+                        designerQue.autoCenterZoom();
+                    }, 0);
+                }
+
+                designerAns = new AudeDesigner(answAutomatonDiv, true);
+                designerAns.setAutomatonCode( 
+                    newQuestion.automatonAnswer,
+                    designerAns.currentIndex
+                );
+                setTimeout(function () {
+                    designerAns.redraw();
+                    designerAns.autoCenterZoom();
+                }, 0);
+
+            break;
         }
 
-        var modifButton   = document.createElement("button");
-        modifButton.id    = "quizeditor-ModifQuestion";
-        modifButton.title = _("remove");
-        var modifImg = document.createElement("img");
-        modifImg.src = libD.getIcon("actions/draw-brush");
-        modifImg.alt = "Remove";
-        modifButton.appendChild(modifImg);
-
-        var removeButton   = document.createElement("button");
-        removeButton.id    = "quizeditor-removeQuestion";
-        removeButton.title = _("remove");
-        var removeImg = document.createElement("img");
-        removeImg.src = libD.getIcon("actions/list-remove");
-        removeImg.alt = "Remove";
-        removeButton.appendChild(removeImg);
-
-        modification.appendChild(modifButton);
-        modification.appendChild(removeButton);
-
-        td.appendChild(quesNumber);
-        tr.appendChild(td);
-        td = document.createElement("td");
-        td.appendChild(quesDiv);
-        tr.appendChild(td);
-        td = document.createElement("td");
-        td.appendChild(answDiv);
-        tr.appendChild(td);
-        td = document.createElement("td");
-        td.appendChild(modification);
-        tr.appendChild(td);
-        previewTable.appendChild(tr);
         previewTable.style.display = "initial";
     }
 
@@ -413,6 +395,9 @@
             li_list[i] = document.createElement("li");
             li_list[i].id = "quizeditor-category" + i;
             li_list[i].textContent = li_listContent[i];
+            li_list[i].onclick = function () {
+                showNewQuestionCategory(this.id);
+            }
             newQuestionCategory.appendChild(li_list[i]);
         }
 
@@ -441,7 +426,32 @@
         }
     }
 
-    function showSavePane () {
+    function saveQuiz() {
+        var tableMonth = [
+            _("January"),
+            _("February"),
+            _("March"),
+            _("April"),
+            _("May"),
+            _("June"),
+            _("July"),
+            _("August"),
+            _("September"),
+            _("October"),
+            _("November"),
+            _("December")
+        ];
+        var quizTitleInput      = document.getElementById("quizeditor-titleInput");
+        var authorInput         = document.getElementById("quizeditor-authorInput");
+        var descriptionTextarea = document.getElementById("quizeditor-descriptionTextarea");
+        var date         = new Date();
+        quiz.title       = quizTitleInput.value;
+        quiz.author      = authorInput.value;
+        quiz.date        = "" + (date.getDate() + " " + tableMonth[date.getMonth()] + " " + date.getFullYear());
+        quiz.description = descriptionTextarea.value;
+    }
+
+    function showSavePane (mode) {
 
         var savePane    = document.createElement("div");
         savePane.id     = "quizeditor-savePane";
@@ -475,6 +485,11 @@
         validationButton.id          = "quizeditor_saveValidation"
         validationButton.textContent = _("Validate");
         validationButton.style       = "position: relative; left: 80%; top: 80%";
+        validationButton.onclick     = function () {
+            saveQuiz();
+            AudeGUI.QuizEditor.save();
+            AudeGUI.QuizEditor.close();
+        }
 
         quizTitle.appendChild(quizTitleParag);
         quizTitle.appendChild(quizTitleInput);
@@ -495,9 +510,42 @@
         AudeGUI.QuizEditor.standby();
     }
 
+    function showNewQuestionCategory (elementId) {
+        var index = elementId.substr(-1);
+        designerQue = null;
+        designerAns = null;
+        index = parseInt(index);
+        switch (index) {
+            case 0 :
+                hideEverybody();
+                showMcqPane("");
+                break;
+            case 1 :
+                hideEverybody();
+                showAutomatonRPane("");
+                break;
+            case 2 :
+                hideEverybody();
+
+                break;
+            case 3 :
+                hideEverybody();
+
+                break;
+        }
+
+        AudeGUI.QuizEditor.standby();
+    }
+
+    function removeQuestion (buttonClicked) {
+        var index = indexOf(buttonClicked);
+        quiz.questions.splice(index, 1);
+        AudeGUI.QuizEditor.standby();
+    }
+
     // For Multiples Choice Questions
 
-    function showMcqPane () {
+    function showMcqPane (mode,index) {
         mcqR = {};
         mcqNumberOfChoices = 2;
 
@@ -506,7 +554,7 @@
         mcqPane.style.display = "initial";
 
         let title         = document.createElement("h1");
-        title.textContent = "MCQ";
+        title.textContent = _("MCQ");
 
         mcqPane.appendChild(title);
 
@@ -522,7 +570,7 @@
         content.style       = "position: relative; left: 2.5%;";
 
         var p = document.createElement("p");
-        p.textContent = _("Write the different choices and check the correct on. ");
+        p.textContent = _("Write the different choices and check the correct one. ");
 
         let choiceArea = document.createElement("div");
         choiceArea.id  = "quizeditor-choiceArea";
@@ -536,7 +584,6 @@
             choice_list[i].placeholder = _("choice " + (i+1) + " ...");
 
             removeButton       = document.createElement("button");
-            removeButton.id    = "quizeditor-removeChoice" + i;
             removeButton.title = _("remove");
 
             removeImg     = document.createElement("img");
@@ -555,12 +602,16 @@
             divArea.appendChild(choice_list[i]);
             divArea.appendChild(removeButton);
             choiceArea.appendChild(divArea);
+
+            removeButton.onclick = function () {
+                removeChoice(this.parentNode);
+            };
         }
 
-        let addButton   = document.createElement("button");
-        addButton.id    = "quizeditor-addChoice";
-        addButton.title = _("add");
-        addButton.style = "position: relative; left: 2.5%;";
+        let addButton     = document.createElement("button");
+        addButton.title   = _("add");
+        addButton.style   = "position: relative; left: 2.5%;";
+        addButton.onclick = addChoice;
 
         let addImg = document.createElement("img");
         addImg.src = libD.getIcon("actions/list-add");
@@ -577,13 +628,18 @@
         validationButton.id          = "quizeditor-validate";
         validationButton.textContent = _("Validate");
         validationButton.style       = "position: relative; left: 80%; top: 80%";
+        validationButton.onclick = function () {
+            mcqValidation(mode,index);
+            hideEverybody();
+            (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+        }
 
         mcqPane.appendChild(validationButton);
         refs.root.appendChild(mcqPane);
         AudeGUI.QuizEditor.standby();
     }
 
-    function mcqValidation () {
+    function mcqValidation (mode,index) {
         var instruction   = document.getElementById("quizeditor-questionArea").value; 
         var answers       = [];
         var possibilities = [];
@@ -613,9 +669,16 @@
             answers:       answers,
             possibilities: possibilities
         };
-        quiz.questions.push(mcqR);
+        if (mode === "") {
+            quiz.questions.push(mcqR);
+        } else {
+            grainPreviewTable();
+            quiz.questions[index] = mcqR;
+        }
 
         refs.root.removeChild(document.getElementById("quizeditor-mcqPane"));
+        designerQue = null;
+        designerAns = null;
     }
 
     function addChoice () {
@@ -626,7 +689,6 @@
         newChoice.placeholder = _("choice " + (mcqNumberOfChoices+1) + " ...");
 
         removeButton       = document.createElement("button");
-        removeButton.id    = "quizeditor-removeChoice" + (mcqNumberOfChoices);
         removeButton.title = _("remove");
 
         removeImg     = document.createElement("img");
@@ -647,27 +709,243 @@
         document.getElementById("quizeditor-choiceArea").appendChild(
             divArea
         );
+
+        removeButton.onclick = function () {
+            removeChoice(this.parentNode);
+        };
+
         mcqNumberOfChoices++;
         AudeGUI.QuizEditor.standby();
     }
 
-    function removeChoice (elementToremove) {
+    function removeChoice (elementToRemove) {
         var parent = document.getElementById("quizeditor-choiceArea");
-        parent.removeChild(elementToremove);
+        parent.removeChild(elementToRemove);
+
+        var childs = parent.childNodes;
+        for (var i = 0; i < childs.length; i++) {
+            childs[i].id = "quizeditor-choice" + i;
+            childs[i].childNodes[1].placeholder = "choice " + (i+1) + " ...";
+        }
         mcqNumberOfChoices--;
         AudeGUI.QuizEditor.standby();
+    }
+
+    function modifyMcQuestion (buttonClicked) {
+        var index = indexOf(buttonClicked);
+
+        var question      = quiz.questions[index];
+        var possibilities = question.possibilities;
+        var answers       = question.answers;
+
+        hideEverybody();
+        showMcqPane("shift",index);
+        document.getElementById("quizeditor-questionArea").value = question.instruction;
+        for (var i = 0, choiceDiv; i < possibilities.length; i++) {
+            if (i > 1) {
+                addChoice();
+            }
+            choiceDiv    = document.getElementById("quizeditor-choice" + i).childNodes;
+            choiceDiv[1].value = possibilities[i].text;
+        }
+
+        for (var i = 0, choiceDiv, id; i < answers.length; i++) {
+            id = answers[i].charCodeAt(0) - "a".charCodeAt(0);
+            choiceDiv    = document.getElementById("quizeditor-choice" + id).childNodes;
+            choiceDiv[0].checked = "checked";
+        }
+        AudeGUI.QuizEditor.standby();
+    }
+
+    // For Automatons researcher
+
+    function showAutomatonRPane (mode,index) {
+        automatonR = {};
+
+        var automatonRPane = document.createElement("div");
+        automatonRPane.id  = "quizeditor-automatonRPane";
+        automatonRPane.style.display = "initial";
+
+        let title         = document.createElement("h1");
+        title.textContent = _("Find an automaton");
+
+        automatonRPane.appendChild(title);
+
+        var content = document.createElement("div");
+        var left    = document.createElement("div");
+        var right   = document.createElement("div");
+        left.style  = "position : absolute; left :  0%; height: 50%; width: 49%; border: 1px solid";
+        right.style = "position : absolute; left : 50%; height: 50%; width: 49%; border: 1px solid";
+
+        var leftSubTitle    = document.createElement("div");
+        var rightSubTitle   = document.createElement("div");
+        var leftSubContent  = document.createElement("div");
+        var rightSubContent = document.createElement("div");
+        var automatonQueDiv = document.createElement("div");
+        var automatonAnsDiv = document.createElement("div");
+        leftSubTitle.textContent  = _("Question");
+        rightSubTitle.textContent = _("Answer");
+        automatonAnsDiv.style     = "position:absolute; height:95.5%; width:100%; background-color: gainsboro;";
+        automatonQueDiv.style     = "position:absolute; height:57%; width:100%; background-color: gainsboro; display: none";
+
+        var questionWording   = document.createElement("textarea");
+        questionWording.id    = "quizeditor-automatonRTextarea";
+        questionWording.style = "position : relative; display: block; width: 98.9%";
+        questionWording.rows  = 10;
+        var drawAutomaton     = document.createElement("button");
+        drawAutomaton.id      = "quizeditor-drawAutomaton";
+        drawAutomaton.style   = "position: relative; display: block; left: 59%; top: 115%";
+        drawAutomaton.textContent = _("Draw an automaton");
+
+        leftSubContent.appendChild(questionWording);
+        leftSubContent.appendChild(drawAutomaton);
+        leftSubContent.appendChild(automatonQueDiv);
+        rightSubContent.appendChild(automatonAnsDiv);
+
+        left.appendChild(leftSubTitle);
+        left.appendChild(leftSubContent);
+        right.appendChild(rightSubTitle);
+        right.appendChild(rightSubContent);
+
+        content.appendChild(left);
+        content.appendChild(right);
+
+        drawAutomaton.onclick = function () {
+            drawAutomaton.style.display   = "none";
+            automatonQueDiv.style.display = "initial";
+            designerQue = new AudeDesigner(automatonQueDiv);
+            setTimeout(function () {
+                designerQue.redraw();
+            }, 0);
+
+        }
+
+        let validationButton         = document.createElement("button");
+        validationButton.textContent = _("Validate");
+        validationButton.style       = "position: absolute; left: 88%; top: 65%";
+        validationButton.onclick = function () {
+            AutomatonRValidation(mode,index);
+            hideEverybody();
+            (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+        }
+
+        content.appendChild(validationButton);
+
+        automatonRPane.appendChild(content);
+        refs.root.appendChild(automatonRPane);
+        left.style.backgroundColor  = "white";
+        right.style.backgroundColor = "white";
+        designerAns = new AudeDesigner(automatonAnsDiv);
+    }
+
+    function AutomatonRValidation (mode,index) {
+        automatonR = {
+            type:"automatonEquiv",
+            instructionHTML:   document.getElementById("quizeditor-automatonRTextarea").value,
+            automatonQuestion: null,
+            automatonAnswer:   designerAns.getAutomatonCode(designerAns.currentIndex,false),
+        }
+
+        if (designerQue !== null) {
+            automatonR.automatonQuestion =
+                designerQue.getAutomatonCode(designerQue.currentIndex,false)
+        }
+
+        if (mode === "") {
+            quiz.questions.push(automatonR);
+        } else {
+            grainPreviewTable();
+            quiz.questions[index] = automatonR;
+        }
+
+        refs.root.removeChild(document.getElementById("quizeditor-automatonRPane"));
+        designerQue = null;
+        designerAns = null;
+    }
+
+    function modifyAutomatonR (buttonClicked) {
+        var index = indexOf(buttonClicked);
+        var question  = quiz.questions[index];
+
+        hideEverybody();
+        showAutomatonRPane("shift",index);
+        document.getElementById("quizeditor-automatonRTextarea").value = question.instructionHTML;
+        
+        if (question.automatonQuestion !== null) { 
+            document.getElementById("quizeditor-drawAutomaton").click();
+            designerQue.setAutomatonCode(
+                question.automatonQuestion,
+                designerQue.currentIndex
+            );
+            designerQue.autoCenterZoom();
+        }    
+
+        designerAns.setAutomatonCode(
+            question.automatonAnswer,
+            designerAns.currentIndex
+        );
+        designerAns.autoCenterZoom();
     }
 
     // Tools
     function hideEverybody () {
         document.getElementById("quizeditorPane").style.display  = "none";
         document.getElementById("quizeditor-newquestionPane").style.display  = "none";
-        if (document.getElementById("quizeditor-mcqPane") !== null ) {
-            document.getElementById("quizeditor-mcqPane").style.display  = "none";
-        }
         if (document.getElementById("quizeditor-savePane") !== null) {
             document.getElementById("quizeditor-savePane").style.display  = "none";
         }
+        if (document.getElementById("quizeditor-mcqPane") !== null ) {
+            document.getElementById("quizeditor-mcqPane").style.display  = "none";
+        }
+        if (document.getElementById("quizeditor-automatonRPane") !== null ) {
+            document.getElementById("quizeditor-automatonRPane").style.display  = "none";
+        }
+    }
+
+    function grainPreviewTable () {
+        var previewTable   = document.getElementById("quizeditor-preview");
+        for (var i = quiz.questions.length; i > 0 ; i--) {
+            previewTable.deleteRow(i); 
+        }
+    }
+
+    function automatonReformat (automaton) {
+        var array = null;
+        var res   = {
+            states:      [],
+            finalStates: [],
+            transitions: []
+        }
+
+        array = automaton.getStates().getList();
+        for (var i = 0; i < array.length; i++) {
+            res.states.push("" + array[i]);
+        }
+
+        array = automaton.getFinalStates().getList();
+        for (var i = 0; i < array.length; i++) {
+            res.finalStates.push("" + array[i]);
+        }
+
+        array = automaton.getTransitions().getList();
+        for (var i = 0, trans; i < array.length; i++) {
+            trans = [
+                "" + array[i].startState,
+                array[i].symbol,
+                "" + array[i].endState
+            ];
+            res.transitions.push(trans);
+        }
+
+        return res;
+    }
+
+    function indexOf (element) {
+        var td    = element.parentNode.parentNode;
+        var index = td.parentNode.firstChild.firstChild.textContent;
+        index = parseInt(index);
+        index -= 1;
+        return index;
     }
 
 }(window));
