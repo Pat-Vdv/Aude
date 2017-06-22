@@ -125,7 +125,9 @@
                         (AudeGUI.notifier && AudeGUI.notifier.displayed) ||
                         !document.getElementById("codeedit").classList.contains("disabled") //FIXME
                     ) {
-                        AudeGUI.notify(_("Program Result"), resultsContent.cloneNode(true), "normal");
+                        let div = document.createElement("div");
+                        div.innerHTML = svgCode;
+                        AudeGUI.notify(_("Program Result"), div, "normal");
                     }
                 }
             );
