@@ -119,7 +119,7 @@
             return container.indexOf(value) !== -1;
         }
 
-        if (container instanceof Set) {
+        if (container instanceof Set || container instanceof Map) {
             return container.has(value);
         }
     };
