@@ -22,17 +22,17 @@
     var _ = function (textToTranslate) {        // var _ != AudeGUI.l10n; before add the quizEditor's translate
         return textToTranslate;
     };
-    var AudeGUI         = pkg.AudeGUI;
-    var quizeditor      = null;                      // quizeditor element in the HTML DOM
-    var win             = null;                      // Quiz editor's window
-    var refs            = {};
-    var designerAns     = null;
-    var designerQue     = null;
-    var mcqR            = {};                        // Multiple choice questions' object
+    var AudeGUI          = pkg.AudeGUI;
+    var quizeditor       = null;                      // quizeditor element in the HTML DOM
+    var win              = null;                      // Quiz editor's window
+    var refs             = {};
+    var designerAns      = null;
+    var designerQue      = null;
+    var currentState     = null;
+    var mcqR             = {};                        // Multiple choice questions' object
     var mcqNumberOfChoices = 0;
-    var automatonR      = {};                        // Automaton research questions' object
-    var languageR       = {};                        // language research questions' object
-    var expregR         = {};                        // regular expr research questions' object
+    var automatonR       = {};                        // Automaton research questions' object
+    var regexR           = {};                        // regular expr research questions' object
     var quiz = {
         title:  "",
         author: "",
@@ -44,7 +44,7 @@
     AudeGUI.QuizEditor = {
 
         load: function () {
-            quizeditor = document.getElementById("quizEditor");
+            quizeditor   = document.getElementById("quizEditor");
         },
 
         run: function () {
@@ -58,8 +58,8 @@
                 mcqR       = {};
                 mcqNumberOfChoices = 0;
                 automatonR = {};
-                languageR  = {};
-                expregR    = {};
+                regexR    = {};
+                grainPreviewTable();
                 quiz = JSON.parse(code);
                 showQuizeditorPane("shift");
             } catch (e) {
@@ -76,6 +76,7 @@
         },
 
         save: function () {
+            cleanDesigners();
             var jsonQuiz = JSON.stringify(quiz);
             var blob     = new Blob([jsonQuiz], {type: "application/json"});
             var date     = quiz.date;
@@ -89,15 +90,17 @@
 
         close: function () {
             document.getElementById("quizeditor-mainPane").textContent = "";
-            AudeGUI    = pkg.AudeGUI;
-            quizeditor = null;
-            refs       = {};
-            mcqR       = {};
+            AudeGUI      = pkg.AudeGUI;
+            quizeditor   = null;
+            refs         = {};
+            designerAns  = null;
+            designerQue  = null;
+            currentState = null;
+            mcqR         = {};
             mcqNumberOfChoices = 0;
-            automatonR = {};
-            languageR  = {};
-            expregR    = {};
-            quiz       = {
+            automatonR   = {};
+            regexR       = {};
+            quiz         = {
                 title:  "",
                 author: "",
                 date:   "",
@@ -105,53 +108,54 @@
                 questions: []
             };
             win.close();
+
+
         },
 
         standby: function () {
-            
-            //  Open a old quiz 
+
+            //  Open a old quiz
             document.getElementById("quizeditor-open").onclick = function () {
-                hideEverybody();
                 var fileinput = document.getElementById("quizeditor-file");
                 fileinput.onclick = openQuiz;
                 fileinput.click();
-            };  
+            };
 
             // New question pane
             document.getElementById("quizeditor-newquestion").onclick = function () {
-                hideEverybody();
                 showNewQuestionPane();
             };
 
             // Save the quiz
             document.getElementById("quizeditor-save").onclick = function () {
-                let correctState = 
+                let correctState =
                     document.getElementById("quizeditor-newquestionPane").style.display != "none"
                     || document.getElementById("quizeditor-mcqPane");
                 let confirm = true;
                 if (correctState) {
                     confirm = window.confirm(_("Do you really want to cancel your quiz modification ? "));
                 }
-                if (confirm) {      
-                    hideEverybody();
+                if (confirm) {
                     showSavePane();
                 }
-            };                 
+            };
         }
     };
 
-    
+
     function drawQuizeditorPane () {
+        setCurrentState("previewPane");
+
         if (win && win.ws) {
             win.close();
         }
 
         let quizeditorPaneContent = ["div#quizeditor-Pane.libD-ws-colors-auto libD-ws-size-auto" ,
             {id:"quizeditor-mainPane"},[
-            ["div#quizeditor-toolbar", [
+            ["div", [
                 ["input#quizeditor-open", {type: "button", value: _("Open")}],
 
-                ["input#quizeditor-file", {type: "file", style: "display:none"}],                
+                ["input#quizeditor-file", {type: "file", style: "display:none"}],
 
                 ["button#quizeditor-undo", {title:_("Undo")}, [
                     ["img", {src:libD.getIcon("actions/edit-undo"), alt:"Undo"}]
@@ -167,13 +171,43 @@
 
                 ["a#close-quiz", {id: "close-quiz", "href": "#"}, _("Close the Quiz Editor")],
 
-                ["span",[
-                    ["input",{type: "text", name:"searchArea", placeholder: _("Search ...") ,style:"position: absolute; top : 2.5%; right : 2%"}]
-                ]]                
+                ["div",[
+                    ["input#quizeditor-research",{
+                        type: "search",
+                        name:"searchArea",
+                        placeholder: _("Search ..."),
+                        style:"position: absolute; top: 2.5%; right: 2%; width: 23%;"
+                    }],
+                    ["ul#quizeditor-researchPane", {
+                        style:"display: none; z-index:1; position: absolute; top: 3.1%; right: 2%; border: 1px solid darkgrey; padding-left: 0px; width: 23%; background-color: white;"
+                        }, [
+                            ["li#quizeditor-searchCategory0",{style: "display: none"}, [
+                                ["a", _("Multiple Choice Question")]
+                            ]],
+                            ["li#quizeditor-searchCategory1",{style: "display: none"}, [
+                                ["a", _("Find an automaton")]
+                            ]],
+                            ["li#quizeditor-searchCategory2",{style: "display: none"}, [
+                                ["a", _("Find a regular expression")]
+                            ]]
+                        ]
+                    ]
+                ]]
             ]],
-
-            ["div#quizeditor-content",{"#":"root"}]
-            
+            ["div#quizeditor-content", {"#":"root"}, [
+                ["div#quizeditorPane", [
+                    ["table#quizeditor-preview", {
+                        "style": "display:none; position: absolute; width:90%; top:7%; left: 5%"
+                    }, [
+                        ["tr", [
+                            ["th", {"style": "width:4%; text-align: center;"}, _("N°")],
+                            ["th", {"style": "text-align: center;"}, _("Questions")],
+                            ["th", {"style": "text-align: center; width: 35%"}, _("Answers")],
+                            ["th", {"style": "width:4%; text-align: center;"}, _("Modifications")]
+                        ]]
+                    ]]
+                ]]
+            ]]
         ]];
 
         win = libD.newWin({
@@ -182,60 +216,72 @@
             fullscreen: true,
             content: libD.jso2dom(quizeditorPaneContent, refs)
         });
-        
+
         document.getElementById("close-quiz").onclick = function () {
             AudeGUI.QuizEditor.close();
         };
 
-        var quizeditorPane = document.createElement("div");
-        quizeditorPane.id  = "quizeditorPane";
-        var previewTable   = document.createElement("table");
-        previewTable.id    = "quizeditor-preview";
-        previewTable.style     = "display:none; position: relative; width:90%; top:25px";
+        // Events
+        var tabref = [
+            "true, vraies, false, faux, fausses, choice, choix, multiples",
+            "automaton, automate, find, trouver, determiniser, elemination, epsilon, transitions, minimisations, complementaires, produits, complete",
+            "regular, regulière, expressions"
+        ];
+        var search = document.getElementById("quizeditor-research");
 
-        quizeditorPane.appendChild(previewTable);
-        refs.root.appendChild(quizeditorPane);
+        search.onkeyup = function () {
+            researchBar(tabref, this);
+        };
 
-        var tr         = document.createElement("tr");
-        var th         = document.createElement("th");
+        var ul = document.getElementById("quizeditor-researchPane");
+        for (var i = 0, li = null, id = ""; i < ul.childNodes.length; i++) {
+            li = ul.childNodes[i];
+            li.onmouseover = function () {
+                this.style.backgroundColor = "aliceblue";
+            };
 
-        th.textContent = _("N°");
-        th.style       = "width:4%";
-        tr.appendChild(th);
-        th             = document.createElement("th");
-        th.textContent = _("Questions");
-        tr.appendChild(th);
-        th             = document.createElement("th");
-        th.textContent = _("Answers");
-        tr.appendChild(th);
-        th             = document.createElement("th");
-        th.style       = "width:4%";
-        th.textContent = _("Modifications");
-        tr.appendChild(th);
-        previewTable.appendChild(tr);
+            li.onmouseout = function () {
+                this.style.backgroundColor = "white";
+            };
+
+            li.onclick = function () {
+                search.value = "";
+                search.placeholder = _("Search ...");
+                ul.style.display = "none";
+                id = "quizeditor-category" + this.id.substr(-1);
+                document.getElementById(id).click();
+            }
+        }
+
+        search.onblur = setTimeout(0, function () {
+            this.value = "";
+            this.placeholder = _("Search ...");
+            ul.style.display = "none";
+        });
     }
 
     /*
-     * Add the last edit question to the preview table if (mode = "") 
-     * else show the preview table from alll the object quiz if (mode = shift) 
+     * Add the last edit question to the preview table if (mode = "")
+     * else show the preview table from alll the object quiz if (mode = shift)
      */
     function showQuizeditorPane (mode) {
-
+        if (!setCurrentState("previewPane")) {
+            return;
+        }
         switch (mode) {
             case "":
-                questionPreview(quiz.questions.length-1);
+                questionPreview(quiz.questions.length - 1);
                 break;
 
             case "shift":
                 if (quiz.questions != []) {
                     for (var i = 0; i < quiz.questions.length; i++) {
-                        questionPreview(i); 
+                        questionPreview(i);
                     }
                 }
         }
-
-        var quizeditorPane = document.getElementById("quizeditorPane");
-        quizeditorPane.style.display = "initial";
+        document.getElementById("quizeditorPane").style.display = "initial";
+        redrawAutomatons();
         AudeGUI.QuizEditor.standby();
     }
 
@@ -266,6 +312,11 @@
         removeImg.src = libD.getIcon("actions/list-remove");
         removeImg.alt = "Remove";
         removeButton.appendChild(removeImg);
+        removeButton.onclick = function () {
+            grainPreviewTable();
+            removeQuestion(this);
+            showQuizeditorPane("shift");
+        }
 
         modification.appendChild(modifButton);
         modification.appendChild(removeButton);
@@ -290,12 +341,6 @@
                     modifyMcQuestion(this);
                 }
 
-                removeButton.onclick = function () {
-                    grainPreviewTable();
-                    removeQuestion(this);
-                    showQuizeditorPane("shift");
-                }
-
                 var contentQue   = document.createElement("p");
                 var contentAns   = document.createElement("p");
                 var quesSubDiv   = document.createElement("div");
@@ -310,7 +355,7 @@
                     span.class = "quiz-answer-id";
                     li.appendChild(span);
                     span = document.createElement("span");
-                    span.textContent = newQuestion.possibilities[i].text; 
+                    span.textContent = newQuestion.possibilities[i].text;
                     li.appendChild(span);
                     list.appendChild(li);
                 }
@@ -321,22 +366,13 @@
                 contentAns.textContent = newQuestion.answers.toString();
                 answDiv.appendChild(contentAns);
 
-            break;
-
-            case "word":
-                
-            break;
+                break;
 
             case "automatonEquiv":
                 modifButton.onclick = function () {
                     modifyAutomatonR(this);
                 }
 
-                removeButton.onclick = function () {
-                    grainPreviewTable();
-                    removeQuestion(this);
-                    showQuizeditorPane("shift");
-                }
                 var contentQue = document.createElement("p");
                 contentQue.textContent = newQuestion.instructionHTML;
                 quesDiv.appendChild(contentQue);
@@ -344,12 +380,12 @@
                 var answAutomatonDiv = document.createElement("div");
                 quesDiv.appendChild(quesAutomatonDiv);
                 answDiv.appendChild(answAutomatonDiv);
-                answAutomatonDiv.style = "min-height: 100px; position:relative";
-                quesAutomatonDiv.style = "min-height: 100px; position:relative";
-                
-                if (newQuestion.automatonQuestion !== null) {
+                answAutomatonDiv.style = "min-height: 100px; position:relative; background-color: #a4c9d1;";
+                quesAutomatonDiv.style = "min-height: 100px; position:relative; background-color: #a4c9d1;";
+
+                if (newQuestion.automatonQuestion) {
                     designerQue = new AudeDesigner(quesAutomatonDiv, true);
-                    designerQue.setAutomatonCode( 
+                    designerQue.setAutomatonCode(
                         newQuestion.automatonQuestion,
                         designerQue.currentIndex
                     );
@@ -357,10 +393,12 @@
                         designerQue.redraw();
                         designerQue.autoCenterZoom();
                     }, 0);
+                } else {
+                    quesAutomatonDiv.style.display = "none";
                 }
 
                 designerAns = new AudeDesigner(answAutomatonDiv, true);
-                designerAns.setAutomatonCode( 
+                designerAns.setAutomatonCode(
                     newQuestion.automatonAnswer,
                     designerAns.currentIndex
                 );
@@ -368,8 +406,43 @@
                     designerAns.redraw();
                     designerAns.autoCenterZoom();
                 }, 0);
+                newQuestion.previewAutomatonQue = designerQue;
+                newQuestion.previewAutomatonAns = designerAns;
+                break;
+            case "regexEquiv":
+                modifButton.onclick = function () {
+                    modifyRegexR(this);
+                }
 
-            break;
+                var contentQue = document.createElement("p");
+                contentQue.textContent = newQuestion.instructionHTML;
+                quesDiv.appendChild(contentQue);
+                var quesAutomatonDiv = document.createElement("div");
+                quesAutomatonDiv.style = "min-height: 100px; position:relative; background-color: #a4c9d1;";
+                quesDiv.appendChild(quesAutomatonDiv);
+
+                if (newQuestion.automatonQuestion) {
+                    designerQue = new AudeDesigner(quesAutomatonDiv, true);
+                    designerQue.setAutomatonCode(
+                        newQuestion.automatonQuestion,
+                        designerQue.currentIndex
+                    );
+                    setTimeout(function () {
+                        designerQue.redraw();
+                        designerQue.autoCenterZoom();
+                    }, 0);
+                } else {
+                    quesAutomatonDiv.style.display = "none";
+                }
+
+                var contentAns = document.createElement("p");
+                contentAns.textContent = newQuestion.regex;
+                answDiv.appendChild(contentAns);
+                newQuestion.previewAutomatonQue = designerQue;
+                break;
+            case "word":
+
+                break;
         }
 
         previewTable.style.display = "initial";
@@ -382,12 +455,11 @@
 
         let title = document.createElement("h1");
         title.textContent = "Category";
-        let newQuestionCategory = document.createElement("ul");
+        let newQuesCategory = document.createElement("ul");
         let li_list = [];
         let li_listContent = [
             "Multiple Choice Question",
             "Find an automaton",
-            "Find a language",
             "Find a regular expression"
         ];
 
@@ -396,19 +468,42 @@
             li_list[i].id = "quizeditor-category" + i;
             li_list[i].textContent = li_listContent[i];
             li_list[i].onclick = function () {
-                showNewQuestionCategory(this.id);
+                newQuestionCategory(this.id);
             }
-            newQuestionCategory.appendChild(li_list[i]);
+            newQuesCategory.appendChild(li_list[i]);
         }
 
         newQuestionPane.appendChild(title);
-        newQuestionPane.appendChild(newQuestionCategory);
+        newQuestionPane.appendChild(newQuesCategory);
 
         refs.root.appendChild(newQuestionPane);
     }
 
+    function newQuestionCategory (elementId) {
+        var index = elementId.substr(-1);
+        designerQue = null;
+        designerAns = null;
+        index = parseInt(index);
+        switch (index) {
+            case 0 :
+                showMcqPane("");
+                break;
+            case 1 :
+                showAutomatonRPane("");
+                break;
+            case 2 :
+                showRegexRPane("");
+                break;
+        }
+
+        AudeGUI.QuizEditor.standby();
+    }
+
     function showNewQuestionPane () {
-        var newQuestionPane   = document.getElementById("quizeditor-newquestionPane");
+        if (!setCurrentState("newQuestionPane")) {
+            return;
+        }
+        var newQuestionPane = document.getElementById("quizeditor-newquestionPane");
         newQuestionPane.style.display = "initial";
         AudeGUI.QuizEditor.standby();
     }
@@ -417,7 +512,7 @@
         var file = document.getElementById("quizeditor-file");
         file.onchange = function () {
             var freader = new FileReader();
-                        
+
             freader.onload = function () {
                 AudeGUI.QuizEditor.open(freader.result);
             };
@@ -451,8 +546,10 @@
         quiz.description = descriptionTextarea.value;
     }
 
-    function showSavePane (mode) {
-
+    function showSavePane () {
+        if (!setCurrentState("savePane")) {
+            return;
+        }
         var savePane    = document.createElement("div");
         savePane.id     = "quizeditor-savePane";
         var information = document.createElement("div");
@@ -506,34 +603,11 @@
         savePane.appendChild(information);
         savePane.appendChild(validationButton);
 
+        quiz.title       ? quizTitleInput.value      = quiz.title       : "";
+        quiz.author      ? authorInput.value         = quiz.author      : "";
+        quiz.description ? descriptionTextarea.value = quiz.description : "";
+
         refs.root.appendChild(savePane);
-        AudeGUI.QuizEditor.standby();
-    }
-
-    function showNewQuestionCategory (elementId) {
-        var index = elementId.substr(-1);
-        designerQue = null;
-        designerAns = null;
-        index = parseInt(index);
-        switch (index) {
-            case 0 :
-                hideEverybody();
-                showMcqPane("");
-                break;
-            case 1 :
-                hideEverybody();
-                showAutomatonRPane("");
-                break;
-            case 2 :
-                hideEverybody();
-
-                break;
-            case 3 :
-                hideEverybody();
-
-                break;
-        }
-
         AudeGUI.QuizEditor.standby();
     }
 
@@ -543,9 +617,26 @@
         AudeGUI.QuizEditor.standby();
     }
 
+    function researchBar (tabref, search) {
+        var ul = document.getElementById("quizeditor-researchPane");
+        ul.style.display = "initial";
+        var regex = new RegExp(search.value);
+
+        for (var i = 0; i < tabref.length; i++) {
+            if (regex.test(tabref[i])) {
+                ul.childNodes[i].style.display = "block";
+            } else {
+                ul.childNodes[i].style.display = "none";
+            }
+        }
+    }
+
     // For Multiples Choice Questions
 
     function showMcqPane (mode,index) {
+        if (!setCurrentState("mcqPane")) {
+            return;
+        }
         mcqR = {};
         mcqNumberOfChoices = 2;
 
@@ -630,7 +721,6 @@
         validationButton.style       = "position: relative; left: 80%; top: 80%";
         validationButton.onclick = function () {
             mcqValidation(mode,index);
-            hideEverybody();
             (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
         }
 
@@ -640,7 +730,7 @@
     }
 
     function mcqValidation (mode,index) {
-        var instruction   = document.getElementById("quizeditor-questionArea").value; 
+        var instruction   = document.getElementById("quizeditor-questionArea").value;
         var answers       = [];
         var possibilities = [];
         var possibility   = null;
@@ -667,7 +757,9 @@
             type:          "mcq",
             instruction:   instruction,
             answers:       answers,
-            possibilities: possibilities
+            possibilities: possibilities,
+            previewAutomatonQue: null,
+            previewAutomatonAns: null
         };
         if (mode === "") {
             quiz.questions.push(mcqR);
@@ -676,7 +768,6 @@
             quiz.questions[index] = mcqR;
         }
 
-        refs.root.removeChild(document.getElementById("quizeditor-mcqPane"));
         designerQue = null;
         designerAns = null;
     }
@@ -738,7 +829,6 @@
         var possibilities = question.possibilities;
         var answers       = question.answers;
 
-        hideEverybody();
         showMcqPane("shift",index);
         document.getElementById("quizeditor-questionArea").value = question.instruction;
         for (var i = 0, choiceDiv; i < possibilities.length; i++) {
@@ -760,16 +850,157 @@
     // For Automatons researcher
 
     function showAutomatonRPane (mode,index) {
+        if (!setCurrentState("automatonRPane")) {
+            return;
+        }
         automatonR = {};
-
+        designerAns = null;
+        designerQue = null;
+        var refs2 = {};
         var automatonRPane = document.createElement("div");
         automatonRPane.id  = "quizeditor-automatonRPane";
         automatonRPane.style.display = "initial";
 
-        let title         = document.createElement("h1");
-        title.textContent = _("Find an automaton");
+        automatonRPane.appendChild(libD.jso2dom(["div", [
+            ["h1", _("Find an automaton")],
+            ["div", {"style": "position : absolute; left :  0%; height: 50%; width: 49%; border: 1px solid; background-color: white;"}, [
+                ["div", {"style": "text-align: center"}, _("Question")],
+                ["div", [
+                    ["textarea#quizeditor-automatonRTextarea", {
+                        "style": "position : relative; display: block; width: 98.9%",
+                        "rows": 10,
+                        "placeholder": _("Question wording ...")
+                    }],
+                    ["button#quizeditor-drawAutomaton", {
+                        "#": "drawAutomaton",
+                        "style": "position: absolute; display: block; right: 1%; bottom: 1%"
+                        },
+                        _("Draw an automaton")
+                    ],
+                    ["button#quizeditor-audescriptCodeButton", {
+                        "#": "audescriptCodeButton",
+                        "style": "position: absolute; display: block; right: 1%; bottom: -8%"
+                        },
+                        _("Add audescript conditions")
+                    ],
+                    ["div", {
+                        "#": "automatonQueDiv",
+                        "style": "position:absolute; height:57%; width:100%; background-color: #a4c9d1; display: none"
+                    }]
+                ]]
+            ]],
+            ["div", {"style": "position : absolute; left : 50%; height: 50%; width: 49%; border: 1px solid; background-color: white;"}, [
+                ["div", {"style": "text-align: center"}, _("Answer")],
+                ["div", {"#": "automatonAnsDiv"}, [
+                    ["div", {"style": "position:absolute; height:95.5%; width:100%; background-color: #a4c9d1;"}]
+                ]]
+            ]],
+            ["textarea#quizeditor-audescriptCode", {
+                "#": "audescriptCode",
+                "style": "display:none; position: absolute; top: 64%; left:30%; width:40%;",
+                "rows":4,
+                "placeholder": _("Write your audescript code here ...")
+            }],
+            ["button", {
+                "#": "validationButton",
+                "style": "position: absolute; left: 88%; top: 65%;"
+                },
+                _("Validate")
+            ]
+        ]], refs2));
 
-        automatonRPane.appendChild(title);
+        refs.root.appendChild(automatonRPane);
+
+        refs2.drawAutomaton.onclick = function () {
+            this.style.display   = "none";
+            refs2.automatonQueDiv.style.display = "initial";
+            designerQue = new AudeDesigner(refs2.automatonQueDiv);
+            setTimeout(function () {
+                designerQue.redraw();
+            }, 0);
+        }
+
+        refs2.validationButton.onclick = function () {
+            automatonRValidation(mode,index);
+            (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+        }
+
+        refs2.audescriptCodeButton.onclick = function () {
+            this.style.display = "none";
+            refs2.audescriptCode.style.display = "initial";
+            validationButton.style.top = "75%";
+
+        }
+
+        designerAns = new AudeDesigner(refs2.automatonAnsDiv);
+    }
+
+    function automatonRValidation (mode,index) {
+        automatonR = {
+            type:"automatonEquiv",
+            instructionHTML:   document.getElementById("quizeditor-automatonRTextarea").value,
+            automatonQuestion: null,
+            automatonAnswer:   designerAns.getAutomatonCode(designerAns.currentIndex,false),
+            audescriptCode :   document.getElementById("quizeditor-audescriptCode").value,
+            previewAutomatonQue: null,
+            previewAutomatonAns: null
+        }
+
+        if (designerQue) {
+            automatonR.automatonQuestion =
+                designerQue.getAutomatonCode(designerQue.currentIndex,false)
+        }
+
+        if (mode === "") {
+            quiz.questions.push(automatonR);
+        } else {
+            grainPreviewTable();
+            quiz.questions[index] = automatonR;
+        }
+
+        designerQue = null;
+        designerAns = null;
+    }
+
+    function modifyAutomatonR (buttonClicked) {
+        var index = indexOf(buttonClicked);
+        var question  = quiz.questions[index];
+
+        showAutomatonRPane("shift",index);
+        document.getElementById("quizeditor-automatonRTextarea").value = question.instructionHTML;
+
+        if (question.automatonQuestion) {
+            document.getElementById("quizeditor-drawAutomaton").click();
+            designerQue.setAutomatonCode(
+                question.automatonQuestion,
+                designerQue.currentIndex
+            );
+            designerQue.autoCenterZoom();
+        }
+
+        designerAns.setAutomatonCode(
+            question.automatonAnswer,
+            designerAns.currentIndex
+        );
+        designerAns.autoCenterZoom();
+    }
+
+    // For Regular expressions researcher
+
+    function showRegexRPane (mode,index) {
+        if (!setCurrentState("regexRPane")) {
+            return;
+        }
+        regexR = {};
+
+        var regexRPane = document.createElement("div");
+        regexRPane.id  = "quizeditor-regexRPane";
+        regexRPane.style.display = "initial";
+
+        let title         = document.createElement("h1");
+        title.textContent = _("Find a regular expression");
+
+        regexRPane.appendChild(title);
 
         var content = document.createElement("div");
         var left    = document.createElement("div");
@@ -782,25 +1013,32 @@
         var leftSubContent  = document.createElement("div");
         var rightSubContent = document.createElement("div");
         var automatonQueDiv = document.createElement("div");
-        var automatonAnsDiv = document.createElement("div");
         leftSubTitle.textContent  = _("Question");
         rightSubTitle.textContent = _("Answer");
-        automatonAnsDiv.style     = "position:absolute; height:95.5%; width:100%; background-color: gainsboro;";
-        automatonQueDiv.style     = "position:absolute; height:57%; width:100%; background-color: gainsboro; display: none";
+        leftSubTitle.style        = "text-align: center";
+        rightSubTitle.style       = "text-align: center";
+        automatonQueDiv.style     = "position:absolute; height:57%; width:100%; background-color: #a4c9d1; display: none";
 
         var questionWording   = document.createElement("textarea");
-        questionWording.id    = "quizeditor-automatonRTextarea";
+        questionWording.id    = "quizeditor-regexRTextarea";
         questionWording.style = "position : relative; display: block; width: 98.9%";
         questionWording.rows  = 10;
+        questionWording.placeholder = _("Question wording ...");
         var drawAutomaton     = document.createElement("button");
         drawAutomaton.id      = "quizeditor-drawAutomaton";
-        drawAutomaton.style   = "position: relative; display: block; left: 59%; top: 115%";
+        drawAutomaton.style   = "position: absolute; display: block; right: 1%; bottom: 1%";
         drawAutomaton.textContent = _("Draw an automaton");
+
+        var regex   = document.createElement("textarea");
+        regex.id    = "quizeditor-regex";
+        regex.style = "position : relative; display: block; width: 98.9%";
+        regex.rows  = 10;
+        regex.placeholder = _("Write a regular expression ...");
 
         leftSubContent.appendChild(questionWording);
         leftSubContent.appendChild(drawAutomaton);
         leftSubContent.appendChild(automatonQueDiv);
-        rightSubContent.appendChild(automatonAnsDiv);
+        rightSubContent.appendChild(regex);
 
         left.appendChild(leftSubTitle);
         left.appendChild(leftSubContent);
@@ -824,88 +1062,71 @@
         validationButton.textContent = _("Validate");
         validationButton.style       = "position: absolute; left: 88%; top: 65%";
         validationButton.onclick = function () {
-            AutomatonRValidation(mode,index);
-            hideEverybody();
-            (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+            if ( isRegex(document.getElementById("quizeditor-regex").value) ) {
+                regexRValidation(mode,index);
+                (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+            }
         }
 
         content.appendChild(validationButton);
 
-        automatonRPane.appendChild(content);
-        refs.root.appendChild(automatonRPane);
+        regexRPane.appendChild(content);
+        refs.root.appendChild(regexRPane);
         left.style.backgroundColor  = "white";
         right.style.backgroundColor = "white";
-        designerAns = new AudeDesigner(automatonAnsDiv);
     }
 
-    function AutomatonRValidation (mode,index) {
-        automatonR = {
-            type:"automatonEquiv",
-            instructionHTML:   document.getElementById("quizeditor-automatonRTextarea").value,
+    function regexRValidation (mode,index) {
+
+        regexR = {
+            type:"regexEquiv",
+            instructionHTML:   document.getElementById("quizeditor-regexRTextarea").value,
             automatonQuestion: null,
-            automatonAnswer:   designerAns.getAutomatonCode(designerAns.currentIndex,false),
+            regex: document.getElementById("quizeditor-regex").value,
+            previewAutomatonQue: null,
+            previewAutomatonAns: null
         }
 
         if (designerQue !== null) {
-            automatonR.automatonQuestion =
+            regexR.automatonQuestion =
                 designerQue.getAutomatonCode(designerQue.currentIndex,false)
         }
 
         if (mode === "") {
-            quiz.questions.push(automatonR);
+            quiz.questions.push(regexR);
         } else {
             grainPreviewTable();
-            quiz.questions[index] = automatonR;
+            quiz.questions[index] = regexR;
         }
 
-        refs.root.removeChild(document.getElementById("quizeditor-automatonRPane"));
         designerQue = null;
         designerAns = null;
     }
 
-    function modifyAutomatonR (buttonClicked) {
+    function modifyRegexR (buttonClicked) {
         var index = indexOf(buttonClicked);
         var question  = quiz.questions[index];
 
-        hideEverybody();
-        showAutomatonRPane("shift",index);
-        document.getElementById("quizeditor-automatonRTextarea").value = question.instructionHTML;
-        
-        if (question.automatonQuestion !== null) { 
+        showRegexRPane("shift",index);
+        document.getElementById("quizeditor-regexRTextarea").value = question.instructionHTML;
+        document.getElementById("quizeditor-regex").value          = question.regex;
+
+        if (question.automatonQuestion !== null) {
             document.getElementById("quizeditor-drawAutomaton").click();
             designerQue.setAutomatonCode(
                 question.automatonQuestion,
                 designerQue.currentIndex
             );
             designerQue.autoCenterZoom();
-        }    
-
-        designerAns.setAutomatonCode(
-            question.automatonAnswer,
-            designerAns.currentIndex
-        );
-        designerAns.autoCenterZoom();
+        }
     }
 
     // Tools
-    function hideEverybody () {
-        document.getElementById("quizeditorPane").style.display  = "none";
-        document.getElementById("quizeditor-newquestionPane").style.display  = "none";
-        if (document.getElementById("quizeditor-savePane") !== null) {
-            document.getElementById("quizeditor-savePane").style.display  = "none";
-        }
-        if (document.getElementById("quizeditor-mcqPane") !== null ) {
-            document.getElementById("quizeditor-mcqPane").style.display  = "none";
-        }
-        if (document.getElementById("quizeditor-automatonRPane") !== null ) {
-            document.getElementById("quizeditor-automatonRPane").style.display  = "none";
-        }
-    }
 
     function grainPreviewTable () {
-        var previewTable   = document.getElementById("quizeditor-preview");
+        var previewTable = document.getElementById("quizeditor-preview");
         for (var i = quiz.questions.length; i > 0 ; i--) {
-            previewTable.deleteRow(i); 
+            previewTable.deleteRow(i);
         }
     }
 
@@ -948,4 +1169,84 @@
         return index;
     }
 
+    function isRegex (regex) {
+        var regexToAutomaton = null;
+        AudeGUI.Runtime.loadIncludes(["equivalence", "regex2automaton", "automaton2json"],
+            function () {
+                regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
+            }
+        );
+        var res = false;
+        try {
+            var fake = regexToAutomaton(regex);
+            res = true;
+        } catch (e) {
+            AudeGUI.notify  (_("The regex given in the quiz is not valid."), libD.format(_("Know operation: \".\", \"*\", \"+\".")), "error");
+        }
+        return res;
+    }
+
+    function redrawAutomatons () {
+        for (var i = 0, leng = quiz.questions.length, q; i < leng; i++) {
+            q = quiz.questions[i];
+            if (q.previewAutomatonQue) {
+                q.previewAutomatonQue.redraw();
+                q.previewAutomatonQue.autoCenterZoom();
+            }
+            if (q.previewAutomatonAns) {
+                q.previewAutomatonAns.redraw();
+                q.previewAutomatonAns.autoCenterZoom();
+            }
+        }
+    }
+
+    function cleanDesigners () {
+        for (var i = 0, leng = quiz.questions.length; i < leng; i++) {
+            delete quiz.questions[i].previewAutomatonQue;
+            delete quiz.questions[i].previewAutomatonAns;
+        }
+    }
+
+    /*
+     * Different states :
+     *  -previewPane
+     *  -newQuestionPane
+     *  -savePane
+     *  -mcqPane
+     *  -automatonRPane
+     *  -regexRPane
+     */
+    function setCurrentState(newState) {
+        let confirm = true;
+        if (currentState !== "previewPane" && newState === "savePane") {
+            confirm = window.confirm(_("Do you really want to cancel your quiz edition ? "));
+        }
+
+        switch (currentState) {
+            case "previewPane" :
+                document.getElementById("quizeditorPane").style.display  = "none";
+                break;
+            case "newQuestionPane" :
+                document.getElementById("quizeditor-newquestionPane").style.display = "none";
+                break;
+            case "savePane" :
+                document.getElementById("quizeditor-savePane").style.display = "none";
+                break;
+            case "mcqPane" :
+                document.getElementById("quizeditor-mcqPane").style.display = "none";
+                refs.root.removeChild(document.getElementById("quizeditor-mcqPane"));
+                break;
+            case "automatonRPane" :
+                document.getElementById("quizeditor-automatonRPane").style.display = "none";
+                refs.root.removeChild(document.getElementById("quizeditor-automatonRPane"));
+                break;
+            case "regexRPane" :
+                document.getElementById("quizeditor-regexRPane").style.display = "none";
+                refs.root.removeChild(document.getElementById("quizeditor-regexRPane"));
+                break;
+        }
+
+        currentState = newState;
+        return confirm;
+    }
 }(window));
