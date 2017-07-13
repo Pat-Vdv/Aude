@@ -1,0 +1,14 @@
+
+
+// removes a not coaccessible state from the automaton
+export function removeNotCoaccessible (A)
+    let V := coaccessibleStates(A)
+    let notcoaStates := A.getStates()\coaccessibleStates(A)
+    // we will make the exeption to avoid removing the initial state
+    // otherwise we won't have a valid automaton
+    notcoaStates := notcoaStates\{A.getInitialState()}
+    let notcoaState := getRandomState(notcoaStates)
+    A.removeState(notcoaState)
+    return A
+
+end function
