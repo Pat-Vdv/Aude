@@ -1,0 +1,52 @@
+// returns a set of all the co-accessible states of the automaton
+export function coaccessibleStates (A)
+
+    let Coaccessibles:=A.getFinalStates().copy()
+    let toVisit := A.getFinalStates().copy()
+    let Visited := new Set()
+
+    while toVisit.size != 0 do
+
+        let q := toVisit.getItem()
+        toVisit.remove(q)
+        Visited := Visited union {q}
+        let coRLocal := new Set()
+        foreach t in A.getTransitions() do
+            if t.endState = q then
+                coRLocal.add(t.startState)
+            end if
+        end foreach
+        Coaccessibles := Coaccessibles union coRLocal
+        toVisit := toVisit union (coRLocal\Visited)
+    end while
+
+    return Coaccessibles
+
+end function
+
+// returns a set of all the accessibles states of the automaton
+export function accessibleStates (A)
+
+    let q0 := A.getInitialState().copy()
+    let Accessibles:={q0}
+    let toVisit := new Set()
+    toVisit := {q0}
+    let Visited := new Set()
+
+    while toVisit.size != 0 do
+        let q := toVisit.getItem()
+        toVisit.remove(q)
+        Visited := Visited union {q}
+        let RLocal := new Set()
+        foreach t in A.getTransitions() do
+            if t.startState = q then
+                RLocal.add(t.endState)
+            end if
+        end foreach
+        Accessibles := Accessibles union RLocal
+        toVisit := toVisit union (RLocal\Visited)
+    end while
+
+    return Accessibles
+
+end function
