@@ -2646,23 +2646,23 @@
             (maxY - minY) / parentBcr.height
         );
 
-        var previousZoom = that.svgZoom;
+        var previousZoom = this.svgZoom;
         var factorRatio = (wantedRatio / currentRatio);
-        var nz = Math.min(1, that.svgZoom * factorRatio);
+        var nz = Math.min(1, this.svgZoom * factorRatio);
 
-        that.newZoom(nz);
+        this.newZoom(nz);
 
-        that.svgNode.viewBox.baseVal.x += (
+        this.svgNode.viewBox.baseVal.x += (
             minX / previousZoom - (
-                that.svgNode.viewBox.baseVal.width
+                this.svgNode.viewBox.baseVal.width
                     -
                 (maxX - minX) / previousZoom
             ) / 2
         );
 
-        that.svgNode.viewBox.baseVal.y += (
+        this.svgNode.viewBox.baseVal.y += (
             minY / previousZoom - (
-                that.svgNode.viewBox.baseVal.height
+                this.svgNode.viewBox.baseVal.height
                     -
                 (maxY - minY) / previousZoom
             ) / 2
