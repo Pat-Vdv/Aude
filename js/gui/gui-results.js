@@ -184,7 +184,7 @@
             resultToLeft.appendChild(span);
         },
 
-        exportResult: function () {
+        export: function () {
             var fn = null;
             if (automatonResult) {
                 fn = window.prompt(_("Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"), exportResultFN);
