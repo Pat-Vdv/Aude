@@ -38,6 +38,8 @@
     var OVERLAY_TOP_OFFSET = 10;
     var MOVE_BEFORE_BLOCK_OVERLAY = 3;
 
+    var insertNodeMsg = null;
+
     function id(node, value) {
         if (value === undefined) {
             return node.getAttribute("data-id") || node.getAttribute("id");
@@ -1053,7 +1055,7 @@
             return;
         }
 
-        var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockClick, mouseCoords = null, origMouseCoords = null, currentMoveAction = null, insertNodeMsg = null, newTransitionMsg = null, stateOverlay = null, transitionOverlay = null, frameModifiedSVG = false;
+        var nodeMoving, nodeEdit, pathEdit, coords, nodeMovingData, blockClick, mouseCoords = null, origMouseCoords = null, currentMoveAction = null, newTransitionMsg = null, stateOverlay = null, transitionOverlay = null, frameModifiedSVG = false;
 
         function cancelMsg() {
             if (insertNodeMsg) {
@@ -2820,4 +2822,11 @@
             });
         }
     }());
+
+    AudeDesigner.initiateNewState = function () {
+        insertNodeMsg = AudeDesigner.msg({
+            title: _("New state"),
+            content: _("Click where you want to place the new state.")
+        });
+    };
 }(this));

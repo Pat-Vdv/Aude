@@ -394,13 +394,7 @@
             e.target.classList.remove("mouse-down");
         };
 
-        svgContainer.parentNode.lastChild.lastChild.onclick = function (e) {
-            insertNodeMsg = AudeDesigner.msg({
-                title: _("New state"),
-                content: _("Click where you want to place the new state.")
-            });
-        };
-
+        svgContainer.parentNode.lastChild.lastChild.onclick = AudeDesigner.initiateNewState;
         svgContainer.parentNode.lastChild.lastChild.textContent = _("New state");
     }
 
