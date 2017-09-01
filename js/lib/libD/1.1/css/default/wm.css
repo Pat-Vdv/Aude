@@ -1,19 +1,8 @@
-.libD-wm-window.decoration {
-	border:1px solid rgb(50,50,50);
-}
-
-.libD-wm-window.decoration {
-	-moz-border-radius:5px;
-	-khtml-border-radius:5px;
-	border-radius:5px;
-	border:1px solid rgba(50,50,50,0.5)
-}
-
 .libD-wm-window {
 	position:absolute;
 
 /* Styles protecting the content of the window */
-	font-size:16px; /* FIXME : this might warm because it prevent users from auto adjusting the font size of the windows' container */
+	font-size:1rem;
 	text-align:left;
 	font-style:normal;
 	font-weight:normal;
@@ -21,11 +10,7 @@
 }
 
 .libD-ws-colors-auto {
-	background-color:rgb(237,237,237);
-}
-
-.libD-ws-colors-auto {
-	background-color:rgba(237,237,237, 0.93);
+	background-color:rgba(239, 240, 241, 0.93);
 	color:black;
 	font-family:"Liberation Sans", "Nimbus Sans L", "FreeSans", Verdana,Helvetica, sans-serif;
 }
@@ -36,52 +21,44 @@
 	margin:0;
 	padding:0;
 	position:relative;
-    overflow: auto;
+	overflow: auto;
 	zoom:1;
 }
 
 .shadows.libD-wm-window.decoration.active, .no-decoration.active .libD-wm-content {
-	-webkit-box-shadow:0 4px 8px rgba(0,0,0,0.4);
-	-moz-box-shadow:0 4px 8px rgba(0,0,0,0.4);
-	box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
-shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-content {
-	-webkit-box-shadow:0 4px 8px rgba(0,0,0,0.2);
-	box-shadow:0 4px 8px rgba(0,0,0,0.2);
-	-moz-box-shadow:0 4px 8px rgba(0,0,0,0.2);
+.shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-content {
+	box-shadow:0 2px 4px rgba(0,0,0,0.2);
 }
 
 .no-decoration.libD-wm-window .libD-wm-titlebar {
-	display:none
+	display:none;
 }
 
 .libD-wm-window.decoration .libD-wm-titlebar {
-	background-color:rgb(237,237,237);
+	background-color:rgb(239, 240, 241);
 }
 .libD-wm-window.decoration .libD-wm-titlebar {
 	position:relative;
-	-moz-border-radius-topright:5px;
-	-khtml-border-top-right-radius:5px;
-	-khtml-border-top-left-radius:5px;
-	-moz-border-radius-topleft:5px;
-	border-top-left-radius:5px;
-	border-top-right-radius:5px;
-	height:17px;
+	height:16px;
 	padding-top:2px;
-	color:#555;
+	color:#F1F1F1;
 	cursor:default;
-	background-color:rgba(237,237,237, 0.9);
+	background-color:rgba(239, 240, 241, 0.9);
 	background-repeat:repeat-x
 }
 
 .active.libD-wm-window.decoration .libD-wm-titlebar {
-	background-image:url(wm/title_top_middle.png);
+	background:linear-gradient(to bottom, #556068, #475057);
 }
 
-.inactive.libD-wm-window.decoration .libD-wm-titlebar {
-	background-image:url(wm/title_top_middle_inactive.png);
+.libD-wm-window.decoration .libD-wm-titlebar {
+	border-top-left-radius:2px;
+	border-top-right-radius:2px;
 }
+
 
 .inactive.libD-wm-window.decoration .libD-wm-title {
 	color:#AAA
@@ -102,6 +79,7 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 	margin:0;
 	margin-left:24px;
 	padding:0;
+	padding-top:2px;
 	width:100%;
 	height:100%;
 	white-space:pre;
@@ -109,10 +87,8 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 }
 
 .libD-wm-title, .libD-wm-text {
-	font-size:13px;
-	font-family: Sans, sans-serif;
-	text-shadow:1px 1px 5px #AAA;
-	font-weight:bold;
+	font-size:10px;
+	font-family: sans-serif;
 }
 
 .libD-wm-title.libD-wm-title-embeded {
@@ -139,10 +115,6 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 
 .libD-wm-window.icon-hide .libD-wm-titlebar-space {
 	left:0;
-	-khtml-border-top-left-radius:5px;
-	-moz-border-radius-topleft:5px;
-	border-top-left-radius:5px;
-	border-top-right-radius:5px;
 }
 
 .libD-wm-window.decoration .libD-wm-content {
@@ -157,78 +129,100 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 
 .libD-wm-min, .libD-wm-restore, .libD-wm-max, .libD-wm-close {
 	position:absolute;
-	width:16px;
-	height:16px;
+	top:3px;
 	font-size:0px;
 	color:transparent;
 	background-repeat:no-repeat;
-	cursor:auto;
-	opacity:0.7;
+
 }
+
+.libD-wm-close:before, .libD-wm-restore:before, .libD-wm-max:before, .libD-wm-min:before {
+	position:relative;
+	font-size:10px;
+	cursor:auto;
+	height:12px;
+	width:12px;
+	overflow:hidden;
+	display:inline-block;
+	text-align:center;
+	border-radius:50px;
+	color:#F1F1F1;
+}
+
+.libD-wm-window.decoration.inactive .libD-wm-close:before, .libD-wm-window.decoration.inactive .libD-wm-restore:before, .libD-wm-window.decoration.inactive .libD-wm-max:before, .libD-wm-window.decoration.inactive .libD-wm-min:before {
+	color:#CCC;
+}
+
+.libD-wm-window.decoration.inactive .libD-wm-close:hover:before, .libD-wm-window.decoration.inactive .libD-wm-restore:hover:before, .libD-wm-window.decoration.inactive .libD-wm-max:hover:before, .libD-wm-window.decoration.inactive .libD-wm-min:hover:before {
+	color:#556068;
+}
+
+
+.libD-wm-min:hover:before {
+	background:#CC3;
+	color:#556068;
+}
+
+.libD-wm-restore:hover:before, .libD-wm-max:hover:before {
+	background:#4B4;
+	color:#556068;
+}
+
+.libD-wm-close:before {
+	content:"×";
+	color:#556068;
+	background:#F1F1F1;
+}
+
+.libD-wm-close:hover:before {
+	background:#FF98A2;
+}
+
+.libD-wm-restore:before { content:"❖"; }
+.libD-wm-max:before	 { content:"+"; }
+.libD-wm-min:before	 { content:"−"; }
 
 .libD-wm-close {
-	right:3px;
-	background-image:url(wm/close-h.png);
+	right:4px;
 }
 
-.libD-wm-restore {
-	right:21px;
-	background-image:url(wm/restore-h.png);
-}
-
-.libD-wm-max {
-	right:21px;
-	background-image:url(wm/maximize-h.png);
+.libD-wm-max, .libD-wm-restore {
+	right:20px;
 }
 
 .libD-wm-min {
-	right:40px;
-	background-image:url(wm/minimize-h.png);
+	right:35px;
 }
-
 
 .libD-wm-close:hover, .libD-wm-restore:hover, .libD-wm-max:hover, .libD-wm-min:hover {
 	opacity:1;
-}
-
-.libD-wm-min:active, .libD-wm-restore:active, .libD-wm-max:active, .libD-wm-close:active {
-	margin-right:2px;
-	margin-top:2px;
-	height:12px;
-	width:12px;
-	background-size:95%;
+	font-weight:bold;
 }
 
 .libD-wm-window.decoration .libD-wm-resize-left {
 	position:absolute;
-	top:19px;
+	top:18px;
 	left:0;
-	bottom:3px;
-	width:2px;
+	bottom:0px;
+	width:3px;
 	background:#F1F1F1;
-	-moz-border-radius-bottomleft:5px;
-	-khtml-border-bottom-left-radius:5px;
-	border-bottom-left-radius:5px;
 }
 
 .libD-wm-window.decoration .libD-wm-resize-right {
 	position:absolute;
-	top:19px;
+	top:18px;
 	right:0;
-	bottom:3px;
-	width:2px;
+	bottom:0px;
+	width:3px;
 	background:#F1F1F1;
-	-moz-border-radius-bottomright:5px;
-	-khtml-border-bottom-right-radius:5px;
-	border-bottom-right-radius:5px;
 }
 
 .libD-wm-window.decoration .libD-wm-resize-bottom {
 	position:absolute;
-	right:3px;
-	left:3px;
+	right:0px;
+	left:0px;
 	bottom:0;
-	height:2px;
+	height:3px;
 	background:#F1F1F1;
 }
 
@@ -238,14 +232,14 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 
 .libD-wm-window.decoration .libD-wm-content.fixed-size {
 	position:absolute;
-	top:19px;
-	bottom:2px;
-	left:2px;
-	right:2px
+	top:18px;
+	bottom:3px;
+	left:3px;
+	right:3px
 }
 
 .libD-wm-content.auto-size {
-	margin:2px;
+	margin:3px;
 	margin-top:0px
 }
 
@@ -261,7 +255,7 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 .libD-wm-window.libD-wm-maximized .libD-wm-content.fixed-size {
 	bottom:0;
 	left:0;
-	right:0
+	right:0;
 }
 
 .libD-wm-window.libD-wm-maximized .libD-wm-content.auto-size {
@@ -274,13 +268,8 @@ shadows.libD-wm-window.decoration.inactive, .no-decoration.inactive .libD-wm-con
 
 .libD-wm-window.libD-wm-maximized {
 	border:0;
-	-moz-border-radius:0;
-	-khtml-border-radius:0;
-	border-radius:0
 }
 
-.libD-wm-window.libD-wm-maximized .libD-wm-titlebar {
-	-moz-border-radius:0;
-	-khtml-border-radius:0;
-	border-radius:0
+.libD-wm-window.libD-wm-maximized.decoration .libD-wm-titlebar {
+	border-radius:0;
 }

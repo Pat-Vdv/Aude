@@ -176,11 +176,8 @@
                 }
             };
 
-            var img = new Image();
-            img.src = "icons/oxygen/16x16/actions/arrow-left.png";
             var span = document.createElement("span");
-            span.textContent = _("Edit this automaton");
-            resultToLeft.appendChild(img);
+            span.textContent = "◄ " + _("Edit this automaton");
             resultToLeft.appendChild(span);
         },
 

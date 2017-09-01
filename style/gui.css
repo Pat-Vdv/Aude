@@ -10,7 +10,6 @@ html,body {
 body {
     display:-webkit-flex;
     display:flex;
-    -webkit-flex-direction:column;
     flex-direction:column;
 }
 
@@ -43,41 +42,42 @@ body {
    min-height:1.4rem;
    line-height:1.4rem;
    vertical-align:middle;
-   background:#CDE;
-   padding:1px 0;
+   background:#BEE7FF;
+   padding:0;
    font-size:0;
-   -webkit-flex-direction:row;
    flex-direction:row;
-   display:-webkit-flex;
    display:flex;
 }
 
 #toolbar .left {
-    -webkit-flex:1;
     flex:1;
 }
 
 
 #toolbar .sep {
-   padding-left:0.5ex;
-   padding-right:0.5ex;
+   padding-left:0.2rem;
+   padding-right:0.2rem;
+   border-left:1px solid #5AC;
    display:inline-block;
    vertical-align:middle;
-   height:1.4rem;
+   height:1.2rem;
 }
 
 #toolbar button, #toolbar select {
-   background-color:rgba(255,255,255,0.3);
    color:black;
-   min-height:32px;
-   font-size:small;
+   min-height:28px;
    border:0;
-   border-top:1px solid #BBC;
-   border-bottom:1px solid #BBC;
+   min-width:22px;
    vertical-align:middle;
    display:inline-block;
-   margin: 1px 0;
+   background:transparent;
+   margin: 0;
    padding:0 3px;
+   transition:250ms;
+}
+
+#toolbar .symb {
+    font-size:1rem;
 }
 
 #toolbar button img {
@@ -85,7 +85,7 @@ body {
 }
 
 #toolbar button:hover:not(.greyed), #toolbar select:hover:not(.greyed) {
-   background-color:white
+   background:rgba(0,0,0,0.1)
 }
 
 .greyed {
@@ -93,18 +93,9 @@ body {
 }
 
 
-#toolbar button:first-child, #toolbar select:first-child, .algomode #algo-exec {
-   border-top-left-radius:4px;
-   border-bottom-left-radius:5px;
-   border-left:1px solid #BBC;
-   margin-left:0.75ex;
-}
 
 #toolbar button:last-child, #toolbar select:last-child, .algomode #saveas, .codemode #redraw, .launch-disabled #algorun, .algomode #n-automaton {
-   border-top-right-radius:4px;
-   border-bottom-right-radius:5px;
-   border-right:1px solid #BBC;
-   margin-right:0.75ex;
+   margin-right:1ex;
 }
 
 #predef-algos {
@@ -112,15 +103,19 @@ body {
     text-overflow: ellipsis;
 }
 
-select {
+#toolbar select {
    -webkit-appearance:none;
    -moz-appearance:none;
    appearance:none;
-   padding-right:2ex !important;
-   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='10pt'>▾</text></svg>") !important;
-   background-repeat:no-repeat !important;
-   background-position: right center !important;
+   padding-right:2ex;
+   height: 28px;
+   vertical-align: middle;
+   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='8pt'>▾</text></svg>") no-repeat right center;
 /*   background-origin:content-box;*/
+}
+
+#toolbar select:hover:not(.greyed) {
+   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='8pt'>▾</text></svg>") no-repeat right center, rgba(0,0,0,0.1);
 }
 
 #toolbar span {
@@ -131,10 +126,13 @@ button * {
    vertical-align:middle
 }
 
-#toolbar button, #toolbar select, #toolbar .text {
-   font-size:small;
-   padding-top:4px;
-   padding-bottom:4px;
+#toolbar button, #toolbar select {
+   font-size:0.8rem;
+}
+
+#toolbar .text {
+   font-size:0.6rem;
+   color:#05A
 }
 
 .launch-disabled #algo-exec {
@@ -247,26 +245,17 @@ button * {
 }
 
 #results-tb button {
-   background:rgba(250,250,250, 0.8);
-   border-radius:4px;
+   background:#556068;
+   border-radius:2px;
    border:1px solid #AAA;
-   margin-top:0.5ex;
-   color:gray;
-   font-weight:bold;
+   margin-top:0.8ex;
+   color:#F1F1F1;
    vertical-align:middle;
    font-size:small
 }
 
-#results-tb button img {
-   opacity:0.5
-}
-
 #results-tb {
    text-align:center;
-   -webkit-transition:200ms;
-   -ms-transition:200ms;
-   transition:200ms;
-   opacity:0.5;
    font-size:0
 }
 
@@ -711,7 +700,7 @@ p img {
    text-align:center;
    min-width:13ex;
    transition:200ms;
-   cursor:pointer
+   cursor:pointer;
 }
 
 #new-state-btn-wrap:not(.welcome-hidden) #new-state-btn, #new-state-btn:hover {
