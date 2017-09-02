@@ -701,6 +701,7 @@ p img {
    min-width:13ex;
    transition:200ms;
    cursor:pointer;
+   z-index:1000;
 }
 
 #new-state-btn-wrap:not(.welcome-hidden) #new-state-btn, #new-state-btn:hover {
