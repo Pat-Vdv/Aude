@@ -125,13 +125,9 @@
                         (AudeGUI.notifier && AudeGUI.notifier.displayed) ||
                         !document.getElementById("codeedit").classList.contains("disabled") //FIXME
                     ) {
-<<<<<<< HEAD
-                        AudeGUI.notify(_("Program Result"), resultsContentDesigner.cloneNode(true), "normal");
-=======
                         let div = document.createElement("div");
                         div.innerHTML = svgCode;
                         AudeGUI.notify(_("Program Result"), div, "normal");
->>>>>>> fa0f2531eb523782c671358c3d7d106a0ba9f8b9
                     }
                 }
             );
@@ -156,14 +152,13 @@
                 resultDesigner.disable();
             }
         },
-/*************************** NEW FUNCTIONS *****************************/
-         setMealy : function (M) {
 
-            // Mealy ---> Automaton
+         setMealy : function (M) {
+            // Mealy → Automaton
             var A = new Automaton;
 
             // defining the initial state of A
-            A.setInitialState (M.initial_state);
+            A.setInitialState(M.getInitialState());
 
             // defining the states of A
             M.states.forEach(function (s) {
@@ -174,14 +169,13 @@
             // defining the alphabet for A
 
             M.states.forEach(function (s) {
-                M.input_alphabet.forEach(function (a) {
-                    var n = M.next(s,a);
+                M.getInputAlphabet().forEach(function (a) {
+                    var n = M.next(s, a);
                         A.addTransition(
                             s,
-                            a+'/'+n[1],
+                            a + '/' + n[1],
                             n[0]
                         );
-                        A.setAlphabet(a+'/'+n[1]);
                 });
             });
 
@@ -189,38 +183,37 @@
         },
 
         setMoore : function (M) {
-
-            // Moore ---> Automaton
+            // Moore → Automaton
             var A = new Automaton;
 
             // defining the input alphabet for A
-            M.input_alphabet.forEach( function(a){
+            M.getInputAlphabet().forEach( function(a){
                  A.addSymbol(a);
             });
 
             // defining the initial state of A
-            var init = M.initial_state + '/' +  M.output.get(M.initial_state);
+            var init = M.getInitialState() + '/' +  M.getOutput(M.getInitialState());
             A.setInitialState(init);
 
             // defining the states of A
             M.states.forEach(function (s) {
-                var newst = s +'/'+ M.output.get(s);
+                var newst = s +'/'+ M.getOutput(s);
                 A.addState(newst);
             });
 
             // defining the transitions for A
             M.states.forEach(function (s) {
-                M.input_alphabet.forEach(function (a) {
-                    var n = M.next(s,a);
+                M.getInputAlphabet().forEach(function (a) {
+                    var n = M.next(s, a);
                         A.addTransition(
-                            s+'/'+ M.output.get(s),
+                            s + '/' +  M.getOutput(s),
                             a,
                             n[0] + '/' + n[1]
                         );
                 });
             });
 
-             AudeGUI.Results.set(A);
+            AudeGUI.Results.set(A);
         },
 
         load: function () {

@@ -1,7 +1,7 @@
 // returns a set of all the co-accessible states of the automaton
 export function coaccessibleStates (A)
 
-    let Coaccessibles:=A.getFinalStates().copy()
+    let Coaccessibles := A.getFinalStates().copy()
     let toVisit := A.getFinalStates().copy()
     let Visited := new Set()
 
@@ -17,7 +17,7 @@ export function coaccessibleStates (A)
             end if
         end foreach
         Coaccessibles := Coaccessibles union coRLocal
-        toVisit := toVisit union (coRLocal\Visited)
+        toVisit := toVisit union (coRLocal \ Visited)
     end while
 
     return Coaccessibles
@@ -28,7 +28,7 @@ end function
 export function accessibleStates (A)
 
     let q0 := A.getInitialState().copy()
-    let Accessibles:={q0}
+    let Accessibles := {q0}
     let toVisit := new Set()
     toVisit := {q0}
     let Visited := new Set()
@@ -44,7 +44,7 @@ export function accessibleStates (A)
             end if
         end foreach
         Accessibles := Accessibles union RLocal
-        toVisit := toVisit union (RLocal\Visited)
+        toVisit := toVisit union (RLocal \ Visited)
     end while
 
     return Accessibles

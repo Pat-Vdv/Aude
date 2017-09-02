@@ -73,7 +73,7 @@
             /*jshint validthis: true */
             callback.apply(this, automata);
         },
-/********************************* NEW FUNCTIONS ******************************************/
+
         get_mealy: function (i) {
 
             // Automaton ---> Mealy
@@ -86,31 +86,18 @@
             var M = new Mealy;
 
             // defining the initial state for M
-            M.initialState(A.getInitialState());
+            M.setInitialState(A.getInitialState());
 
-            A.getAlphabet().forEach( function (a) {
+            A.getAlphabet().forEach(function (a) {
                 // a is in the form of "input_instance/output_instance"
-                // so we're going to separate it
-                var input = [];
-                var output = [];
-                var i=0;
-                while (a[i] !== '/') {
-                    input[i]=a[i];
-                    i++;
-                }
-                i++;
-                var j=0;
-                while (i<a.length) {
-                    output[j]=a[i];
-                    j++;
-                    i++;
-                }
-                M.addInAlphabet(input.join(""));
-                M.addOutAlphabet(output.join(""));
+
+                var trans = a.split("/");
+                M.addInputSymbol(aude.getValue(trans[0], automataMap));
+                M.addOutputSymbol(aude.getValue(trans[1], automataMap));
             });
 
             // defining the states for M
-            A.getStates().forEach( function (s) {
+            A.getStates().forEach(function (s) {
                 M.addState(s);
             });
 
@@ -124,32 +111,23 @@
 
                        // we split the symbol (ex. "2/a")
                        // into the input and the output (ex. input = "2", output="a")
-                       var input = [];
-                       var output = [];
-                       var i=0;
-                       while(symbol[i]!=='/'){
-                            input[i] = symbol[i];
-                            i++;
-                       }
-                       var j=0;
-                       i=i+1;
-                       while(i<symbol.length){
-                           output[j]=symbol[i];
-                           j++;
-                           i++;
-                       }
-                       M.addTransition(startState,input.join(""),endState);
-                       M.addOutput(startState,input.join(""),output);
-                       M.addOutAlphabet(output.join(""));
+
+                        var trans  = symbol.split("/");
+                        var input  = aude.getValue(trans[0], automataMap);
+                        var output = aude.getValue(trans[1], automataMap);
+
+                       M.addTransition(startState, input, endState);
+                       M.setOutput(startState, input, output);
+                       M.addOutputSymbol(output);
                     });
                 });
             });
 
             return M;
         },
-        get_moore: function (i){
 
-            // Automaton ---> Moore
+        get_moore: function (i) {
+            // Automaton → Moore
             let A = AudeGUI.Runtime.get_automaton(i);
 
             if (isNaN(i)) {
@@ -159,42 +137,24 @@
             var M = new Moore;
 
             // defining the initial state for M
-            var I = A.getInitialState();
-            var init = [];
-            var i=0;
-            while (I[i] !== '/'){
-                init[i]=I[i];
-                i++;
-            }
-            M.initial_state = init.join("");
+            M.setInitialState(A.getInitialState().split("/")[0])
 
             // defining the input alphabet for M
             A.getAlphabet().forEach(
-                function(a) {
-                    M.addInAlphabet(a);
+                function (a) {
+                    M.addInputSymbol(a);
                 }
             );
 
             A.getStates().forEach(
-                function(s) {
+                function (s) {
                     // separating the actual state from its output
-                    var state = [];
-                    var output = [];
-                    var i=0;
-                    while ( s[i] !== '/' ) {
-                        state[i] = s[i];
-                        i++;
-                    }
-                    i++; // skipping the '/'
-                    var j=0;
-                    while ( i < s.length ) {
-                        output[j]=s[i];
-                        i++;
-                        j++;
-                    }
-                    M.addState(state.join(""));
+                    var sp = s.split("/");
+                    var state  = aude.getValue(sp[0], automataMap);
+                    var output = aude.getValue(sp[1], automataMap);
+                    M.addState(state);
                     M.addOutAlphabet(output);
-                    M.addOutput(state.join(""),output);
+                    M.addOutput(state, output);
                 }
             );
 
@@ -206,26 +166,16 @@
                       f(startState, symbol).forEach(function (endState) {
                             // we extranct from the startState and ensState (ex. s = "q/a")
                             // the actual states, leaving behind their outputs (ex. state = "q")
-                            var state = [];
-                            var endSt = [];
-                            var i=0;
-                            while(startState[i]!=='/'){
-                                state[i] = startState[i];
-                                i++;
-                            }
-                            var i=0;
-                            while(endState[i]!=='/'){
-                                endSt[i] = endState[i];
-                                i++;
-                            }
-                            M.addTransition(state.join(""),symbol,endSt.join(""));
+
+                            var states = s.split("/");
+                            M.addTransition(states[0], symbol, states[1]);
                     });
                 });
             });
 
             return M;
-
         },
+
         get_automaton: function (i) {
             if (isNaN(i)) {
                 return null;

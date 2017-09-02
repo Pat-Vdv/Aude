@@ -1,11 +1,8 @@
-
-from makeFaultyAutomata     import addState, addTransitionFromState, randomNumber,addEpsilonTransitionToState, addEpsilonTransitionFromState, getRandomState, getRandomSymbol, getRandomTransition, getStateName
-from accessibility          import coaccessibleStates
-
-
+from makeFaultyAutomata import addState, addTransitionFromState, randomNumber,addEpsilonTransitionToState, addEpsilonTransitionFromState, getRandomState, getRandomSymbol, getRandomTransition, getStateName
+from accessibility      import coaccessibleStates
 
 // adds a not accessible state to the automaton
-export function addNotAccessible (A)
+export function addNotAccessible(A)
     let stateName := getStateName(A)
     addState(A,stateName)
     var random := randomNumber(1, 4)
@@ -17,9 +14,8 @@ export function addNotAccessible (A)
     return A
 end function
 
-// adds a random transition between two not coaccessible states
-export function transitionNotCoaccessible (A)
-
+// Adds a random transition between two not coaccessible states
+export function transitionNotCoaccessible(A)
     // extraction of not coaccessible states from the automaton
     let coaStates := coaccessibleStates(A)
     let states := A.getStates()
@@ -37,9 +33,8 @@ export function transitionNotCoaccessible (A)
     return A
 end function
 
-// adds a random transition that goes to a not coaccessible state
-export function addTransitionToANotCoaccessible (A)
-
+// Adds a random transition that goes to a not coaccessible state
+export function addTransitionToANotCoaccessible(A)
     // extraction of not coaccessible states from the automaton
     let coaStates := coaccessibleStates(A)
     let states := A.getStates()
@@ -55,11 +50,11 @@ export function addTransitionToANotCoaccessible (A)
     return A
 end function
 
-// this function adds states and transitions to the automaton
+// Adds states and transitions to the automaton
 // by copying certain states and transitions in the original automaton
 // to complicate it
 // thus resulting in a non deterministic finite state automaton
-export function copyTransitions (A)
+export function copyTransitions(A)
     let f := A.getTransitionFunction()
 
     // we take a random transition instead of a state
@@ -101,42 +96,39 @@ export function copyTransitions (A)
 end function
 
 run(
+    function (A)
+        var input := window.prompt("Complicate the current automaton by choosing one or more of the following options\n1 - Add Not Accessible\n2 - Add Transition Between Two Not Coaccessibles\n3 - Add Transition To A Not Coaccessible\n4 - Copy Transitions","1 3 4")
 
-function(A)
-    var input := window.prompt("Complicate the current automaton by choosing one or more of the following options\n1 - Add Not Accessible\n2 - Add Transition Between Two Not Coaccessibles\n3 - Add Transition To A Not Coaccessible\n4 - Copy Transitions","1 3 4")
-
-    // extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
-    let I := []
-    var n := 0
-    foreach c in input do
-        if c<='9' and c>='0' then
-            n:=n*10 + parseInt(c)
-        else
+        // extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
+        let I := []
+        var n := 0
+        foreach c in input do
+            if c<='9' and c>='0' then
+                n:=n*10 + parseInt(c)
+            else
+                I.push(n)
+                n:=0
+            end if
+        done
+        if n!=0 then
             I.push(n)
-            n:=0
         end if
-    done
-    if n!=0 then
-        I.push(n)
-    end if
 
-    // for each case we execute the associated function
-    foreach c in I do
-       if c=1 then
-           A := addNotAccessible(A)
-       else if c=2 then
-           A := transitionNotCoaccessible(A)
-       else if c=3 then
-           A := addTransitionToANotCoaccessible(A)
-       else if c=4 then
-           A := copyTransitions(A)
-       end if
-    end foreach
-    return A
-end function,
-
-get_automaton(currentAutomaton)
-
+        // for each case we execute the associated function
+        foreach c in I do
+           if c=1 then
+               A := addNotAccessible(A)
+           else if c=2 then
+               A := transitionNotCoaccessible(A)
+           else if c=3 then
+               A := addTransitionToANotCoaccessible(A)
+           else if c=4 then
+               A := copyTransitions(A)
+           end if
+        end foreach
+        return A
+    end function,
+    get_automaton(currentAutomaton)
 )
 
 

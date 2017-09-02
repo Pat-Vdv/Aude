@@ -1,11 +1,8 @@
-// A COMPRENDRE
-
 let map := new Object
 map["\\e"] := epsilon
 map["ε"]   := epsilon
 
-// converts an automaton into a JSON object
-// look at unitTests.ajs examples for more information
+// Converts an automaton into a JSON object
 export function automaton2json(A)
     function toString(e)
         if e = epsilon then
@@ -56,30 +53,24 @@ export function automaton2json(A)
     return result + "\n\t]\n}"
 end function
 
-// takes a JSON object like the ones in unitTests.ajs
-// and converts them into an automaton (JS object)
+// Takes a JSON object and converts it into an automaton
 export function object2automaton(o)
     let A := new Automaton
 
-    // we rename the function aude.getValue
-    let fromString := aude.getValue            //il fait quoi fromString?????????????????????????
+    let fromString := aude.getValue
 
     for i from 0 to o.states.length - 1 do
         if i = 0 then
             A.setInitialState(fromString(o.states[i], map))
         else
-            // we add states to the automaton
             A.addState(fromString(o.states[i], map))
         end if
     done
 
-    // we add the final states to the automaton
     foreach s in o.finalStates do
         A.addFinalState(fromString(s, map))
     done
 
-    // we add the transitions to the automaton
-    // to see the method, go to js/automaton.js
     foreach t in o.transitions do
         A.addTransition(
             fromString(t[0], map),
@@ -93,12 +84,8 @@ end function
 
 run(automaton2json, get_automaton(currentAutomaton))
 
-// ---------------- NEW FUNCTIONS ----------------------------
-
-// takes a JSON object like the ones in unitTests.ajs
-// and converts them into a mealy/moore machine(JS object)
-export function object2mealymoore(o,isMealy)
-
+// Takes a JSON object and converts it into a Mealy / Moore machine
+export function object2mealymoore(o, isMealy)
     let M := (
         if isMealy then
             new Mealy()
@@ -109,38 +96,28 @@ export function object2mealymoore(o,isMealy)
     let fromString := aude.getValue
 
     foreach s in o.states do
-        // we add states to the automaton
-        //M.states.add(fromString(o.states[i], map))
         M.addState(s)
     done
 
-    //M.initial_state := o.initial_state
-    M.initialState(o.initialState)
-
+    M.setInitialState(o.initialState)
 
     foreach i in o.inputAlph do
-        //M.input_alphabet.add(fromString(o.inputAlph[i], map))
-        M.addInAlphabet(i)
+        M.addInputSymbol(i)
     done
 
     foreach i in o.outputAlph do
-        //M.output_alphabet.add(fromString(o.outputAlph[i], map))
-        M.addOutAlphabet(i)
+        M.addOutputSymbol(i)
     done
 
-    // we add the transitions to the mealy machine
-    //M.transition := new Map()
     foreach t in o.transitions do
-        M.addTransition(t[0],t[1],t[2])
+        M.addTransition(t[0], t[1], t[2])
     done
 
-    // we add the outputs to the machine
-    //M.output := new Map()
     foreach p in o.outputs do
-        if isMealy then // Mealy case
-            M.addOutput(p[0],p[1],p[2])
-        else // Moore case
-            M.addOutput(p[0],p[1])
+        if isMealy then
+            M.setOutput(p[0], p[1], p[2])
+        else
+            M.setOutput(p[0], p[1])
         end if
     done
     return M

@@ -143,7 +143,7 @@ end function
 
 export function regexToAutomaton(regex)
     if regex is undefined then
-        regex := prompt("Enter the regular expression you want to get an automaton of.")
+        regex := prompt(_("Enter the regular expression you want to get an automaton of."))
 
         if regex is null then
             return
@@ -162,7 +162,7 @@ export function regexToAutomaton(regex)
 
 
     function error()
-        throw new Error("There is a syntax error in your regular expression on character " + i)
+        throw new Error(_(format("There is a syntax error in your regular expression on character {0}", i)))
     end function
 
     function get_lex()

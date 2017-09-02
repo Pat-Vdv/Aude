@@ -4,13 +4,10 @@
 Algorithm 5
 
 Input − Mealy Machine
-
 Output − Moore Machine
 
 Step 1 − Calculate the number of different outputs for each state (Qi) that are available in the state table of the Mealy machine.
-
 Step 2 − If all the outputs of Qi are same, copy state Qi. If it has n distinct outputs, break Qi into n states as Qin where n = 0, 1, 2.......
-
 Step 3 − If the output of the initial state is 1, insert a new initial state at the beginning which gives 0 output.
 */
 
@@ -47,15 +44,17 @@ parcours de la liste des etats:
 // initial_output is the output of the initial state for the Moore machine
 // since it depends on the mealy machine, it is to be deetermined each time
 // initial_output is an element of input_alphabet
-export function mealy2moore ( mealy, initial_output)
+export function mealy2moore(mealy, initial_output)
 
      let M := new Moore()
 
      M.input_alphabet := mealy.input_alphabet
      M.output_alphabet := mealy.output_alphabet
+
      if initial_output = undefined then
          initial_output:="ε"
      end if
+
      M.initial_state := [mealy.initial_state,initial_output].join("")
      M.states := new Set()
      M.transition := new Map()
@@ -92,63 +91,7 @@ export function mealy2moore ( mealy, initial_output)
     done
 
     return M
-
 end function
 
 run(mealy2moore, get_mealy(currentAutomaton))
-/*
- from automaton2json   import object2mealymoore
-from automaton2json   import object2mealy
-from MealyToMoore     import mealy2moore
-
-let mealyEx := object2mealy(
-                {
-                "states": ["q0","q1","q2"],
-                "initialState": "q0",
-                "inputAlph": ["0","1"],
-                "outputAlph": ["0","1"],
-                "transitions":[
-                    ["q0","0","q1"],   ["q0","1","q2"],
-                    ["q1","0","q1"],   ["q1","1","q2"],
-                    ["q2","0","q1"],   ["q2","1","q2"]
-                ],
-                "outputs":[
-                    ["q0","0","0"],   ["q0","1","0"],
-                    ["q1","0","0"],   ["q1","1","1"],
-                    ["q2","0","1"],   ["q2","1","0"]
-                ]
-                },0
-            )
-let mooore := mealy2moore(mealyEx)
-console.log(mooore.states)
-foreach x in mooore.transition do
-    foreach y in x do
-        console.log(y)
-    done
-done
-
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
