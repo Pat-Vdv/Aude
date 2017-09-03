@@ -51,6 +51,39 @@
         return node;
     }
 
+    function ajsEval(script, autoAnsw, A) {
+        var res = null;
+        AudeGUI.Runtime.loadIncludes(
+            ["determinization", "minimization", "completion", "complementation"],
+            function () {
+                try {
+                    res = eval(
+                        "(function() {" +
+                            audescript.toJS(`
+                                from determinization import isDeterminized
+                                from minimization    import isMinimized
+                                from completion      import isCompleted
+                                from complementation import automataAreComplement
+
+                                return ` + script
+                            ).code +
+                        "}());"
+                    );
+                } catch (e) {
+                    AudeGUI.notify(
+                            _("Loading the quiz failed"),
+                            libD.format(
+                                _("The audescript Code isn't correct: {0}"),
+                                e.message,
+                                "error"
+                            )
+                        );
+                    throw e;
+                }
+            }
+        );
+        return res;
+    }
 
     AudeGUI.Quiz = {
         fileInput: null,
@@ -76,7 +109,9 @@
                 );
                 throw e;
             }
-        }
+        },
+
+        _ajsEval: ajsEval
     };
 
     //FIXME
@@ -608,28 +643,5 @@
         var A = designerDraft.getAutomaton(designerDraft.currentIndex);
         document.getElementById("div-quiz").removeChild(div);
         return A;
-    }
-
-    function ajsEval(script, autoAnsw, A) {
-        var required = "";
-        required += "from determinization import isDeterminized" + "\n";
-        required += "from minimization import isMinized" + "\n";
-        required += "from complete import isCompleted" + "\n";
-        required += "from complementation import automataAreComplement" + "\n";
-
-        script = required + "return " + script;
-        try {
-            return eval("(function () {" + audescript.toJS(script).code + "})();");
-        } catch (e) {
-            AudeGUI.notify(
-                    _("Loading the quiz failed"),
-                    libD.format(
-                        _("The quiz seems to be malformed: {0}"),
-                        e.message,
-                        "error"
-                    )
-                );
-            throw e;
-        }
     }
 }(window));
