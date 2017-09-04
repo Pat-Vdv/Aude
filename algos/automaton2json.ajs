@@ -93,7 +93,6 @@ end function
 
 run(automaton2json, get_automaton(currentAutomaton))
 
-// ---------------- NEW FUNCTIONS ----------------------------
 
 // takes a JSON object like the ones in unitTests.ajs
 // and converts them into a mealy/moore machine(JS object)

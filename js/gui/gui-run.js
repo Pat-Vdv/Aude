@@ -73,7 +73,7 @@
             /*jshint validthis: true */
             callback.apply(this, automata);
         },
-/********************************* NEW FUNCTIONS ******************************************/
+
         get_mealy: function (i) {
 
             // Automaton ---> Mealy
