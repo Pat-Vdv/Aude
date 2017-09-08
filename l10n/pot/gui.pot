@@ -207,6 +207,12 @@ msgstr ""
 msgid "List differentiable states"
 msgstr ""
 
+msgid "List accessible states"
+msgstr ""
+
+msgid "List coaccessible states"
+msgstr ""
+
 msgid "Test empty language"
 msgstr ""
 

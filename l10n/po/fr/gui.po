@@ -205,6 +205,12 @@ msgstr "Muter"
 msgid "List differentiable states"
 msgstr "Lister les état distingables"
 
+msgid "List accessible states"
+msgstr "Lister les états accessibles"
+
+msgid "List coaccessible states"
+msgstr "Lister les états coaccessibles"
+
 msgid "Test empty language"
 msgstr "Tester language vide"
 
