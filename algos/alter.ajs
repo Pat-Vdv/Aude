@@ -6,9 +6,7 @@ export function randomNumber (minimum, maximum)
     return n
 end function
 
-// This function returns a random symbol
-// from the alphabet of an automaton
-// the alphabet is a set
+// Returns a random symbol from the alphabet of an automaton. The alphabet is a set.
 export function getRandomSymbol(alphabet)
     var random := randomNumber(1, alphabet.size)
     var i := 1

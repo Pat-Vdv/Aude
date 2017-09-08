@@ -153,7 +153,7 @@
             }
         },
 
-         setMealy : function (M) {
+        setMealy: function (M) {
             // Mealy → Automaton
             var A = new Automaton;
 

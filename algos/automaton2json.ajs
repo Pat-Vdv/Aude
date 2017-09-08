@@ -82,9 +82,7 @@ export function object2automaton(o)
     return A
 end function
 
-run(automaton2json, get_automaton(currentAutomaton))
-
-// Takes a JSON object and converts it into a Mealy / Moore machine
+// Takes an object and converts it into a Mealy / Moore machine
 export function object2mealymoore(o, isMealy)
     let M := (
         if isMealy then
@@ -131,3 +129,4 @@ export function object2moore (o)
     return object2mealymoore(o, false)
 end function
 
+run(automaton2json, get_automaton(currentAutomaton))

@@ -17,6 +17,6 @@ automaton2htmltable.ajs / Table representation
 regex2automaton.ajs     / Reg. Exp. → automaton
 regex2minautomaton.ajs  / Reg. Exp. → minimized automaton
 automaton2regex.ajs     / Automaton → Reg. Exp.
-MooreToMealy.ajs        / Moore Machine → Mealy machine
-MealyToMoore.ajs        / Mealy Machine → Moore machine
+moore2mealy.ajs        / Moore Machine → Mealy machine
+mealy2moore.ajs        / Mealy Machine → Moore machine
 unitTests.ajs           / Unit tests for Aude

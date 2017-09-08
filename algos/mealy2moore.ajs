@@ -1,61 +1,18 @@
-// transformation of a mealy machine to an equivalent moore machine
-// algorithm : source https://www.tutorialspoint.com/automata_theory/moore_and_mealy_machines.htm
-/*
-Algorithm 5
-
-Input − Mealy Machine
-Output − Moore Machine
-
-Step 1 − Calculate the number of different outputs for each state (Qi) that are available in the state table of the Mealy machine.
-Step 2 − If all the outputs of Qi are same, copy state Qi. If it has n distinct outputs, break Qi into n states as Qin where n = 0, 1, 2.......
-Step 3 − If the output of the initial state is 1, insert a new initial state at the beginning which gives 0 output.
-*/
-
-
-
-// ALGORITHM
-/*
-parcours de la liste des etats:
-    pour chaque etat e faire
-        pour chaque entree x faire
-            etat_suivant := transition (etat, entree)
-            sortie := output (etat, entree)
-            couple(etat_suivant, sortie) <- construire tous les couples possibles commme ça
-        fin pour
-    fin pour
-
-    pour chaque etat e faire
-        deduire de l'ensemble des couples tous les sorties possibles pour e
-        construire les nouveaux etats
-        et leur associer les sorties correspondantes qu'on a deduit
-    fin pour
-
-    //reste a faire les nouveaux transitions
-
-    pour chaque etat de moore (t1, o1) faire
-        pour chaque entree a faire
-            determiner transition (t1, a, t2) et sortie (t1, a, o2)
-            trouver l'etat de moore (t2, o2) et lui associer a à partir de t1 <- nouveau transition
-            ajouter ce nouveau transition dans l'ensemble des nouveaux transitions
-        fin pour
-    fin pour
-*/
-
-// initial_output is the output of the initial state for the Moore machine
+// initialOutput is the output of the initial state for the Moore machine
 // since it depends on the mealy machine, it is to be deetermined each time
-// initial_output is an element of input_alphabet
-export function mealy2moore(mealy, initial_output)
+// initialOutput is an element of input_alphabet
+export function mealy2moore(mealy, initialOutput)
 
      let M := new Moore()
 
      M.input_alphabet := mealy.input_alphabet
      M.output_alphabet := mealy.output_alphabet
 
-     if initial_output = undefined then
-         initial_output:="ε"
+     if initialOutput = undefined then
+         initialOutput:="ε"
      end if
 
-     M.initial_state := [mealy.initial_state,initial_output].join("")
+     M.initial_state := [mealy.initial_state,initialOutput].join("")
      M.states := new Set()
      M.transition := new Map()
      M.output := new Map()
@@ -76,10 +33,10 @@ export function mealy2moore(mealy, initial_output)
 
     // if the initial state has no transition coming towards it
     // then it is not present in the ns_o_set, nor is it a state for M
-    if ns_o_set does not contain [mealy.initial_state,initial_output] then
-        ns_o_set.add([mealy.initial_state,initial_output])
+    if ns_o_set does not contain [mealy.initial_state,initialOutput] then
+        ns_o_set.add([mealy.initial_state,initialOutput])
         M.states.add(M.initial_state)
-        M.output.set(M.initial_state,initial_output)
+        M.output.set(M.initial_state,initialOutput)
     end if
 
     // now we add the new transitions
@@ -94,4 +51,3 @@ export function mealy2moore(mealy, initial_output)
 end function
 
 run(mealy2moore, get_mealy(currentAutomaton))
-

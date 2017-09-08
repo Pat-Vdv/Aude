@@ -1,7 +1,13 @@
 var aude = {
+    _ : null,
+
     elementToString : libD.elementToString,
 
     getNextValue: function (s, j, len, map) {
+        if (!aude._) {
+            aude._ = this.AudeGUI ? this.AudeGUI.l10n : function (s) {return s;}
+        }
+
         if (len === undefined) {
             len = s.length;
         }
@@ -51,7 +57,7 @@ var aude = {
                 nextValue = aude.getNextValue(s, j, len, map);
 
                 if (j === nextValue.lastIndex) {
-                    throw new Error(_("Value is malformed."));
+                    throw new Error(aude._("Value is malformed."));
                 }
 
                 j = nextValue.lastIndex;
@@ -61,7 +67,7 @@ var aude = {
                         if (set.card() === 0) {
                             set = {};
                         } else {
-                            throw new Error(_("Value is malformed."));
+                            throw new Error(aude._("Value is malformed."));
                         }
                     }
                     ++j;
@@ -72,14 +78,14 @@ var aude = {
                 } else if (set instanceof Set) {
                     set.add(nextValue.value);
                 } else {
-                    throw new Error(_("Value is malformed."));
+                    throw new Error(aude._("Value is malformed."));
                 }
 
                 j = nextValue.lastIndex;
             }
 
             if (!closed) {
-                throw new Error(_("Value is malformed."));
+                throw new Error(aude._("Value is malformed."));
             }
 
             return {
@@ -108,7 +114,7 @@ var aude = {
                 nextValue = aude.getNextValue(s, j, len, map);
 
                 if (j === nextValue.lastIndex) {
-                    throw new Error(_("Value is malformed."));
+                    throw new Error(aude._("Value is malformed."));
                 }
 
                 tuple.push(nextValue.value);
@@ -116,7 +122,7 @@ var aude = {
             }
 
             if (!closed) {
-                throw new Error(_("Value is malformed."));
+                throw new Error(aude._("Value is malformed."));
             }
 
             return {
@@ -136,7 +142,7 @@ var aude = {
 
             if (/^[a-zA-Z]+$/.test(valName)) {
                 if (typeof that[valName] !== "function") {
-                    throw new Error(_("Constructor name in value refers to unkown class."));
+                    throw new Error(aude._("Constructor name in value refers to unkown class."));
                 }
                 ++j;
                 while (j < len && s[j] !== ")") {
@@ -231,8 +237,8 @@ var aude = {
                 nextValue = aude.getNextValue(s, 0, len, map);
         if (nextValue.lastIndex === len) {
             return nextValue.value;
-        }
-        throw new Error(_("Value is malformed."));
+        } else
+        throw new Error(aude._("Value is malformed."));
     },
 
     toArray: function (l) {
@@ -242,7 +248,7 @@ var aude = {
             return l;
         }
 
-        throw new Error(_("Cannot make an array from arbitrary type"));
+        throw new Error(aude._("Cannot make an array from arbitrary type"));
     },
 
     toSet : libD.toSet

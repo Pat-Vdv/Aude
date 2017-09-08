@@ -1,23 +1,8 @@
-// transformation of a moore machine to an equivalent mealy machine
-//the only thing that has to change is the output function
-// algorithm : source https://www.tutorialspoint.com/automata_theory/moore_and_mealy_machines.htm
-/* Algorithm 4
-
-Input − Moore Machine
-
-Output − Mealy Machine
-
-Step 1 − Take a blank Mealy Machine transition table format.
-
-Step 2 − Copy all the Moore Machine transition states into this table format.
-
-Step 3 − Check the present states and their corresponding outputs in the Moore Machine state table; if for a state Qi output is m, copy it into the output columns of the Mealy Machine state table wherever Qi appears in the next state.
-*/
 
 // Using the transition function, we're going to examine the next state of a transition
 // and we're going to create a new outputMealy function that associates to each state and input
 // an output related to the next state, following the output function of the moore machine
-function transform_output(states, input, transition, outputMoore)
+function transformOutput(states, input, transition, outputMoore)
     let outputMealy := new Map()
 
     foreach x in states do
@@ -34,8 +19,9 @@ end function
 
 // Takes a moore machine and returns the equivalent mealy machine
 export function MooreToMealy(moore)
-    let output := transform_output(moore.states, moore.input_alphabet, moore.transition, moore.output);
+    let output := transformOutput(moore.states, moore.input_alphabet, moore.transition, moore.output);
     let mealy := new Mealy(moore.states, moore.initial_state, moore.input_alphabet, moore.output_alphabet, moore.transition, output);
     return mealy
 end function
 
+run(moore2mealy, get_moore(currentAutomaton))
