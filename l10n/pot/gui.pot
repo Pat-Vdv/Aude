@@ -213,11 +213,13 @@ msgstr ""
 msgid "JSON representation"
 msgstr ""
 
-
 msgid "Moore machine → Mealy machine"
 msgstr ""
 
 msgid "Mealy machine → Moore machine"
+msgstr ""
+
+msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add not accessible\n2 - Add transition between two not coaccessibles\n3 - Add transition to a not coaccessible\n4 - Copy transitions"
 msgstr ""
 
 msgid "Table representation"

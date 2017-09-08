@@ -214,6 +214,9 @@ msgstr "Machine de Moore → machine de Mealy"
 msgid "Mealy machine → Moore machine"
 msgstr "Machine de Mealy → machine de Moore"
 
+msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add not accessible\n2 - Add transition between two not coaccessibles\n3 - Add transition to a not coaccessible\n4 - Copy transitions"
+msgstr "Compliquer l'automate courant en choisssant une ou plusieurs des options suivantes :\n1 - Ajouter un accessible\n2 - Ajouter une transition entre deux non co-accessibles\n3 - Ajouter une transition vers un non co-accessible\n4 - Copier des transitions"
+
 msgid "JSON representation"
 msgstr "Représentation JSON"
 

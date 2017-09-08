@@ -97,7 +97,12 @@ end function
 
 run(
     function (A)
-        var input := window.prompt("Complicate the current automaton by choosing one or more of the following options\n1 - Add Not Accessible\n2 - Add Transition Between Two Not Coaccessibles\n3 - Add Transition To A Not Coaccessible\n4 - Copy Transitions","1 3 4")
+        var input := window.prompt(
+            AudeGUI.l10n(
+                "Complicate the current automaton by choosing one or more of the following options\n1 - Add not accessible\n2 - Add transition between two not coaccessibles\n3 - Add transition to a not coaccessible\n4 - Copy transitions"
+            ),
+            "1 3 4"
+        )
 
         // extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
         let I := []
