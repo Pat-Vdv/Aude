@@ -1,9 +1,8 @@
 from normalization import normalize
 
 // Returns a random whole number in the [minimum, maximum] interval
-export function randomNumber (minimum, maximum)
-    var n := Math.floor((Math.random()) * (maximum - minimum + 1)) + minimum
-    return n
+export function randomNumber(minimum, maximum)
+    return Math.floor((Math.random()) * (maximum - minimum + 1)) + minimum
 end function
 
 // Returns a random symbol from the alphabet of an automaton. The alphabet is a set.
@@ -33,17 +32,8 @@ export function getRandomState(states)
 end function
 
 // Returns a random transition from a set of transitions
-export function getRandomTransition (transitions)
-    var random := randomNumber(1, transitions.size)
-    var i := 1
-    foreach transition in transitions do
-        if i = random then
-            return transition
-        else
-            i++
-        end if
-    end foreach
-
+export function getRandomTransition(transitions)
+    return transitions.getList()[randomNumber(0, transitions.size)]
 end function
 
 // Finds a name for a new state
@@ -77,11 +67,9 @@ end function
 
 // Removes a random transition from the automaton
 export function removeTransition(A)
-
     var randomTransition := getRandomTransition(A.getTransitions())
     A.removeTransition(randomTransition)
     return A
-
 end function
 
 // Adds a random false transition in the automaton
@@ -179,7 +167,7 @@ export function inverseTransition(A)
         end if
     end foreach
 
-    if T!={} then
+    if T != {} then
         var randomTransition := getRandomTransition(T)
         A.removeTransition(randomTransition)
         A.addTransition(randomTransition.endState, randomTransition.symbol, randomTransition.startState)
