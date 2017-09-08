@@ -3,6 +3,9 @@
 from minimization     import minimize
 from equivalence      import automataAreEquivalent
 from automaton2json   import object2automaton
+from automaton2json   import object2mealymoore
+from automaton2json   import object2mealy
+from automaton2json   import object2moore
 from infiniteLanguage import infiniteLanguage
 from epsElimination   import epsElim
 
@@ -372,7 +375,9 @@ function doTests(testCorrect, testFailed, testFailInfo)
         "normalization.ajs",
         "product.ajs",
         "regex2automaton.ajs",
-        "regex2minautomaton.ajs"
+        "regex2minautomaton.ajs",
+        "moore2mealy.ajs",
+        "mealy2moore.ajs"
     ];
 
     function parse(fileNumber)

@@ -56,6 +56,13 @@
         }
     }
 
+    function toString(a) {
+        return (typeof a === "string" || typeof a === "number")
+            ? a
+            : aude.elementToString(a, automataMap)
+    };
+
+
     AudeGUI.Results = {
         deferedResultShow: false,
 
@@ -137,6 +144,10 @@
             if (res instanceof Automaton) {
                 AudeGUI.Results.setAutomaton(res);
                 results.style.overflow = "hidden";
+            } else if (res instanceof Mealy) {
+                AudeGUI.Results.setMealy(res);
+            } else if (res instanceof Moore) {
+                AudeGUI.Results.setMoore(res);
             } else {
                 if (HTMLElement && res instanceof HTMLElement) {
                     AudeGUI.Results.setDOM(res);
@@ -147,6 +158,57 @@
                 results.style.overflow = "";
                 resultDesigner.disable();
             }
+        },
+
+        setMealy: function (M) {
+            // Mealy → Automaton
+            var A = new Automaton;
+
+            // defining the initial state of A
+            A.setInitialState(M.getInitialState());
+
+            M.states.forEach(function (s) {
+                M.getInputAlphabet().forEach(function (a) {
+                    var n = M.next(s, a);
+                    A.addTransition(
+                        s,
+                        toString(a) + '/' + toString(n[1]),
+                        n[0]
+                    );
+                });
+            });
+
+            AudeGUI.Results.set(A);
+        },
+
+        setMoore : function (M) {
+            // Moore → Automaton
+            var A = new Automaton;
+
+            // defining the initial state of A
+            A.setInitialState(
+                toString(M.getInitialState()) + '/' +  toString(M.getOutput(M.getInitialState()))
+            );
+
+            // defining the states of A
+            M.states.forEach(function (s) {
+                var newst = toString(s) + '/' + toString(M.getOutput(s));
+                A.addState(newst);
+            });
+
+            // defining the transitions for A
+            M.states.forEach(function (s) {
+                M.getInputAlphabet().forEach(function (a) {
+                    var n = M.next(s, a);
+                        A.addTransition(
+                            toString(s) + '/' +  toString(M.getOutput(s)),
+                            a,
+                            toString(n[0]) + '/' + toString(n[1])
+                        );
+                });
+            });
+
+            AudeGUI.Results.set(A);
         },
 
         load: function () {

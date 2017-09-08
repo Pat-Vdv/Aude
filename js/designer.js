@@ -920,7 +920,7 @@
 
         var getValue = (
             onlyStrings
-                ? v => AudeDesigner.getValueFunction(v).toString()
+                ? v => v
                 : AudeDesigner.getValueFunction
         );
 

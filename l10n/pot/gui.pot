@@ -198,7 +198,19 @@ msgstr ""
 msgid "Minimize"
 msgstr ""
 
+msgid "Complicate"
+msgstr ""
+
+msgid "Mutate"
+msgstr ""
+
 msgid "List differentiable states"
+msgstr ""
+
+msgid "List accessible states"
+msgstr ""
+
+msgid "List coaccessible states"
 msgstr ""
 
 msgid "Test empty language"
@@ -210,10 +222,20 @@ msgstr ""
 msgid "JSON representation"
 msgstr ""
 
+msgid "Moore machine → Mealy machine"
+msgstr ""
+
+msgid "Mealy machine → Moore machine"
+msgstr ""
+
+msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add not accessible\n2 - Add transition between two not coaccessibles\n3 - Add transition to a not coaccessible\n4 - Copy transitions"
+msgstr ""
+
+msgid "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"
+msgstr ""
 
 msgid "Table representation"
 msgstr ""
-
 
 msgid "Load a Quiz"
 msgstr ""

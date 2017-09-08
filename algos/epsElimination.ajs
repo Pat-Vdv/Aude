@@ -1,6 +1,7 @@
+// Adds all the states that are obtained by epsilon transitions starting from q
 function add(setStates, trans, q)
     if setStates contains q then
-        return
+        return // no need to add q to setStates since it's already in it
     end if
 
     setStates.add(q)
@@ -10,11 +11,12 @@ function add(setStates, trans, q)
     done
 end function
 
+// Determines if the state q should be transformed into a final state
+// by checking if there is an epsilon transition from a final state to q
 function finalAccessibleByEpsilon(q, trans, F, visited)
     if visited contains q then
         return false
     end if
-
     visited.add(q)
 
     foreach d in trans(q, epsilon) do
@@ -26,6 +28,8 @@ function finalAccessibleByEpsilon(q, trans, F, visited)
     return false
 end function
 
+// Calculation of a new union of final states
+// by adding to F all states in Q accessible by epsilon transition
 function el(Q, trans, F)
     let newF := {}
 
@@ -42,22 +46,38 @@ export function epsElim(A)
     let ElimA := new Automaton
     let trans := A.getTransitionFunction()
 
+    // the new automaton has the same states
     ElimA.setStates(A.getStates())
+
+    // we calculate the new final states
     ElimA.setFinalStates(el(A.getStates(), trans, A.getFinalStates()))
+
+    // the initial state remains the same
     ElimA.setInitialState(A.getInitialState())
 
     foreach q1 in A.getStates() do
+        // we calculate all the states that follow an epsilon transition
+        // starting from q1
         let origStates := {}
         add(origStates, trans, q1)
 
+        // we try to find a non-epsilon transition
+        // in the midst of epsilon-transitions that start form q1
+        // so that we can use it to replace all epsilon transitions
         foreach a in A.getAlphabet() do
             let destStates := {}
             foreach q in origStates do
+                // if there's a non-epsilon transition from q
+                // then we're going to save that in destStates
+                // and all other states that come after it
+                // by an epsilon transition
                 foreach qd in trans(q, a) do
                     add(destStates, trans, qd)
                 done
             done
 
+            // we add transitions between q1 and every state qd that
+            // has a non-epsilon transition in between
             foreach qd in destStates do
                 ElimA.addTransition(q1, a, qd)
             done

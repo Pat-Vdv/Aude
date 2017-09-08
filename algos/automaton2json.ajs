@@ -2,6 +2,7 @@ let map := new Object
 map["\\e"] := epsilon
 map["ε"]   := epsilon
 
+// Converts an automaton into a JSON object
 export function automaton2json(A)
     function toString(e)
         if e = epsilon then
@@ -52,6 +53,7 @@ export function automaton2json(A)
     return result + "\n\t]\n}"
 end function
 
+// Takes a JSON object and converts it into an automaton
 export function object2automaton(o)
     let A := new Automaton
 
@@ -78,6 +80,53 @@ export function object2automaton(o)
     done
 
     return A
+end function
+
+// Takes an object and converts it into a Mealy / Moore machine
+export function object2mealymoore(o, isMealy)
+    let M := (
+        if isMealy then
+            new Mealy()
+        else
+            new Moore()
+    )
+
+    let fromString := aude.getValue
+
+    foreach s in o.states do
+        M.addState(s)
+    done
+
+    M.setInitialState(o.initialState)
+
+    foreach i in o.inputAlph do
+        M.addInputSymbol(i)
+    done
+
+    foreach i in o.outputAlph do
+        M.addOutputSymbol(i)
+    done
+
+    foreach t in o.transitions do
+        M.addTransition(t[0], t[1], t[2])
+    done
+
+    foreach p in o.outputs do
+        if isMealy then
+            M.setOutput(p[0], p[1], p[2])
+        else
+            M.setOutput(p[0], p[1])
+        end if
+    done
+    return M
+end function
+
+export function object2mealy (o)
+    return object2mealymoore (o, true)
+end function
+
+export function object2moore (o)
+    return object2mealymoore(o, false)
 end function
 
 run(automaton2json, get_automaton(currentAutomaton))

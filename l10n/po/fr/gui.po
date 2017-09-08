@@ -196,14 +196,38 @@ msgstr "ε-éliminer"
 msgid "Minimize"
 msgstr "Minimiser"
 
+msgid "Complicate"
+msgstr "Compliquer"
+
+msgid "Mutate"
+msgstr "Muter"
+
 msgid "List differentiable states"
 msgstr "Lister les état distingables"
+
+msgid "List accessible states"
+msgstr "Lister les états accessibles"
+
+msgid "List coaccessible states"
+msgstr "Lister les états coaccessibles"
 
 msgid "Test empty language"
 msgstr "Tester language vide"
 
 msgid "Test infinite language"
 msgstr "Tester language infini"
+
+msgid "Moore machine → Mealy machine"
+msgstr "Machine de Moore → machine de Mealy"
+
+msgid "Mealy machine → Moore machine"
+msgstr "Machine de Mealy → machine de Moore"
+
+msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add not accessible\n2 - Add transition between two not coaccessibles\n3 - Add transition to a not coaccessible\n4 - Copy transitions"
+msgstr "Compliquer l'automate courant en choisssant une ou plusieurs des options suivantes :\n1 - Ajouter un accessible\n2 - Ajouter une transition entre deux non co-accessibles\n3 - Ajouter une transition vers un non co-accessible\n4 - Copier des transitions"
+
+msgid "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"
+msgstr "Transformez l'automate courant en choisissant une ou plusieurs options parmis les suivantes :\n1 - Changer un symbole\n2 - Supprimer une transition\n3 - Ajouter une transition\n4 - Ajouter un état et des transitions\n5 - Inverser une transition\n6 - Renommer les états\n7 - Rendre un état non-accepteur\n8 - Supprimer des epsilon-transitions\n9 - Supprimer un état\n10 - Rendre un état accepteur"
 
 msgid "JSON representation"
 msgstr "Représentation JSON"

@@ -1,0 +1,22 @@
+// Using the transition function, we're going to examine the next state of a transition
+// and we're going to create a new outputMealy function that associates to each state and input
+// an output related to the next state, following the output function of the moore machine
+
+// Takes a moore machine and returns the equivalent mealy machine
+export function moore2mealy(moore)
+    let mealy := new Mealy();
+    mealy.setInitialState(moore.getInitialState());
+
+    foreach startState in moore.getStates() do
+        foreach inputSymbol in moore.getInputAlphabet() do
+            let endState := moore.getTransition([startState, inputSymbol])
+            let outputSymbol := moore.getOutput(endState)
+            mealy.addTransition(startState, inputSymbol, endState)
+            mealy.setOutput(startState, inputSymbol, outputSymbol)
+        end foreach
+    end foreach
+
+    return mealy
+end function
+
+run(moore2mealy, get_moore(currentAutomaton))

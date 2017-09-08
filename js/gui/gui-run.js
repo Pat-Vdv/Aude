@@ -33,7 +33,7 @@
         var res = audescript.toJS(code, moduleName, fileName);
         data.includes = res.neededModules;
         return (
-            "(function (run, get_automaton, get_automata, currentAutomaton) {" +
+            "(function (run, get_automaton, get_automata, get_mealy, get_moore, currentAutomaton) {" +
             res.code + "})"
         );
     }
@@ -74,7 +74,90 @@
             callback.apply(this, automata);
         },
 
-        get_automaton: function (i) {
+        get_mealy: function (i) {
+            // Automaton → Moore
+            let A = AudeGUI.Runtime.get_automaton(i, true);
+
+            if (isNaN(i)) {
+                return null;
+            }
+
+            var M = new Mealy;
+
+            // defining the initial state for M
+            M.setInitialState(aude.getValue(A.getInitialState(), automataMap));
+
+            var f = A.getTransitionFunction();
+
+            f().forEach(function (startState) {
+                f(startState).forEach(function (symbol) {
+                    f(startState, symbol).forEach(function (endState) {
+                        // we split the symbol (ex. "2/a")
+                        // into the input and the output (ex. input = "2", output="a")
+
+                        let nStartState = aude.getValue(startState, automataMap);
+                        let nEndState = aude.getValue(endState, automataMap);
+
+                        var trans  = symbol.split("/");
+
+                        if (trans.length !== 2) {
+                            throw new Error(_(libD.format("Transition {0} is missing an output symbol or has too many '/'.", symbol)))
+                        }
+
+                        var input  = aude.getValue(trans[0], automataMap);
+                        var output = aude.getValue(trans[1], automataMap);
+
+                       M.addTransition(nStartState, input, nEndState);
+                       M.setOutput(nStartState, input, output);
+                    });
+                });
+            });
+
+            return M;
+        },
+
+        get_moore: function (i) {
+            // Automaton → Moore
+            let A = AudeGUI.Runtime.get_automaton(i, true);
+
+            if (isNaN(i)) {
+                return null;
+            }
+
+            var M = new Moore();
+
+            M.setInitialState(aude.getValue(A.getInitialState().split("/")[0], automataMap));
+
+            var trans = A.getTransitionFunction();
+
+            A.getStates().forEach(
+                function (s) {
+                    // separating the actual state from its output
+                    var sp = s.split("/");
+                    if (sp.length !== 2) {
+                        throw new Error(_(libD.format("State {0} is missing an output symbol or has too many '/'.", s)))
+                    }
+
+                    var state  = aude.getValue(sp[0], automataMap);
+                    var output = aude.getValue(sp[1], automataMap);
+                    M.setOutput(state, output);
+
+                    trans(s).forEach(
+                        function (symbol) {
+                            trans(s, symbol).forEach(
+                                function (endState) {
+                                    M.addTransition(state, symbol, aude.getValue(endState.split("/")[0], automataMap));
+                                }
+                            )
+                        }
+                    );
+                }
+            );
+
+            return M;
+        },
+
+        get_automaton: function (i, statesAsString) {
             if (isNaN(i)) {
                 return null;
             }
@@ -82,7 +165,7 @@
             var A = null;
 
             try {
-                A = AudeGUI.mainDesigner.getAutomaton(i);
+                A = AudeGUI.mainDesigner.getAutomaton(i, statesAsString);
             } catch (e) {
                 console.error(e);
                 throw new Error(libD.format(_("get_automaton: automaton n°{0} could not be understood."), JSON.stringify(i)));
@@ -113,7 +196,9 @@
                 moduleName || "<program>",
                 AudeGUI.Runtime.run,
                 AudeGUI.Runtime.get_automaton,
-                AudeGUI.Runtime.get_automata
+                AudeGUI.Runtime.get_automata,
+                AudeGUI.Runtime.get_mealy,
+                AudeGUI.Runtime.get_moore
             );
         },
 
@@ -167,6 +252,8 @@
                 moduleName || "<program>",
                 libD.none,
                 libD.none,
+                libD.none,
+                libD.none,
                 libD.none
             );
         },
@@ -200,7 +287,7 @@
             return res;
         },
 
-        runProgramCode: function (f, moduleName, run, get_automaton, get_automata) {
+        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore) {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
                 loadingProgNot = null;
@@ -211,6 +298,8 @@
                     run,
                     get_automaton,
                     get_automata,
+                    get_mealy,
+                    get_moore,
                     AudeGUI.mainDesigner.currentIndex
                 );
 
