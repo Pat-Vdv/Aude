@@ -2,52 +2,46 @@
 // since it depends on the mealy machine, it is to be deetermined each time
 // initialOutput is an element of input_alphabet
 export function mealy2moore(mealy, initialOutput)
-
-     let M := new Moore()
-
-     M.input_alphabet := mealy.input_alphabet
-     M.output_alphabet := mealy.output_alphabet
+     let moore := new Moore()
 
      if initialOutput = undefined then
-         initialOutput:="ε"
+         initialOutput := epsilon
      end if
 
-     M.initial_state := [mealy.initial_state,initialOutput].join("")
-     M.states := new Set()
-     M.transition := new Map()
-     M.output := new Map()
+     moore.setInitialState([mealy.getInitialState(), initialOutput])
 
     // a set containing all the [next_state,output] couples
     // that we've deduced from the Mealy machine
-    // they represent the new Moore machine states
-    let ns_o_set := new Set()
+    // they represent the new Moore machine statesœ
+    let stateAndOutputSet := new Set()
 
-    foreach s in mealy.states do
-        foreach a in mealy.input_alphabet do
-            var ns_o := mealy.next(s,a) // next() returns an array: [next_state, output]
-            ns_o_set.add(ns_o)
-            M.states.add(ns_o.join(""))
-            M.output.set(ns_o.join(""), ns_o[1])
+    foreach s in mealy.getStates() do
+        foreach a in mealy.getInputAlphabet() do
+            let stateAndOutput := mealy.next(s, a) // next() returns an array: [next_state, output]
+            stateAndOutputSet.add(stateAndOutput)
+            moore.setOutput(stateAndOutput, stateAndOutput[1])
+            moore.addInputSymbol(a)
         done
     done
 
     // if the initial state has no transition coming towards it
-    // then it is not present in the ns_o_set, nor is it a state for M
-    if ns_o_set does not contain [mealy.initial_state,initialOutput] then
-        ns_o_set.add([mealy.initial_state,initialOutput])
-        M.states.add(M.initial_state)
-        M.output.set(M.initial_state,initialOutput)
+    // then it is not present in the stateAndOutputSet, nor is it a state for moore
+    if stateAndOutputSet does not contain [mealy.getInitialState(), initialOutput] then
+        stateAndOutputSet.add([mealy.getInitialState(), initialOutput])
+        moore.setOutput(moore.getInitialState(), initialOutput)
     end if
 
     // now we add the new transitions
-    foreach c in ns_o_set do
-        foreach a in M.input_alphabet do
-            var next_c := mealy.next(c[0], a)
-            M.transition.set([c.join(""),a], next_c.join("") )
+    foreach c in stateAndOutputSet do
+        foreach a in moore.getInputAlphabet() do
+            var nextC := mealy.next(c[0], a)
+            console.log("nextC", c, a, nextC)
+            moore.addTransition(c, a, nextC)
         done
     done
 
-    return M
+    return moore
 end function
 
 run(mealy2moore, get_mealy(currentAutomaton))
+

@@ -1,101 +1,124 @@
-// definition of a Mealy object
 (function (pkg) {
     "use strict";
 
+    pkg.Mealy = function (states, initialState, inputAlphabet, outputAlphabet, transition, output) {
+        this.initialState   = initialState;
+        this.states         = states         || new Set();
+        this.inputAlphabet  = inputAlphabet  || new Set();
+        this.outputAlphabet = outputAlphabet || new Set();
+        this.transition     = transition     || new Map();
+        this.output         = output         || new Map();
+    };
 
-//defining the class Mealy
-  pkg.Mealy = function ( states, initial_state, input_alphabet, output_alphabet, transition, output ) {
-    // adding object properties
-    this.states = states;
-    this.initial_state = initial_state;
-    this.input_alphabet = input_alphabet;
-    this.output_alphabet = output_alphabet;
-    this.transition = transition;
-    this.output = output;
-  };
+    pkg.Mealy.prototype = {
+        getStates: function () {
+            return this.states;
+        },
 
-pkg.Mealy.prototype ={
+        getOutput: function (state) {
+            if (state === undefined) {
+                return this.output;
+            }
 
-    // adding a method for Mealy
-    // returns the next state of the machine
-    // and produces an output value form the current state and the current input
-    next: function(currentState, currentInput)
-    {
-        var next_state = this.transition.get([currentState,currentInput]);
-        var output = this.output.get([currentState,currentInput]);
-        return [next_state,output];
-    },
+            return this.output.get(state);
+        },
 
-    // execution of the mealy machine M
-    // produces a sequence of outputs
-    execute: function (word)
-    {
-        var total_output = [];
-        //we start at initial_state
-        var S = this.initial_state;
+        // Returns the next state of the machine
+        // and produces an output value form the current state and the current input
+        next: function (state, inputSymbol) {
+            var nextState = this.transition.get([state, inputSymbol]);
+            var output = this.output.get([state, inputSymbol]);
+            return [nextState, output];
+        },
 
-        // execution
-        for (var i = 0; i<word.length; i++)
-        {
-            // we take one by one
-            var input = word[i];
-            // N is an array containing the next state
-            // and an output
-            var N = this.next(S, input);
-            //console.log("ici", N, S, input);
-            S = N[0];
-            total_output[i]=N[1];
+        // Execution of the mealy machine M: produces a sequence of outputs
+        execute: function (word) {
+            var totalOutput = [];
+            //we start at initial_state
+            var S = this.initial_state;
+
+            // execution
+            for (var i = 0; i < word.length; i++) {
+                // we take one by one
+                var input = word[i];
+                // N is an array containing the next state
+                // and an output
+                var N = this.next(S, input);
+                //console.log("ici", N, S, input);
+                S = N[0];
+                totalOutput[i] = N[1];
+            }
+            return totalOutput;
+        },
+
+        // Adds a state to the mealy machine
+        addState: function (state) {
+            if ( this.states === undefined ) {
+                this.states = new Set();
+            }
+            this.states.add(state);
+        },
+
+        // Defines the initial state of the mealy machine
+        setInitialState: function (state) {
+            this.addState(state);
+            this.initialState = state;
+        },
+
+        // Returns the initial state of the moore machine
+        getInitialState: function (state) {
+            return this.initialState;
+        },
+
+        // Adds a letter to the input alphabet of the moore machine
+        addInputSymbol: function (s) {
+            this.inputAlphabet.add(s);
+        },
+
+        // Adds a letter to the output alphabet of the moore machine
+        addOutputSymbol: function (s) {
+            this.outputAlphabet.add(s);
+        },
+
+        getInputAlphabet: function () {
+            return this.inputAlphabet;
+        },
+
+        getOutputAlphabet: function () {
+            return this.outputAlphabet;
+        },
+
+        setInputAlphabet: function (alphabet) {
+            this.inputAlphabet = alphabet.copy();
+        },
+
+        setOutputAlphabet: function (alphabet) {
+            this.outputAlphabet = alphabet.copy();
+        },
+
+        getTransition: function (stateSymb) {
+            if (stateSymb) {
+                return this.transition.get(stateSymb);
+            }
+            return this.transition;
+        },
+
+        // Adds a transition to the transition function
+        addTransition: function (startState, s, destState) {
+            this.addState(startState);
+            this.addInputSymbol(s);
+            this.addState(destState);
+
+            this.transition.set([startState, s], destState);
+        },
+
+        // Adds an output to the output function
+        setOutput: function (startState, inputSymbol, outputSymbol) {
+            this.addState(startState);
+            this.addInputSymbol(inputSymbol);
+            this.addOutputSymbol(outputSymbol);
+            this.output.set([startState, inputSymbol], outputSymbol);
         }
-        return total_output;
-    },
-
-    // adds a state to the mealy machine
-    addState: function (state){
-        if ( this.states === undefined ) {
-            this.states = new Set();
-        }
-        this.states.add(state);
-    },
-
-    // defines the initial state of the mealy machine
-    initialState: function (state){
-        this.initial_state=state;
-    },
-
-    // adds a letter to the input alphabet of the mealy machine
-    addInAlphabet: function (word) {
-         if ( this.input_alphabet === undefined ) {
-            this.input_alphabet = new Set();
-         }
-            this.input_alphabet.add(word);
-    },
-
-    // adds a letter to the output alphabet of the mealy machine
-    addOutAlphabet: function(word){
-        if ( this.output_alphabet === undefined ) {
-            this.output_alphabet = new Set();
-        }
-        this.output_alphabet.add(word);
-    },
-
-    // adds a transition to the transition function
-    addTransition: function(t1, t2, t3){
-        if ( this.transition === undefined ) {
-            this.transition = new Map();
-        }
-        this.transition.set([t1,t2],t3);
-    },
-
-    // adds an output to the output function
-    addOutput: function(o1,o2,o3){
-        if ( this.output === undefined ) {
-            this.output = new Map();
-        }
-        this.output.set([o1,o2],o3);
-    }
-};
-
-pkg.Mealy = Mealy;
-
+    };
 }(this));
 

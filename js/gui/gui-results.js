@@ -56,6 +56,13 @@
         }
     }
 
+    function toString(a) {
+        return (typeof a === "string" || typeof a === "number")
+            ? a
+            : aude.elementToString(a, automataMap)
+    };
+
+
     AudeGUI.Results = {
         deferedResultShow: false,
 
@@ -160,22 +167,14 @@
             // defining the initial state of A
             A.setInitialState(M.getInitialState());
 
-            // defining the states of A
-            M.states.forEach(function (s) {
-                A.addState(s);
-            });
-
-            // defining the transitions for A
-            // defining the alphabet for A
-
             M.states.forEach(function (s) {
                 M.getInputAlphabet().forEach(function (a) {
                     var n = M.next(s, a);
-                        A.addTransition(
-                            s,
-                            a + '/' + n[1],
-                            n[0]
-                        );
+                    A.addTransition(
+                        s,
+                        toString(a) + '/' + toString(n[1]),
+                        n[0]
+                    );
                 });
             });
 
@@ -186,18 +185,14 @@
             // Moore → Automaton
             var A = new Automaton;
 
-            // defining the input alphabet for A
-            M.getInputAlphabet().forEach( function(a){
-                 A.addSymbol(a);
-            });
-
             // defining the initial state of A
-            var init = M.getInitialState() + '/' +  M.getOutput(M.getInitialState());
-            A.setInitialState(init);
+            A.setInitialState(
+                toString(M.getInitialState()) + '/' +  toString(M.getOutput(M.getInitialState()))
+            );
 
             // defining the states of A
             M.states.forEach(function (s) {
-                var newst = s +'/'+ M.getOutput(s);
+                var newst = toString(s) + '/' + toString(M.getOutput(s));
                 A.addState(newst);
             });
 
@@ -206,9 +201,9 @@
                 M.getInputAlphabet().forEach(function (a) {
                     var n = M.next(s, a);
                         A.addTransition(
-                            s + '/' +  M.getOutput(s),
+                            toString(s) + '/' +  toString(M.getOutput(s)),
                             a,
-                            n[0] + '/' + n[1]
+                            toString(n[0]) + '/' + toString(n[1])
                         );
                 });
             });

@@ -1,26 +1,21 @@
-
 // Using the transition function, we're going to examine the next state of a transition
 // and we're going to create a new outputMealy function that associates to each state and input
 // an output related to the next state, following the output function of the moore machine
-function transformOutput(states, input, transition, outputMoore)
-    let outputMealy := new Map()
 
-    foreach x in states do
-        foreach y in input do
-            let next:= transition.get([x,y])
-            let out := outputMoore.get(next)
-            outputMealy.set([x,y],out)
+// Takes a moore machine and returns the equivalent mealy machine
+export function moore2mealy(moore)
+    let mealy := new Mealy();
+    mealy.setInitialState(moore.getInitialState());
+
+    foreach startState in moore.getStates() do
+        foreach inputSymbol in moore.getInputAlphabet() do
+            let endState := moore.getTransition([startState, inputSymbol])
+            let outputSymbol := moore.getOutput(endState)
+            mealy.addTransition(startState, inputSymbol, endState)
+            mealy.setOutput(startState, inputSymbol, outputSymbol)
         end foreach
     end foreach
 
-    return outputMealy
-end function
-
-
-// Takes a moore machine and returns the equivalent mealy machine
-export function MooreToMealy(moore)
-    let output := transformOutput(moore.states, moore.input_alphabet, moore.transition, moore.output);
-    let mealy := new Mealy(moore.states, moore.initial_state, moore.input_alphabet, moore.output_alphabet, moore.transition, output);
     return mealy
 end function
 
