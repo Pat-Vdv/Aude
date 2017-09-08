@@ -5,7 +5,7 @@ complementation.ajs     / Complement
 product.ajs             / Product
 mirror.ajs              / Mirror
 complicate.ajs          / Complicate
-alter.ajs               / Alter
+mutate.ajs              / Mutate
 epsElimination.ajs      / ε-eliminate
 emptyLanguage.ajs       / Test empty language
 infiniteLanguage.ajs    / Test infinite language
