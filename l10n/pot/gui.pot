@@ -198,6 +198,9 @@ msgstr ""
 msgid "Minimize"
 msgstr ""
 
+msgid "Complicate"
+msgstr ""
+
 msgid "List differentiable states"
 msgstr ""
 
@@ -211,9 +214,14 @@ msgid "JSON representation"
 msgstr ""
 
 
-msgid "Table representation"
+msgid "Moore machine → Mealy machine"
 msgstr ""
 
+msgid "Mealy machine → Moore machine"
+msgstr ""
+
+msgid "Table representation"
+msgstr ""
 
 msgid "Load a Quiz"
 msgstr ""

@@ -196,6 +196,9 @@ msgstr "ε-éliminer"
 msgid "Minimize"
 msgstr "Minimiser"
 
+msgid "Complicate"
+msgstr "Compliquer"
+
 msgid "List differentiable states"
 msgstr "Lister les état distingables"
 
@@ -204,6 +207,12 @@ msgstr "Tester language vide"
 
 msgid "Test infinite language"
 msgstr "Tester language infini"
+
+msgid "Moore machine → Mealy machine"
+msgstr "Machine de Moore → machine de Mealy"
+
+msgid "Mealy machine → Moore machine"
+msgstr "Machine de Mealy → machine de Moore"
 
 msgid "JSON representation"
 msgstr "Représentation JSON"
