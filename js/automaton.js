@@ -317,6 +317,15 @@
         removeState: function (state) {
             this.states.remove(state);
             this.finalStates.remove(state);
+
+            var that = this;
+            this.getTransitions().forEach(
+                function (t) {
+                    if (t.startState === state || t.endState === state) {
+                        that.removeTransition(t);
+                    }
+                }
+            );
         },
 
         /**
