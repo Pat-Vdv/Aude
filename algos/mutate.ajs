@@ -6,8 +6,13 @@ export function randomNumber(minimum, maximum)
 end function
 
 // Returns a random transition from a set of transitions
-export function getRandomElement(set)
-    return set.getList()[randomNumber(0, set.size - 1)]
+export function getRandomElement(set, fallbackElement)
+    return (
+        if set is empty then
+            fallbackElement
+        else
+            set.getList()[randomNumber(0, set.size - 1)]
+    )
 end function
 
 // Finds a name for a new state
@@ -49,14 +54,9 @@ export function removeTransition(A)
     end if
 end function
 
-// Adds a random false transition in the automaton
+// Adds a random "wrong" transition in the automaton
 export function addTransition(A)
-    // we choose a random input from the alphabet of A
-    if A.getAlphabet() is empty then
-        return
-    end if
-
-    let randomInput := getRandomElement(A.getAlphabet())
+    let randomInput := getRandomElement(A.getAlphabet(), "a")
 
     // we choose two random states of A
     let firstRandomState := getRandomElement(A.getStates())
@@ -70,7 +70,7 @@ end function
 
 // Adds a random transition that starts at startState
 export function addTransitionFromState(A, startState)
-    let randomSymbol := getRandomElement(A.getAlphabet())
+    let randomSymbol := getRandomElement(A.getAlphabet(), "a")
     let randomState := getRandomElement(A.getStates())
     A.addTransition(startState, randomSymbol, randomState)
     return A
