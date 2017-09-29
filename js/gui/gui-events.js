@@ -166,7 +166,7 @@ window.AudeGUI.initEvents = function () {
                 menu.classList.add("disabled");
             });
         }
-    });
+    })();
 
     if (!AudeGUI.audeExam) {
         document.getElementById("automata-list").onclick = function () {
