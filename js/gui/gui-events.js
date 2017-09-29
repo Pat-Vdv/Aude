@@ -19,6 +19,7 @@ window.AudeGUI.initEvents = function () {
     "use strict";
 
     var AudeGUI = window.AudeGUI;
+
     var exportResult = document.getElementById("export-result");
     var exportBtn = document.getElementById("export");
 
@@ -32,7 +33,9 @@ window.AudeGUI.initEvents = function () {
 
             if (e.keyCode === 69) {
                 if (e.shiftKey) {
-                    exportResult.onclick();
+                    if (!AudeGUI.audeExam) {
+                        exportResult.onclick();
+                    }
                 } else {
                     exportBtn.onclick();
                 }
@@ -61,7 +64,11 @@ window.AudeGUI.initEvents = function () {
     }());
 
     window.addEventListener("resize", AudeGUI.onResize, false);
-    document.getElementById("execute").onclick = AudeGUI.WordExecution.run;
+
+    if (!AudeGUI.audeExam) {
+        document.getElementById("execute").onclick = AudeGUI.WordExecution.run;
+    }
+
     document.getElementById("export").onclick = AudeGUI.export;
 
     document.getElementById("redraw").onclick = function () {
@@ -76,12 +83,14 @@ window.AudeGUI.initEvents = function () {
     document.getElementById("zoom_best").onclick = AudeGUI.mainDesigner.autoCenterZoom.bind(AudeGUI.mainDesigner);
     document.getElementById("save").onclick = AudeGUI.save;
     document.getElementById("saveas").onclick = AudeGUI.saveAs;
-    document.getElementById("export-result").onclick = AudeGUI.Results.export;
     document.getElementById("automaton_minus").onclick = AudeGUI.removeCurrentAutomaton;
     document.getElementById("automaton_plus").onclick = AudeGUI.addAutomaton;
 
+    if (!AudeGUI.audeExam) {
+        exportResult.onclick = AudeGUI.Results.export;
+        AudeGUI.Programs.fileInput.onchange   = AudeGUI.Programs.open;
+    }
 
-    AudeGUI.Programs.fileInput.onchange   = AudeGUI.Programs.open;
     AudeGUI.automatonFileInput.onchange = AudeGUI.openAutomaton;
 
     (function () {
@@ -140,40 +149,46 @@ window.AudeGUI.initEvents = function () {
         );
     }(document.getElementById("undo"), document.getElementById("redo")));
 
+    (function () {
+        var hamburger = document.getElementById("hamburger");
 
+        if (hamburger) {
+            var menu = document.getElementById("menu");
 
-    document.getElementById("hamburger").onclick = function () {
-        window.setTimeout(
-            function () {
-                document.getElementById("menu").classList.toggle("disabled");
-            }, 0
-        );
-    };
-
-    window.addEventListener("click", function () {
-        document.getElementById("menu").classList.add("disabled");
+            hamburger.onclick = function () {
+                window.setTimeout(
+                    function () {
+                        menu.classList.toggle("disabled");
+                    }, 0
+                );
+            }
+            window.addEventListener("click", function () {
+                menu.classList.add("disabled");
+            });
+        }
     });
 
-    document.getElementById("automata-list").onclick = function () {
-        AudeGUI.AutomataList.show();
-    };
+    if (!AudeGUI.audeExam) {
+        document.getElementById("automata-list").onclick = function () {
+            AudeGUI.AutomataList.show();
+        };
 
-    document.getElementById("automata-list-chooser-close").onclick = function () {
-        AudeGUI.AutomataList.hide();
-    };
+        document.getElementById("automata-list-chooser-close").onclick = function () {
+            AudeGUI.AutomataList.hide();
+        };
 
-    document.getElementById("algorun").onclick = AudeGUI.Runtime.launchPredefAlgo;
+        document.getElementById("algorun").onclick = AudeGUI.Runtime.launchPredefAlgo;
+
+        document.getElementById("algo-exec").onclick = function () {
+            AudeGUI.Runtime.loadAS(AudeGUI.ProgramEditor.getText());
+        };
+
+        document.getElementById("quiz").onclick = function () {
+            AudeGUI.Quiz.fileInput.click();
+        };
+    }
 
     document.getElementById("automaton_plus").onchange = function () {
         AudeGUI.setCurrentAutomatonIndex(parseInt(document.getElementById("automaton_plus").value, 10));
-    };
-
-
-    document.getElementById("algo-exec").onclick = function () {
-        AudeGUI.Runtime.loadAS(AudeGUI.ProgramEditor.getText());
-    };
-
-    document.getElementById("quiz").onclick = function () {
-        AudeGUI.Quiz.fileInput.click();
     };
 };

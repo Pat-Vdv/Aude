@@ -22,113 +22,118 @@
     "use strict";
 
     var AudeGUI = pkg.AudeGUI;
+
     var _ = AudeGUI.l10n;
 
-    getFile("algos/list.txt",
-        function (algoFile) {
-            getFile(
-                "dirlist.txt",
-                function (dirlist) {
-                    var dirs = dirlist.split("\n");
+    getFile(
+        "dirlist.txt",
+        function (dirlist) {
+            var dirs = dirlist.split("\n");
 
-                    var files = {
-                        a: [],
-                        q: [],
-                        e: []
-                    };
+            var files = {
+                a: [],
+                q: [],
+                e: []
+            };
 
-                    var win = null;
-                    var langFound = false;
+            var win = null;
+            var langFound = false;
 
-                    for (var i = 0, len = dirs.length; i < len; ++i) {
-                        if (dirs[i]) {
-                            if (dirs[i][0] === "l") { // l10n
-                                if (libD.lang === dirs[i].split("/")[2].split(".")[0]) {
-                                    langFound = true;
-                                    break;
-                                }
-                            } else {
-                                files[dirs[i][0]].push(dirs[i]);
-                            }
+            for (var i = 0, len = dirs.length; i < len; ++i) {
+                if (dirs[i]) {
+                    if (dirs[i][0] === "l") { // l10n
+                        if (libD.lang === dirs[i].split("/")[2].split(".")[0]) {
+                            langFound = true;
+                            break;
                         }
-                    }
-
-                    dirs = null;
-
-                    if (langFound) {
-                        libD.jsLoad(
-                            "l10n/js/" + libD.lang + ".js",
-                            function () {
-                                libD.moduleLoaded("*langPack");
-                            }
-                        );
                     } else {
+                        files[dirs[i][0]].push(dirs[i]);
+                    }
+                }
+            }
+
+            dirs = null;
+
+            if (langFound) {
+                libD.jsLoad(
+                    "l10n/js/" + libD.lang + ".js",
+                    function () {
                         libD.moduleLoaded("*langPack");
                     }
+                );
+            } else {
+                libD.moduleLoaded("*langPack");
+            }
 
-                    function makeWindow(title, textList, funList, btnText, letter, folder, ext, fileelem) {
-                        var refs = {};
+            if (AudeGUI.audeExam) {
+                return;
+            }
 
-                        if (win && win.ws) {
-                            win.close();
-                        }
+            function makeWindow(title, textList, funList, btnText, letter, folder, ext, fileelem) {
+                var refs = {};
 
-                        win = libD.newWin({
-                            title:   title,
-                            height:  "80%",
-                            width:   "75%",
-                            left:    "12.5%",
-                            top:     "12.5%",
-                            show:    true,
-                            content: libD.jso2dom(["div#loaddistantfile.libD-ws-colors-auto libD-ws-size-auto", [
-                                ["div#pane-localfile", [
-                                    ["p.title", _("From your computer")],
-                                    ["p", ["button", {"#": "btn"}, btnText]]
-                                ]],
-                                ["div#pane-distantfile", [
-                                    ["p.title", textList],
-                                    ["ul", {"#": "list"}]
-                                ]]
-                            ]], refs)
-                        });
+                if (win && win.ws) {
+                    win.close();
+                }
 
-                        for (var j = 0, leng = files[letter].length; j < leng; ++j) {
-                            var li = document.createElement("li");
-                            var a  = document.createElement("a");
+                win = libD.newWin({
+                    title:   title,
+                    height:  "80%",
+                    width:   "75%",
+                    left:    "12.5%",
+                    top:     "12.5%",
+                    show:    true,
+                    content: libD.jso2dom(["div#loaddistantfile.libD-ws-colors-auto libD-ws-size-auto", [
+                        ["div#pane-localfile", [
+                            ["p.title", _("From your computer")],
+                            ["p", ["button", {"#": "btn"}, btnText]]
+                        ]],
+                        ["div#pane-distantfile", [
+                            ["p.title", textList],
+                            ["ul", {"#": "list"}]
+                        ]]
+                    ]], refs)
+                });
 
-                            a.href        = "#";
-                            a.onclick     = funList.bind(null, a);
-                            a._file       = files[letter][j];
-                            a.textContent = files[letter][j].replace(folder, "").replace(new RegExp("\\." + ext + "$"), "");
+                for (var j = 0, leng = files[letter].length; j < leng; ++j) {
+                    var li = document.createElement("li");
+                    var a  = document.createElement("a");
 
-                            li.appendChild(a);
-                            refs.list.appendChild(li);
-                        }
+                    a.href        = "#";
+                    a.onclick     = funList.bind(null, a);
+                    a._file       = files[letter][j];
+                    a.textContent = files[letter][j].replace(folder, "").replace(new RegExp("\\." + ext + "$"), "");
 
-                        refs.btn.onclick = function () {
-                            win.close();
-                            fileelem.click();
-                        };
-                    }
+                    li.appendChild(a);
+                    refs.list.appendChild(li);
+                }
 
-                    function lfile(fun, fail) {
-                        return function (link) {
-                            win.close();
+                refs.btn.onclick = function () {
+                    win.close();
+                    fileelem.click();
+                };
+            }
 
-                            getFile(
-                                link._file,
-                                fun,
-                                function () {
-                                    AudeGUI.notify(fail);
-                                },
-                                true
-                            );
+            function lfile(fun, fail) {
+                return function (link) {
+                    win.close();
 
-                            return false;
-                        };
-                    }
+                    getFile(
+                        link._file,
+                        fun,
+                        function () {
+                            AudeGUI.notify(fail);
+                        },
+                        true
+                    );
 
-                    libD.need(["ready", "ws", "wm", "*langPack"], function () {
+                    return false;
+                };
+            }
+
+            libD.need(["ready", "ws", "wm", "*langPack"], function () {
+                getFile("algos/list.txt",
+                    function (algoFile) {
                         var algos = algoFile.split("\n");
 
                         for (var j = 0; j < algos.length; ++j) {
@@ -136,61 +141,60 @@
                                 AudeGUI.Runtime.addAlgo(algos[j]);
                             }
                         }
+                    }
+                );
 
-                        algos = null;
-
-                        if (files.q.length) {
-                            document.getElementById("quiz").onclick = function () {
-                                makeWindow(
-                                    _("Load a Quiz"),
-                                    _("Ready to use quizzes"),
-                                    lfile(AudeGUI.Quiz.load, _("Loading quiz failed.")),
-                                    _("Load a quiz"),
-                                    "q",
-                                    "quiz/",
-                                    "json",
-                                    AudeGUI.Quiz.fileInput
-                                );
-                            };
-                        }
-
-                        if (files.e.length || files.a.length) {
-                            document.getElementById("open").onclick = function () {
-                                if (AudeGUI.getCurrentMode() === "program") {
-                                    if (files.a.length) {
-                                        makeWindow(
-                                            _("Load a program"),
-                                            _("Built-in algorithms"),
-                                            lfile(AudeGUI.Programs.open, _("Loading program failed.")),
-                                            _("Load a program"),
-                                            "a",
-                                            "algos/",
-                                            "ajs",
-                                            AudeGUI.Programs.fileInput
-                                        );
-                                    } else {
-                                        AudeGUI.Programs.fileInput.click();
-                                    }
-                                } else if (files.e.length) {
-                                    makeWindow(
-                                        _("Load an automaton"),
-                                        _("Examples of automaton"),
-                                        lfile(AudeGUI.openAutomaton, _("Loading automaton failed.")),
-                                            _("Load an automaton"),
-                                        "e",
-                                        "examples-automata/",
-                                        "txt",
-                                        AudeGUI.automatonFileInput
-                                    );
-                                } else {
-                                    AudeGUI.Programs.fileInput.click();
-                                }
-                            };
-                        }
-                    });
+                if (files.q.length) {
+                    document.getElementById("quiz").onclick = function () {
+                        makeWindow(
+                            _("Load a Quiz"),
+                            _("Ready to use quizzes"),
+                            lfile(AudeGUI.Quiz.load, _("Loading quiz failed.")),
+                            _("Load a quiz"),
+                            "q",
+                            "quiz/",
+                            "json",
+                            AudeGUI.Quiz.fileInput
+                        );
+                    };
                 }
-            );
+
+                if (files.e.length || files.a.length) {
+                    document.getElementById("open").onclick = function () {
+                        if (AudeGUI.getCurrentMode() === "program") {
+                            if (files.a.length) {
+                                makeWindow(
+                                    _("Load a program"),
+                                    _("Built-in algorithms"),
+                                    lfile(AudeGUI.Programs.open, _("Loading program failed.")),
+                                    _("Load a program"),
+                                    "a",
+                                    "algos/",
+                                    "ajs",
+                                    AudeGUI.Programs.fileInput
+                                );
+                            } else {
+                                AudeGUI.Programs.fileInput.click();
+                            }
+                        } else if (files.e.length) {
+                            makeWindow(
+                                _("Load an automaton"),
+                                _("Examples of automaton"),
+                                lfile(AudeGUI.openAutomaton, _("Loading automaton failed.")),
+                                    _("Load an automaton"),
+                                "e",
+                                "examples-automata/",
+                                "txt",
+                                AudeGUI.automatonFileInput
+                            );
+                        } else {
+                            AudeGUI.Programs.fileInput.click();
+                        }
+                    };
+                }
+            });
         },
+
         function (message, status) {
             var msg = null;
 
@@ -202,7 +206,7 @@
                 msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
             }
 
-            AudeGUI.notify(_("Unable to get the list of predefined algorithms"), msg);
+            AudeGUI.notify(_("Unable to get the list of needed files"), msg);
         }
     );
 }(window));

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1" />
+        <title>Aude</title>
+<!--         <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" /> -->
+        <link rel="stylesheet" href="style/gui.css" />
+        <link rel="stylesheet" href="js/lib/katex/katex.min.css" />
+
+        <script type="text/javascript;version=1.8">
+            var js18Supported = true;
+        </script>
+        <script>
+            window.audeExam = true;
+
+            var libD = {path: 'js/lib/libD/1.1/'};
+
+            window.require = function (m) {
+                if (m === "audescript-runtime") {
+                    return audescript;
+                }
+
+                if (m === "source-map") {
+                    return sourceMap;
+                }
+
+                throw new Error("this require is dummy and is only for requiring audescript");
+            }
+
+            if (!SVGElement.prototype.getElementsByClassName) {
+                SVGElement.prototype.getElementsByClassName = function(className) {
+                    return this.querySelectorAll('.' + className);
+                };
+            }
+        </script>
+        <script>
+        /*<!--//*/
+            if (!window.js18Supported) {
+                var js18Supported = false;
+            }
+
+            function boot(files) {
+                for(var i = 0; i < files.length; i++) {
+                    document.write('<script src="' + files[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
+                }
+            }
+
+            boot([
+                "js/lib/libD/1.1/core.js",
+                "js/lib/libD/1.1/set.js",
+                "js/lib/hammer.min.js",
+                "js/mousewheel.js",
+                "js/getFile.js",
+                "js/aude.js",
+                "js/automaton.js",
+                "js/automaton2dot.js",
+                "js/lib/requestAnimationFrame.js",
+                "js/designer.js",
+                "js/gui.js",
+                "js/touch2click.js",
+                "js/lib/fileSaver.js",
+            ]);
+
+            if (!window.SVGPathSeg) { boot(["js/lib/pathseg.js"]); }
+
+            window.addEventListener('load', function() {
+                setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
+            }, false);
+        /* --> //*/
+        </script>
+    </head>
+    <body>
+        <div id="toolbar" class="designmode">
+            <span class="left">
+                <span>
+                    <span class="text" data-translated-content="true">Mode:</span>
+                    <select id="switchmode">
+                        <option value="design" data-translated-content="true">Design</option>
+                        <option value="automatoncode" data-translated-content="true">Code</option>
+                    </select>
+                </span>
+
+                <label for="n_automaton">
+                    <span data-translated-content="true" class="text">Automaton</span>
+                    <span class="text algomode-specific">&nbsp;</span>
+                </label>
+                <span>
+                    <select id="n-automaton"></select>
+                    <button class="designmode-specific" id="automaton_plus" title="Create a new automaton" data-translated-title="true"> <span class="symb">+</span> </button>
+                    <button class="designmode-specific" id="automaton_minus" title="Remove current automaton" data-translated-title="true"> <span class="symb">-</span> </button>
+                </span>
+                <span class="designmode-specific">
+                    <span class="sep"></span>
+                    <button id="redraw" data-translated-content="true">Redraw</button>
+                </span>
+                <span class="designmode-specific">
+                    <button class="designmode-specific" id="zoom_best" title="Zoom and center automatically" data-translated-title="true"><span class="symb">⇱</span></button>
+                </span>
+                <span class="designmode-specific">
+                    <span class="sep"></span>
+                    <button id="undo" data-translated-title="true" title="Undo"> <span class="symb">⟲</span> </button>
+                    <button id="redo" data-translated-title="true" title="Redo"> <span class="symb">⟳</span> </button>
+                </span>
+            </span>
+            <span class="right">
+                <span>
+                    <input type="file" id="fileautomaton" style="display:none" />
+                    <input type="file" id="fileprogram" style="display:none" />
+                    <input type="file" id="filequiz" style="display:none" />
+                    <span>
+                        <button id="open"><img src="icons/oxygen/16x16/actions/document-open.png" alt="" /><span data-translated-content="true">Open</span></button>
+                        <button id="save"><img src="icons/oxygen/16x16/actions/document-save.png" alt="" /><span data-translated-content="true">Save</span></button>
+                        <button id="saveas"><img src="icons/oxygen/16x16/actions/document-save-as.png" alt="" /><span data-translated-content="true">Save As</span></button>
+                        <button class="designmode-specific" id="export"><img src="icons/oxygen/16x16/actions/document-export.png" alt=""  /><span data-translated-content="true">Export</span></button>
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div id="content">
+            <div id="automataedit" class="pane">
+                <div id="left-pane">
+                    <div id="automata-container">
+                    <div id="svg-container" class="pane"></div>
+                    <div id="automatoncode" class="pane disabled">
+                        <textarea id="automatoncodeedit"></textarea>
+                    </div>
+                    </div>
+                </div>
+                <div id="splitter" class="disabled"></div>
+                <div id="automata-list-chooser" class="disabled">
+                    <p id="automata-list-chooser-intro"></p>
+                    <a href="#" data-translated-content="true" id="automata-list-chooser-close">Close</a>
+                    <ul id="automata-list-chooser-content"></ul>
+                    <button id="automata-list-chooser-btn" data-translated-content="true">Continue execution</button>
+                    <p></p>
+                </div>
+            </div>
+            <div id="codeedit" class="pane disabled"></div>
+        </div>
+    </body>
+</html>

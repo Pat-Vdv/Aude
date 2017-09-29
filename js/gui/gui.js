@@ -263,7 +263,8 @@
                     break;
 
                 case "design":
-                    if (AudeGUI.Results.deferedResultShow) {
+
+                    if (!AudeGUI.examExam && AudeGUI.Results.deferedResultShow) {
                         setTimeout(AudeGUI.Results.enable, 0);
                         AudeGUI.Results.deferedResultShow = false;
                     }
@@ -297,13 +298,13 @@
                         return;
                     }
 
-                    if (AudeGUI.Results.deferedResultShow) {
+                    if (!AudeGUI.audeExam && AudeGUI.Results.deferedResultShow) {
                         setTimeout(AudeGUI.Results.enable, 0);
                         AudeGUI.Results.deferedResultShow = false;
                     }
 
 
-                    if (AudeGUI.ProgramEditor.getText()) {
+                    if (!AudeGUI.audeExam && AudeGUI.ProgramEditor.getText()) {
                         toolbar.className = "designmode codemode";
                     } else {
                         toolbar.className = "designmode codemode launch-disabled";
@@ -323,7 +324,9 @@
         },
 
         onResize: function () {
-            AudeGUI.Results.redraw();
+            if (!AudeGUI.audeExam) {
+                AudeGUI.Results.redraw();
+            }
             AudeGUI.mainDesigner.redraw();
         },
 
@@ -356,29 +359,35 @@
         }
     };
 
-    AudeGUI.Programs = {
-        fileInput: null,
+    AudeGUI.audeExam = window.hasOwnProperty("audeExam") && window.audeExam;
 
-        open: function (code) {
-            if (typeof code === "string") {
-                AudeGUI.ProgramEditor.setText(code);
-                return;
+    if (AudeGUI.audeExam) {
+        window.audescript = {l10n: function () {}};
+    } else {
+        AudeGUI.Programs = {
+            fileInput: null,
+
+            open: function (code) {
+                if (typeof code === "string") {
+                    AudeGUI.ProgramEditor.setText(code);
+                    return;
+                }
+
+                var freader = new FileReader();
+
+                freader.onload = function () {
+                    AudeGUI.Programs.open(freader.result);
+                };
+
+                freader.readAsText(AudeGUI.Programs.fileInput.files[0], "utf-8");
+                programFileName = AudeGUI.Programs.fileInput.value;
+            },
+
+            load: function () {
+                AudeGUI.Programs.fileInput = document.getElementById("fileprogram");
             }
-
-            var freader = new FileReader();
-
-            freader.onload = function () {
-                AudeGUI.Programs.open(freader.result);
-            };
-
-            freader.readAsText(AudeGUI.Programs.fileInput.files[0], "utf-8");
-            programFileName = AudeGUI.Programs.fileInput.value;
-        },
-
-        load: function () {
-            AudeGUI.Programs.fileInput = document.getElementById("fileprogram");
-        }
-    };
+        };
+    }
 
     function createNewStateButton(svgContainer) {
         svgContainer.parentNode.appendChild(document.createElement("div"));
@@ -421,14 +430,21 @@
         AudeGUI.mainDesigner = new AudeDesigner(svgContainer);
         createNewStateButton(svgContainer);
 
-        AudeGUI.Quiz.load();
-        AudeGUI.Programs.load();
-        AudeGUI.Results.load();
-        AudeGUI.WordExecution.load();
-        AudeGUI.ProgramEditor.load();
+        if (!AudeGUI.audeExam) {
+            AudeGUI.Quiz.load();
+            AudeGUI.Programs.load();
+            AudeGUI.Results.load();
+            AudeGUI.WordExecution.load();
+            AudeGUI.ProgramEditor.load();
+        }
+
         AudeGUI.AutomatonCodeEditor.load();
         AudeGUI.AutomataList.load();
-        AudeGUI.Runtime.load();
+
+        if (!AudeGUI.audeExam) {
+            AudeGUI.Runtime.load();
+        }
+
         AudeGUI.initEvents();
         AudeGUI.onResize();
         AudeGUI.addAutomaton();
