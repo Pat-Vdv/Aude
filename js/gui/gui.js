@@ -203,9 +203,6 @@
             if (AudeGUI.AutomataList.automatonCount < 1) {
                 AudeGUI.addAutomaton();
             }
-
-            AudeGUI.AutomataList.removeAutomaton(curAutomaton);
-            AudeGUI.AutomataList.show();
         },
 
         applyTranslation: function () {
