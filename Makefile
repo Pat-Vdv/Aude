@@ -2,7 +2,7 @@ DEST_EXAM?=../aude-exam
 
 all: l10n dirlist.txt js/audescript/audescript.js js/gui.js
 
-.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam
+.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod
 
 l10n:
 	cd l10n && make
@@ -69,6 +69,11 @@ exam:
 	cd "${DEST_EXAM}" && make
 	rm -rf "${DEST_EXAM}/js/gui" "${DEST_EXAM}/js/audescript" "${DEST_EXAM}/js/mealy.js" "${DEST_EXAM}/js/moore.js" "${DEST_EXAM}/Makefile" "${DEST_EXAM}/l10n/Makefile" "${DEST_EXAM}/l10n/makejs.js" "${DEST_EXAM}/l10n/po" "${DEST_EXAM}/l10n/pot"
 	cp index-exam.html "${DEST_EXAM}/index.html"
+
+prod:
+	make
+	make exam
+	cd .. ; zip aude-exam.zip -r aude-exam
 
 count-lines:
 	echo "  lines\t size" && cat `find | grep -E '(\.html|\.js|\.ajs|\.css|Makefile|\.ts)$$' | grep -v ./js/lib/ | grep -v ./node_modules/ | grep -v ./doc/` | wc -l -c
