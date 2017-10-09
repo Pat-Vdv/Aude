@@ -13,9 +13,6 @@ msgstr "Erreur à la ligne {0}"
 msgid "Execute the current automaton with a word"
 msgstr "Exécuter l’automate actuel sur un mot"
 
-msgid "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)"
-msgstr "Quel nom voulez-vous donner à l’image exportée ? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg)"
-
 msgid "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
 msgstr "Quel nom voulez-vous donner au fichier exporté ? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
 
@@ -23,7 +20,7 @@ msgid "Which name do you want to give to the exported text file?"
 msgstr "Quel nom voulez-vous donner au fichier texte exporté ?"
 
 msgid "get_automaton: automaton n°{0} could not be understood."
-msgstr "get_automaton: impossible de lire l'automate n°{0}."
+msgstr "get_automaton: impossible de lire l’automate n°{0}."
 
 msgid "get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."
 msgstr "get_automaton: l’automate n°{0} n’existe pas ou n’a pas d’état initial."
@@ -31,8 +28,8 @@ msgstr "get_automaton: l’automate n°{0} n’existe pas ou n’a pas d’état
 msgid "Please enter a name for the file in which the program will be saved."
 msgstr "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré."
 
-msgid "Please enter a name for the file in which the automaton will be saved."
-msgstr "Veuillez saisir un nom pour le fichier dans lequel l’automate sera enregistré."
+msgid "Please enter a name for the file in which the automaton will be saved (give a .dot extension to save as dot format, .svg to save as svg, .txt to save in Aude format)."
+msgstr "Veuillez saisir un nom pour le fichier dans lequel l’automate sera enregistré (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format Aude)."
 
 msgid "Syntax error: bad import parameter in {0}"
 msgstr "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}"
@@ -364,9 +361,6 @@ msgstr "L’automate donné dans le quiz n’est pas correct."
 msgid "No regular expression or automaton was given in the quiz."
 msgstr "Aucun automate ou aucune expression régulière n’a été donné dans le quiz."
 
-msgid "Automaton given in the quiz is not correct."
-msgstr "L’automate donné dans le quiz n’est pas correct."
-
 msgid "Select an algo"
 msgstr "Choisir un algo"
 
@@ -430,43 +424,45 @@ msgstr "Choisir et ordonner les automates paramètres"
 msgid "Order the parameter automata"
 msgstr "Ordonner les automates paramètres"
 
-msgid "<h2>Welcome to {0}!</h2>
-<h3> Never used {0} before? </h3>
-<ul>
-    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom left of the screen.</li>
-    <li>You can apply an algorithm on your automaton with the <strong>Select an algo</strong> toolbar button.</li>
-</ul>
-<h3> Using a keyboard and a mouse? You can be faster. </h3>
-<ul>
-    <li>To add a <strong>new state</strong>, double-click where you want the state to be.</li>
-    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
-    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
-    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
-    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
-    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
-</ul>
-<h3> Quizzes </h3>
-<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>
-<p> Now it’s your turn!</p>"
+msgid "<h2>Welcome to {0}!</h2>"
+"<h3> Never used {0} before? </h3>"
+"<ul>"
+"    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom left of the screen.</li>"
+"    <li>You can apply an algorithm on your automaton with the <strong>Select an algo</strong> toolbar button.</li>"
+"</ul>"
+"<h3> Using a keyboard and a mouse? You can be faster. </h3>"
+"<ul>"
+"    <li>To add a <strong>new state</strong>, double-click where you want the state to be.</li>"
+"    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>"
+"    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>"
+"    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>"
+"    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>"
+"    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>"
+"</ul>"
 
-msgstr "<h2>Bienvenue sur {0}!</h2>
-<h3> Vous n’avez encore jamais utilisé {0} ? </h3>
-<ul>
-<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à gauche de l'écran.</li>
-<li>Vous pouvez appliquer un algorithme sur votre automate en cliquant sur le boutton <strong>Choisir un algo</strong> de la barre d’outils.</li>
-</ul>
-<h3> Vous utilisez un clavier et une souris ? Vous pouvez être plus rapide. </h3>
-<ul>
-    <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez là où vous voulez le placer.</li>
-    <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>
-    <li>Pour <strong>renommer</strong> un état ou une transition, double-cliquez dessus.</li>
-    <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>
-    <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>
-    <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>
-</ul>
-<h3> Quizz </h3>
-<p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>
-<p> À vous de jouer !</p>"
+msgstr "<h2>Bienvenue sur {0}!</h2>"
+"<h3> Vous n’avez encore jamais utilisé {0} ? </h3>"
+"<ul>"
+"<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à gauche de l'écran.</li>"
+"<li>Vous pouvez appliquer un algorithme sur votre automate en cliquant sur le boutton <strong>Choisir un algo</strong> de la barre d’outils.</li>"
+"</ul>"
+"<h3> Vous utilisez un clavier et une souris ? Vous pouvez être plus rapide. </h3>"
+"<ul>"
+"    <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez là où vous voulez le placer.</li>"
+"    <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>"
+"    <li>Pour <strong>renommer</strong> un état ou une transition, double-cliquez dessus.</li>"
+"    <li>Pour rendre un état <strong>initial</strong>, ctrl-cliquez dessus avec le bouton droit de votre souris.</li>"
+"    <li>Pour rendre un état <strong>(non-)accepteur</strong>, cliquez dessus avec le bouton droit de votre souris.</li>"
+"    <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>"
+"</ul>"
+
+msgid "<h3> Quizzes </h3>"
+"<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>"
+"<p> Now it’s your turn!</p>"
+
+msgstr "<h3> Quizz </h3>"
+"<p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>"
+"<p> À vous de jouer !</p>"
 
 msgid  "Unable to access the code of automaton n°{0}"
 msgstr "Impossible d'accéder au code de l'automaton n°{0}"

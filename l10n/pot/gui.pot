@@ -3,7 +3,9 @@
 msgid "Program Result"
 msgstr ""
 
-msgid "\nStack trace: \n"
+msgid ""
+"\n"
+"Stack trace: \n"
 msgstr ""
 
 msgid "Error on line {0}, character {1}"
@@ -15,34 +17,38 @@ msgstr ""
 msgid "Execute the current automaton with a word"
 msgstr ""
 
-msgid "Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)"
-msgstr ""
-
-msgid "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
+msgid ""
+"Which name do you want to give to the exported file? (give a .dot extension "
+"to save as dot format, .svg to save as svg, .txt to save as automaton code)"
 msgstr ""
 
 msgid "Which name do you want to give to the exported text file?"
 msgstr ""
 
-msgid "get_automaton: automaton n°{0} could not be understood."
+msgid "get_automaton: automaton n{0} could not be understood."
 msgstr ""
 
-msgid "get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."
+msgid ""
+"get_automaton: automaton n{0} doesnt exist or doesnt have an initial state."
 msgstr ""
 
 msgid "Please enter a name for the file in which the program will be saved."
 msgstr ""
 
-msgid "Please enter a name for the file in which the automaton will be saved."
+msgid ""
+"Please enter a name for the file in which the automaton will be saved (give "
+"a .dot extension to save as dot format, .svg to save as svg, .txt to save in "
+"Aude format)."
 msgstr ""
 
 msgid "Syntax error: bad import parameter in {0}"
 msgstr ""
 
-msgid "Error: import failed: '{0}' (in '{1}')."
+msgid "Error: import of {0} in {2} failed: '{1}'."
 msgstr ""
 
-msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
+msgid ""
+"Error: import: absolute paths are not supported in this version (in '{0}')'"
 msgstr ""
 
 msgid "Mode:"
@@ -87,7 +93,7 @@ msgstr ""
 msgid "Export result"
 msgstr ""
 
-msgid "Automaton n°"
+msgid "Automaton n"
 msgstr ""
 
 msgid "result.txt"
@@ -105,22 +111,28 @@ msgstr ""
 msgid "Step"
 msgstr ""
 
-msgid "Delay between steps (ms): "
+msgid "Delay between steps(ms): "
 msgstr ""
 
 msgid "Edit this automaton"
 msgstr ""
 
-msgid "To add a new state, double-click on the drawing area where you want it to be."
+msgid ""
+"To add a new state, double-click on the drawing area where you want it to be."
 msgstr ""
 
-msgid "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
+msgid ""
+"To add a new transition, Shift+click on the start state then click on the "
+"destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how "
+"to input symbols</a>."
 msgstr ""
 
 msgid "To rename a state, double-click on it."
 msgstr ""
 
-msgid "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
+msgid ""
+"To modify symbols of a transition, double-click on its label.<br /><a "
+"href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
 msgstr ""
 
 msgid "To remove a state, Ctrl+click on it."
@@ -171,7 +183,15 @@ msgstr ""
 msgid "Howto: input symbols"
 msgstr ""
 
-msgid "<p>In the window which will invite you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surround them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>"
+msgid ""
+"<p>In the window which will invite you to input symbols, simply enter the "
+"symbol you want to attach to the transition.</p><p>If you want to attach "
+"more than one symbol, separate them with commas.</p><p>If you want to input "
+"symbols containing spaces or commas, surround them with double quotes.</"
+"p><p>If you need to input a symbol containing double-quotes or slashes, put "
+"a slash behind them and surround the symbol with double-quotes.</p><p>to "
+"insert an epsilon (-transition), you can input it directly or use <code>\\e</"
+"code></p>"
 msgstr ""
 
 msgid "Create a new automaton"
@@ -192,7 +212,7 @@ msgstr ""
 msgid "Simplify names of the states"
 msgstr ""
 
-msgid "ε-eliminate"
+msgid "-eliminate"
 msgstr ""
 
 msgid "Minimize"
@@ -219,19 +239,37 @@ msgstr ""
 msgid "Test infinite language"
 msgstr ""
 
+msgid "Moore machine  Mealy machine"
+msgstr ""
+
+msgid "Mealy machine  Moore machine"
+msgstr ""
+
+msgid ""
+"Complicate the current automaton by choosing one or more of the following "
+"options\n"
+"1 - Add a not accessible state\n"
+"2 - Add a transition between two not coaccessibles\n"
+"3 - Add a transition to a not coaccessible state\n"
+"4 - Copy transitions"
+msgstr ""
+
+msgid ""
+"Transform the current automaton by choosing one or more of the following "
+"options:\n"
+"1 - Change a symbol\n"
+"2 - Remove a transition\n"
+"3 - Add a transition\n"
+"4 - Add a state and some transitions\n"
+"5 - Inverse a transition\n"
+"6 - Rename states\n"
+"7 - Make a state non accepting\n"
+"8 - Remove an epsilon transition\n"
+"9 - Remove a state\n"
+"10 - Make a state accepting"
+msgstr ""
+
 msgid "JSON representation"
-msgstr ""
-
-msgid "Moore machine → Mealy machine"
-msgstr ""
-
-msgid "Mealy machine → Moore machine"
-msgstr ""
-
-msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add a not accessible state\n2 - Add a transition between two not coaccessibles\n3 - Add a transition to a not coaccessible state\n4 - Copy transitions"
-msgstr ""
-
-msgid "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"
 msgstr ""
 
 msgid "Table representation"
@@ -288,13 +326,13 @@ msgstr ""
 msgid "Equiv. between 2 automata"
 msgstr ""
 
-msgid "Reg. Exp. → automaton"
+msgid "Reg. Exp.  automaton"
 msgstr ""
 
-msgid "Reg. Exp. → minimized automaton"
+msgid "Reg. Exp.  minimized automaton"
 msgstr ""
 
-msgid "Automaton → Reg. Exp."
+msgid "Automaton  Reg. Exp."
 msgstr ""
 
 msgid "Complete"
@@ -315,31 +353,37 @@ msgstr ""
 msgid "The given automaton accepts too many words."
 msgstr ""
 
-msgid "The empty word is accepted while it shouldn’t be."
+msgid "The empty word is accepted while it shouldnt be."
 msgstr ""
 
 msgid "The empty word is not accepted while it should be."
 msgstr ""
 
-msgid "Word <i>{0}</i> is accepted while it shouldn’t be."
+msgid "Word <i>{0}</i> is accepted while it shouldnt be."
 msgstr ""
 
 msgid "Word <i>{0}</i> is not accepted while it should be."
 msgstr ""
 
-msgid "The given automaton isn’t equivalent to the expected one."
+msgid "The given automaton isnt equivalent to the expected one."
 msgstr ""
 
 msgid "Question type not known"
 msgstr ""
 
-msgid "Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>"
+msgid ""
+"Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for "
+"multiple choices question,</li><li>\"word\" (to draw an automaton which "
+"accepts a given list of words).</li></ul>"
 msgstr ""
 
 msgid "Question was not answered."
 msgstr ""
 
-msgid "We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)"
+msgid ""
+"We are willing to dont give you any mark. Your progress is the most "
+"important thing, above any arbitrary absolute meaningless mark. Keep your "
+"efforts;-)"
 msgstr ""
 
 msgid "Correct answer?"
@@ -366,13 +410,10 @@ msgstr ""
 msgid "No regular expression or automaton was given in the quiz."
 msgstr ""
 
-msgid "Automaton given in the quiz is not correct."
-msgstr ""
-
 msgid "Select an algo"
 msgstr ""
 
-msgid "You didn’t select enough automata. Please select {0} automata."
+msgid "You didnt select enough automata. Please select {0} automata."
 msgstr ""
 
 msgid "Automaton #{0}"
@@ -384,16 +425,22 @@ msgstr ""
 msgid "Continue execution"
 msgstr ""
 
-msgid "The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."
+msgid ""
+"The algorithm you want to use needs {0} automata. Please select these "
+"automata in the order you want and click \"Continue execution\" when you are "
+"ready."
 msgstr ""
 
-msgid "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
+msgid ""
+"This order will be used for future algorithm executions. If you want to "
+"change this order, you can call this list using the <img src=\"{0}\" /> "
+"toolbar icon.<br />Notice: Algorithms taking only one automaton work with "
+"the current automaton, they dont use this ordering."
 msgstr ""
 
-msgid "Order the parameter automata"
-msgstr ""
-
-msgid "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
+msgid ""
+"The file was not found or you don't have enough permissions to read it. "
+"(HTTP status: {0})"
 msgstr ""
 
 msgid "Unable to get the list of predefined algorithms"
@@ -432,34 +479,40 @@ msgstr ""
 msgid "Choose and order the parameter automata"
 msgstr ""
 
-msgid "<h2>Welcome to {0}!</h2>
-<h3> Never used {0} before? </h3>
-<ul>
-    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom left of the screen.</li>
-    <li>You can apply an algorithm on your automaton with the <strong>Select an algo</strong> toolbar button.</li>
-</ul>
-<h3> Using a keyboard and a mouse? You can be faster. </h3>
-<ul>
-    <li>To add a <strong>new state</strong>, double-click where you want the state to be.</li>
-    <li>To add a <strong>new transition</strong>, Shift+click on the start state then click on the destination state.</li>
-    <li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> of a transition, double-click on it.</li>
-    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>
-    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>
-    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>
-</ul>
-<h3> Quizzes </h3>
-<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>
-<p> Now it’s your turn!</p>"
-
+msgid "Order the parameter automata"
 msgstr ""
 
-msgid  "Unable to access the code of automaton n°{0}"
+msgid ""
+"<h2>Welcome to {0}!</h2><h3> Never used {0} before? </h3><ul>    <li>Create "
+"your first automaton by clicking on the <strong>New state</strong> button at "
+"the bottom left of the screen.</li>    <li>You can apply an algorithm on "
+"your automaton with the <strong>Select an algo</strong> toolbar button.</"
+"li></ul><h3> Using a keyboard and a mouse? You can be faster. </h3><ul>    "
+"<li>To add a <strong>new state</strong>, double-click where you want the "
+"state to be.</li>    <li>To add a <strong>new transition</strong>, Shift"
+"+click on the start state then click on the destination state.</li>    "
+"<li>To <strong>rename</strong> a state, to <strong>modify symbols</strong> "
+"of a transition, double-click on it.</li>    <li>To set a state as the "
+"<strong>initial</strong> state, ctrl+right click on the state.</li>    "
+"<li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</"
+"li>    <li>To <strong>remove</strong> a state or a transition, ctrl-click on "
+"it.</li></ul>"
 msgstr ""
 
-msgid  "You need to fix the automaton in design mode before accessing its code."
+msgid ""
+"<h3> Quizzes </h3><p>To load a quiz, click on the \"Load a Quiz\" toolbar "
+"button. You can keep on using all the features of the program, like running "
+"algorithms, during the quiz whenever it is possible to draw an automaton.</"
+"p><p> Now its your turn!</p>"
 msgstr ""
 
-msgid  "Zoom and center automatically"
+msgid "Unable to access the code of automaton n{0}"
+msgstr ""
+
+msgid "You need to fix the automaton in design mode before accessing its code."
+msgstr ""
+
+msgid "Zoom and center automatically"
 msgstr ""
 
 msgid "Undo"

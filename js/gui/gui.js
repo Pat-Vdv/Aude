@@ -21,14 +21,40 @@
     "use strict";
 
     var AudeGUI = null;
-    var exportFN = "";
+    var saveFN = "";
 
     function saveProgram(fname) {
         saveAs(new Blob([AudeGUI.ProgramEditor.getValue()], {type: "text/plain;charset=utf-8"}), fname);
     }
 
-    function saveAutomaton(fname) {
-        saveAs(new Blob([AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false)], {type: "text/plain"}), fname);
+    function saveAutomaton(fn) {
+        if (fn) {
+            var EXTENSION_SIZE = 4;
+
+            if (fn.length > EXTENSION_SIZE && fn.substr(fn.length - EXTENSION_SIZE) === ".svg") {
+                if (AudeGUI.getCurrentMode() !== "design") {
+                    AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
+                }
+
+                saveAs(new Blob([AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
+            } else if (fn.length > EXTENSION_SIZE && fn.substr(fn.length - EXTENSION_SIZE) === ".dot") {
+                if (AudeGUI.getCurrentMode() === "design") {
+                    AudeGUI.AutomatonCodeEditor.setText(AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false));
+                } else {
+                    AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
+                }
+
+                var A = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
+
+                if (A) {
+                    saveAs(new Blob([automaton2dot(A)], {type: "text/plain;charset=utf-8"}), fn);
+                } else {
+                    AudeGUI.notify(_("There is no automaton to save."));
+                }
+            } else {
+                saveAs(new Blob([AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false)], {type: "text/plain"}), fn);
+            }
+        }
     }
 
 
@@ -75,9 +101,9 @@
                 (
                     prog
                         ? _("Please enter a name for the file in which the program will be saved.")
-                        : _("Please enter a name for the file in which the automaton will be saved.")
+                        : _("Please enter a name for the file in which the automaton will be saved (give a .dot extension to save as dot format, .svg to save as svg, .txt to save in Aude format).")
                 ),
-                (prog ? _("algo.ajs") : _("automaton.txt"))
+                (prog ? _("algo.ajs") : _("automaton.svg"))
             );
 
             if (n) {
@@ -109,42 +135,14 @@
             }
         },
 
-        export: function () {
-            var fn = window.prompt(_("Which name do you want to give to the exported image? (give a .dot extension to save as dot format, .svg to save as svg)"), exportFN);
-
-            if (fn) {
-                exportFN = fn;
-
-                var EXTENSION_SIZE = 4;
-
-                if (fn.length > EXTENSION_SIZE && fn.substr(fn.length - EXTENSION_SIZE) === ".svg") {
-                    if (AudeGUI.getCurrentMode() !== "design") {
-                        AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
-                    }
-
-                    saveAs(new Blob([AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex)], {type: "text/plain;charset=utf-8"}), fn);
-                } else {
-                    if (AudeGUI.getCurrentMode() === "design") {
-                        AudeGUI.AutomatonCodeEditor.setText(AudeGUI.mainDesigner.getAutomatonCode(AudeGUI.mainDesigner.currentIndex, false));
-                    } else {
-                        AudeGUI.mainDesigner.setAutomatonCode(AudeGUI.AutomatonCodeEditor.getText(), AudeGUI.mainDesigner.currentIndex);
-                    }
-
-                    var A = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
-
-                    if (A) {
-                        saveAs(new Blob([automaton2dot(A)], {type: "text/plain;charset=utf-8"}), fn);
-                    } else {
-                        AudeGUI.notify(_("There is no automaton to save."));
-                    }
-                }
-            }
-        },
-
-        openAutomaton: function (code) {
+        openAutomaton: function (code, fname) {
             if (typeof code === "string") {
-                AudeGUI.AutomatonCodeEditor.setText(code);
-                AudeGUI.mainDesigner.setAutomatonCode(code, AudeGUI.mainDesigner.currentIndex);
+                if (code.trim().startsWith("<?xml") || code.startsWith("<svg") && (!automatonFileName || !automatonFileName.endsWith(".txt"))) {
+                    AudeGUI.mainDesigner.setSVG(code, AudeGUI.mainDesigner.currentIndex);
+                } else {
+                    AudeGUI.AutomatonCodeEditor.setText(code);
+                    AudeGUI.mainDesigner.setAutomatonCode(code, AudeGUI.mainDesigner.currentIndex);
+                }
                 return;
             }
 
@@ -470,11 +468,12 @@
                 "    <li>To set a state as the <strong>initial</strong> state, ctrl+right click on the state.</li>" +
                 "    <li>To set a state as <strong>(non-)accepting</strong>, right-click on it.</li>" +
                 "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>" +
-                "</ul>" +
+                "</ul>"
+            ), "Aude") + (AudeGUI.audeExam ? "" : _(
                 "<h3> Quizzes </h3>" +
                 "<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>" +
                 "<p> Now it’s your turn!</p>"
-            ), "Aude");
+            ));
 
             AudeGUI.mainDesigner.svgContainer.parentNode.appendChild(divWelcome);
             function hideWelcome() {

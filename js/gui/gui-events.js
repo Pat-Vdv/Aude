@@ -21,7 +21,6 @@ window.AudeGUI.initEvents = function () {
     var AudeGUI = window.AudeGUI;
 
     var exportResult = document.getElementById("export-result");
-    var exportBtn = document.getElementById("export");
 
     window.addEventListener("keydown", function (e) {
         if (e.ctrlKey || e.metaKey) {
@@ -36,8 +35,6 @@ window.AudeGUI.initEvents = function () {
                     if (!AudeGUI.audeExam) {
                         exportResult.onclick();
                     }
-                } else {
-                    exportBtn.onclick();
                 }
                 e.preventDefault();
                 return false;
@@ -68,8 +65,6 @@ window.AudeGUI.initEvents = function () {
     if (!AudeGUI.audeExam) {
         document.getElementById("execute").onclick = AudeGUI.WordExecution.run;
     }
-
-    document.getElementById("export").onclick = AudeGUI.export;
 
     document.getElementById("redraw").onclick = function () {
         AudeGUI.viz(
