@@ -251,7 +251,13 @@ var aude = {
         throw new Error(aude._("Cannot make an array from arbitrary type"));
     },
 
-    toSet : libD.toSet
+    toSet: function (iterable) {
+        return (
+            iterable instanceof Set
+                ? iterable
+                : new Set(iterable)
+        );
+    }
 };
 
 // required in Aude as well as in Audescript.
