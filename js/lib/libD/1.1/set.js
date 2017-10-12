@@ -323,7 +323,7 @@
         }
 
         plus(...args) {
-            r = new PkgSet(this);
+            let r = new PkgSet(this);
             r.unionInPlace(args);
             return r;
         }
