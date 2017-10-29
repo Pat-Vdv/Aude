@@ -378,7 +378,7 @@
         }
 
         toString() {
-            return this.size ? "{" + this.getSortedList().join(",") + "}" : "∅";
+            return this.size ? "{" + this.getSortedList().map(pkg.elementToString).join(",") + "}" : "∅";
         }
 
         every(func) {
