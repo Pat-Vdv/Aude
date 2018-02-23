@@ -115,7 +115,7 @@ function string(e)
     return e.type + "(" + string(e.v1) + ", " + string(e.v2) + ")"
 end function
 
-export function automatonToRE(A, retStruct)
+export function automatonToRegex(A, retStruct)
     A := normalize(minimize(A), 1)
     let trans := A.getTransitionFunction()
 
@@ -178,7 +178,7 @@ run(
             )
         end function
 
-        let res := automatonToRE(A)
+        let res := automatonToRegex(A)
 
         if this.katex then
             let span := document.createElement("span")
