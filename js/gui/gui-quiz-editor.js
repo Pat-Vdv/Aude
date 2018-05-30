@@ -631,7 +631,7 @@
                 ["img", {"src": libD.getIcon("actions/list-add")}],
                 ["#", _("Add an answer")]
             ]]],
-            ["p", ["button", {"#": "validationButton"}, _("Validate")]]
+            ["p.big-center", ["button", {"#": "validationButton"}, _("Validate")]]
         ]], refs);
 
         let choice_list = [];
