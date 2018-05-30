@@ -1,6 +1,6 @@
 DEST_EXAM?=../aude-exam
 
-all: l10n dirlist.txt js/audescript/audescript.js js/gui.js
+all: l10n dirlist.txt js/audescript/audescript.js
 
 .PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod
 
@@ -12,9 +12,6 @@ dirlist.txt:
 
 js/audescript/audescript.js:
 	cd js/audescript/ && make
-
-js/gui.js: $(wildcard js/gui/*.js) js/gui/Makefile
-	cd js/gui/ && make
 
 uncommited-zip: /tmp/aude-uncommited.zip
 
@@ -58,7 +55,7 @@ zip: /tmp/aude.zip
 	rm -rf aude;
 
 clean:
-	rm -rf dirlist.txt js/gui.js
+	rm -rf dirlist.txt
 
 ${DEST_EXAM}:
 exam:
@@ -67,7 +64,7 @@ exam:
 	cp -r l10n/js l10n/po l10n/pot l10n/makejs.js l10n/Makefile "${DEST_EXAM}/l10n/"
 	rm -rf "${DEST_EXAM}/js/gui/gui-quiz.js" "${DEST_EXAM}/js/gui/quiz-editor.js" "${DEST_EXAM}/js/lib/katex" "${DEST_EXAM}/js/lib/ace-builds" "${DEST_EXAM}/js/lib/libD/1.1/css/old" "${DEST_EXAM}/js/lib/libD/1.1/css/default/wm" "${DEST_EXAM}/js/lib/libD/1.1/css/wm.css"
 	cd "${DEST_EXAM}" && make
-	rm -rf "${DEST_EXAM}/js/gui" "${DEST_EXAM}/js/audescript" "${DEST_EXAM}/js/mealy.js" "${DEST_EXAM}/js/moore.js" "${DEST_EXAM}/Makefile" "${DEST_EXAM}/l10n/Makefile" "${DEST_EXAM}/l10n/makejs.js" "${DEST_EXAM}/l10n/po" "${DEST_EXAM}/l10n/pot"
+	rm -rf "${DEST_EXAM}/js/audescript" "${DEST_EXAM}/js/mealy.js" "${DEST_EXAM}/js/moore.js" "${DEST_EXAM}/Makefile" "${DEST_EXAM}/l10n/Makefile" "${DEST_EXAM}/l10n/makejs.js" "${DEST_EXAM}/l10n/po" "${DEST_EXAM}/l10n/pot"
 	cp index-exam.html "${DEST_EXAM}/index.html"
 
 prod:
