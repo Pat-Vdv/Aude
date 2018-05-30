@@ -32,13 +32,13 @@ msgid "Please enter a name for the file in which the automaton will be saved (gi
 msgstr "Veuillez saisir un nom pour le fichier dans lequel l’automate sera enregistré (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format Aude)."
 
 msgid "Syntax error: bad import parameter in {0}"
-msgstr "Erreur de syntaxe : mauvais paramètre pour 'import' dans {0}"
+msgstr "Erreur de syntaxe : mauvais paramètre pour « import » dans {0}"
 
 msgid "Error: import of {0} in {2} failed: '{1}'."
-msgstr "Erreur : l’import de {0} depuis {2} a échoué : '{1}'."
+msgstr "Erreur : l’import de {0} depuis {2} a échoué : « {1} »."
 
 msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
-msgstr "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis '{0}')."
+msgstr "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis « {0} »)."
 
 msgid "Mode:"
 msgstr "Mode :"
@@ -221,10 +221,10 @@ msgid "Mealy machine → Moore machine"
 msgstr "Machine de Mealy → machine de Moore"
 
 msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add a not accessible state\n2 - Add a transition between two not coaccessibles\n3 - Add a transition to a not coaccessible state\n4 - Copy transitions"
-msgstr "Compliquer l'automate courant en choisssant une ou plusieurs des options suivantes :\n1 - Ajouter un état non-accessible\n2 - Ajouter une transition entre deux états non co-accessibles\n3 - Ajouter une transition vers un état non co-accessible\n4 - Copier des transitions"
+msgstr "Compliquer l’automate courant en choisssant une ou plusieurs des options suivantes :\n1 - Ajouter un état non-accessible\n2 - Ajouter une transition entre deux états non co-accessibles\n3 - Ajouter une transition vers un état non co-accessible\n4 - Copier des transitions"
 
 msgid "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"
-msgstr "Transformez l'automate courant en choisissant une ou plusieurs options parmis les suivantes :\n1 - Changer un symbole\n2 - Supprimer une transition\n3 - Ajouter une transition\n4 - Ajouter un état et des transitions\n5 - Inverser une transition\n6 - Renommer les états\n7 - Rendre un état non-accepteur\n8 - Supprimer des epsilon-transitions\n9 - Supprimer un état\n10 - Rendre un état accepteur"
+msgstr "Transformez l’automate courant en choisissant une ou plusieurs options parmis les suivantes :\n1 - Changer un symbole\n2 - Supprimer une transition\n3 - Ajouter une transition\n4 - Ajouter un état et des transitions\n5 - Inverser une transition\n6 - Renommer les états\n7 - Rendre un état non-accepteur\n8 - Supprimer des epsilon-transitions\n9 - Supprimer un état\n10 - Rendre un état accepteur"
 
 msgid "JSON representation"
 msgstr "Représentation JSON"
@@ -329,13 +329,13 @@ msgid "The given regular expression isn’t equivalent to the expected one."
 msgstr "L’expression régulière donnée n’est pas équivalent à l’automate attendu."
 
 msgid "The given automaton isn’t determinized."
-msgstr "L’automate donné n'est pas déterminisé"
+msgstr "L’automate donné n’est pas déterminisé"
 
 msgid "The given automaton isn’t minimized."
-msgstr "L’automate donné n'est pas minimisé."
+msgstr "L’automate donné n’est pas minimisé."
 
 msgid "The given automaton isn’t complete."
-msgstr "L’automate donné n'est pas complet."
+msgstr "L’automate donné n’est pas complet."
 
 msgid "Question type not known"
 msgstr "Type de question inconnu"
@@ -483,10 +483,10 @@ msgstr "<h3> Quizz </h3>"
 "<p> À vous de jouer !</p>"
 
 msgid  "Unable to access the code of automaton n°{0}"
-msgstr "Impossible d'accéder au code de l'automaton n°{0}"
+msgstr "Impossible d’accéder au code de l’automate n°{0}"
 
 msgid  "You need to fix the automaton in design mode before accessing its code."
-msgstr "Vous devez corriger l'automate dans le mode dessin avant d'accéder à son code."
+msgstr "Vous devez corriger l’automate dans le mode dessin avant d’accéder à son code."
 
 msgid  "Zoom and center automatically"
 msgstr "Zoomer et centrer automatiquement"
@@ -513,7 +513,7 @@ msgid "Example: For the following languages, give an automaton that recognizes i
 msgstr "Exemple : Pour les langages suivants, donnez un automate qui les reconnaît (si un tel automate existe)."
 
 msgid "Example: For the following minimal automaton, give a regular expression that is equivalent."
-msgstr "Example : Pour l'automate minimal suivant, donnez une expression régulière équivalente."
+msgstr "Example : Pour l’automate minimal suivant, donnez une expression régulière équivalente."
 
 msgid "Multiple Choice Question"
 msgstr "Question à Choix Multiples"
@@ -528,7 +528,7 @@ msgid "Search…"
 msgstr "Chercher…"
 
 msgid "Close the Quiz Editor"
-msgstr "Fermer l'éditeur de quiz"
+msgstr "Fermer l’éditeur de quiz"
 
 msgid "Questions"
 msgstr "Questions"
@@ -585,7 +585,7 @@ msgid "Show the quiz overview"
 msgstr "Afficher le quiz"
 
 msgid "Quiz Overview"
-msgstr "Vue d'ensemble du quiz"
+msgstr "Vue d’ensemble du quiz"
 
 msgid "January"
 msgstr "janvier"
@@ -633,7 +633,7 @@ msgid "Description:"
 msgstr "Description :"
 
 msgid "There is no question in this quiz yet. Click on the button bellow to add a new question."
-msgstr "Il n'y a pas encore de question dans ce quiz. Cliquez sur le bouton ci-dessous pour ajouter une nouvelle question."
+msgstr "Il n’y a pas encore de question dans ce quiz. Cliquez sur le bouton ci-dessous pour ajouter une nouvelle question."
 
 msgid "Write your question…"
 msgstr "Écrivez votre question…"
@@ -651,7 +651,7 @@ msgid "Write your audescript code here…"
 msgstr "Écrivez votre code audescript ici…"
 
 msgid "Write the regular expression…"
-msgstr "Écrivez l'expression régulière…"
+msgstr "Écrivez l’expression régulière…"
 
 msgid "Loading…"
 msgstr "Chargement…"
@@ -666,7 +666,7 @@ msgid "Recognized operations: “.”, “*”, “+”."
 msgstr "Opérations reconnues: « . », « * », « + »."
 
 msgid "If you want the automaton answer to be:"
-msgstr "Si vous voulez que l'automate réponse soit:"
+msgstr "Si vous voulez que l’automate réponse soit:"
 
 msgid "determinized, write isDeterminized(autoAnsw)"
 msgstr "determinisé, écrivez isDeterminized(autoAnsw)"
