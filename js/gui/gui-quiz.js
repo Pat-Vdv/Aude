@@ -536,7 +536,7 @@
             refs.answers.innerHTML = "<input type=\"text\" id=\"regexUserResponse\" style=\"width:30%;\"></input>";
             (quiz.answers[quiz.currentQuestion].userResponse)
                 ? document.getElementById("regexUserResponse").value = quiz.answers[quiz.currentQuestion].userResponse
-                : document.getElementById("regexUserResponse").placeholder = _("Write a regular expression ...");
+                : document.getElementById("regexUserResponse").placeholder = _("Write a regular expression…");
 
             break;
         case "automatonEquiv":
