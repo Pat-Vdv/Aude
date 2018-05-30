@@ -325,6 +325,18 @@ msgstr "Le mot <i>{0}</i> n’est pas accepté alors qu’il devrait l‘être."
 msgid "The given automaton isn’t equivalent to the expected one."
 msgstr "L’automate donné n’est pas équivalent à l’automate attendu."
 
+msgid "The given regular expression isn’t equivalent to the expected one."
+msgstr "L’expression régulière donnée n’est pas équivalent à l’automate attendu."
+
+msgid "The given automaton isn’t determinized."
+msgstr "L’automate donné n'est pas déterminisé"
+
+msgid "The given automaton isn’t minimized."
+msgstr "L’automate donné n'est pas minimisé."
+
+msgid "The given automaton isn’t complete."
+msgstr "L’automate donné n'est pas complet."
+
 msgid "Question type not known"
 msgstr "Type de question inconnu"
 
@@ -358,8 +370,14 @@ msgstr "Page précédente"
 msgid "Automaton given in the quiz is not correct."
 msgstr "L’automate donné dans le quiz n’est pas correct."
 
-msgid "No regular expression or automaton was given in the quiz."
+msgid "Regular expression given in the quiz is not valid."
+msgstr "L’expression régulière donnée dans le quiz n’est pas valide."
+
+msgid "No automaton or regular expression was given in the quiz."
 msgstr "Aucun automate ou aucune expression régulière n’a été donné dans le quiz."
+
+msgid "Automaton given in the quiz is not correct."
+msgstr "L’automate donné dans le quiz n’est pas correct."
 
 msgid "Select an algo"
 msgstr "Choisir un algo"

@@ -365,7 +365,19 @@ msgstr ""
 msgid "Word <i>{0}</i> is not accepted while it should be."
 msgstr ""
 
-msgid "The given automaton isnt equivalent to the expected one."
+msgid "The given automaton isn’t equivalent to the expected one."
+msgstr ""
+
+msgid "The given regular expression isn’t equivalent to the expected one."
+msgstr ""
+
+msgid "The given automaton isn’t determinized."
+msgstr ""
+
+msgid "The given automaton isn’t minimized."
+msgstr ""
+
+msgid "The given automaton isn’t complete."
 msgstr ""
 
 msgid "Question type not known"
@@ -405,6 +417,12 @@ msgid "Previous page"
 msgstr ""
 
 msgid "Automaton given in the quiz is not correct."
+msgstr ""
+
+msgid "Regular expression given in the quiz is not valid."
+msgstr ""
+
+msgid "No automaton or regular expression was given in the quiz."
 msgstr ""
 
 msgid "No regular expression or automaton was given in the quiz."
