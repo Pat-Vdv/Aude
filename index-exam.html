@@ -34,36 +34,24 @@
                 };
             }
         </script>
+
+        <script src="js/lib/libD/1.1/core.js"></script>
+        <script src="js/lib/libD/1.1/set.js"></script>
+        <script src="js/lib/hammer.min.js"></script>
+        <script src="js/mousewheel.js"></script>
+        <script src="js/getFile.js"></script>
+        <script src="js/aude.js"></script>
+        <script src="js/automaton.js"></script>
+        <script src="js/automaton2dot.js"></script>
+        <script src="js/lib/requestAnimationFrame.js"></script>
+        <script src="js/designer.js"></script>
+        <script src="js/gui.js"></script>
+        <script src="js/touch2click.js"></script>
+        <script src="js/lib/fileSaver.js"></script>
+        <script src="js/lib/pathseg.js"></script>
+
         <script>
         /*<!--//*/
-            if (!window.js18Supported) {
-                var js18Supported = false;
-            }
-
-            function boot(files) {
-                for(var i = 0; i < files.length; i++) {
-                    document.write('<script src="' + files[i] + '"' + (js18Supported ? 'type="application/javascript;version=1.8"' : '') + '></'+'script>');
-                }
-            }
-
-            boot([
-                "js/lib/libD/1.1/core.js",
-                "js/lib/libD/1.1/set.js",
-                "js/lib/hammer.min.js",
-                "js/mousewheel.js",
-                "js/getFile.js",
-                "js/aude.js",
-                "js/automaton.js",
-                "js/automaton2dot.js",
-                "js/lib/requestAnimationFrame.js",
-                "js/designer.js",
-                "js/gui.js",
-                "js/touch2click.js",
-                "js/lib/fileSaver.js",
-            ]);
-
-            if (!window.SVGPathSeg) { boot(["js/lib/pathseg.js"]); }
-
             window.addEventListener('load', function() {
                 setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
             }, false);
