@@ -99,5 +99,5 @@ for(var l in langs) {
       }
    }
    fs.writeSync(jsFile, '})();');
-   fs.close(jsFile);
+   fs.closeSync(jsFile);
 }
