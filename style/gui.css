@@ -312,7 +312,7 @@ select {
    font-style:italic
 }
 
-#close-quiz {
+#close-quiz, #close-quiz-editor {
    position:absolute;
    top:0;
    font-size:small;
@@ -765,6 +765,7 @@ input[type=button], button, select {
    color:black;
 }
 
+
 input[type=button]:active, button:active {
    background:#D5D5D5
 }
@@ -807,4 +808,171 @@ input[type=button]:active, button:active {
 #menu button:hover {
     background:#7BF;
     color:white;
+}
+
+#quiz-editor {
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+}
+
+.quiz-editor-pane {
+    max-width:130ex;
+    margin:auto;
+}
+
+#quiz-editor h1, #quiz-editor .big-center {
+    text-align:center;
+}
+
+#quiz-editor-content {
+    padding:1ex;
+    flex:1;
+    clear:both;
+}
+
+#quiz-editor p > input[type="text"]:first-child:last-child {
+    width:100%;
+    box-sizing:border-box;
+}
+
+#quiz-editor .big-center > button {
+    padding:1ex;
+}
+
+#quiz-editor-mcq-pane {
+    text-align:left;
+}
+
+#quiz-editor-newquestion {
+    padding:1ex;
+}
+
+#quiz-editor-open-save-buttons {
+    float:left;
+}
+
+#quiz-editor-preview {
+    width:90%;
+    display:none;
+}
+
+#quiz-editor-content h1 {
+    margin-top:0;
+    padding-top:0;
+    position:relative;
+}
+
+.quiz-editor-pane {
+    position:relative;
+    width:100%;
+    height:100%;
+    box-sizing:border-box;
+}
+
+.quiz-editor-pane:not(.quiz-editor-current-pane) {
+    display:none !important;
+}
+
+#quiz-editor.overview-mode #quiz-editor-overview-btn {
+    display:none;
+}
+
+#quiz-editor-automatonR-pane {
+    display:flex;
+    flex-direction:column;
+}
+
+#quiz-editor-automatonR-pane h2 {
+    margin:0;
+    font-size:1rem;
+}
+
+#quiz-editor-automatonR-panes {
+    flex:1;
+    display:flex;
+    flex-direction:row;
+}
+
+.quiz-editor-disp-flex {
+    display:flex;
+    flex-direction:column;
+}
+
+.quiz-editor-flex {
+    flex:1;
+    position:relative;
+}
+
+#quiz-editor-automatonR-panes > div {
+    box-sizing:border-box;
+    padding:0.5ex;
+    width:50%;
+}
+
+#quiz-editor textarea {
+    margin:0;
+}
+
+#quiz-editor #quiz-editor-audescriptCode {
+    margin:0.5ex
+}
+
+.automaton-draw-area {
+    height:100%;
+    width:100%;
+    position:relative;
+    background:#FFF;
+    border:1px solid silver;
+    box-sizing:border-box;
+}
+
+#quiz-editor-audescriptCode {
+    margin:0.5ex;
+}
+
+#quiz-editor-divPoint {
+    background-color: write;
+}
+
+#quiz-editor-regexR-pane {
+    display:flex;
+    flex-direction:column;
+}
+
+#quiz-editor-regexR-pane-content {
+    display:flex;
+    flex-direction:row;
+    flex:1;
+}
+
+#quiz-editor-regexR-pane-content > div {
+    box-sizing:border-box;
+    width:50%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#quiz-editor-regexR-pane-content > div > div {
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    margin-left:0.25ex;
+    margin-right:0.25ex;
+}
+
+#quiz-editor-regexR-pane-content textarea {
+    margin-bottom:1ex;
+}
+
+#quiz-editor .help {
+    text-align:justify;
+    font-size:small;
+    color:#D50;
+}
+
+#quiz-editor .grammalecte_menu_main_button {
+    /* Workaround: The Grammalecte extension is buggy here */
+    display:none !important;
 }

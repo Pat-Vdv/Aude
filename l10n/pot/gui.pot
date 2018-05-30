@@ -233,7 +233,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-msgid "Quiz: "
+msgid "Quiz:"
 msgstr ""
 
 msgid "Quiz"
@@ -447,4 +447,181 @@ msgid "Redo"
 msgstr ""
 
 msgid "Menu"
+msgstr ""
+
+msgid "Add a question"
+msgstr ""
+
+msgid "Edit or Create  a Quiz"
+msgstr ""
+
+msgid "Example: Which of the following assertions are correct? (check the correct answers)"
+msgstr ""
+
+msgid "Example: For the following languages, give an automaton that recognizes it (if such an automaton exists)."
+msgstr ""
+
+msgid "Example: For the following minimal automaton, give a regular expression that is equivalent."
+msgstr ""
+
+msgid "Multiple Choice Question"
+msgstr ""
+
+msgid "Find an automaton"
+msgstr ""
+
+msgid "Find a regular expression"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
+msgid "Close the Quiz Editor"
+msgstr ""
+
+msgid "Questions"
+msgstr ""
+
+msgid "Question"
+msgstr ""
+
+msgid "Answers"
+msgstr ""
+
+msgid "Answer"
+msgstr ""
+
+msgid "Points"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Nb"
+msgstr ""
+
+msgid "Quiz Editor"
+msgstr ""
+
+msgid "New quiz"
+msgstr ""
+
+msgid "Do you really want to start a new quiz from scratch?"
+msgstr ""
+
+msgid "Do you really want to abandon your modifications to the quiz?"
+msgstr ""
+
+msgid "Write the different possible answers and check the correct ones."
+msgstr ""
+
+msgid "Choice {0}…"
+msgstr ""
+
+msgid "New Question"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Add an answer"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
+msgid "Show the quiz overview"
+msgstr ""
+
+msgid "Quiz Overview"
+msgstr ""
+
+msgid "January"
+msgstr ""
+
+msgid "February"
+msgstr ""
+
+msgid "March"
+msgstr ""
+
+msgid "April"
+msgstr ""
+
+msgid "May"
+msgstr ""
+
+msgid "June"
+msgstr ""
+
+msgid "July"
+msgstr ""
+
+msgid "August"
+msgstr ""
+
+msgid "September"
+msgstr ""
+
+msgid "October"
+msgstr ""
+
+msgid "November"
+msgstr ""
+
+msgid "December"
+msgstr ""
+
+msgid "Quiz title:"
+msgstr ""
+
+msgid "Your name:"
+msgstr ""
+
+msgid "Description:"
+msgstr ""
+
+msgid "There is no question in this quiz yet. Click on the button bellow to add a new question."
+msgstr ""
+
+msgid "Write your question…"
+msgstr ""
+
+msgid "Write a regular expression…"
+msgstr ""
+
+msgid "Automaton answer"
+msgstr ""
+
+msgid "Draw an automaton"
+msgstr ""
+
+msgid "Write your audescript code here…"
+msgstr ""
+
+msgid "Write the regular expression…"
+msgstr ""
+
+msgid "Loading…"
+msgstr ""
+
+msgid "Your regular expression is going to be checked."
+msgstr ""
+
+msgid "This regular expresion does not seem valid."
+msgstr ""
+
+msgid "Recognized operations: “.”, “*”, “+”."
+msgstr ""
+
+msgid "If you want the automaton answer to be:"
+msgstr ""
+
+msgid "determinized, write isDeterminized(autoAnsw)"
+msgstr ""
+
+msgid "minimized, write isMinimized(autoAnsw)"
+msgstr ""
+
+msgid "completed, write isCompleted(autoAnsw)"
 msgstr ""

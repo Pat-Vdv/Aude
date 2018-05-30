@@ -613,7 +613,7 @@
         var refs = {};
         divQuiz.appendChild(libD.jso2dom([
             ["h1#quiz-title", [
-                ["#", quiz.title ? _("Quiz: ") : _("Quiz")],
+                ["#", quiz.title ? _("Quiz:") + " " : _("Quiz")],
                 ["span", {"#": "quizTitleContent"}]
             ]],
             ["h2#quiz-author", {"#": "author"}],

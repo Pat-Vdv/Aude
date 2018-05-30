@@ -53,9 +53,22 @@
 
         notify: function (title, content, type) {
             if (!libD.Notify) {
+                AudeGUI.notifier = {
+                    close: function () {
+                        AudeGUI.notifier = null;
+                    },
+
+                    title: title,
+                    content: content,
+                    type: type
+                };
+
+                // FIXME: notifications may hide other notifications
+
                 libD.need(["notify"], function () {
-                    AudeGUI.notify(title, content, type);
+                    AudeGUI.notify(AudeGUI.notifier.title, AudeGUI.notifier.content, AudeGUI.notifier.type);
                 });
+
                 return;
             }
 

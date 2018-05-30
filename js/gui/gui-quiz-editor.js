@@ -19,40 +19,29 @@
 (function (pkg) {
     "use strict";
 
-    var AudeGUI          = pkg.AudeGUI;
+    var AudeGUI = pkg.AudeGUI;
     var _ = AudeGUI.l10n;
-    var quizeditor       = null;                        // quizeditor element in the HTML DOM
-    var win              = null;                        // Quiz editor's window
-    var refs             = {};                          // win refs cf to the libD
-    var designerAns      = null;                        // Current automaton answer designer
-    var designerQue      = null;                        // Current automaton question designer
-    var currentState     = null;
-    var mcqR             = {};                          // Multiple choice questions' object
+
+    var quizEditor         = null;
+    var quizEditorContent  = null;
+    var win                = null;
+    var designerAns        = null;
+    var designerQue        = null;
+    var currentState       = null;
+    var mcqR               = null;
     var mcqNumberOfChoices = 0;
-    var automatonR       = {};                          // Automaton research questions' object
-    var regexR           = {};                          // regular expr research questions' object
-    var quiz = {                                        // quiz object
-        title:  "",
-        author: "",
-        date:   "",
-        description: [],
-        questions: []
-    };
+    var automatonR         = null;
+    var regexR             = null;
+    var quiz               = null;
 
     var ajsEval;
 
     AudeGUI.QuizEditor = {
-
         load: function () {
-            quizeditor   = document.getElementById("quizEditor");
             ajsEval = AudeGUI.Quiz._ajsEval;
         },
 
-        run: function () {
-            drawQuizeditorPane();
-            loadNewQuestionPane();
-        },
-
+        run: openQuizEditor,
         /*
          * Open an old quiz.
          * @param. code: old "quiz object"
@@ -63,9 +52,9 @@
                 mcqNumberOfChoices = 0;
                 automatonR = {};
                 regexR    = {};
-                grainPreviewTable();
+                emptyPreviewTable();
                 quiz = JSON.parse(code);
-                showQuizeditorPane("shift");
+                showQuizOverview("shift");
             } catch (e) {
                 AudeGUI.notify(
                     _("Loading the quiz failed"),
@@ -96,214 +85,189 @@
         },
 
         close: function () {
-            document.getElementById("quizeditor-mainPane").textContent = "";
-            AudeGUI      = pkg.AudeGUI;
-            quizeditor   = null;
-            refs         = {};
-            designerAns  = null;
-            designerQue  = null;
-            currentState = null;
-            mcqR         = {};
-            mcqNumberOfChoices = 0;
-            automatonR   = {};
-            regexR       = {};
-            quiz         = {
-                title:  "",
-                author: "",
-                date:   "",
-                description: [],
-                questions: []
-            };
-            win.close();
+            if (!quizEditor) {
+                return;
+            }
+
+            win.minimize();
         }
     };
 
+    function openQuizEditor() {
+        if (win) {
+            win.show();
+            return;
+        }
+
+        drawQuizEditor();
+    }
+
     /*
-     * Create the toobar and the preview pane of questions.
+     * Create the toobar and the overview pane of questions.
      * Add events on that elements.
      * It's call once at quiz editor opening
      */
-    function drawQuizeditorPane () {
-        setCurrentState("previewPane");
+    function drawQuizEditor() {
         if (win && win.ws) {
             win.close();
+            quizEditor.parentNode.removeChild(quizEditor);
         }
 
-        let quizeditorPaneContent = ["div#quizeditor-Pane.libD-ws-colors-auto libD-ws-size-auto" ,
-            {"id":"quizeditor-mainPane"}, [
+        designerAns  = null;
+        designerQue  = null;
+        currentState = null;
+        mcqR         = {};
+        mcqNumberOfChoices = 0;
+        automatonR   = {};
+        regexR       = {};
+        quiz         = {
+            title:  "",
+            author: "",
+            date:   "",
+            description: [],
+            questions: []
+        };
+
+
+        let refs = {};
+
+        let quizEditorWindowContent = ["div#quiz-editor.libD-ws-colors-auto libD-ws-size-auto", {"#":"root"}, [
             ["div", [
-                ["input#quizeditor-open", {"type": "button", "value": _("Open")}],
+                ["div#quiz-editor-open-save-buttons", {"style": "text-align:left"}, [
+                    ["input#quiz-editor-open", {"#": "open", "type": "button", "value": _("Open")}],
+                    ["input#quiz-editor-file", {"#": "file", "type": "file", "style": "display: none"}],
+                    ["input#quiz-editor-save", {"#": "save", "type": "button", "value": _("Save")}],
+                    ["input#quiz-editor-save", {"#": "destroy", "type": "button", "value": _("New quiz")}],
+                ]],
 
-                ["input#quizeditor-file", {"type": "file", "style": "display: none"}],
+                ["input#quiz-editor-overview-btn", {"#":"overview", "type": "button", "value": _("Show the quiz overview")}],
 
-                ["input#quizeditor-newquestion", {"type": "button", "value": _("New question")}],
-
-                ["input#quizeditor-save", {"type": "button", "value": _("Save")}],
-
-                ["a#close-quiz", {"id": "close-quiz", "href": "#"}, _("Close the Quiz Editor")],
-
-                ["div",[
-                    ["input#quizeditor-research",{
-                        "type": "search",
-                        "name":"searchArea",
-                        "placeholder": _("Search ..."),
-                        "style":"position: absolute; top: 2.5%; right: 2%; width: 23%;"
-                    }],
-                    ["ul#quizeditor-researchPane", {
-                        "style":"display: none; z-index:1; position: absolute; top: 3.1%; right: 2%; border: 1px solid darkgrey; padding-left: 0px; width: 23%; background-color: white;"
-                        }, [
-                            ["li#quizeditor-searchCategory0",{"style": "display: none"}, [
-                                ["a", _("Multiple Choice Question")]
-                            ]],
-                            ["li#quizeditor-searchCategory1",{"style": "display: none"}, [
-                                ["a", _("Find an automaton")]
-                            ]],
-                            ["li#quizeditor-searchCategory2",{"style": "display: none"}, [
-                                ["a", _("Find a regular expression")]
-                            ]]
-                        ]
-                    ]
-                ]]
+                ["a#close-quiz-editor", {"#": "close", "href": "#"}, _("Close the Quiz Editor")],
             ]],
-            ["div#quizeditor-content", {"#":"root"}, [
-                ["div#quizeditorPane", [
-                    ["table#quizeditor-preview", {
-                        "style": "display: none; position: absolute; width: 90%; top: 7%; left: 5%"
-                    }, [
+
+            ["section#quiz-editor-content", {"#":"content"}, [
+                ["div#quiz-editor-overview-pane.quiz-editor-pane", [
+                    ["h1", _("Quiz Overview")],
+                    ["table#quiz-editor-overview-table", {"style": "display:none"}, [
                         ["tr", [
-                            ["th", {"style": "width: 4%; text-align: center;"}, _("N°")],
-                            ["th", {"style": "text-align: center;"}, _("Questions")],
-                            ["th", {"style": "text-align: center; width: 35%"}, _("Answers")],
-                            ["th", {"style": "width: 4%; text-align: center;"}, _("Modifications")],
-                            ["th", {"style": "width: 4%; text-align: center;"}, _("Points")]
+                            ["th", _("Nb")],
+                            ["th", {"style":"width:100%"}, _("Questions")],
+                            ["th", {"style":"width:100%"}, _("Answers")],
+                            ["th", _("Edit")],
+                            ["th", _("Points")]
                         ]]
-                    ]]
+                    ]],
+
+                    ["p#quiz-editor-nothing-yet", {"#":"nothingYet"}, _("There is no question in this quiz yet. Click on the button bellow to add a new question.")],
+
+                    ["p", ["button#quiz-editor-new-question-btn", {"#": "newQuestion"}, [
+                        ["img", {"src": libD.getIcon("actions/list-add"), "alt":" + "}],
+                        ["#", " " + _("Add a question")]
+                    ]]]
                 ]]
             ]]
         ]];
 
         win = libD.newWin({
-            title:      _("Quiz editor"),
+            title:      _("Quiz Editor"),
             show:       true,
             fullscreen: true,
-            content: libD.jso2dom(quizeditorPaneContent, refs)
+            content: libD.jso2dom(quizEditorWindowContent, refs)
         });
 
+        quizEditor = refs.root;
+        quizEditorContent = refs.content;
+
+        refs.overview.onclick = showQuizOverview.bind(null, "show");
+
         // Close the quiz editor
-        document.getElementById("close-quiz").onclick = function () {
-            AudeGUI.QuizEditor.close();
-        };
+        refs.close.onclick = AudeGUI.QuizEditor.close;
 
         //  Open a old quiz
-        document.getElementById("quizeditor-open").onclick = function () {
-            var fileinput = document.getElementById("quizeditor-file");
+        refs.open.onclick = function () {
+            var fileinput = document.getElementById("quiz-editor-file");
             fileinput.onclick = openQuiz;
             fileinput.click();
         };
 
         // New question pane
-        document.getElementById("quizeditor-newquestion").onclick = function () {
-            showNewQuestionPane();
-        };
+        refs.newQuestion.onclick = setCurrentState.bind(null, "new-question");
 
         // Save the quiz
-        document.getElementById("quizeditor-save").onclick = function () {
-            let correctState =
-                document.getElementById("quizeditor-newquestionPane").style.display != "none"
-                || document.getElementById("quizeditor-mcqPane");
+        refs.save.onclick = function () {
+            let correctState = (
+                document.getElementById("quiz-editor-new-question-pane").style.display != "none"
+                || document.getElementById("quiz-editor-mcq-pane")
+            );
+
             let confirm = true;
+
             if (correctState) {
-                confirm = window.confirm(_("Do you really want to cancel your quiz modification ? "));
+                confirm = window.confirm(_("Do you really want to abandon your modifications to the quiz?"));
             }
+
             if (confirm) {
                 showSavePane();
             }
         };
 
-        // Research events
-        // Reference array. tabref[0] is for mcq, tabref[1] is for automaton research, tabref[2] for regex research
-        var tabref = [
-            "true, vraies, false, faux, fausses, choice, choix, multiples",
-            "automaton, automate, find, trouver, determiniser, elemination, epsilon, transitions, minimisations, complementaires, produits, complete",
-            "regular, regulière, expressions"
-        ];
-        var search = document.getElementById("quizeditor-research");
-
-        search.onkeyup = function () {
-            researchBar(tabref, this);
-        };
-        // Append all possibilities to the result list and hide them
-        var ul = document.getElementById("quizeditor-researchPane");
-        for (var i = 0, li = null, id = ""; i < ul.childNodes.length; i++) {
-            li = ul.childNodes[i];
-            li.onmouseover = function () {
-                this.style.backgroundColor = "wheat";
-            };
-
-            li.onmouseout = function () {
-                this.style.backgroundColor = "white";
-            };
-
-            li.onclick = function () {
-                search.value = "";
-                search.placeholder = _("Search ...");
-                ul.style.display = "none";
-                id = "quizeditor-category" + this.id.substr(-1);
-                document.getElementById(id).click();
+        refs.destroy.onclick = function () {
+            if (window.confirm(_("Do you really want to start a new quiz from scratch?"))) {
+                drawQuizEditor();
             }
         }
 
-        search.addEventListener("blur", function () {
-            setTimeout(0, function () {
-                this.value = "";
-            this.placeholder = _("Search ...");
-            ul.style.display = "none";
-            });
-        });
-
-        search.addEventListener("focusout", function () {
-            setTimeout(0, function () {
-                this.value = "";
-            this.placeholder = _("Search ...");
-            ul.style.display = "none";
-            });
-        });
+        drawNewQuestionPane();
+        setCurrentState("overview");
     }
 
     /*
-     * Add  if (mode = "") the last edit question to the preview table
-     * else (mode = shift) show the preview table from all the quiz object
+     * Add  if (mode = "") the last edit question to the overview table
+     * else (mode = shift) show the overview table from all the quiz object
      */
-    function showQuizeditorPane (mode) {
-        if (!setCurrentState("previewPane")) {
-            return;
-        }
+    function showQuizOverview(mode) {
         switch (mode) {
             case "":
                 questionPreview(quiz.questions.length - 1);
-            break;
+                break;
 
             case "shift":
-                if (quiz.questions != []) {
+                if (quiz.questions) {
                     for (var i = 0; i < quiz.questions.length; i++) {
                         questionPreview(i);
                     }
                 }
+                break;
+
+            case "show":
+                // Do nothing specific, we just want to show the stuff actually
+                break;
         }
 
-        document.getElementById("quizeditor-preview").style.display = "initial";
-        document.getElementById("quizeditorPane").style.display = "initial";
-        redrawAutomatons();
+        console.log("Questions", quiz.questions);
+        if (quiz.questions.length) {
+            document.getElementById("quiz-editor-overview-table").style.display = "table";
+            document.getElementById("quiz-editor-nothing-yet").style.display = "none";
+        } else {
+            document.getElementById("quiz-editor-overview-table").style.display = "none";
+            document.getElementById("quiz-editor-nothing-yet").style.display = "";
+        }
+
+        redrawAutomata();
+
+        setCurrentState("overview");
     }
 
     /*
-     * Add the questions[index] to the preview table
+     * Add the questions[index] to the overview table
      */
-    function questionPreview (index) {
+    function questionPreview(index) {
         var q = quiz.questions[index];
-        var previewTable = document.getElementById("quizeditor-preview");
-        var refsLocal = {};
-        previewTable.appendChild(libD.jso2dom(["tr", [
+        var overviewTable = document.getElementById("quiz-editor-overview-table");
+        overviewTable.style.display = "table";
+
+        var refs = {};
+        overviewTable.appendChild(libD.jso2dom(["tr", [
             ["td", [
                 ["div", {"style": "text-align: center"}, "" + (index + 1)]
             ]],
@@ -315,82 +279,83 @@
             ]],
             ["td", [
                 ["div", {"style": "text-align: center"}, [
-                    ["button#quizeditor-modifQuestion" + index, {"#": "modifButton", "title": _("edit")}, [
+                    ["button#quiz-editor-modifQuestion" + index, {"#": "modifButton", "title": _("edit")}, [
                         ["img", {"src": libD.getIcon("actions/editimage"), "alt": "Edit"}]
                     ]],
-                    ["button#quizeditor-removeQuestion" + index, {"#": "removeButton", "title": _("remove")}, [
+                    ["button#quiz-editor-removeQuestion" + index, {"#": "removeButton", "title": _("remove")}, [
                         ["img", {"src": libD.getIcon("actions/geany-close-all"), "alt": "Remove"}]
                     ]]
                 ]]
             ]],
             ["td", {"style": "text-align: center;"}, [
-                ["button#quizeditor-addPoint" + index, {"#": "addPoint", "title": _("add")}, [
-                    ["img", {"src": libD.getIcon("actions/arrow-up"), "alt": "Add"}]
+                ["button#quiz-editor-addPoint" + index, {"#": "addPoint", "title": _("Add")}, [
+                    ["img", {"src": libD.getIcon("actions/arrow-up"), "alt": _("Add")}]
                 ]],
-                ["div#quizeditor-divPoint" + index, {"#": "divPoint", "style": "background-color: write;"}, "" + q.point],
-                ["button#quizeditor-removePoint" + index, {"#": "removePoint", "title": _("remove")}, [
+                ["div#quiz-editor-divPoint" + index, {"#": "divPoint"}, "" + q.point],
+                ["button#quiz-editor-removePoint" + index, {"#": "removePoint", "title": _("remove")}, [
                     ["img", {"src": libD.getIcon("actions/arrow-down"), "alt": "Remove"}]
                 ]]
             ]]
-        ]], refsLocal));
+        ]], refs));
 
-        refsLocal.removeButton.onclick = function () {
-            grainPreviewTable();
-            removeQuestion(this);
-            showQuizeditorPane("shift");
+        refs.removeButton.onclick = function () {
+            emptyPreviewTable();
+            removeQuestion(index);
+            showQuizOverview("shift");
         }
-        refsLocal.addPoint.onclick = function () {
+
+        refs.addPoint.onclick = function () {
             addPoint(index);
         };
 
-        refsLocal.removePoint.onclick = function () {
+        refs.removePoint.onclick = function () {
             removePoint(index);
         };
 
         switch (q.type) {
             case "mcq":
-                refsLocal.modifButton.onclick = function () {
-                    modifyMcQuestion(this);
+                refs.modifButton.onclick = function () {
+                    modifyMcQuestion(index);
                 }
 
-                refsLocal.quesDiv.appendChild(libD.jso2dom([
+                refs.quesDiv.appendChild(libD.jso2dom([
                     ["p", {"#": "instruction"}],
                     ["div", [
                         ["ul", {"#":"list", "style": "list-style-type: none;"}]
                     ]]
-                ], refsLocal));
-                textFormat(q.instruction, refsLocal.instruction, true);
+                ], refs));
+                textFormat(q.instruction, refs.instruction, true);
 
                 for (var i = 0; i < q.possibilities.length; i++) {
-                    refsLocal.list.appendChild(libD.jso2dom(["li", [
+                    refs.list.appendChild(libD.jso2dom(["li", [
                         ["span", {"class": "quiz-answer-id"}, q.possibilities[i].id + ". "],
                         ["span", q.possibilities[i].text]
                     ]]));
                 }
 
-                refsLocal.answDiv.appendChild(libD.jso2dom(["p", q.answers.toString()]));
+                refs.answDiv.appendChild(libD.jso2dom(["p", q.answers.toString()]));
                 break;
 
             case "automatonEquiv":
-                refsLocal.modifButton.onclick = function () {
-                    modifyAutomatonR(this);
+                refs.modifButton.onclick = function () {
+                    modifyAutomatonR(index);
                 }
 
-                refsLocal.quesDiv.appendChild(libD.jso2dom([
+                refs.quesDiv.appendChild(libD.jso2dom([
                     ["p", {"#": "instruction"}],
                     ["div", {
                         "#": "quesAutomatonDiv",
-                        "style": "min-height: 100px; position:relative; background-color: #a4c9d1;"
+                        "style": "min-height: 100px; position:relative;"
                     }]
-                ], refsLocal));
-                textFormat(q.instructionHTML, refsLocal.instruction, true);
-                refsLocal.answDiv.appendChild(libD.jso2dom(["div", {
+                ], refs));
+                textFormat(q.instructionHTML, refs.instruction, true);
+                refs.answDiv.appendChild(libD.jso2dom(["div", {
                     "#": "answAutomatonDiv",
-                    "style": "min-height: 100px; position:relative; background-color: #a4c9d1;"
-                }], refsLocal));
+                    "style": "min-height: 100px; position:relative;"
+                }], refs));
 
                 if (q.automatonQuestion) {
-                    designerQue = new AudeDesigner(refsLocal.quesAutomatonDiv, true);
+                    designerQue = new AudeDesigner(refs.quesAutomatonDiv, true);
                     designerQue.setAutomatonCode(
                         q.automatonQuestion,
                         designerQue.currentIndex
@@ -400,11 +365,11 @@
                         designerQue.autoCenterZoom();
                     }, 0);
                 } else {
-                    refsLocal.quesAutomatonDiv.style.display = "none";
+                    refs.quesAutomatonDiv.style.display = "none";
                 }
 
                 if (!isAutomatonNull(q.automatonAnswer)) {
-                    designerAns = new AudeDesigner(refsLocal.answAutomatonDiv, true);
+                    designerAns = new AudeDesigner(refs.answAutomatonDiv, true);
                     designerAns.setAutomatonCode(
                         q.automatonAnswer,
                         designerAns.currentIndex
@@ -414,30 +379,33 @@
                         designerAns.autoCenterZoom();
                     }, 0);
                 } else {
-                    refsLocal.answAutomatonDiv.style.display = "none";
-                    refsLocal.answDiv.style.textAlign = "center";
-                    refsLocal.answDiv.textContent = "null";
+                    refs.answAutomatonDiv.style.display = "none";
+                    refs.answDiv.style.textAlign = "center";
+                    refs.answDiv.textContent = "null";
                 }
-                q.previewAutomatonQue = designerQue;
-                q.previewAutomatonAns = designerAns;
+
+                q.overviewAutomatonQue = designerQue;
+                q.overviewAutomatonAns = designerAns;
                 break;
+
             case "regexEquiv":
-                refsLocal.modifButton.onclick = function () {
+                refs.modifButton.onclick = function () {
                     modifyRegexR(this);
                 }
 
-                refsLocal.quesDiv.appendChild(libD.jso2dom([
+                refs.quesDiv.appendChild(libD.jso2dom([
                     ["p", {"#": "instruction"}],
                     ["div", {
                         "#": "quesAutomatonDiv",
-                        "style": "min-height: 100px; position:relative; background-color: #a4c9d1;"
+                        "style": "min-height: 100px; position:relative;"
                     }]
-                ], refsLocal));
-                textFormat(q.instructionHTML, refsLocal.instruction, true);
-                refsLocal.answDiv.appendChild(libD.jso2dom(["p", q.regex]));
+                ], refs));
+
+                textFormat(q.instructionHTML, refs.instruction, true);
+                refs.answDiv.appendChild(libD.jso2dom(["p", q.regex]));
 
                 if (q.automatonQuestion) {
-                    designerQue = new AudeDesigner(refsLocal.quesAutomatonDiv, true);
+                    designerQue = new AudeDesigner(refs.quesAutomatonDiv, true);
                     designerQue.setAutomatonCode(
                         q.automatonQuestion,
                         designerQue.currentIndex
@@ -447,13 +415,13 @@
                         designerQue.autoCenterZoom();
                     }, 0);
                 } else {
-                    refsLocal.quesAutomatonDiv.style.display = "none";
+                    refs.quesAutomatonDiv.style.display = "none";
                 }
 
-                q.previewAutomatonQue = designerQue;
+                q.overviewAutomatonQue = designerQue;
                 break;
-            case "word":
 
+            case "word":
                 break;
         }
     }
@@ -461,50 +429,56 @@
     /*
      * Create the new question pane.
      * Add events on that elements.
-     * It's call once at quiz editor opening
+     * It's called once at quiz editor opening
      */
-    function loadNewQuestionPane () {
-        var refsLocal = {};
-        var newQuestionPane = libD.jso2dom(["div#quizeditor-newquestionPane",
-            {"style": "display: none; margin: 1%;"}, [
-            ["h1", _("Category")],
+    function drawNewQuestionPane() {
+        var refs = {};
+        var newQuestionPane = libD.jso2dom(["div#quiz-editor-new-question-pane.quiz-editor-pane", [
+            ["h1", _("New Question")],
             ["div", {"#": "content", "style": "display: inline-grid; width: 90%; margin: 1%;"}]
-        ]], refsLocal);
+        ]], refs);
 
         let contentList = [
-            "Multiple Choice Question",
-            "Find an automaton",
-            "Find a regular expression"
+            _("Multiple Choice Question"),
+            _("Find an automaton"),
+            _("Find a regular expression")
         ];
 
         let exampleList = [
-            _("Example: Which proposals between the following are correct (check the correct answers)"),
-            _("Example: For the following languages, give an automaton that recognizes it (if such an automaton exists)"),
-            _("Example: For the foloowing minimal automaton, give a regular expression specifying the automaton.")
+            _("Example: Which of the following assertions are correct? (check the correct answers)"),
+            _("Example: For the following languages, give an automaton that recognizes it (if such an automaton exists)."),
+            _("Example: For the following minimal automaton, give a regular expression that is equivalent.")
         ];
 
         for (var i = 0; i < contentList.length; i++) {
-            refsLocal.content.appendChild(libD.jso2dom(["button#quizeditor-category" + i,
-                { "#": "currentA", "style": "text-align: -webkit-left;"}, [
-                ["h2", ["a", contentList[i]]],
-                ["span", {"style": "margin: 2%"}, ["i", exampleList[i]]]
-            ]], refsLocal));
+            refs.content.appendChild(
+                libD.jso2dom(
+                    ["button#quiz-editor-category" + i, {"#": "currentA"}, [
+                            ["strong", contentList[i]],
+                            ["br"],
+                            ["i", exampleList[i]]
+                    ]],
+                    refs
+                )
+            );
 
-            refsLocal.currentA.onclick = function () {
+            refs.currentA.onclick = function () {
                 newQuestionCategory(this.id);
             }
         }
-        refs.root.appendChild(newQuestionPane);
+        quizEditorContent.appendChild(newQuestionPane);
     }
 
     /*
      * Call the function which correspond to the element clicked from the new quesiton pane
      */
-    function newQuestionCategory (elementId) {
-        var index = elementId.substr(-1);
+    function newQuestionCategory(elementId) {
+        // 0 for mcq, 1 for automatonR, 2 for regexR
+        var index = parseInt(elementId.substr(-1), 10);
+
         designerQue = null;
         designerAns = null;
-        index = parseInt(index);                //0 for mcq, 1 for automatonR, 2 for regexR
+
         switch (index) {
             case 0 :
                 showMcqPane("");
@@ -519,30 +493,20 @@
     }
 
     /*
-     * Display the new question pane
-     */
-    function showNewQuestionPane () {
-        if (!setCurrentState("newQuestionPane")) {
-            return;
-        }
-        document.getElementById("quizeditor-newquestionPane").style.display = "initial";
-    }
-
-    /*
      * Open a olo quiz from user local storage.
      */
-    function openQuiz () {
-        var file = document.getElementById("quizeditor-file");                  // input file
+    function openQuiz() {
+        var file = document.getElementById("quiz-editor-file"); // input file
         file.onchange = function () {
             var freader = new FileReader()
             freader.onload = function () {
-                AudeGUI.QuizEditor.open(freader.result);                        // freader.result containt stringify(quiz object)
+                AudeGUI.QuizEditor.open(freader.result); // freader.result containt stringify(quiz object)
             };
             freader.readAsText(file.files[0], "utf-8");
         }
     }
 
-    function saveQuiz () {
+    function saveQuiz() {
         var tableMonth = [
             _("January"),
             _("February"),
@@ -557,9 +521,11 @@
             _("November"),
             _("December")
         ];
-        var quizTitleInput      = document.getElementById("quizeditor-titleInput");
-        var authorInput         = document.getElementById("quizeditor-authorInput");
-        var descriptionTextarea = document.getElementById("quizeditor-descriptionTextarea");
+
+        var quizTitleInput      = document.getElementById("quiz-editor-titleInput");
+        var authorInput         = document.getElementById("quiz-editor-authorInput");
+        var descriptionTextarea = document.getElementById("quiz-editor-descriptionTextarea");
+
         var date         = new Date();
         quiz.title       = quizTitleInput.value;
         quiz.author      = authorInput.value;
@@ -567,187 +533,184 @@
         quiz.description = descriptionTextarea.value;
     }
 
-    function showSavePane () {
-        if (!setCurrentState("savePane")) {
-            return;
-        }
-        var refsLocal = {};
-        var savePane  = libD.jso2dom(["div#quizeditor-savePane", [
+    function showSavePane() {
+        var refs = {};
+        var savePane  = libD.jso2dom(["div#quiz-editor-save", [
             ["div", {"style": "position: relative"}, [
-                ["div", [
-                    ["p", _("Quiz's title")],
-                    ["input#quizeditor-titleInput", {
+                ["div", ["p", ["label", [
+                    ["#", _("Quiz title:") + " "],
+                    ["input#quiz-editor-titleInput", {
                             "#": "quizTitleInput",
                             "type": "text",
-                            "placeholder": _("Title ...")
+                            "placeholder": _("Title…")
                         }
                     ]
-                ]],
-                ["div", [
-                    ["p", _("Your name")],
-                    ["input#quizeditor-authorInput", {
+                ]]]],
+                ["div", ["p", ["label", [
+                    ["#", _("Your name:") + " "],
+                    ["input#quiz-editor-authorInput", {
                             "#": "authorInput",
                             "type": "text",
-                            "placeholder": _("Enter your name ...")
+                            "placeholder": _("Enter your name…")
                         }
                     ]
-                ]],
-                ["div", [
-                    ["p", _("Description")],
-                    ["textarea#quizeditor-descriptionTextarea", {
+                ]]]],
+                ["div", ["p", ["label", [
+                    ["#", _("Description:") + " "],
+                    ["textarea#quiz-editor-descriptionTextarea", {
                             "#": "descriptionTextarea",
                             "rows": "4",
                             "cols": "40",
-                            "placeholder": _("Description ...")
+                            "spellcheck":"false",
+                            "placeholder": _("Description…")
                         }
                     ]
-                ]]
+                ]]]]
             ]],
-            ["button#quizeditor_saveValidation", {
-                    "#": "validationButton",
-                    "style": "position: relative; left: 80%; top: 80%"
-                },
-                _("Validate")
-            ]
-        ]], refsLocal);
+            ["button#quizEditor_saveValidation", {"#": "validationButton"}, _("Validate")]
+        ]], refs);
 
-        refsLocal.validationButton.onclick     = function () {
+        refs.validationButton.onclick = function () {
             saveQuiz();
             AudeGUI.QuizEditor.save();
             AudeGUI.QuizEditor.close();
         }
 
-        quiz.title       ? refsLocal.quizTitleInput.value      = quiz.title       : "";
-        quiz.author      ? refsLocal.authorInput.value         = quiz.author      : "";
-        quiz.description ? refsLocal.descriptionTextarea.value = quiz.description : "";
+        refs.quizTitleInput.value      = quiz.title       || "";
+        refs.authorInput.value         = quiz.author      || "";
+        refs.descriptionTextarea.value = quiz.description || "";
 
-        refs.root.appendChild(savePane);
+        quizEditorContent.appendChild(savePane);
+        setCurrentState("save")
     }
 
     /*
-     * Remove a question from the quiz object and the preview table
+     * Remove a question from the quiz object and the overview table
      */
-    function removeQuestion (buttonClicked) {
-        var index = questionIndex(buttonClicked);
+    function removeQuestion(index) {
         quiz.questions.splice(index, 1);
     }
 
-    /*
-     * Research engine function
-     */
-    function researchBar (tabref, search) {
-        var ul = document.getElementById("quizeditor-researchPane");
-        ul.style.display = "initial";
-        var regex = new RegExp(search.value);                               //User research
-
-        for (var i = 0; i < tabref.length; i++) {                           // if found in tabref
-            if (regex.test(tabref[i])) {
-                ul.childNodes[i].style.display = "block";                   // then show the possibily
-            } else {
-                ul.childNodes[i].style.display = "none";                    // else hide it
-            }
-        }
-    }
-
-    function addPoint (index, point) {
+    function addPoint(index, point) {
         if (quiz.questions[index].point < 100) {
             quiz.questions[index].point++;
         }
-        document.getElementById("quizeditor-divPoint" + index).textContent = "" + quiz.questions[index].point;
+        document.getElementById("quiz-editor-divPoint" + index).textContent = "" + quiz.questions[index].point;
     }
 
-    function removePoint (index, point) {
+    function removePoint(index, point) {
         if (quiz.questions[index].point > 0) {
             quiz.questions[index].point--;
         }
-        document.getElementById("quizeditor-divPoint" + index).textContent = "" + quiz.questions[index].point;
+        document.getElementById("quiz-editor-divPoint" + index).textContent = "" + quiz.questions[index].point;
     }
 
     // --- FOR MULTIPLES CHOICE QUESTIONS
 
-    function showMcqPane (mode,index) {
-        if (!setCurrentState("mcqPane")) {
-            return;
+    function showMcqPane(mode, index) {
+        var mcqPane = document.getElementById("quiz-editor-mcq-pane");
+        if (mcqPane) {
+            mcqPane.parentNode.removeChild(mcqPane);
         }
+
         mcqR = {};
         mcqNumberOfChoices = 2;
 
-        var refsLocal = {};
-        var mcqPane = libD.jso2dom(["div#quizeditor-mcqPane", {"style": "display: initial; margin-top: 0; margin-left: 10px;"}, [
-            ["h1", _("MCQ")],
-            ["input#quizeditor-questionArea", {
+        var refs = {};
+
+        mcqPane = libD.jso2dom(["div#quiz-editor-mcq-pane.quiz-editor-pane", [
+            ["h1", _("Multiple Choice Question")],
+            ["p", ["input#quiz-editor-questionArea", {
                 "type": "text",
-                "name": "questionArea",
-                "placeholder": _("write your question ...")
-            }],
-            ["div", {"style": "position: relative; left: 2.5%;"}, [
-                ["p", _("Write the different choices and check the correct one. ")],
-                ["div#quizeditor-choiceArea", {"#": "choiceArea"}],
-                ["button", {"#": "addButton", "title": _("add"), "style": "position: relative; left: 2.5%;"}, [
-                    ["img", {"src": libD.getIcon("emblems/vcs-added"), "alt": _("Add")}]
-                ]]
-            ]],
-            ["button", {"#": "validationButton", "style": "position: relative; left: 80%; top: 80%"}, _("Validate")]
-        ]], refsLocal);
+                "placeholder": _("Write your question…"),
+                "#": "questionArea"
+            }]],
+            ["p", _("Write the different possible answers and check the correct ones.")],
+            ["div#quiz-editor-choiceArea", {"#": "choiceArea"}],
+            ["p", ["button", {"#": "addButton", "title": _("Add")}, [
+                ["img", {"src": libD.getIcon("actions/list-add")}],
+                ["#", _("Add an answer")]
+            ]]],
+            ["p", ["button", {"#": "validationButton"}, _("Validate")]]
+        ]], refs);
 
         let choice_list = [];
 
         for (var i = 0; i < mcqNumberOfChoices; i++) {
-            refsLocal.choiceArea.appendChild(libD.jso2dom([
-                ["div#quizeditor-choice" + i, {"style": "position: relative; left: 2.5%;"}, [
+            var q = libD.jso2dom([
+                ["div#quiz-editor-choice" + i, [
                     ["input", {"type": "checkbox"}],
-                    ["input", {"type": "text", "name":"questionArea", "placeholder": _("choice") + " " + (i+1) + " ..."}],
+                    ["input", {"type": "text", "name":"questionArea", "placeholder": libD.format(_("Choice {0}…"), i + 1)}],
                     ["button", {"#": "removeButton", "title": _("remove")}, [
                         ["img", {"src": libD.getIcon("actions/geany-close-all"), "alt": _("Remove")}]
                     ]]
                 ]]
-            ], refsLocal));
+            ], refs);
 
-            refsLocal.removeButton.onclick = function () {
-                removeChoice(this.parentNode);
-            };
+            refs.choiceArea.appendChild(q);
+            refs.removeButton.onclick = removeChoice.bind(null, q);
         }
 
-        refsLocal.addButton.onclick = addChoice;
-        refsLocal.validationButton.onclick = function () {
-            mcqValidation(mode,index);
-            (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+        refs.addButton.onclick = addChoice;
+        refs.validationButton.onclick = function () {
+            mcqValidation(mode, index);
+            showQuizOverview((mode == "") ? "" : "shift");
         }
-        refs.root.appendChild(mcqPane);
+
+        quizEditorContent.appendChild(mcqPane);
+
+        setTimeout(
+            function () {
+                refs.questionArea.focus();
+            },
+            0
+        );
+
+        setCurrentState("mcq");
     }
 
     /*
      * Push the current question in the quiz object.
      */
-    function mcqValidation (mode,index) {
+    function mcqValidation(mode, index) {
         mcqR = {
             type:          "mcq",
-            instruction:   document.getElementById("quizeditor-questionArea").value,
+            instruction:   document.getElementById("quiz-editor-questionArea").value,
             answers:       [],
             possibilities: [],
             point:         0,
-            previewAutomatonQue: null,
-            previewAutomatonAns: null
+            overviewAutomatonQue: null,
+            overviewAutomatonAns: null
         };
 
-        var choiceArray = document.getElementById("quizeditor-choiceArea").childNodes;
-        for (var i = 0, possibility  = null, choice = null, a_acsiiCode  = 97; i < choiceArray.length; i++) {
-            choice = choiceArray[i].childNodes;
-            if (choice[0].checked) {                                            // push the id of the correct possibility in mcqR
+        var choiceArray = document.getElementById("quiz-editor-choiceArea").childNodes;
+        for (var i = 0, a_acsiiCode  = 97; i < choiceArray.length; i++) {
+            var choice = choiceArray[i].childNodes;
+            var value = choice[1].value.trim();
+
+            if (!value) {
+                continue; // if the answer is empty, skip it
+            }
+
+            // push the id of the correct possibility in mcqR
+            if (choice[0].checked) {
                 mcqR.answers.push(String.fromCharCode(a_acsiiCode));
             }
-            possibility = {                                                     // push the id and text of the possibility in mcqR
+
+            // push the id and text of the possibility in mcqR
+            var possibility = {
                 id:   String.fromCharCode(a_acsiiCode),
-                text: choice[1].value
+                text: value
             };
+
             mcqR.possibilities.push(possibility);
-            a_acsiiCode++;;
+            a_acsiiCode++;
         }
 
         if (mode === "") {
             quiz.questions.push(mcqR);
         } else {
-            grainPreviewTable();
+            emptyPreviewTable();
             quiz.questions[index] = mcqR;
         }
 
@@ -756,28 +719,26 @@
     }
 
     /*
-     * Edit a old m.c.question which is indentify by "buttonClicked"
+     * Edit a m.c.question indexed by index
      */
-    function modifyMcQuestion (buttonClicked) {
-        var index = questionIndex(buttonClicked);
-
+    function modifyMcQuestion(index) {
         var q      = quiz.questions[index];
         var possibilities = q.possibilities;
         var answers       = q.answers;
 
-        showMcqPane("shift",index);
-        document.getElementById("quizeditor-questionArea").value = q.instruction;
+        showMcqPane("shift", index);
+        document.getElementById("quiz-editor-questionArea").value = q.instruction;
         for (var i = 0, choiceDiv; i < possibilities.length; i++) {
             if (i > 1) {
                 addChoice();
             }
-            choiceDiv    = document.getElementById("quizeditor-choice" + i).childNodes;
+            choiceDiv    = document.getElementById("quiz-editor-choice" + i).childNodes;
             choiceDiv[1].value = possibilities[i].text;
         }
 
         for (var i = 0, choiceDiv, id; i < answers.length; i++) {
             id = answers[i].charCodeAt(0) - "a".charCodeAt(0);
-            choiceDiv    = document.getElementById("quizeditor-choice" + id).childNodes;
+            choiceDiv    = document.getElementById("quiz-editor-choice" + id).childNodes;
             choiceDiv[0].checked = "checked";
         }
     }
@@ -785,183 +746,168 @@
     /*
      * Add a possibility to the question
      */
-    function addChoice () {
-        var choiceArea = document.getElementById("quizeditor-choiceArea");
-        var refsLocal  = {};
-        choiceArea.appendChild(libD.jso2dom(["div#quizeditor-choice" + (mcqNumberOfChoices), {
-                "style": "position: relative; left: 2.5%;"
-            }, [
+    function addChoice() {
+        var choiceArea = document.getElementById("quiz-editor-choiceArea");
+        var refs  = {};
+        var q = libD.jso2dom(["div#quiz-editor-choice" + (mcqNumberOfChoices), [
                 ["input", {"type": "checkbox"}],
-                ["input", {"type": "text", "name":"questionArea", "placeholder": _("choice") + " " + (mcqNumberOfChoices+1) + " ..."}],
+                ["input", {"#": "addedInput", "type": "text", "placeholder": libD.format(_("Choice {0}…"), mcqNumberOfChoices + 1)}],
                 ["button", {"#": "removeButton", "title": _("remove")}, [
                     ["img", {"src": libD.getIcon("actions/geany-close-all"), "alt": _("Remove")}]
                 ]]
             ]
-        ], refsLocal));
+        ], refs);
 
-        refsLocal.removeButton.onclick = function () {
-            removeChoice(this.parentNode);
-        };
+        choiceArea.appendChild(q);
+        refs.removeButton.onclick = removeChoice.bind(null, q);
+
+        setTimeout(
+            function () {
+                refs.addedInput.focus();
+            },
+            0
+        );
+
         mcqNumberOfChoices++;
     }
 
     /*
      * Remove a possibility from the questions
      */
-    function removeChoice (elementToRemove) {
-        var parent = document.getElementById("quizeditor-choiceArea");
+    function removeChoice(elementToRemove) {
+        var parent = document.getElementById("quiz-editor-choiceArea");
         parent.removeChild(elementToRemove);
 
         var children = parent.childNodes;
         for (var i = 0; i < children.length; i++) {
-            children[i].id = "quizeditor-choice" + i;
-            children[i].childNodes[1].placeholder = "choice " + (i+1) + " ...";
+            children[i].id = "quiz-editor-choice" + i;
+            children[i].childNodes[1].placeholder = libD.format(_("Choice {0}…", (i+1)));
         }
         mcqNumberOfChoices--;
     }
 
-    // --- FOR AUTOMATONS RESEARCHER
-
-    function showAutomatonRPane (mode,index) {
-        if (!setCurrentState("automatonRPane")) {
-            return;
-        }
+    function showAutomatonRPane(mode, index) {
         automatonR = {};
         designerAns = null;
         designerQue = null;
-        var refsLocal = {};
-        var automatonRPane = libD.jso2dom(["div#quizeditor-automatonRPane", {"style": "display: initial; margin-top: 0; margin-left: 10px;"}, [
-            ["div", [
-                ["h1", _("Find an automaton")],
-                ["div", {"style": "position : absolute; left :  0%; height: 50%; width: 49%; border: 1px solid; background-color: white;"}, [
-                    ["div", {"style": "text-align: center"}, _("Question")],
-                    ["div", [
-                        ["textarea#quizeditor-automatonRTextarea", {
-                            "style": "position : relative; display: block; width: 98.9%",
+        var refs = {};
+        var automatonRPane = document.getElementById("quiz-editor-automatonR-pane");
+
+        if (automatonRPane) {
+            automatonRPane.parentNode.removeChild(automatonRPane);
+        }
+
+        automatonRPane = libD.jso2dom(["div#quiz-editor-automatonR-pane.quiz-editor-pane", [
+            ["h1", _("Find an automaton")],
+            ["div#quiz-editor-automatonR-panes", [
+                ["div.quiz-editor-disp-flex", [
+                    ["h2", _("Question")],
+                    ["div.quiz-editor-flex quiz-editor-disp-flex", [
+                        ["textarea#quiz-editor-automatonRTextarea", {
                             "rows": 10,
-                            "placeholder": _("Question wording ...")
+                            "spellcheck":"false",
+                            "placeholder": _("Type the question here…")
                         }],
-                        ["button#quizeditor-drawAutomaton", {
-                            "#": "drawAutomaton",
-                            "style": "position: absolute; display: block; right: 1%; bottom: 1%"
-                            },
-                            _("Draw an automaton")
-                        ],
-                        ["button#quizeditor-audescriptCodeButton", {
-                            "#": "audescriptCodeButton",
-                            "style": "position: absolute; display: block; right: 1%; bottom: -8%"
-                            },
-                            _("Add audescript conditions")
-                        ],
-                        ["div", {
-                            "#": "automatonQueDiv",
-                            "style": "position:absolute; height:57%; width:100%; background-color: #a4c9d1; display: none"
-                        }]
-                    ]]
-                ]],
-                ["div", {"style": "position : absolute; left : 50%; height: 50%; width: 49%; border: 1px solid; background-color: white;"}, [
-                    ["div", {"style": "text-align: center"}, _("Answer")],
-                    ["div", {"#": "automatonAnsDiv"}, [
-                        ["div", {"style": "position:absolute; height:95.5%; width:100%; background-color: #a4c9d1;"}]
-                    ]]
-                ]],
-                ["textarea#quizeditor-audescriptCode", {
-                    "#": "audescriptCode",
-                    "style": "display:none; position: absolute; top: 66.3%; left:30%; width:40%;",
-                    "rows":4,
-                    "placeholder": _("Write your audescript code here ...")
-                }],
-                ["button", {"#": "info", "title": _("Info"), "style": "display: none; position: absolute; top: 71.3%; left:71%;"}, [
-                    ["img", {"src": libD.getIcon("actions/kt-info-widget"), "alt": "Info"}]
-                ]],
-                ["div",
-                    {
-                        "#": "infoPane",
-                        "style": "display: none; position: absolute; top: 70%; left:67%; padding: 3px; border: 1px solid black; border-radius: 10px; background-color: gainsboro"
-                    }, [
-                        ["span", _("If you want the automaton answer be: ")],
-                        ["ul", [
-                            ["li", _("determinized write (isDeterminized(autoAnsw)")],
-                            ["li", _("minimized write (isMinimized(autoAnsw)")],
-                            ["li", _("completed write (isCompleted(autoAnsw)")]
+                        ["p", ["label", [
+                            ["input#quiz-editor-drawAutomaton", {
+                                "#": "drawAutomaton",
+                                "type": "checkbox"
+                            }],
+                            ["#", " " + _("Draw an automaton")]
+                        ]]],
+                        ["div.quiz-editor-flex", {"#": "automatonQueDiv"}, [
+                            ["div.automaton-draw-area"]
                         ]]
-                    ]],
-                ["button", {
-                    "#": "validationButton",
-                    "style": "position: absolute; left: 92%; top: 68%;"
-                    },
-                    _("Validate")
-                ]
-            ]]
-        ]], refsLocal);
+                    ]]
+                ]],
+                ["div.quiz-editor-disp-flex", [
+                    ["h2", _("Answer")],
+                    ["div.quiz-editor-flex", {"#": "automatonAnsDiv"}, [
+                        ["div.automaton-draw-area"]
+                    ]]
+                ]]
+            ]],
+            ["div", {"style":"display:flex;"}, [
+                ["textarea#quiz-editor-audescriptCode", {
+                    "#": "audescriptCode",
+                    "rows":4,
+                    "style":"flex:1",
+                    "spellcheck":"false",
+                    "placeholder": _("Write your audescript code here…")
+                }],
+                ["div.help", [
+                    ["p", _("If you want the automaton answer to be:") + " "],
+                    ["ul", [
+                        ["li", _("determinized, write isDeterminized(autoAnsw)")],
+                        ["li", _("minimized, write isMinimized(autoAnsw)")],
+                        ["li", _("completed, write isCompleted(autoAnsw)")]
+                    ]]
+                ]]
+            ]],
+            ["button", {"#": "validationButton"}, _("Validate")]
+        ]], refs);
 
-        refs.root.appendChild(automatonRPane);
+        quizEditorContent.appendChild(automatonRPane);
 
-        designerAns = new AudeDesigner(refsLocal.automatonAnsDiv);
+        designerAns = new AudeDesigner(refs.automatonAnsDiv);
 
-        refsLocal.drawAutomaton.onclick = function () {
-            this.style.display   = "none";
-            refsLocal.automatonQueDiv.style.display = "initial";
-            designerQue = new AudeDesigner(refsLocal.automatonQueDiv);
-            setTimeout(function () {
-                designerQue.redraw();
-            }, 0);
-        };
+        setTimeout(function () {
+            designerAns.redraw();
+        }, 0);
 
-        refsLocal.validationButton.onclick = function () {
-            if (refsLocal.audescriptCode.value) {
-                ajsEval(script, autoAnsw, A)
-//(res === null) ? setTimeout(10, (function() { res = ajsEval(script, autoAnsw, A)})) : "";
-                automatonRValidation(mode,index);
-                (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
-            }else{
-                automatonRValidation(mode,index);
-                (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+        refs.drawAutomaton.checked = false;
+        (refs.drawAutomaton.onchange = function () {
+            if (refs.drawAutomaton.checked) {
+                refs.automatonQueDiv.style.display = "";
+
+                if (!designerQue) {
+                    designerQue = new AudeDesigner(refs.automatonQueDiv);
+                }
+
+                setTimeout(function () {
+                    designerQue.redraw();
+                }, 0);
+            } else {
+                refs.automatonQueDiv.style.display = "none";
             }
+        })();
+
+        refs.validationButton.onclick = function () {
+            if (refs.audescriptCode.value) {
+                ajsEval(script, autoAnsw, A);
+            }
+
+            automatonRValidation(mode, index);
+            showQuizOverview((mode == "") ? "" : "shift");
         };
 
-        refsLocal.audescriptCodeButton.onclick = function () {
-            this.style.display = "none";
-            refsLocal.info.style.display = "initial";
-            refsLocal.audescriptCode.style.display = "initial";
-            refsLocal.validationButton.style.top = "75%";
-        };
-
-        refsLocal.info.onmouseover = function () {
-            refsLocal.infoPane.style.display = "initial";
-            refsLocal.validationButton.style.top = "88%";
-        };
-
-        refsLocal.infoPane.onmouseout = function () {
-            refsLocal.infoPane.style.display = "none";
-            refsLocal.validationButton.style.top = "75%";
-        };
+        setCurrentState("automatonR");
     }
 
     /*
      * Push the current question in the quiz object.
      */
-    function automatonRValidation (mode,index) {
+    function automatonRValidation(mode, index) {
         automatonR = {
             type:"automatonEquiv",
-            instructionHTML:   document.getElementById("quizeditor-automatonRTextarea").value,
+            instructionHTML:   document.getElementById("quiz-editor-automatonRTextarea").value,
             automatonQuestion: null,
-            automatonAnswer:   designerAns.getAutomatonCode(designerAns.currentIndex,false),
-            audescriptCode :   document.getElementById("quizeditor-audescriptCode").value,
+            automatonAnswer:   designerAns.getAutomatonCode(designerAns.currentIndex, false),
+            audescriptCode :   document.getElementById("quiz-editor-audescriptCode").value,
             point:             0,
-            previewAutomatonQue: null,
-            previewAutomatonAns: null
+            overviewAutomatonQue: null,
+            overviewAutomatonAns: null
         }
 
         if (designerQue) {
             automatonR.automatonQuestion =
-                designerQue.getAutomatonCode(designerQue.currentIndex,false)
+                designerQue.getAutomatonCode(designerQue.currentIndex, false)
         }
 
         if (mode === "") {
             quiz.questions.push(automatonR);
         } else {
-            grainPreviewTable();
+            emptyPreviewTable();
             quiz.questions[index] = automatonR;
         }
 
@@ -969,18 +915,14 @@
         designerAns = null;
     }
 
-    /*
-     * Edit a old automaton research question which is indentify by "buttonClicked"
-     */
-    function modifyAutomatonR (buttonClicked) {
-        var index = questionIndex(buttonClicked);
+    function modifyAutomatonR(index) {
         var q  = quiz.questions[index];
 
-        showAutomatonRPane("shift",index);
-        textFormat(q.instructionHTML, document.getElementById("quizeditor-automatonRTextarea"), true);
+        showAutomatonRPane("shift", index);
+        textFormat(q.instructionHTML, document.getElementById("quiz-editor-automatonRTextarea"), true);
 
         if (q.automatonQuestion) {
-            document.getElementById("quizeditor-drawAutomaton").click();
+            document.getElementById("quiz-editor-drawAutomaton").click();
             designerQue.setAutomatonCode(
                 q.automatonQuestion,
                 designerQue.currentIndex
@@ -989,8 +931,8 @@
         }
 
         if (q.audescriptCode) {
-            document.getElementById("quizeditor-audescriptCodeButton").click();
-            document.getElementById("quizeditor-audescriptCode").value = q.audescriptCode;
+            document.getElementById("quiz-editor-audescriptCodeButton").click();
+            document.getElementById("quiz-editor-audescriptCode").value = q.audescriptCode;
         }
 
         designerAns.setAutomatonCode(
@@ -1002,89 +944,121 @@
 
     // --- FOR REGULAR EXPRESSIONS RESEARCHER
 
-    function showRegexRPane (mode,index) {
-        if (!setCurrentState("regexRPane")) {
-            return;
-        }
+    function showRegexRPane(mode, index) {
         regexR = {};
-        var refsLocal  = {};
-        var regexRPane = libD.jso2dom(["div#quizeditor-regexRPane", {"style": "display: initial; margin-top: 0; margin-left: 10px;"}, [
+        var refs  = {};
+
+        var regexRPane = document.getElementById("quiz-editor-regexR-pane");
+
+        if (regexRPane) {
+            regexRPane.parentNode.removeChild(regexRPane);
+        }
+
+        regexRPane = libD.jso2dom(["div#quiz-editor-regexR-pane.quiz-editor-pane", [
             ["h1", _("Find a regular expression")],
-            ["div", [
-                ["div", {"style": "position : absolute; left :  0%; height: 50%; width: 49%; border: 1px solid; background-color: white"}, [
-                    ["div", {"style": "text-align: center"}, _("Question")],
+            ["section#quiz-editor-regexR-pane-content", [
+                ["div", [
+                    ["h1", _("Question")],
                     ["div", [
-                        ["textarea#quizeditor-regexRTextarea", {
-                            "style": "position : relative; display: block; width: 98.9%",
+                        ["textarea#quiz-editor-regexRTextarea", {
                             "rows": 10,
-                            "placeholder": _("Question wording ...")
+                            "spellcheck":"false",
+                            "placeholder": _("Write your question…")
                         }],
-                        ["button#quizeditor-drawAutomaton", {
-                                "#" : "drawAutomaton",
-                                "style": "position: absolute; display: block; right: 1%; bottom: 1%"
-                            },
-                            _("Draw an automaton")
+                        ["p",
+                            ["button#quiz-editor-drawAutomaton", {
+                                    "#" : "drawAutomaton",
+                                },
+                                _("Draw an automaton")
+                            ]
                         ],
-                        ["div", {"#": "automatonQueDiv", "style": "position:absolute; height:57%; width:100%; background-color: #a4c9d1; display: none"}]
+                        ["div.automaton-draw-area", {"#": "automatonQueDiv", "style": "display: none"}]
                     ]]
                 ]],
-                ["div", {"style": "position : absolute; left : 50%; height: 50%; width: 49%; border: 1px solid; background-color: white"}, [
-                    ["div", {"style": "text-align: center"}, _("Answer")],
+                ["div", [
+                    ["h1", _("Answer")],
                     ["div", [
-                        ["textarea#quizeditor-regex", {
-                            "style": "position : relative; display: block; width: 98.9%",
+                        ["textarea#quiz-editor-regex", {
                             "rows": 10,
-                            "placeholder": _("Write a regular expression ...")
+                            "spellcheck":"false",
+                            "placeholder": _("Write a regular expression…")
                         }]
                     ]]
-                ]],
-                ["button", {"#": "validationButton", "style": "position: absolute; left: 92%; top: 68%"}, _("Validate")]
-            ]]
-        ]], refsLocal);
-        regexRPane.style.display = "initial";
+                ]]
+            ]],
+            ["p.big-center", ["button", {"#": "validationButton"}, _("Validate")]]
+        ]], refs);
 
-        refsLocal.drawAutomaton.onclick = function () {
-            refsLocal.drawAutomaton.style.display   = "none";
-            refsLocal.automatonQueDiv.style.display = "initial";
-            designerQue = new AudeDesigner(refsLocal.automatonQueDiv);
+        refs.drawAutomaton.onclick = function () {
+            refs.drawAutomaton.parentNode.style.display   = "none";
+            refs.automatonQueDiv.style.display = "";
+            designerQue = new AudeDesigner(refs.automatonQueDiv);
             setTimeout(function () {
                 designerQue.redraw();
             }, 0);
-        }
+        };
 
-        refsLocal.validationButton.onclick = function () {
-            if ( isRegex(document.getElementById("quizeditor-regex").value) ) {
-                regexRValidation(mode,index);
-                (mode == "") ? showQuizeditorPane("") : showQuizeditorPane("shift");
+        refs.validationButton.onclick = function () {
+            var regexToAutomaton = null;
+
+            AudeGUI.Runtime.loadIncludes(["equivalence", "regex2automaton", "automaton2json"],
+                function () {
+                    AudeGUI.notifier.close(); // loading notification
+
+                    regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
+
+                    try {
+                        regexToAutomaton(document.getElementById("quiz-editor-regex").value);
+                    } catch (e) {
+                        AudeGUI.notify(
+                            _("This regular expresion does not seem valid."),
+                            _("Recognized operations: “.”, “*”, “+”."),
+                            "error"
+                        );
+                        return;
+                    }
+
+                    regexRValidation(mode, index);
+                    showQuizOverview((mode == "") ? "" : "shift");
+                }
+            );
+
+            if (!regexToAutomaton) {
+                AudeGUI.notify(
+                    _("Loading…"),
+                    _("Your regular expression is going to be checked."),
+                    "info"
+                );
             }
-        }
+        };
 
-        refs.root.appendChild(regexRPane);
+        quizEditorContent.appendChild(regexRPane);
+        setCurrentState("regexR");
     }
 
     /*
      * Push the current question in the quiz object.
      */
-    function regexRValidation (mode,index) {
+    function regexRValidation(mode, index) {
         regexR = {
             type:"regexEquiv",
-            instructionHTML:   document.getElementById("quizeditor-regexRTextarea").value,
+            instructionHTML:   document.getElementById("quiz-editor-regexRTextarea").value,
             automatonQuestion: null,
-            regex: document.getElementById("quizeditor-regex").value,
+            regex: document.getElementById("quiz-editor-regex").value,
             point: 0,
-            previewAutomatonQue: null,
-            previewAutomatonAns: null
+            overviewAutomatonQue: null,
+            overviewAutomatonAns: null
         }
 
         if (designerQue !== null) {
             regexR.automatonQuestion =
-                designerQue.getAutomatonCode(designerQue.currentIndex,false)
+                designerQue.getAutomatonCode(designerQue.currentIndex, false)
         }
 
         if (mode === "") {
             quiz.questions.push(regexR);
         } else {
-            grainPreviewTable();
+            emptyPreviewTable();
             quiz.questions[index] = regexR;
         }
 
@@ -1092,19 +1066,16 @@
         designerAns = null;
     }
 
-    /*
-     * Edit a old regex research question which is indentify by "buttonClicked"
-     */
-    function modifyRegexR (buttonClicked) {
+    function modifyRegexR(buttonClicked) {
         var index = questionIndex(buttonClicked);
         var q  = quiz.questions[index];
 
-        showRegexRPane("shift",index);
-        textFormat(q.instructionHTML, document.getElementById("quizeditor-regexRTextarea"), true);
-        document.getElementById("quizeditor-regex").value          = q.regex;
+        showRegexRPane("shift", index);
+        textFormat(q.instructionHTML, document.getElementById("quiz-editor-regexRTextarea"), true);
+        document.getElementById("quiz-editor-regex").value          = q.regex;
 
-        if (q.automatonQuestion ) {
-            document.getElementById("quizeditor-drawAutomaton").click();
+        if (q.automatonQuestion) {
+            document.getElementById("quiz-editor-drawAutomaton").click();
             designerQue.setAutomatonCode(
                 q.automatonQuestion,
                 designerQue.currentIndex
@@ -1116,58 +1087,36 @@
     // Tools
 
     /*
-     * Remove all questions from the preview pane
+     * Remove all questions from the overview pane
      */
-    function grainPreviewTable () {
-        var previewTable = document.getElementById("quizeditor-preview");
+    function emptyPreviewTable() {
+        var overviewTable = document.getElementById("quiz-editor-overview-table");
         for (var i = quiz.questions.length; i > 0 ; i--) {
-            previewTable.deleteRow(i);
+            overviewTable.deleteRow(i);
         }
     }
 
     /*
      * Return question index starting from the edit th
      */
-    function questionIndex (element) {
+    function questionIndex(element) {
         var td    = element.parentNode.parentNode;
-        var index = td.parentNode.firstChild.firstChild.textContent;
-        index = parseInt(index);
-        index -= 1;
-        return index;
-    }
-
-    function isRegex (regex) {
-        var regexToAutomaton = null;
-        AudeGUI.Runtime.loadIncludes(["equivalence", "regex2automaton", "automaton2json"],
-            function () {
-                regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
-            }
-        );
-        var res = false;
-        try {
-            setTimeout(0, function (){
-                var fake = regexToAutomaton(regex);
-                res = true;
-            });
-        } catch (e) {
-            AudeGUI.notify  (_("The regex given in the quiz is not valid."), libD.format(_("Know operation: \".\", \"*\", \"+\".")), "error");
-        }
-        return res;
+        return parseInt(td.parentNode.firstChild.firstChild.textContent, 10) - 1;
     }
 
     /*
-     * Redraw all automatons of the preview table
+     * Redraw all automatons of the overview table
      */
-    function redrawAutomatons () {
+    function redrawAutomata() {
         for (var i = 0, leng = quiz.questions.length, q; i < leng; i++) {
             q = quiz.questions[i];
-            if (q.previewAutomatonQue) {
-                q.previewAutomatonQue.redraw();
-                q.previewAutomatonQue.autoCenterZoom();
+            if (q.overviewAutomatonQue) {
+                q.overviewAutomatonQue.redraw();
+                q.overviewAutomatonQue.autoCenterZoom();
             }
-            if (q.previewAutomatonAns) {
-                q.previewAutomatonAns.redraw();
-                q.previewAutomatonAns.autoCenterZoom();
+            if (q.overviewAutomatonAns) {
+                q.overviewAutomatonAns.redraw();
+                q.overviewAutomatonAns.autoCenterZoom();
             }
         }
     }
@@ -1175,54 +1124,47 @@
     /*
      * Delete all designers from the quiz object
      */
-    function cleanDesigners () {
+    function cleanDesigners() {
         for (var i = 0, leng = quiz.questions.length; i < leng; i++) {
-            delete quiz.questions[i].previewAutomatonQue;
-            delete quiz.questions[i].previewAutomatonAns;
+            delete quiz.questions[i].overviewAutomatonQue;
+            delete quiz.questions[i].overviewAutomatonAns;
         }
     }
 
     /*
-     * Different states :
-     *  -previewPane
-     *  -newQuestionPane
-     *  -savePane
-     *  -mcqPane
-     *  -automatonRPane
-     *  -regexRPane
+     * Possible states:
+     *  - overview
+     *  - new-question
+     *  - save
+     *  - mcq
+     *  - automatonR
+     *  - regexR
      */
-    function setCurrentState (newState) {
-        let confirm = true;
-        if (currentState !== "previewPane" && newState === "savePane") {
-            confirm = window.confirm(_("Do you really want to cancel your quiz edition ? "));
+
+    function setCurrentState(newState) {
+        if (newState === currentState) {
+            return true;
         }
 
-        switch (currentState) {
-            case "previewPane" :
-                document.getElementById("quizeditorPane").style.display  = "none";
-                break;
-            case "newQuestionPane" :
-                document.getElementById("quizeditor-newquestionPane").style.display = "none";
-                break;
-            case "savePane" :
-                document.getElementById("quizeditor-savePane").style.display = "none";
-                break;
-            case "mcqPane" :
-                document.getElementById("quizeditor-mcqPane").style.display = "none";
-                refs.root.removeChild(document.getElementById("quizeditor-mcqPane"));
-                break;
-            case "automatonRPane" :
-                document.getElementById("quizeditor-automatonRPane").style.display = "none";
-                refs.root.removeChild(document.getElementById("quizeditor-automatonRPane"));
-                break;
-            case "regexRPane" :
-                document.getElementById("quizeditor-regexRPane").style.display = "none";
-                refs.root.removeChild(document.getElementById("quizeditor-regexRPane"));
-                break;
+        if (currentState !== "overview" && newState === "save") {
+            if (!window.confirm(_("Do you really want to cancel your quiz edition?"))) {
+                return;
+            }
         }
+
+        if (currentState) {
+            quizEditor.classList.remove(currentState + "-mode");
+        }
+
+        let currentPane = document.getElementsByClassName("quiz-editor-current-pane")[0];
+        if (currentPane) {
+            currentPane.classList.remove("quiz-editor-current-pane");
+        }
+
+        quizEditor.classList.add(newState + "-mode");
+        document.getElementById("quiz-editor-" + newState + "-pane").classList.add("quiz-editor-current-pane");
 
         currentState = newState;
-        return confirm;
     }
 
     var katexAutorenderOpts = {
