@@ -230,7 +230,7 @@ tries to resemble and be compatible with Graphviz output.
 
 Usage examples in `js/gui.js` and `js/gui/gui-results.js`.
 
-A designer can be created by using `let designer = AudeDesigner(someDiv)` where
+A designer can be created by using `let designer = new AudeDesigner(someDiv)` where
 `someDiv` is a DOM div (`created using document.createElement("div")` for
 example).
 

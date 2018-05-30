@@ -51,6 +51,39 @@
         return node;
     }
 
+    function ajsEval(script, autoAnsw, A) {
+        var res = null;
+        AudeGUI.Runtime.loadIncludes(
+            ["determinization", "minimization", "completion", "complementation"],
+            function () {
+                try {
+                    res = eval(
+                        "(function() {" +
+                            audescript.toJS(`
+                                from determinization import isDeterminized
+                                from minimization    import isMinimized
+                                from completion      import isCompleted
+                                from complementation import automataAreComplement
+
+                                return ` + script
+                            ).code +
+                        "}());"
+                    );
+                } catch (e) {
+                    AudeGUI.notify(
+                            _("Loading the quiz failed"),
+                            libD.format(
+                                _("The audescript Code isn't correct: {0}"),
+                                e.message,
+                                "error"
+                            )
+                        );
+                    throw e;
+                }
+            }
+        );
+        return res;
+    }
 
     AudeGUI.Quiz = {
         fileInput: null,
@@ -76,7 +109,9 @@
                 );
                 throw e;
             }
-        }
+        },
+
+        _ajsEval: ajsEval
     };
 
     //FIXME
@@ -149,7 +184,7 @@
 
         var refs    = null;
         var answers = null;
-        var respA   = null;
+        var autoAnsw   = null;
         var i = 0;
         var len = 0;
         var possibilities = null;
@@ -157,6 +192,7 @@
         var leng = 0;
         var q = null;
 
+    // Validation
         if (typeof previousQuestion === "number" && previousQuestion >= 0) {
             q = quiz.questions[previousQuestion];
             var r = quiz.answers[previousQuestion];
@@ -187,16 +223,16 @@
 
                 break;
             case "word":
-                respA = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
+                autoAnsw = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
 
                 var words = q.words;
                 var regex = "";
 
                 r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
 
-                if (respA) {
+                if (autoAnsw) {
                     for (i = 0, len = words.length; i < len; ++i) {
-                        if (!respA.acceptedWord(words[i])) {
+                        if (!autoAnsw.acceptedWord(words[i])) {
                             r.isCorrect = false;
                             r.reasons.push(
                                 words[i]
@@ -216,7 +252,7 @@
                     }
 
                     if (!r.reasons[0]) {
-                        r.isCorrect = automataAreEquivalent(regexToAutomaton(regex), respA);
+                        r.isCorrect = automataAreEquivalent(regexToAutomaton(regex), autoAnsw);
                         if (!r.isCorrect) {
                             r.reasons.push(_("The given automaton accepts too many words."));
                         }
@@ -226,17 +262,28 @@
                     r.reasons.push(_("Question was not answered."));
                 }
                 break;
+            case "regexEquiv":
             case "automatonEquiv":
-                respA = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
+                if (q.automatonAnswer) {
+                    autoAnsw = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
+                    r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
+                } else if (q.regex) {
+                    r.userResponse = autoAnsw = document.getElementById("regexUserResponse").value;
+                    try {
+                        autoAnsw = regexToAutomaton(autoAnsw);
+                    } catch (e) {
+                        throw _("Regular expression given in the quiz is not valid.");
+                    }
+                } else {
+                    throw _("No automaton or regular expression was given in the quiz.");
+                }
 
-                r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
-
-                if (respA) {
+                if (autoAnsw) {
                     var A;
 
-                    if (q.automaton) {
+                    if (q.automatonAnswer) {
                         try {
-                            A = object2automaton(q.automaton);
+                            A = svg2automaton(q.automatonAnswer);
                         } catch (e) {
                             console.error(e);
                             throw _("Automaton given in the quiz is not correct.");
@@ -245,40 +292,64 @@
                         try {
                             A = regexToAutomaton(q.regex);
                         } catch (e) {
-                            throw _("The regex given in the quiz is not valid.");
+                            console.error(e);
+                            throw _("Regular expression given in the quiz is not valid.");
                         }
-                    } else {
-                        throw _("No regular expression or automaton was given in the quiz.");
                     }
 
-                    r.isCorrect = automataAreEquivalent(A, respA);
-                    if (!r.isCorrect) {
-                        if (q.examples instanceof Array) {
-                            for (i = 0, len = q.examples.length; i < len; ++i) {
-                                if (!respA.acceptedWord(q.examples[i])) {
-                                    r.reasons.push(
-                                        q.examples[i]
-                                            ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), q.examples[i])
-                                            : _("The empty word is not accepted while it should be.")
-                                    );
+                    if (q.audescriptCode){
+                        r.isCorrect = automataAreEquivalent(A, autoAnsw) && ajsEval(q.audescriptCode, autoAnsw, A);
+                        if (!r.isCorrect) {
+                            var atomicScript = q.audescriptCode.split(" and ");
+                            if (!automataAreEquivalent(A, autoAnsw)) {
+                                q.automatonAnswer
+                                ? r.reasons.push(_("The given automaton isn’t equivalent to the expected one."))
+                                : r.reasons.push(_("The given regular expression isn’t equivalent to the expected one."));
+                            }
+                            var cond = ["determinized", "minimized", "complete"]
+                            for (var i = 0; i < atomicScript.length; i++) {
+                                if (!ajsEval(atomicScript[i], autoAnsw) ) {
+                                    for (var j = 0, res = 0; j < cond.length; j++) {
+                                        res = atomicScript[i].toLowerCase().search(cond[j]);
+                                        (res !== -1)
+                                            ? r.reasons.push(_("The given automaton isn’t " + cond[j] + "."))
+                                            : "";
+                                    }
                                 }
                             }
                         }
-
-                        if (q.counterExamples instanceof Array) {
-                            for (i = 0, len = q.counterExamples.length; i < len; ++i) {
-                                if (respA.acceptedWord(q.counterExamples[i])) {
-                                    r.reasons.push(
-                                        q.counterExamples[i]
-                                            ? libD.format(_("Word <i>{0}</i> is accepted while it shouldn’t be."), q.counterExamples[i])
-                                            : _("The empty word is accepted while it shouldn’t be.")
-                                    );
+                    } else {
+                        r.isCorrect = automataAreEquivalent(A, autoAnsw);
+                        if (!r.isCorrect) {
+                            if (q.examples instanceof Array) {
+                                for (i = 0, len = q.examples.length; i < len; ++i) {
+                                    if (!autoAnsw.acceptedWord(q.examples[i])) {
+                                        r.reasons.push(
+                                            q.examples[i]
+                                                ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), q.examples[i])
+                                                : _("The empty word is not accepted while it should be.")
+                                        );
+                                    }
                                 }
                             }
-                        }
 
-                        if (!r.reasons[0]) {
-                            r.reasons.push(_("The given automaton isn’t equivalent to the expected one."));
+                            if (q.counterExamples instanceof Array) {
+                                for (i = 0, len = q.counterExamples.length; i < len; ++i) {
+                                    if (autoAnsw.acceptedWord(q.counterExamples[i])) {
+                                        r.reasons.push(
+                                            q.counterExamples[i]
+                                                ? libD.format(_("Word <i>{0}</i> is accepted while it shouldn’t be."), q.counterExamples[i])
+                                                : _("The empty word is accepted while it shouldn’t be.")
+                                        );
+                                    }
+                                }
+                            }
+
+                            if (!r.reasons[0]) {
+                                q.automatonAnswer
+                                    ? r.reasons.push(_("The given automaton isn’t equivalent to the expected one."))
+                                    : r.reasons.push(_("The given regular expression isn’t equivalent to the expected one."));
+                            }
                         }
                     }
                 } else {
@@ -291,6 +362,7 @@
 
         ++quiz.currentQuestion;
 
+    // Correction
         if (quiz.currentQuestion >= quiz.questions.length) {
             quiz.refs.content.textContent = "";
             quiz.refs.content.appendChild(libD.jso2dom(["p", _("The Quiz is finished! Here are the details of the correction.")]));
@@ -342,7 +414,7 @@
                 refs.answerInstr.lastChild.className = "possibilities";
 
                 possibilities = question_i.possibilities;
-
+                // For mcq
                 if (possibilities) {
                     for (j = 0, leng = possibilities.length; j < leng; ++j) {
                         refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
@@ -377,6 +449,7 @@
             return;
         }
 
+    // Asking
         q = quiz.questions[quiz.currentQuestion];
 
         var qid = q.hasOwnProperty("id") ? q.id : (quiz.currentQuestion + 1);
@@ -393,7 +466,8 @@
                         _("Question {0}: "),
                         qid
                     )],
-                    ["span", {"#": "questionContent"}]
+                    ["span", {"#": "questionContent"}],
+                    ["div", {"#": "questionAutomata"}]
                 ]],
                 ["div#quiz-answers", {"#": "answers"}],
                 ["div.button-container", [
@@ -407,6 +481,15 @@
             textFormat(q.instructionHTML, refs.questionContent, true);
         } else {
             textFormat(q.instruction, refs.questionContent);
+        }
+
+        if (q.automatonQuestion) {
+            refs.questionAutomata.style = "position: relative; width: 50%; height: 200px; background-color: #d9e0ee;";
+            var designer = new AudeDesigner(refs.questionAutomata, true);
+            designer.setAutomatonCode(q.automatonQuestion);
+            designer.autoCenterZoom();
+        } else {
+            refs.questionAutomata.style.display = "none";
         }
 
         switch (q.type) {
@@ -448,6 +531,14 @@
             }
             break;
         case "word":
+            break;
+        case "regexEquiv":
+            refs.answers.innerHTML = "<input type=\"text\" id=\"regexUserResponse\" style=\"width:30%;\"></input>";
+            (quiz.answers[quiz.currentQuestion].userResponse)
+                ? document.getElementById("regexUserResponse").value = quiz.answers[quiz.currentQuestion].userResponse
+                : document.getElementById("regexUserResponse").placeholder = _("Write a regular expression ...");
+
+            break;
         case "automatonEquiv":
             refs.answers.innerHTML = "<p>" +  _("You can draw the automaton bellow.") + "</p>";
 
@@ -469,7 +560,7 @@
         case "algo":
             break;
         default:
-            AudeGUI.notify(_("Question type not known"), libD.format(_("Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>")), "error");
+            AudeGUI.notify  (_("Question type not known"), libD.format(_("Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>")), "error");
         }
 
         refs.ok.onclick = nextQuestion(quiz, quiz.currentQuestion);
@@ -522,7 +613,7 @@
         var refs = {};
         divQuiz.appendChild(libD.jso2dom([
             ["h1#quiz-title", [
-                ["#", quiz.title ? _("Quiz: ") : _("Quiz")],
+                ["#", quiz.title ? _("Quiz:") + " " : _("Quiz")],
                 ["span", {"#": "quizTitleContent"}]
             ]],
             ["h2#quiz-author", {"#": "author"}],
@@ -540,5 +631,17 @@
         quiz.refs = refs;
         refs.closeQuiz.onclick = closeQuiz;
         refs.startQuiz.onclick = nextQuestion(quiz);
+    }
+
+    var designerDraft = null;
+    function svg2automaton(svg) {
+        var div  = document.createElement("div");
+        designerDraft = new AudeDesigner(div, true);
+        document.getElementById("div-quiz").appendChild(div);
+        div.display = "none";
+        designerDraft.setAutomatonCode(svg);
+        var A = designerDraft.getAutomaton(designerDraft.currentIndex);
+        document.getElementById("div-quiz").removeChild(div);
+        return A;
     }
 }(window));

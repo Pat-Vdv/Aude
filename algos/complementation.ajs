@@ -1,6 +1,7 @@
 from completion import complete;
+from equivalence import automataAreEquivalent;
 
-function complement(A)
+export function complement(A)
    let compA := complete(A);
 
    foreach state in compA.getStates() do
@@ -8,6 +9,11 @@ function complement(A)
    done
 
    return compA
+end function
+
+export function automataAreComplement(A1, A2)
+    let A := complement(A1)
+    return automataAreEquivalent(A, A2, false)
 end function
 
 run(complement, get_automaton(currentAutomaton));

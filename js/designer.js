@@ -2093,11 +2093,11 @@
         // checks if the node or one of its parent has class c. Specific to the AutomatonAudeDesigner.
         function parentWithClass(node, c) {
             do {
-                if (node.getAttribute("class") === c) {
+                if (node.classList.contains(c)) {
                     return node;
                 }
                 node = node.parentNode;
-            } while (node && node !== that.svgContainer);
+            } while (node && node.classList && node !== that.svgContainer);
             return false;
         }
 

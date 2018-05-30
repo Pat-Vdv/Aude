@@ -43,4 +43,10 @@ export function complete(A, alphabet)
    return compA
 end function
 
+export function isCompleted(A)
+    let numStateBefore := A.getStates().card()
+    let numStateAfter := complete(A).getStates().card()
+    return (numStateBefore = numStateAfter)
+end function
+
 run(complete, get_automaton(currentAutomaton))

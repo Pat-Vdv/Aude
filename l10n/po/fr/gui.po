@@ -250,7 +250,7 @@ msgstr "Fermer le quiz"
 msgid "Close"
 msgstr "Fermer"
 
-msgid "Quiz: "
+msgid "Quiz:"
 msgstr "Quiz : "
 
 msgid "Quiz"
@@ -481,3 +481,180 @@ msgstr "Refaire"
 
 msgid "Menu"
 msgstr "Menu"
+
+msgid "Add a question"
+msgstr "Ajouter une question"
+
+msgid "Edit or Create  a Quiz"
+msgstr "Éditer ou créer un quiz"
+
+msgid "Example: Which of the following assertions are correct? (check the correct answers)"
+msgstr "Example : Parmi ces assertions, lesquelles sont correctes ? (cochez les réponses correctes)"
+
+msgid "Example: For the following languages, give an automaton that recognizes it (if such an automaton exists)."
+msgstr "Exemple : Pour les langages suivants, donnez un automate qui les reconnaît (si un tel automate existe)."
+
+msgid "Example: For the following minimal automaton, give a regular expression that is equivalent."
+msgstr "Example : Pour l'automate minimal suivant, donnez une expression régulière équivalente."
+
+msgid "Multiple Choice Question"
+msgstr "Question à Choix Multiples"
+
+msgid "Find an automaton"
+msgstr "Trouver un automate"
+
+msgid "Find a regular expression"
+msgstr "Trouver une expression régulière"
+
+msgid "Search…"
+msgstr "Chercher…"
+
+msgid "Close the Quiz Editor"
+msgstr "Fermer l'éditeur de quiz"
+
+msgid "Questions"
+msgstr "Questions"
+
+msgid "Question"
+msgstr "Question"
+
+msgid "Answers"
+msgstr "Réponses"
+
+msgid "Answer"
+msgstr "Réponse"
+
+msgid "Points"
+msgstr "Points"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Nb"
+msgstr "N°"
+
+msgid "Quiz Editor"
+msgstr "Éditeur de quiz"
+
+msgid "New quiz"
+msgstr "Nouveau quiz"
+
+msgid "Do you really want to start a new quiz from scratch?"
+msgstr "Voulez-vous vraiment commencer un nouveau quiz ?"
+
+msgid "Do you really want to abandon your modifications to the quiz?"
+msgstr "Voulez-vous vraiment abandonnez vos modifications au quiz ?"
+
+msgid "Write the different possible answers and check the correct ones."
+msgstr "Écrivez les différentes réponses possibles et cochez celles qui sont correctes."
+
+msgid "Choice {0}…"
+msgstr "Choix {0}…"
+
+msgid "New Question"
+msgstr "Nouvelle question"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Add an answer"
+msgstr "Ajouter une réponse"
+
+msgid "Validate"
+msgstr "Valider"
+
+msgid "Show the quiz overview"
+msgstr "Afficher le quiz"
+
+msgid "Quiz Overview"
+msgstr "Vue d'ensemble du quiz"
+
+msgid "January"
+msgstr "janvier"
+
+msgid "February"
+msgstr "février"
+
+msgid "March"
+msgstr "mars"
+
+msgid "April"
+msgstr "avril"
+
+msgid "May"
+msgstr "mai"
+
+msgid "June"
+msgstr "juin"
+
+msgid "July"
+msgstr "juillet"
+
+msgid "August"
+msgstr "août"
+
+msgid "September"
+msgstr "septembre"
+
+msgid "October"
+msgstr "octobre"
+
+msgid "November"
+msgstr "novembre"
+
+msgid "December"
+msgstr "décembre"
+
+msgid "Quiz title:"
+msgstr "Titre du quiz :"
+
+msgid "Your name:"
+msgstr "Votre nom :"
+
+msgid "Description:"
+msgstr "Description :"
+
+msgid "There is no question in this quiz yet. Click on the button bellow to add a new question."
+msgstr "Il n'y a pas encore de question dans ce quiz. Cliquez sur le bouton ci-dessous pour ajouter une nouvelle question."
+
+msgid "Write your question…"
+msgstr "Écrivez votre question…"
+
+msgid "Write a regular expression…"
+msgstr "Écrivez une expression régulière…"
+
+msgid "Draw an automaton"
+msgstr "Dessiner un automate"
+
+msgid "Automaton answer"
+msgstr "Automate réponse"
+
+msgid "Write your audescript code here…"
+msgstr "Écrivez votre code audescript ici…"
+
+msgid "Write the regular expression…"
+msgstr "Écrivez l'expression régulière…"
+
+msgid "Loading…"
+msgstr "Chargement…"
+
+msgid "Your regular expression is going to be checked."
+msgstr "Votre expression régulière va être vérifiée."
+
+msgid "This regular expresion does not seem valid."
+msgstr "Cette expression régulière ne semble pas valide."
+
+msgid "Recognized operations: “.”, “*”, “+”."
+msgstr "Opérations reconnues: « . », « * », « + »."
+
+msgid "If you want the automaton answer to be:"
+msgstr "Si vous voulez que l'automate réponse soit:"
+
+msgid "determinized, write isDeterminized(autoAnsw)"
+msgstr "determinisé, écrivez isDeterminized(autoAnsw)"
+
+msgid "minimized, write isMinimized(autoAnsw)"
+msgstr "minimisé, écrivez isMinimized(autoAnsw)"
+
+msgid "completed, write isCompleted(autoAnsw)"
+msgstr "complété, écrivez isCompleted(autoAnsw)"

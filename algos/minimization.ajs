@@ -1,5 +1,5 @@
 from determinization import determinize, isDeterminized
-from completion import complete
+from completion import complete, isCompleted
 
 export function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, alphabet)
 
@@ -129,6 +129,15 @@ export function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndCompl
     done
 
     return MinA
+end function
+
+export function isMinimized(A)
+    let numStateBefore := A.getStates().card()
+    if not isCompleted(A) then
+        numStateBefore := numStateBefore + 1
+    end if
+    let numStateAfter := minimize(A).getStates().card()
+    return (numStateBefore = numStateAfter)
 end function
 
 run(minimize, get_automaton(currentAutomaton))

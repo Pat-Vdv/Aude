@@ -60,7 +60,7 @@ able to see line numbers when an error in a audescript program occurs. If
 you intend to program in Audescript, you might want to use Firefox, Chromium
 or a new version of Opera.
 
-# Installing 
+# Installing
 
 Place the folder of Aude anywhere you want Aude to be installed.
 
@@ -107,8 +107,7 @@ This program makes use of the following external projects:
  - Ace, which is under a BSD license.
  - KaTeX, which is under MIT.
  - Hammer, which is under MIT.
- - A subset of the Oxygen iconset (http://www.oxygen-icons.org) which is dual
-   licensed : under the Creative Common Attribution-ShareAlike 3.0 License or
+ - A subset of the Breeze iconset (https://github.com/KDE/breeze-icons) which is licensed under
    the GNU Library General Public License.
 
 The GPLv3 license is provided in the file gpl.txt.
