@@ -301,7 +301,7 @@ select {
    font-style:italic
 }
 
-#close-quiz, #close-quiz-editor {
+#close-quiz, #close-quiz-editor, #close-exerciceList {
    position:absolute;
    top:0;
    font-size:small;
@@ -965,4 +965,33 @@ input[type=button]:active, button:active {
 #quiz-editor .grammalecte_menu_main_button {
     /* Workaround: The Grammalecte extension is buggy here */
     display:none !important;
+}
+
+#exerciceList-selection-chapter {
+    border: 2px solid #aaa;
+    border-radius: 20px;
+}
+.exerciceList-selection-chapter-cell {
+    font-size: 25px;
+    text-align: center;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding: 15px;
+}
+.exerciceList-exercice-select:hover {
+    background-color: rgba(150, 150, 150 )  ;
+}
+
+#exerciceList-selection-exercice {
+    margin: 100px;
+    box-shadow: 6px 6px 5px grey;
+    border: 3px solid #aaa;
+}
+
+.exerciceList-exercice-select {
+    margin :10px;
+    background-color: rgba(239, 240, 241, 0.93) ;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
 }

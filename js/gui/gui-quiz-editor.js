@@ -753,7 +753,7 @@
                 ["input", {"type": "checkbox"}],
                 ["input", {"#": "addedInput", "type": "text", "placeholder": libD.format(_("Choice {0}…"), mcqNumberOfChoices + 1)}],
                 ["button", {"#": "removeButton", "title": _("remove")}, [
-                    ["img", {"src": libD.getIcon("actions/geany-close-all"), "alt": _("Remove")}]
+                    ["img", {"src": libD.getIcon("actions/list-remove"), "alt": _("Remove")}]
                 ]]
             ]
         ], refs);
@@ -781,7 +781,7 @@
         var children = parent.childNodes;
         for (var i = 0; i < children.length; i++) {
             children[i].id = "quiz-editor-choice" + i;
-            children[i].childNodes[1].placeholder = libD.format(_("Choice {0}…", (i+1)));
+            children[i].childNodes[1].placeholder = libD.format(_("Choice {0}…"), (i+1));
         }
         mcqNumberOfChoices--;
     }

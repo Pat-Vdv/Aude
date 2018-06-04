@@ -184,7 +184,11 @@ window.AudeGUI.initEvents = function () {
 
         document.getElementById("quizEditor").onclick = function () {
             AudeGUI.QuizEditor.run();
-        }
+        };
+
+        document.getElementById("exercice").onclick = function () {
+            AudeGUI.ExerciceList.run();
+        };
     }
 
     document.getElementById("automaton_plus").onchange = function () {
