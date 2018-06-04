@@ -34,12 +34,8 @@
     var regexR             = null;
     var quiz               = null;
 
-    var ajsEval;
-
     AudeGUI.QuizEditor = {
-        load: function () {
-            ajsEval = AudeGUI.Quiz._ajsEval;
-        },
+        load: function () {},
 
         run: openQuizEditor,
         /*
@@ -324,7 +320,7 @@
                         ["ul", {"#":"list", "style": "list-style-type: none;"}]
                     ]]
                 ], refs));
-                textFormat(q.instruction, refs.instruction, true);
+                AudeGUI.Quiz.textFormat(q.instruction, refs.instruction, true);
 
                 for (var i = 0; i < q.possibilities.length; i++) {
                     refs.list.appendChild(libD.jso2dom(["li", [
@@ -348,7 +344,7 @@
                         "style": "min-height: 100px; position:relative;"
                     }]
                 ], refs));
-                textFormat(q.instructionHTML, refs.instruction, true);
+                AudeGUI.Quiz.textFormat(q.instructionHTML, refs.instruction, true);
                 refs.answDiv.appendChild(libD.jso2dom(["div", {
                     "#": "answAutomatonDiv",
                     "style": "min-height: 100px; position:relative;"
@@ -401,7 +397,7 @@
                     }]
                 ], refs));
 
-                textFormat(q.instructionHTML, refs.instruction, true);
+                AudeGUI.Quiz.textFormat(q.instructionHTML, refs.instruction, true);
                 refs.answDiv.appendChild(libD.jso2dom(["p", q.regex]));
 
                 if (q.automatonQuestion) {
@@ -874,7 +870,7 @@
 
         refs.validationButton.onclick = function () {
             if (refs.audescriptCode.value) {
-                ajsEval(script, autoAnsw, A);
+                AudeGUI.Quiz._ajsEval(script, autoAnsw, A);
             }
 
             automatonRValidation(mode, index);
@@ -919,7 +915,7 @@
         var q  = quiz.questions[index];
 
         showAutomatonRPane("shift", index);
-        textFormat(q.instructionHTML, document.getElementById("quiz-editor-automatonRTextarea"), true);
+        AudeGUI.Quiz.textFormat(q.instructionHTML, document.getElementById("quiz-editor-automatonRTextarea"), true);
 
         if (q.automatonQuestion) {
             document.getElementById("quiz-editor-drawAutomaton").click();
@@ -1071,7 +1067,7 @@
         var q  = quiz.questions[index];
 
         showRegexRPane("shift", index);
-        textFormat(q.instructionHTML, document.getElementById("quiz-editor-regexRTextarea"), true);
+        AudeGUI.Quiz.textFormat(q.instructionHTML, document.getElementById("quiz-editor-regexRTextarea"), true);
         document.getElementById("quiz-editor-regex").value          = q.regex;
 
         if (q.automatonQuestion) {
@@ -1165,26 +1161,6 @@
         document.getElementById("quiz-editor-" + newState + "-pane").classList.add("quiz-editor-current-pane");
 
         currentState = newState;
-    }
-
-    var katexAutorenderOpts = {
-        delimiters: [
-            {left: "$$",  right: "$$",  display: true},
-            {left: "$",   right: "$",   display: false},
-            {left: "\\[", right: "\\]", display: true},
-            {left: "\\(", right: "\\)", display: false}
-        ]
-    };
-
-    function textFormat(text, node, html) {
-        if (!node) {
-            node = document.createElement("span");
-        }
-
-        node[html ? "innerHTML" : "textContent"] = text instanceof Array ? text.join("") : text;
-
-        renderMathInElement(node, katexAutorenderOpts);
-        return node;
     }
 
     function isAutomatonNull(A) {
