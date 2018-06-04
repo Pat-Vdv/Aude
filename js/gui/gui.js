@@ -373,6 +373,12 @@
 
                     AudeGUI.ProgramEditor.enable();
 
+                    //Load the program from the local storage
+                    if (AudeGUI.ProgramEditor.getText()==="")
+                    {
+                        AudeGUI.Programs.open(localStorage.getItem("ProgramText"))
+                    }
+
                     AudeGUI.onResize();
                     break;
 

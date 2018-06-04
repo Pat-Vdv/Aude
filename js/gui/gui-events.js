@@ -176,6 +176,7 @@ window.AudeGUI.initEvents = function () {
 
         document.getElementById("algo-exec").onclick = function () {
             AudeGUI.Runtime.loadAS(AudeGUI.ProgramEditor.getText());
+            localStorage.setItem("ProgramText",AudeGUI.ProgramEditor.getText()); //Store the program in the local storage
         };
 
         document.getElementById("quiz").onclick = function () {
