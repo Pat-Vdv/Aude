@@ -458,7 +458,7 @@ msgid "<h2>Welcome to {0}!</h2>"
 "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>"
 "</ul>"
 
-msgstr "<h2>Bienvenue sur {0}!</h2>"
+msgstr "<h2>Bienvenue sur {0} !</h2>"
 "<h3> Vous n’avez encore jamais utilisé {0} ? </h3>"
 "<ul>"
 "<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à gauche de l'écran.</li>"
@@ -478,7 +478,7 @@ msgid "<h3> Quizzes </h3>"
 "<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>"
 "<p> Now it’s your turn!</p>"
 
-msgstr "<h3> Quizz </h3>"
+msgstr "<h3> Quiz </h3>"
 "<p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>"
 "<p> À vous de jouer !</p>"
 
