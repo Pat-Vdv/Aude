@@ -188,7 +188,7 @@ window.AudeGUI.initEvents = function () {
         };
 
         document.getElementById("exercice").onclick = function () {
-            AudeGUI.ExerciceList.run();
+            AudeGUI.QuestionList.run();
         };
     }
 
