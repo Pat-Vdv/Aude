@@ -2,7 +2,7 @@ msgid "Program Result"
 msgstr "Résultat"
 
 msgid "\nStack trace: \n"
-msgstr "\nPile de l’erreur : \n"
+msgstr "\nPile de l’erreur\u202F: \n"
 
 msgid "Error on line {0}, character {1}"
 msgstr "Erreur ligne {0}, caractère {1}"
@@ -14,10 +14,10 @@ msgid "Execute the current automaton with a word"
 msgstr "Exécuter l’automate actuel sur un mot"
 
 msgid "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
-msgstr "Quel nom voulez-vous donner au fichier exporté ? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
+msgstr "Quel nom voulez-vous donner au fichier exporté\u202F? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
 
 msgid "Which name do you want to give to the exported text file?"
-msgstr "Quel nom voulez-vous donner au fichier texte exporté ?"
+msgstr "Quel nom voulez-vous donner au fichier texte exporté\u202F?"
 
 msgid "get_automaton: automaton n°{0} could not be understood."
 msgstr "get_automaton: impossible de lire l’automate n°{0}."
@@ -32,16 +32,16 @@ msgid "Please enter a name for the file in which the automaton will be saved (gi
 msgstr "Veuillez saisir un nom pour le fichier dans lequel l’automate sera enregistré (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format Aude)."
 
 msgid "Syntax error: bad import parameter in {0}"
-msgstr "Erreur de syntaxe : mauvais paramètre pour « import » dans {0}"
+msgstr "Erreur de syntaxe\u202F: mauvais paramètre pour «\u202Fimport\u202F» dans {0}"
 
 msgid "Error: import of {0} in {2} failed: '{1}'."
-msgstr "Erreur : l’import de {0} depuis {2} a échoué : « {1} »."
+msgstr "Erreur\u202F: l’import de {0} depuis {2} a échoué\u202F: «\u202F{1}\u202F»."
 
 msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
-msgstr "Erreur : import : les chemins absolus ne sont pas pris en charge dans cette version (depuis « {0} »)."
+msgstr "Erreur\u202F: import\u202F: les chemins absolus ne sont pas pris en charge dans cette version (depuis «\u202F{0}\u202F»)."
 
 msgid "Mode:"
-msgstr "Mode :"
+msgstr "Mode\u202F:"
 
 msgid "Execute Program"
 msgstr "Lancer le programme"
@@ -65,10 +65,10 @@ msgid "Save As"
 msgstr "Enregistrer sous"
 
 msgid "Automaton:"
-msgstr "Automate :"
+msgstr "Automate\u202F:"
 
 msgid "Program:"
-msgstr "Programme :"
+msgstr "Programme\u202F:"
 
 msgid "Export"
 msgstr "Exporter"
@@ -92,7 +92,7 @@ msgid "automaton.txt"
 msgstr "automate.txt"
 
 msgid "Word: "
-msgstr "Mot : "
+msgstr "Mot\u202F: "
 
 msgid "Run"
 msgstr "Exécuter"
@@ -101,7 +101,7 @@ msgid "Step"
 msgstr "Un pas"
 
 msgid "Delay between steps (ms): "
-msgstr "Pause entre les étapes (ms) : "
+msgstr "Pause entre les étapes (ms)\u202F: "
 
 msgid "Edit this automaton"
 msgstr "Éditer cet automate"
@@ -239,7 +239,7 @@ msgid "Loading the quiz failed"
 msgstr "Erreur lors du chargement du Quiz"
 
 msgid "The quiz seems to be malformed: {0}"
-msgstr "Le quiz semble mal formé : {0}"
+msgstr "Le quiz semble mal formé\u202F: {0}"
 
 msgid "Start the Quiz"
 msgstr "Démarrer le quiz"
@@ -251,13 +251,13 @@ msgid "Close"
 msgstr "Fermer"
 
 msgid "Quiz:"
-msgstr "Quiz : "
+msgstr "Quiz\u202F: "
 
 msgid "Quiz"
 msgstr "Quiz"
 
 msgid "Question {0}: "
-msgstr "Question {0} : "
+msgstr "Question {0}\u202F: "
 
 msgid "Next question"
 msgstr "Question suivante"
@@ -266,13 +266,13 @@ msgid "Previous question"
 msgstr "Question précédente"
 
 msgid "The Quiz is finished! Here are the details of the correction."
-msgstr "Le quiz est terminé ! Voici les détails de la correction."
+msgstr "Le quiz est terminé\u202F! Voici les détails de la correction."
 
 msgid "Error in the Quiz"
 msgstr "Erreur dans le quiz"
 
 msgid "There is an error in the Quiz: {0}"
-msgstr "Il y a une erreur dans le quiz : {0}"
+msgstr "Il y a une erreur dans le quiz\u202F: {0}"
 
 msgid "Question {0} has no answers."
 msgstr "La question {0} n’a pas de réponse."
@@ -341,16 +341,16 @@ msgid "Question type not known"
 msgstr "Type de question inconnu"
 
 msgid "Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>"
-msgstr "Le type de la question {0} est inconnu. Les types reconnus sont : <ul><li>\"mcq\" pour question à choix multiples,</li><li>\"word\" (pour dessiner un automate qui accepte une liste donnée de mots).</li></ul>"
+msgstr "Le type de la question {0} est inconnu. Les types reconnus sont\u202F: <ul><li>\"mcq\" pour question à choix multiples,</li><li>\"word\" (pour dessiner un automate qui accepte une liste donnée de mots).</li></ul>"
 
 msgid "Question was not answered."
 msgstr "Vous n’avez pas répondu à la question."
 
 msgid "We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)"
-msgstr "Nous souhaitons ne pas vous donner de note. Votre progression est la chose la plus importante, au delà de toute note arbitraire, absolue et dénuée de sens. Continuez vos efforts ;-)"
+msgstr "Nous souhaitons ne pas vous donner de note. Votre progression est la chose la plus importante, au delà de toute note arbitraire, absolue et dénuée de sens. Continuez vos efforts\u202F;-)"
 
 msgid "Correct answer?"
-msgstr "Réponse correcte ?"
+msgstr "Réponse correcte\u202F?"
 
 msgid "Comments"
 msgstr "Commentaires"
@@ -395,13 +395,13 @@ msgid "Continue execution"
 msgstr "Continuer l’exécution"
 
 msgid "The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."
-msgstr "L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « Continuer l’exécution » quand vous avez fait votre choix."
+msgstr "L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur «\u202FContinuer l’exécution\u202F» quand vous avez fait votre choix."
 
 msgid "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
-msgstr "Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src=\"{0}\" /> de la barre d’outils.<br />Note : Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre."
+msgstr "Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src=\"{0}\" /> de la barre d’outils.<br />Note\u202F: Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre."
 
 msgid "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
-msgstr "Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP : {0})"
+msgstr "Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP\u202F: {0})"
 
 msgid "Unable to get the list of predefined algorithms"
 msgstr "Impossible d’avoir la liste des algorithmes prédéfinis"
@@ -458,13 +458,18 @@ msgid "<h2>Welcome to {0}!</h2>"
 "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>"
 "</ul>"
 
+<<<<<<< HEAD
 msgstr "<h2>Bienvenue sur {0} !</h2>"
 "<h3> Vous n’avez encore jamais utilisé {0} ? </h3>"
+=======
+msgstr "<h2>Bienvenue sur {0}\u202F!</h2>"
+"<h3> Vous n’avez encore jamais utilisé {0}\u202F? </h3>"
+>>>>>>> master
 "<ul>"
 "<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à gauche de l'écran.</li>"
 "<li>Vous pouvez appliquer un algorithme sur votre automate en cliquant sur le boutton <strong>Choisir un algo</strong> de la barre d’outils.</li>"
 "</ul>"
-"<h3> Vous utilisez un clavier et une souris ? Vous pouvez être plus rapide. </h3>"
+"<h3> Vous utilisez un clavier et une souris\u202F? Vous pouvez être plus rapide. </h3>"
 "<ul>"
 "    <li>Pour ajouter un <strong>nouvel état</strong>, double-cliquez là où vous voulez le placer.</li>"
 "    <li>Pour ajouter une <strong>nouvelle transition</strong>, Maj+cliquez sur l’état de départ puis cliquez sur l’état de fin de la transition.</li>"
@@ -480,7 +485,7 @@ msgid "<h3> Quizzes </h3>"
 
 msgstr "<h3> Quiz </h3>"
 "<p>Pour ouvrir un quiz, cliquez sur le bouton \"Charger un Quiz\" de la barre d’outils. Vous pouvez continuer à utiliser toutes les fonctionnalités du programme, comme lancer des algorithmes, pendant le quiz à tout moment lorsqu’il est possible de dessiner un automate.</p><p>Pour faire disparaître ce texte, cliquez dessus.</p>"
-"<p> À vous de jouer !</p>"
+"<p> À vous de jouer\u202F!</p>"
 
 msgid  "Unable to access the code of automaton n°{0}"
 msgstr "Impossible d’accéder au code de l’automate n°{0}"
@@ -663,7 +668,7 @@ msgid "This regular expresion does not seem valid."
 msgstr "Cette expression régulière ne semble pas valide."
 
 msgid "Recognized operations: “.”, “*”, “+”."
-msgstr "Opérations reconnues: « . », « * », « + »."
+msgstr "Opérations reconnues: «\u202F.\u202F», «\u202F*\u202F», «\u202F+\u202F»."
 
 msgid "If you want the automaton answer to be:"
 msgstr "Si vous voulez que l’automate réponse soit:"
