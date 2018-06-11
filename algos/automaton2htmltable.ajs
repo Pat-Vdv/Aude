@@ -1,3 +1,6 @@
+from epsElimination import hasEpsilonTransitions
+
+
 export function automaton2HTMLTable(A)
     let f := A.getTransitionFunction()
     let F := A.getFinalStates()
@@ -36,7 +39,14 @@ export function automaton2HTMLTable(A)
 
     table.appendChild(statesLine)
 
-    foreach a in [epsilon].concat(A.getAlphabet().getSortedList()) do
+    let alphabet := ""
+    if hasEpsilonTransitions(A) then
+        alphabet := [epsilon].concat(A.getAlphabet().getSortedList())
+    else
+        alphabet := A.getAlphabet().getSortedList()
+    fi
+
+    foreach a in alphabet do
         let line := document.createElement("tr")
 
         let cell := document.createElement("th")
