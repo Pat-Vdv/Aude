@@ -92,10 +92,11 @@ export function hasEpsilonTransitions (A)
     let trans := A.getTransitionFunction()
     let states := A.getStates()
     for each s in states do
-        if trans(s,epsilon) then
+        if trans(s,epsilon)!='∅' then
             return true
         fi
+    end for
     return false
 end function
 
-run(epsElim, get_automaton(currentAutomaton))
+run(hasEpsilonTransitions, get_automaton(currentAutomaton))
