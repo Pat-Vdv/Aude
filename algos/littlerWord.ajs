@@ -1,0 +1,118 @@
+from coaccessibility import coaccessibleStates
+from accessibility import accessibleStates
+from emptyLanguage import emptyLanguage
+
+
+//Return an object:
+//state : number which is the distance to the closest final state
+export function dijkstra (A)
+    if emptyLanguage(A)=true then
+        return "No word recognized!"
+    else
+        let coacces := coaccessibleStates(A)
+        let acces := accessibleStates(A)
+        let coacces_acces := coacces and acces
+        let finalStates := A.getFinalStates()
+        let trans := A.getTransitions()
+        let statesDist := new Object()
+
+        //Pour chaque état final
+        foreach fs in finalStates do
+            let currentState := fs
+            let visitedStates := {}
+            let toVisited := {fs}
+            statesDist[fs] := 0
+
+            while toVisited.size!=0
+            do
+                toVisited := toVisited \ visitedStates
+                currentState := toVisited.getItem()
+                toVisited := toVisited \ {currentState}
+                visitedStates.add(currentState)
+
+                //Ajouter les états qui permettent d'accéder à l'état courant
+                foreach t in trans do
+                    if (currentState = t.endState) then
+                        toVisited.add(t.startState)
+                        //For the espilon transitions
+                        if t.symbol=epsilon and (statesDist[t.startState]=undefined or statesDist[t.startState] > statesDist[currentState] ) then
+                            statesDist[t.startState] := statesDist[currentState]
+                        //For other transitions
+                        else if (statesDist[t.startState]=undefined or statesDist[t.startState] > statesDist[currentState]+1 ) then
+                        statesDist[t.startState] := statesDist[currentState]+1
+                        end if
+                    end if
+                done
+            done
+        done
+
+    return statesDist
+    end if
+end function
+
+//Return a littler word of the automaton
+export function giveLittlerWord (A)
+    let dist := dijkstra (A)
+    if typeof dist = "string" then
+        return dist
+    end if
+    let finalStates := A.getFinalStates()
+    let trans := A.getTransitions()
+
+    let currentState := A.getInitialState ()
+    let word := ""
+    let nextState := currentState
+    let symbol := ""
+    while currentState does not belong to finalStates
+    do
+        foreach t in trans
+        do
+            //If it an epsilon transition
+            if t.symbol=epsilon and t.startState = currentState and dist[t.endState] = dist[nextState]  then
+                nextState := t.endState
+                symbol := ""
+            else if t.startState = currentState and dist[t.endState] < dist[nextState]  then
+                nextState := t.endState
+                symbol := t.symbol
+            end if
+        done
+        word += symbol
+        currentState := nextState
+    done
+    return word
+end function
+
+//Return a littler path (epsilon doesn't count as a transition)
+export function giveLittlerPath (A)
+    let dist := dijkstra (A)
+    if typeof dist = "string" then
+        return dist
+    end if
+    let finalStates := A.getFinalStates()
+    let trans := A.getTransitions()
+    let currentState := A.getInitialState ()
+    let nextState := currentState
+    let path := {currentState}
+
+    while currentState does not belong to finalStates
+    do
+        foreach t in trans
+        do
+            //If it an epsilon transition
+            if t.symbol=epsilon and t.startState = currentState and dist[t.endState] = dist[nextState]  then
+                nextState := t.endState
+            else if t.startState = currentState and dist[t.endState] < dist[nextState]  then
+                nextState := t.endState
+            end if
+        done
+        currentState := nextState
+        path.add(currentState)
+    done
+    return path
+end function
+
+run(
+    function ()
+        return giveLittlerWord(get_automaton(currentAutomaton))
+    end function
+)
