@@ -206,7 +206,8 @@
         // parameters are the title and the content of the notification as plain
         // strings.
         // type can be "info", "ok", "error".
-        notify: function (title, content, type) {
+        // Time in ms until the notification disappears
+        notify: function (title, content, type, time) {
 
             // We lazily load the underlaying library used for notification
             if (!libD.Notify) {
@@ -230,7 +231,7 @@
             }
 
             if (!AudeGUI.notifier || !AudeGUI.notifier.displayed) {
-                AudeGUI.notifier = new libD.Notify({closeOnClick: true});
+                AudeGUI.notifier = new libD.Notify({closeOnClick: true},time);
             }
 
             AudeGUI.notifier.setTitle(title);
@@ -284,19 +285,28 @@
         },
 
         // Open an automaton.
+        //If designer is defined put the automaton on the designer else put it on the mainDesigner
         // If code is a string:
         //   - if it starts by an xml preamble, we guess that this is an
         //     automaton in SVG format;
         //   - otherwise, it is an automaton in Aude format.
         // Otherwise, get the automaton from the DOM hidden file input to
         // open automata.
-        openAutomaton: function (code) {
+        openAutomaton: function (code,designer) {
             if (typeof code === "string") {
                 if (code.trim().startsWith("<?xml") || code.startsWith("<svg") && (!automatonFileName || !automatonFileName.endsWith(".txt"))) {
-                    AudeGUI.mainDesigner.setSVG(code, AudeGUI.mainDesigner.currentIndex);
+                    if (designer!==undefined) {
+                        designer.setSVG(code);
+                    }
+                    else {
+                        AudeGUI.mainDesigner.setSVG(code, AudeGUI.mainDesigner.currentIndex);
+                    }
                 } else {
                     AudeGUI.AutomatonCodeEditor.setText(code);
-                    AudeGUI.mainDesigner.setAutomatonCode(code, AudeGUI.mainDesigner.currentIndex);
+                    if (designer!==undefined)
+                        designer.setAutomatonCode(code);
+                    else
+                        AudeGUI.mainDesigner.setAutomatonCode(code, AudeGUI.mainDesigner.currentIndex);
                 }
                 return;
             }
