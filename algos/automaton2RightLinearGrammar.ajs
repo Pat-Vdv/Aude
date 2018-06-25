@@ -1,0 +1,47 @@
+
+// Transform an automaton to a right linear grammar
+function automaton2RightLinearGrammar (A)
+    let G := new rightLinearGrammar()
+    
+    let alphabet := A.getAlphabet()
+    let states := A.getStates()
+    let finalStates := A.getFinalStates()
+    let transi := A.getTransitions()
+    
+    //Set the non terminal symbol with the states of the automaton
+    foreach s in states do
+        G.addNonTerminalSymbol(s)
+    done
+    
+    //Set the start symbol
+    G.setStartSymbol(A.getInitialState())
+
+    //Set the non terminal symbol with the alphabet of the automaton
+    foreach c in alphabet do
+        G.addTerminalSymbol(c)
+    done
+    
+    foreach s in finalStates do
+         G.addRule(s,epsilon,"")
+    done
+    
+    foreach t in transi do
+        if t.symbol = epsilon then 
+            G.addRule(t.startState,"",t.endState)
+        else
+            G.addRule(t.startState,t.symbol,t.endState)
+        end if 
+    done
+    
+    return(G.toString())
+    
+end function
+
+
+run(
+    function()
+
+    let A := get_automaton(currentAutomaton)
+        return (automaton2RightLinearGrammar(A))
+    end function
+)
