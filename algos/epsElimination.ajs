@@ -99,4 +99,4 @@ export function hasEpsilonTransitions (A)
     return false
 end function
 
-run(hasEpsilonTransitions, get_automaton(currentAutomaton))
+run(hasEpsilonTransitions, epsElim(currentAutomaton))
