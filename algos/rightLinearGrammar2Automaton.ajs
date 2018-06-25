@@ -1,0 +1,55 @@
+
+// Transform a rightLinearGrammar into an automaton
+function rightLinearGrammar2Automaton (grammar)
+    let G := str2LRG(grammar)
+    console.log(G.toString())
+    let A := new Automaton()
+    
+    let nonTerminalSymbols := G.getNonTerminalSymbols()
+    let rules := G.getProductionRules()
+    
+    //Create the states
+    foreach sym in nonTerminalSymbols do
+        A.addState(sym)
+    done
+    
+    //Initialise the initial state
+    A.setInitialState(G.getStartSymbol())
+
+
+    //Set the final state
+    var nameFinalState := "F"
+    while nameFinalState belongs to nonTerminalSymbols do
+        nameFinalState += "F"
+    done
+    A.addFinalState(nameFinalState)
+
+
+    foreach rule in rules do
+        if rule.nonTerminalSymbolBody = "" or rule.nonTerminalSymbolBody = undefined then //S -> a
+            if rule.listSymbolTerminal ="ε" then
+                A.addTransition(rule.nonTerminalSymbol,epsilon,nameFinalState)
+            else
+                A.addTransition(rule.nonTerminalSymbol,rule.listSymbolTerminal,nameFinalState)
+            end if
+        else if rule.listSymbolTerminal = "" or rule.listSymbolTerminal = undefined then //S -> T
+            A.addTransition(rule.nonTerminalSymbol,epsilon,rule.nonTerminalSymbolBody)
+        else
+            A.addTransition(rule.nonTerminalSymbol,rule.listSymbolTerminal,rule.nonTerminalSymbolBody); //S -> aT
+        end if
+    done
+
+    return A
+end function
+
+
+run(
+    function()
+        let input := window.prompt(
+            AudeGUI.l10n(
+            "Enter the linear right grammar"
+            ),
+        )    
+        return (rightLinearGrammar2Automaton(input))
+    end function
+)
