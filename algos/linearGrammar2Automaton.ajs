@@ -1,0 +1,71 @@
+from leftLinear2RightLinearGrammar import leftLinear2RightLinearGrammar
+from leftLinear2RightLinearGrammar import isLeftLinear
+// Transform a linearGrammar into an automaton
+export function linearGrammar2Automaton (grammar)
+
+	//If grammar is a string convert it to a linearGrammar
+	let G := null
+	if typeof grammar = "string" then
+		G := string2LinearGrammar(grammar)
+	else
+		G := grammar
+	fi
+	if isLeftLinear(G) then
+        G := leftLinear2RightLinearGrammar(G)
+    fi
+
+
+    let A := new Automaton()
+
+    let nonTerminalSymbols := G.getNonTerminalSymbols()
+    let rules := G.getProductionRules()
+
+    //Create the states
+    foreach sym in nonTerminalSymbols do
+        A.addState(sym)
+    done
+
+    //Initialise the initial state
+    A.setInitialState(G.getStartSymbol())
+
+
+    //Set the final state
+    var nameFinalState := "F"
+    while nameFinalState belongs to nonTerminalSymbols do
+        nameFinalState += "F"
+    done
+    A.addFinalState(nameFinalState)
+
+
+    foreach rule in rules do
+        if rule.nonTerminalSymbolBody = "" or rule.nonTerminalSymbolBody = undefined then //S -> a
+            if rule.listSymbolTerminal ="ε" then //S -> ε
+                A.addTransition(rule.nonTerminalSymbol,epsilon,nameFinalState)
+            else
+                A.addTransition(rule.nonTerminalSymbol,rule.listSymbolTerminal,nameFinalState)
+            end if
+        else if rule.listSymbolTerminal = "" or rule.listSymbolTerminal = undefined then //S -> T
+            A.addTransition(rule.nonTerminalSymbol,epsilon,rule.nonTerminalSymbolBody)
+        else
+			if rule.listSymbolTerminal ="ε" then //S -> εT
+				A.addTransition(rule.nonTerminalSymbol,epsilon,rule.nonTerminalSymbolBody);
+			else
+            	A.addTransition(rule.nonTerminalSymbol,rule.listSymbolTerminal,rule.nonTerminalSymbolBody); //S -> aT
+			end if
+        end if
+    done
+
+    return A
+end function
+
+
+run(
+    function()
+        let input := window.prompt(
+            AudeGUI.l10n(
+            "Enter the linear right grammar"
+            ),
+        )
+        return (linearGrammar2Automaton(input))
+    end function
+)
