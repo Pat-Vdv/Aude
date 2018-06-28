@@ -2,15 +2,15 @@
 (function (pkg, that) {
     "use strict";
 
-    pkg.rightLinearGrammar = function (terminalSymbols,nonTerminalSymbols,startSymbol,productionRules) {
+    pkg.linearGrammar = function (terminalSymbols,nonTerminalSymbols,startSymbol,productionRules) {
 
-        this.terminalSymbols = aude.toSet(terminalSymbols);
-        this.nonTerminalSymbols = aude.toSet(nonTerminalSymbols);
+        this.terminalSymbols = aude.toSet(terminalSymbols) || new Set();
+        this.nonTerminalSymbols = aude.toSet(nonTerminalSymbols) || new Set();
         this.startSymbol = startSymbol;
         this.productionRules =  aude.toSet(productionRules) || new Set();
     };
 
-    pkg.rightLinearGrammar.prototype = {
+    pkg.linearGrammar.prototype = {
         //Add a terminal symbol
         addTerminalSymbol : function (symbol) {
             if (!this.terminalSymbols.has(symbol))
@@ -80,17 +80,20 @@
 
         //Add a rule to the production rule
         //
-        //Ex: to add S -> aS, .addRule("S","a","S")
-        //Ex: to add S -> abS, .addRule("S","ab","S") or .addRule("S",["a","b"],"S")
-        addRule : function (nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody) {
-            if (!nonTerminalSymbol && nonTerminalSymbol!="" )
+        //side : left or right, if not specified right by default
+        //Ex: to add S -> aS, .addRule("S","a","S","right")
+        //Ex: to add S -> abS, .addRule("S","ab","S","right")
+        //Ex: to add S -> Sa, .addRule("S","a","S","left") !!warning!! same order of parameter as the right side
+        //Ex: to add S -> Sab, .addRule("S","ab","S","left")
+        addRule : function (nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side) {
+            if (nonTerminalSymbol!==undefined && nonTerminalSymbol!="")
                 this.addNonTerminalSymbol(nonTerminalSymbol);
-            if (!nonTerminalSymbolBody && nonTerminalSymbolBody!="" )
+            if (nonTerminalSymbolBody!==undefined && nonTerminalSymbolBody!="")
                 this.addNonTerminalSymbol(nonTerminalSymbolBody);
             if (nonTerminalSymbol instanceof Rule)
                 this.productionRules.add(nonTerminalSymbol);
             else
-                this.productionRules.add(new pkg.Rule(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody));
+                this.productionRules.add(new pkg.Rule(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side));
         },
 
         //Return the production rules
@@ -99,19 +102,19 @@
         },
 
         //Remove a rule
-        removeRule : function (nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody) {
+        removeRule : function (nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side) {
             if (nonTerminalSymbol instanceof Rule)
                 this.productionRules.remove(nonTerminalSymbol);
             else
-                this.productionRules.remove(new pkg.Rule(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody));
+                this.productionRules.remove(new pkg.Rule(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side));
         },
 
         //Return true if the given Rule is present
-        hasRule : function (nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody) {
+        hasRule : function (nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side) {
             if (nonTerminalSymbol instanceof Rule)
                 this.productionRules.has(nonTerminalSymbol);
             else
-                this.productionRules.hasRule(new pkg.Rule(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody));
+                this.productionRules.hasRule(new pkg.Rule(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side));
         },
 
         //Return a string format of the grammar
@@ -133,17 +136,49 @@
 
     };
 
-// Class to handle rules use in grammar
-    pkg.Rule = function(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody) {
+    // Class to handle rules use in grammar
+    // side: right means that the rule is right linear
+    // side: left means that the rule is left linear
+    pkg.Rule = function(nonTerminalSymbol,listSymbolTerminal,nonTerminalSymbolBody,side) {
         this.nonTerminalSymbol = nonTerminalSymbol;
         this.listSymbolTerminal = listSymbolTerminal;
         this.nonTerminalSymbolBody = nonTerminalSymbolBody;
+        if (side===undefined || side==="")
+            this.side = "right";
+        else
+            this.side = side;
     }
 
     pkg.Rule.prototype = {
         //Return a string format of the rule
         toString : function () {
-            return this.nonTerminalSymbol +" -> "+this.listSymbolTerminal+this.nonTerminalSymbolBody;
+            if (this.nonTerminalSymbolBody===undefined) {
+                return this.nonTerminalSymbol +" -> "+this.listSymbolTerminal;
+            }
+            else if (this.listSymbolTerminal===undefined) {
+                return this.nonTerminalSymbol +" -> "+""+this.nonTerminalSymbolBody;
+            }
+            else {
+                if (this.side === "right")
+                    return this.nonTerminalSymbol +" -> "+this.listSymbolTerminal+this.nonTerminalSymbolBody;
+                else
+                    return this.nonTerminalSymbol +" -> "+this.nonTerminalSymbolBody+this.listSymbolTerminal;
+            }
+        },
+
+        getNonTerminalSymbol : function () {
+            return this.nonTerminalSymbol;
+        },
+
+        getNonTerminalSymbolBody : function () {
+            return this.nonTerminalSymbolBody;
+        },
+
+        getListSymbolTerminal : function () {
+            if (this.listSymbolTerminal===undefined || this.listSymbolTerminal==="" )
+                return "ε";
+            else
+                return this.listSymbolTerminal;
         },
 
     }
@@ -151,18 +186,23 @@
 
 }(typeof this.exports === "object" ? this.exports : this, typeof this.exports === "object" ? this.exports : this));
 
-(function (pkg) {
-    pkg.str2LRG = function (grammar) {
-        return string2RightLinearGrammar(grammar);
-    };
 
-    pkg.string2RightLinearGrammar = function (grammar) {
-        var G = new rightLinearGrammar();
+// To convert a string of a grammar to a grammar
+// ({Terminal symbol},{Non terminal symbol},Start symbol,{Production rules})
+//Ex ({a,b},{A,S,T},T,{A -> bS,S -> bS,A -> aA,T -> aA,S -> ε})
+// Can't handle multi caracter name for terminal and non termjnal symbol
+(function (pkg) {
+
+    pkg.string2LinearGrammar = function (grammar) {
+        var G = new linearGrammar();
         var i = 0;
         var c = grammar[i]; //the current caracter to analyse
 
         if (c==="(")
             nextC();
+        else
+            //AudeGUI.notify(("Correction"), "Erreur" , "normal",4000);
+            throw new Error("Erreur attendez (");
         recSymTer();
         recComma();
         recSymNoTer();
@@ -172,6 +212,8 @@
         recProductionRules();
         if (c===")")
             nextC();
+            else
+                throw new Error("Erreur attendez )");
 
 
         //Reconnait les symboles terminaux
@@ -182,7 +224,7 @@
                 if (c === '}')
                     nextC();
                 else
-                    throw "Erreur Symter";
+                    throw new Error("Erreur Symter");
             }
             else
                 nextC();
@@ -196,7 +238,7 @@
                 if (c === '}')
                     nextC();
                 else
-                    throw "Erreur Symter";
+                    throw new Error("Erreur Symter");
             }
             else
                 nextC();
@@ -225,7 +267,7 @@
                 nextC();
             }
             else
-                throw "Axiome doit faire partie des symboles non terminaux: "+c ;
+                throw new Error("Axiome doit faire partie des symboles non terminaux ") ;
         }
 
         //Reconnait les règles de production
@@ -236,10 +278,10 @@
                 if (c = '}')
                     nextC();
                 else
-                    throw "Erreur recProductionRules: attend } et le caractère est "+c;
+                    throw new Error("Erreur recProductionRules: attend }");
             }
             else
-                throw "Erreur recProductionRules: attend {";
+                throw new Error("Erreur recProductionRules: attend {");
             }
 
         //Reconnait une liste de regles de production
@@ -267,24 +309,33 @@
                     nextC();
                     if (c === '>') {
                         nextC();
-                        ter = recListTerminalSymbol();
-                        nonTerBody = recNonTerminalSymbol();
-                        G.addRule(nonTer,ter,nonTerBody);
+                        if (G.hasTerminalSymbols(c) || c==="ε") { //For right linear
+                            ter = recListTerminalSymbol();
+                            nonTerBody = recNonTerminalSymbol();
+                            G.addRule(nonTer,ter,nonTerBody);
+                        }
+                        else if (G.hasNonTerminalSymbols(c)) { //For left linear
+                            nonTerBody = recNonTerminalSymbol();
+                            ter = recListTerminalSymbol();
+                            G.addRule(nonTer,ter,nonTerBody,"left");
+                        }
+                        else
+                            throw new Error("Erreur recRules");
                         }
                     else
-                        throw "Erreur recRules: attend un >";
+                        throw new Error("Erreur recRules: attend un >");
                 }
                 else
-                    throw "Erreur recRules: attend un -";
+                    throw new Error("Erreur recRules: attend un -");
             }
             else
-                throw "Erreur recRules: attend un symbole non Terminal c= "+c;
+                throw new Error("Erreur recRules: attend un symbole non Terminal c= ");
         }
 
         //Reconnait une suite de symboles terminaux
         function recListTerminalSymbol() {
             let str = "";
-            while (G.hasTerminalSymbols(c) || c==="ε" || c==="\e") {
+            while (G.hasTerminalSymbols(c) || c==="ε") {
                 str += c;
                 nextC();
             }
@@ -306,16 +357,24 @@
             if (c === ',')
                 nextC();
             else
-                throw "Erreur: attend un virgule";
+                throw new Error("Erreur: attend un virgule");
         }
 
+        //Next caracter of the string
         function nextC () {
             do {
                 i++;
                 c = grammar[i];
+                if (c==="\\") {
+                    i++;
+                    c += grammar[i];
+                    if (c==="\\e")
+                        c="ε";
+                }
             }
             while (c === ' ');
         }
+
         return G;
     };
 
