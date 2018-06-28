@@ -1,5 +1,5 @@
 /*
-    Copyright (c) Raphaël Jakse (Université Grenoble-Alpes), 2013-2016
+    Copyright (c)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -94,16 +94,18 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 }(window));
 
 
-
 (function(pkg,that){
     //List of all the question
     var underTypeQuestionList = ["complement","complete","product","minimize","equivalenceStates","equivalencyAutomata","automaton2Table","table2Automaton"
-    ,"accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate","automaton2RE","RE2automaton"];
+    ,"accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate","automaton2RE","RE2automaton","grammar2Automaton",
+"automaton2Grammar","leftGrammar2RightGrammar"];
     //Need automaton for the response
-    var underTypeQuestionNeedAutomaton = ["complement","complete","product","minimize","determinize","determinize_minimize","eliminate","determinize_eliminate","RE2automaton"];
+    var underTypeQuestionNeedAutomaton = ["complement","complete","product","minimize","determinize","determinize_minimize","eliminate",
+    "determinize_eliminate","RE2automaton","grammar2Automaton"];
     //Need automaton for the wording
     var underTypeQuestionNeedAutomatonWording = ["complement","complete","product","minimize","equivalenceStates","equivalencyAutomata",
-    "table2Automaton","automaton2Table","accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate","automaton2RE"];
+    "table2Automaton","automaton2Table","accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate",
+    "automaton2RE","automaton2Grammar"];
 
     //For the creation of the automaton
     var createAutomatonCoaccessible = null ;
@@ -133,10 +135,17 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     /*Chapter 4*/
     var regexToAutomaton = null;
     var automatonToRegex = null;
+    /*Chapter 5*/
+    var leftLinear2RightLinearGrammar = null;
+    var rightLinear2LeftLinearGrammar = null;
+    var linearGrammar2Automaton = null;
+    var automaton2RightLinearGrammar = null;
+    var isLeftLinear = null;
 
      pkg.loadPrograms = function () {
     window.AudeGUI.Runtime.loadIncludes(["completion","equivalence", "product", "minimization","complementation","distinguishability","coaccessibility","accessibility",
-    "automaton2htmltable","htmltable2automaton","createAutomaton","littlerWord","determinization","epsElimination","regex2automaton","automaton2regex"],
+    "automaton2htmltable","htmltable2automaton","createAutomaton","littlerWord","determinization","epsElimination","regex2automaton","automaton2regex","automaton2RightLinearGrammar",
+    "linearGrammar2Automaton","leftLinear2RightLinearGrammar","rightLinear2LeftLinearGrammar"],
     function () {
         createAutomatonCoaccessible = audescript.m("createAutomaton").createAutomatonCoaccessible;
         complete = audescript.m("completion").complete;
@@ -160,12 +169,17 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions
         regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
         automatonToRegex = audescript.m("automaton2regex").automatonToRegex;
+        leftLinear2RightLinearGrammar = audescript.m("leftLinear2RightLinearGrammar").leftLinear2RightLinearGrammar;
+        rightLinear2LeftLinearGrammar = audescript.m("rightLinear2LeftLinearGrammar").rightLinear2LeftLinearGrammar;
+        linearGrammar2Automaton = audescript.m("linearGrammar2Automaton").linearGrammar2Automaton;
+        automaton2RightLinearGrammar = audescript.m("automaton2RightLinearGrammar").automaton2RightLinearGrammar;
+        isLeftLinear = audescript.m("leftLinear2RightLinearGrammar").isLeftLinear;
         //regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
     });
     }
 
     //Class Question: wording, typeQuestion, underTypeQuestion, automata if needed,regex, a response, type of response, the response of the user
-     pkg.Question =  function (wording,typeQuestion,underTypeQuestion,automaton,regex,response,typeResponse,userResponse) {
+     pkg.Question =  function (wording,typeQuestion,underTypeQuestion,automaton,regex,grammar,response,typeResponse,userResponse) {
 
         this.underTypeQuestion = underTypeQuestion;
 
@@ -200,14 +214,8 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
         this.regex = regex;
 
-/*
-        this.nbrState = 2;
-        this.alphabet = ['a','b'];
-        this.nbrFinalStates = 1;
-        this.mode = 1;
-        this.nbTransitions = 3;
-        this.random = 1;
-        */
+        this.grammar = grammar;
+
     }
 
 
@@ -267,7 +275,15 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "RE2automaton":
                     return "Give the automaton corresponding to the following RE ";
                     break;
-                case "":
+                case "grammar2Automaton":
+                    return "Give the automaton corresponding to the following right linear grammar ";
+                    break;
+                case "automaton2Grammar":
+                    return "Give the linear grammar corresponding to the following automaton ";
+                    break;
+                case "leftGrammar2RightGrammar":
+                    return "Give the right linear grammar corresponding to the following left linear grammar ";
+                    break;
                 default:
                     return "";
                     break;
@@ -277,8 +293,6 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
         //Return true if the question needs to display an automaton for the wording
         needAutomatonQuestion: function () {
-        //    if (this.automaton!==undefined)
-        //        return true;
             for(var i=0,l=underTypeQuestionNeedAutomatonWording.length;i<l;i++){
                 if (this.underTypeQuestion == underTypeQuestionNeedAutomatonWording[i] )
                     return true;
@@ -306,16 +320,17 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         answerMode: function () {
             if (this.typeResponse!=='' && !this.typeResponse=== undefined)
                 return this.typeResponse;
-
             switch (this.underTypeQuestion)
             {
                 case "complement": case "complete":case "product": case"minimize": case"table2Automaton": case "determinize": case "determinize_minimize":
-                case "eliminate": case "determinize_eliminate": case "RE2automaton":
+                case "eliminate": case "determinize_eliminate": case "RE2automaton": case "grammar2Automaton":
                     return "automaton";
                     break;
                 case "equivalenceStates" : case "accessible" : case "coaccessible" : case "word" :
                     return "input";
                     break;
+                case "automaton2Grammar": case "leftGrammar2RightGrammar":
+                    return "grammar"; //It's also an input
                 case "automaton2RE":
                     return "re";
                     break;
@@ -330,71 +345,76 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
         //Create the response with the algorithm and put it in the .response
          correctionQuestion :  function () {
-            var question = this;
             var response= null;
-
-            switch (question.underTypeQuestion) {
+            switch (this.underTypeQuestion) {
                 case "complement":
-                    response = complement(question.automaton[0],question.automaton[0].getAlphabet());
+                    response = complement(this.automaton[0],this.automaton[0].getAlphabet());
                     break;
                 case "complete":
-                    response = complete(question.automaton[0],question.automaton[0].getAlphabet());
+                    response = complete(this.automaton[0],this.automaton[0].getAlphabet());
                     break;
                 case "minimize":
-                    response = minimize(question.automaton[0],question.automaton[0].getAlphabet());
+                    response = minimize(this.automaton[0],this.automaton[0].getAlphabet());
                     break;
                 case "product":
-                    response = product(question.automaton[0],question.automaton[1],false);
+                    response = product(this.automaton[0],this.automaton[1],false);
                     break;
                 case "equivalenceStates":
-                    response = notDistinguableStates(question.automaton[0]);
+                    response = notDistinguableStates(this.automaton[0]);
                     break;
                 case "equivalencyAutomata":
-                    response = automataAreEquivalent(question.automaton[0],question.automaton[1]);
+                    response = automataAreEquivalent(this.automaton[0],this.automaton[1]);
                     break;
                 case "automaton2Table":
-                    response = automaton2HTMLTable(question.automaton[0]);
+                    response = automaton2HTMLTable(this.automaton[0]);
                     break;
                 case "table2Automaton":
-                    response = question.automaton[0];
+                    response = this.automaton[0];
                     break;
                 case "coaccessible":
-                    response = coaccessibleStates(question.automaton[0]);
+                    response = coaccessibleStates(this.automaton[0]);
                     break;
                 case "accessible":
-                    response = accessibleStates(question.automaton[0]);
+                    response = accessibleStates(this.automaton[0]);
                     break;
                 case "word":
-                    response = giveLittlerWord(question.automaton[0]);
+                    response = giveLittlerWord(this.automaton[0]);
                     break;
                 case "determinize":
-                    response = determinize(question.automaton[0]);
+                    response = determinize(this.automaton[0]);
                     break;
                 case "determinize_minimize":
-                    response = determinize(question.automaton[0],1);
+                    response = determinize(this.automaton[0],1);
                     break;
                 case "eliminate":
-                    response = epsElim(question.automaton[0]);
+                    response = epsElim(this.automaton[0]);
                     break;
                 case "determinize_eliminate":
-                    response = determinize(epsElim(question.automaton[0]));
+                    response = determinize(epsElim(this.automaton[0]));
                     break;
                 case "automaton2RE":
-                    response = automatonToRegex(question.automaton[0]);
+                    response = automatonToRegex(this.automaton[0]);
                     break;
                 case "RE2automaton":
-                    response = question.automaton[0];
-                    this.regex = automatonToRegex(question.automaton[0]);
+                    response = regexToAutomaton(this.regex)
+                    break;
+                case "grammar2Automaton":
+                    response = linearGrammar2Automaton(this.grammar);
+                    break;
+                case "automaton2Grammar":
+                    response = automaton2RightLinearGrammar(this.automaton[0]).toString(); //Return the string of the grammar
+                    break;
+                case "leftGrammar2RightGrammar":
+                    response = leftLinear2RightLinearGrammar(this.grammar,0).toString();
                     break;
                 }
                 this.response=response;
         },
 
-        //return true if the response is correct
+        //return true if the response is correct or false otherwise
         isCorrect: function () {
             response = this.response;
-            console.log("this.userResponse");
-            console.log(this.userResponse);
+
             //If thue user needs to draw an automaton and didn't do it
             if(this.typeResponse==="automaton" && (this.userResponse===undefined || this.userResponse===null)) {
                 return false;
@@ -404,7 +424,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "complete":
                     return automataAreEquivalent(response,this.userResponse) && isCompleted(this.userResponse);
                     break;
-                case "complement":  case "product": case "table2Automaton":
+                case "complement": case "product": case "table2Automaton": case "grammar2Automaton":
                     return automataAreEquivalent(response,this.userResponse);
                     break;
                 case "minimize":
@@ -420,7 +440,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     return identicalSets(response,this.userResponse) ;
                     break;
                 case "equivalencyAutomata":
-                    return String(this.userResponse === String(response) );
+                    return this.userResponse === String(response);
                     break;
                 case "automaton2Table":
                     return automataAreEquivalent(this.automaton[0],HTMLTable2automaton(this.userResponse));
@@ -446,43 +466,65 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "RE2automaton":
                     return automataAreEquivalent(this.response,this.userResponse);
                     break;
+                case "automaton2Grammar":
+                    return automataAreEquivalent(this.automaton[0],linearGrammar2Automaton(this.userResponse));
+                    break;
+                case "leftGrammar2RightGrammar": //Compare the 2 automata generated by the grammars, and look if the given grammar is right linear
+                    return automataAreEquivalent( linearGrammar2Automaton(this.grammar),linearGrammar2Automaton(this.userResponse)) && isLeftLinear(this.userResponse)===false;
+                    break;
                 }
         },
         //Settings for creation of automaton
-        settingsCreateAutomaton : function (rand,st,al,fi,mo,tr,automataLoaded) {
-            this.nbrState = st.slice();
+        settingsCreateAutomaton : function (rand,st,al,fi,mo,tr) {
+            this.nbrState = st.slice(); //Use slice to copy an array
             this.alphabet = al.slice();
             this.nbrFinalStates = fi.slice();
             this.mode = mo.slice();
             this.nbTransitions = tr.slice();
-            this.randomly = rand.slice();
-            this.automataLoaded = automataLoaded.slice();
+            this.randomly = rand.slice()
         },
 
-        //Initialize automata needed for the question by generating them or get the given automata
-        initializeAutomata: function () {
+        //Initialize automata needed for the question by generating them or use the given automata (array)
+        initializeAutomata: function (automata) {
             var j=0;
             for (var rand of this.randomly) {
-                if(rand==1) {
-                    if (this.needAutomatonQuestion() && j==0) {
+                if(rand==1 && (automata[j]===null || automata[j]===undefined)) {
+                    if (j==0 & this.needAutomatonQuestion() )
                         this.createAutomaton(0) ;
-                        if (this.need2AutomataQuestion() && j==1)
-                             this.createAutomaton(1) ;
-                     }
-             } else if (rand==0) {
-                this.automaton[j]=this.automataLoaded[j];
-             }
-             j++;
-         }
-         console.log(this.automaton);
+                    else if (j==1 && this.need2AutomataQuestion() )
+                         this.createAutomaton(1) ;
 
+                }else if (rand==0 || (automata[j]!==null && automata[j]!==undefined)) {
+                this.automaton[j] = automata[j];
+                }
+                j++;
+            }
+            console.log(this.automaton[0]);
         },
 
-        //Initialize regex needed for the question
-        initializeRegex: function () {
-            if (this.underTypeQuestion=="RE2automaton") {
-                this.createAutomaton(0) ;
+        //Initialize the regex needed for the question by generating it or use the given RE
+        initializeRegex: function (re) {
+            if (re!==undefined && re!==null) {
+                this.regex = re;
+            }
+            else if (this.underTypeQuestion=="RE2automaton") {
+                //this.createAutomaton(0);
                 this.regex = automatonToRegex(this.automaton[0]);
+            }
+        },
+
+        //Initialize the grammar needed for the question by generating it or use the given grammar
+        initializeGrammar: function (grammar) {
+            if (grammar!==undefined && grammar!==null ) {
+                this.grammar = grammar;
+            }
+            else if (this.underTypeQuestion=="grammar2Automaton") { //Need to have an automaton and convert it to a grammar
+                this.createAutomaton(0) ;
+                this.grammar = automaton2RightLinearGrammar(this.automaton[0]);
+            }
+            else if (this.underTypeQuestion=="leftGrammar2RightGrammar") { //Need to have an automaton to convert to a right linear grammar then converts it to a left linear grammar
+                this.createAutomaton(0) ;
+                this.grammar = rightLinear2LeftLinearGrammar(automaton2RightLinearGrammar(this.automaton[0]));
             }
         },
 
@@ -516,11 +558,52 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 throw("Erreur createAutomaton");
             this.automaton[numAuto]=A
         },
+
+
+
+        /*
+        Method to modify the property
+        */
+
+        addAutomaton : function (Automaton,numAuto) {
+            if (numAuto===undefined)
+                this.automaton[0] = Automaton;
+            else
+                this.automaton[numAuto] = Automaton;
+        },
+
+        addGrammar: function (grammar) {
+            this.grammar = grammar;
+        },
+
+        addRE: function (re) {
+            this.regex = re;
+        },
+
+
+        /*
+        Returns the question in a string json, or saves it if a name is given
+        */
+        save : function (nameFile) {
+            if (nameFile===null  || nameFile===undefined) {
+                return JSON.stringify(this);
+            }
+            var jsonQuestion = JSON.stringify(this);
+            var blob     = new Blob([jsonQuestion], {type: "application/json"});
+            var fileName = nameFile+".json";
+            saveAs(blob, fileName);
+        },
+
+        //Load the string json given or load the file given
+        load : function (code) {
+            this= JSON.parse(code);
+        },
+
+
+
     };
 
 })(typeof this.exports === "object" ? this.exports : this, typeof this.exports === "object" ? this.exports : this);
-
-
 
 (function (pkg) {
 
@@ -539,8 +622,10 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     var automaton2HTMLTable = null;
 
     //For the generation of automaton
+    var grammarLoaded = null;
+    var RELoaded = null;
     var automataLoaded = [null,null]; //If the users loads an automaton
-    var randomly = [1,1]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
+    var randomly = [1,1,0,0]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
     var nbrState = [5,4];
     var alphabet = [['a','b'],['a','b']];
     var nbrFinalStates = [1,1];
@@ -652,12 +737,12 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
     //Display the settings
     var settingsWin = null;
-    var nameSelectedAutomaton = ["none","none"];
+    var nameSelectedFile = ["none","none","none","none"];
     var modeSelected = null;
 
     function settingsAutomaton () {
         var automataL = automataLoaded.slice(); //Local variable for the automataLoaded
-        var nameSelectAuto = nameSelectedAutomaton.slice(); //Local variable for the nameSelectedAutomaton, when the user saved ,put them in the global variable
+        var localNameSelectedFile = nameSelectedFile.slice(); //Local variable for the nameSelectedAutomaton, when the user saved ,put them in the global variable
 
         var localAutomataLoaded = automataLoaded.slice() ;
         var localRandomly = randomly.slice();
@@ -666,7 +751,8 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         var localNbrFinalStates = nbrFinalStates.slice();
         var localMode = mode.slice();
         var localNbTransitions = nbTransitions.slice();
-
+        var localGrammarLoaded = null;
+        var localRELoaded = null;
 
         if (settingsWin===null || !settingsWin.ws ) {
                 settingsWin = libD.newWin({
@@ -679,12 +765,13 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                         ["button",{"class":"load-mode","value": "auto1"}, _("Automaton1")],
                         ["button",{"class":"load-mode","value": "auto2"}, _("Automaton2")],
                         ["button",{"class":"load-mode","value": "re"}, _("Regular expression")],
+                        ["button",{"class":"load-mode","value": "grammar"}, _("Grammar")],
                     ]],
                     ["div",[
-                        ["span",_("Generate randomly automaton ")],
-                        ["input#input-automaton-generate",{"type":"checkbox","name":"randomAutomaton"},("test")],
+                        ["span",_("Generate randomly ")],
+                        ["input#input-automaton-generate",{"type":"checkbox","name":"randomAutomaton"}],
                     ]],
-                    ["span#div-settings-question-automaton-random",[
+                    ["span#div-settings-question-automaton-random",[ //To enter information to generate randomly an automaton
                         ["h2",_("Automaton generated randomly")],
                         ["div#div-settings-question-container-row", [
                             ["div",{"class":"div-settings-question-container-column"}, [
@@ -703,22 +790,52 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                             ]],
                         ]],
                     ]],
-                    ["span#div-settings-question-automaton-select",{"style":"display:none"},[
+                    ["span#div-settings-question-automaton-select",{"style":"display:none"},[ //To select an automaton
                         ["h2",_("Automaton selection")],
                         ["div",_("Select an automaton from the list or from your computer")],
                         ["button#selection-automaton",_("Open automaton")],
                         ["span#",_("Selected automaton: "),[
-                            ["span#display-name-automaton",_("none")],
+                            ["span#display-name-file",_("none")],
+                        ]],
+                        ["br"],
+                    ]],
+                    ["span#div-settings-question-re-random",{"style":"display:none"},[
+                        ["h2",_("Regular expression generated randomly")],
+                        ["div",_("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
+                        ["div",_("Prefearbly select a regular expression from files")],
+                    ]],
+                    ["span#div-settings-question-re-select",{"style":"display:none"},[ //To select a regular expression
+                        ["h2",_("Regular expression selection")],
+                        ["div",_("Select a regular expression from the list or from your computer")],
+                        ["button#selection-re",_("Open regular expression")],
+                        ["span#",_("Selected regular expression: "),[
+                            ["span#display-name-file-re",_("none")],
+                        ]],
+                        ["br"],
+                    ]],
+                    ["span#div-settings-question-grammar-random",{"style":"display:none"},[
+                        ["h2",_("Grammar generated randomly")],
+                        ["div",_("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
+                        ["div",_("Prefearbly select a grammar from files")],
+                    ]],
+                    ["span#div-settings-question-grammar-select",{"style":"display:none"},[ //To select a regular expression
+                        ["h2",_("Grammar selection")],
+                        ["div",_("Select a grammar from the list or from your computer")],
+                        ["button#selection-grammar",_("Open grammar")],
+                        ["span#",_("Selected grammar: "),[
+                            ["span#display-name-file-grammar",_("none")],
                         ]],
                         ["br"],
                     ]],
                     ["button#save-question-settings", _("Save")],
+                    ["button#save-exit-question-settings", _("Save and exit")],
                 ]],
             ])});
             settingsWin.setAlwaysOnTop(100);
         }
             settingsWin.show();
 
+            //To change the menu
             var buttons = document.getElementsByClassName('load-mode');
             for (var i=0,l=buttons.length;i<l;i++) {
                 buttons[i].addEventListener('click',function(e) {
@@ -726,11 +843,14 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                         modeSelected.style.backgroundColor = 'rgba(239, 240, 241, 0.93)' ; //Change the color of the previous selected chapter
                     e.target.style.backgroundColor = 'rgba(239, 100, 100)'; //Change to red when we click
                     modeSelected = e.target;
-                    if (e.target.value==="auto1") {
+                    if (e.target.value==="auto1")
                         displayModeSelected(0);
-                    }
                     else if (e.target.value==="auto2")
                         displayModeSelected(1);
+                    else if (e.target.value==="re")
+                        displayModeSelected(2);
+                    else if (e.target.value==="grammar")
+                        displayModeSelected(3);
 
                 });
                 buttons[i].addEventListener('mouseover',function(e) { //Change the color to grey when mouseover
@@ -748,17 +868,22 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             modeSelected = buttons[0];
             modeSelected.style.backgroundColor = 'rgb(239, 100, 100)' ; //Change the color of the previous selected chapter
 
-
+            //Save and quit
+            document.getElementById("save-exit-question-settings").onclick = function() {
+                saveSettings();
+                settingsWin.close();
+            };
 
             //Save the informations
-            document.getElementById("save-question-settings").onclick = function () {
+            document.getElementById("save-question-settings").onclick = saveSettings;
+            function saveSettings () {
+                randomly = localRandomly.slice();
                 for (var numAutomaton=0; numAutomaton<2;numAutomaton++) {
-                    randomly[numAutomaton] = localRandomly[numAutomaton];
                     if (randomly[numAutomaton] == 1) {
-                        nbrState[numAutomaton] = parseInt(localNbrState[numAutomaton]);
+                        nbrState[numAutomaton] = parseInt(localNbrState[numAutomaton],10);
                         alphabet[numAutomaton] = [];
                         var cara= "";
-                        for  (var c of localAlphabet[numAutomaton])  { //Get the alphabet
+                        for  (var c of String(localAlphabet[numAutomaton]))  { //Get the alphabet
                             if (c==',') {
                                 alphabet[numAutomaton].push(cara);
                                 cara="";
@@ -767,79 +892,154 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                                 cara+=c;
                         }
                         alphabet[numAutomaton].push(cara);
-                        nbrFinalStates[numAutomaton] = parseInt(localNbrFinalStates[numAutomaton]);
-                        mode[numAutomaton] = parseInt(localMode[numAutomaton]);
-                        nbTransitions[numAutomaton] = parseInt(localNbTransitions[numAutomaton]);
+                        nbrFinalStates[numAutomaton] = parseInt(localNbrFinalStates[numAutomaton],10);
+                        mode[numAutomaton] = parseInt(localMode[numAutomaton],10);
+                        nbTransitions[numAutomaton] = parseInt(localNbTransitions[numAutomaton],10);
+                        automataLoaded[numAutomaton] = null;
+
                     }
                     else if (randomly[numAutomaton] == 0) {
-                        console.log("AAAA");
-                        console.log("nameSelectedAutomaton");
                         automataLoaded[numAutomaton] = automataL[numAutomaton];
-                        nameSelectedAutomaton[numAutomaton] = nameSelectAuto[numAutomaton];
+                        nameSelectedFile[numAutomaton] = localNameSelectedFile[numAutomaton];
                     }
                 }
 
+                for (var numAutomaton=2; numAutomaton<4;numAutomaton++) {
+                    if (randomly[numAutomaton] == 0) {
+                        nameSelectedFile[numAutomaton] = localNameSelectedFile[numAutomaton];
+                    }
+                }
+
+                grammarLoaded = localGrammarLoaded;
+                RELoaded = localRELoaded;
             };
 
             /*Display the selected mode between automaton1 automaton2 et ER */
             function displayModeSelected(numAutomaton) {
 
-                //Display the name of the current automaton loaded
-                document.getElementById("display-name-automaton").innerHTML = nameSelectAuto[numAutomaton];
+                //For menu automaton1 and automaton2
+                if(numAutomaton===0 || numAutomaton===1) {
+                    //Hide the menu regular expressions
+                    document.getElementById("div-settings-question-re-random").style.display="none";
+                    document.getElementById("div-settings-question-re-select").style.display="none";
+                    document.getElementById("div-settings-question-grammar-random").style.display="none";
+                    document.getElementById("div-settings-question-grammar-select").style.display="none";
 
-                //Button to open a window for the selection on an automaton
-                document.getElementById('selection-automaton').onclick = chooseAutomaton;
+                    //Display the name of the current automaton loaded
+                    document.getElementById("display-name-file").innerHTML = localNameSelectedFile[numAutomaton];
 
-                //Button to chose if the automaton are choosen or generate randomly
-                var chec = document.getElementById("input-automaton-generate");
+                    //Button to open a window for the selection on an automaton
+                    document.getElementById('selection-automaton').onclick = chooseFile.bind(null,"automaton");
 
-                //For the check input
-                if (localRandomly[numAutomaton]==1) {
-                    chec.checked = true;
-                    document.getElementById('div-settings-question-automaton-random').style.display = "inherit";
-                    document.getElementById('div-settings-question-automaton-select').style.display = "none";
-                } else {
-                    document.getElementById('div-settings-question-automaton-random').style.display = "none";
-                    document.getElementById('div-settings-question-automaton-select').style.display = "inherit";
-                    chec.checked = false;
-                }
+                    //checkbox to choose if the automaton are chosen or generate randomly
+                    var chec = document.getElementById("input-automaton-generate");
 
-                chec.addEventListener("click",function(e) {
-                    if (chec.checked !== true) {
-                        document.getElementById('div-settings-question-automaton-random').style.display = "none";
-                        document.getElementById('div-settings-question-automaton-select').style.display = "inherit";
-                        localRandomly[numAutomaton] = 0;
-                    } else {
+                    //For the check input
+                    if (localRandomly[numAutomaton]==1) {
+                        chec.checked = true;
                         document.getElementById('div-settings-question-automaton-random').style.display = "inherit";
                         document.getElementById('div-settings-question-automaton-select').style.display = "none";
+                    } else {
+                        document.getElementById('div-settings-question-automaton-random').style.display = "none";
+                        document.getElementById('div-settings-question-automaton-select').style.display = "inherit";
+                        chec.checked = false;
+                    }
+
+                    chec.onclick= checkRemove.bind(null,'div-settings-question-automaton-random','div-settings-question-automaton-select');
+
+                    var inputs = document.getElementsByClassName('input-settings-question');
+
+                    //Local save to not lose modification when changing mode (automaton1 to automaton2 and vice-versa)
+                    chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0; console.log(localRandomly + " "+ numAutomaton )};
+
+                    inputs[0].onchange = function () {localNbrState[numAutomaton]=inputs[0].value};
+                    inputs[1].onchange = function () {localAlphabet[numAutomaton]=inputs[1].value};
+                    inputs[2].onchange = function () {localNbrFinalStates[numAutomaton]=inputs[2].value};
+                    inputs[3].onchange = function () {localMode[numAutomaton]=inputs[3].value};
+                    inputs[4].onchange = function () {localNbTransitions[numAutomaton]=inputs[4].value};
+
+                    //Put the local variable in the inputs
+                    inputs[0].value=localNbrState[numAutomaton];
+                    inputs[1].value=localAlphabet[numAutomaton];
+                    inputs[2].value=localNbrFinalStates[numAutomaton];
+                    inputs[3].value=localMode[numAutomaton];
+                    inputs[4].value=localNbTransitions[numAutomaton];
+
+                }
+
+                //To select regex
+                else if (numAutomaton===2) {
+                    //Hide the menu automaton
+                    document.getElementById("div-settings-question-automaton-random").style.display="none";
+                    document.getElementById("div-settings-question-automaton-select").style.display="none";
+                    document.getElementById("div-settings-question-grammar-random").style.display="none";
+                    document.getElementById("div-settings-question-grammar-select").style.display="none";
+                    //Display the name of the current file loaded
+                    document.getElementById("display-name-file-re").innerHTML = localNameSelectedFile[numAutomaton];
+                    //Button to open a window for the selection on an automaton
+                    document.getElementById('selection-re').onclick = chooseFile.bind(null,"re");
+                    //checkbox to choose if the automaton are chosen or generate randomly
+                    var chec = document.getElementById("input-automaton-generate");
+                    chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0; console.log(localRandomly + " "+ numAutomaton )};
+                    //For the check input
+                    if (localRandomly[numAutomaton]==1) {
+                        chec.checked = true;
+                        document.getElementById('div-settings-question-re-random').style.display = "inherit";
+                        document.getElementById('div-settings-question-re-select').style.display = "none";
+                    } else {
+                        document.getElementById('div-settings-question-re-random').style.display = "none";
+                        document.getElementById('div-settings-question-re-select').style.display = "inherit";
+                        chec.checked = false;
+                    }
+                    chec.onclick= checkRemove.bind(null,'div-settings-question-re-random','div-settings-question-re-select');
+                }
+
+                //To select grammar
+                else if (numAutomaton===3) {
+                    //Hide the menu automaton
+                    document.getElementById("div-settings-question-automaton-random").style.display="none";
+                    document.getElementById("div-settings-question-automaton-select").style.display="none";
+                    document.getElementById("div-settings-question-re-random").style.display="none";
+                    document.getElementById("div-settings-question-re-select").style.display="none";
+                    //Display the name of the current file loaded
+                    document.getElementById("display-name-file-grammar").innerHTML = localNameSelectedFile[numAutomaton];
+                    //Button to open a window for the selection on an automaton
+                    document.getElementById('selection-grammar').onclick = chooseFile.bind(null,"grammar");
+                    //checkbox to choose if the automaton are chosen or generate randomly
+                    var chec = document.getElementById("input-automaton-generate");
+                    //For the check input
+                    if (localRandomly[numAutomaton]==1) {
+                        chec.checked = true;
+                        document.getElementById('div-settings-question-grammar-random').style.display = "inherit";
+                        document.getElementById('div-settings-question-grammar-select').style.display = "none";
+                    } else {
+                        document.getElementById('div-settings-question-grammar-random').style.display = "none";
+                        document.getElementById('div-settings-question-grammar-select').style.display = "inherit";
+                        chec.checked = false;
+                    }
+                    chec.onclick= checkRemove.bind(null,'div-settings-question-grammar-random','div-settings-question-grammar-select');
+                }
+
+                //To hide and show the 2 names of divs given
+                function checkRemove (name1,name2) {
+                    console.log(numAutomaton);
+                    if (chec.checked !== true) {
+                        document.getElementById(name1).style.display = "none";
+                        document.getElementById(name2).style.display = "inherit";
+
+                        localRandomly[numAutomaton] = 0;
+                    } else {
+                        document.getElementById(name1).style.display = "inherit";
+                        document.getElementById(name2).style.display = "none";
                         localRandomly[numAutomaton] = 1;
                     }
-                });
+                }
 
 
-                var inputs = document.getElementsByClassName('input-settings-question');
+                //Display a window which lets the user selects a file, type=automaton, er, grammar
+                function chooseFile (type) {
 
-                //Local save to not lose modification when changing mode (automaton1 to automaton2 and vice-versa)
-                chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0};
-                inputs[0].onchange = function () {localNbrState[numAutomaton]=inputs[0].value};
-                inputs[1].onchange = function () {localAlphabet[numAutomaton]=inputs[1].value};
-                inputs[2].onchange = function () {localNbrFinalStates[numAutomaton]=inputs[2].value};
-                inputs[3].onchange = function () {localMode[numAutomaton]=inputs[3].value};
-                inputs[4].onchange = function () {localNbTransitions[numAutomaton]=inputs[4].value};
-
-                //Put the local variable in the inputs
-                inputs[0].value=localNbrState[numAutomaton];
-                inputs[1].value=localAlphabet[numAutomaton];
-                inputs[2].value=localNbrFinalStates[numAutomaton];
-                inputs[3].value=localMode[numAutomaton];
-                inputs[4].value=localNbTransitions[numAutomaton];
-
-
-
-                //Display a window which lets the user selects an automaton
-                function chooseAutomaton () {
-
-                    var listAuto = null; //List of all the automata for each exercice
+                    var listFiles = null; //List of all the automata for each exercice
                     var selectedQuestion = null;
 
                     getFile(
@@ -858,8 +1058,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     );
 
                     function displayWin (automata_question) {
-                        listAuto= JSON.parse(automata_question); //Transform the JSON file (where there are the folders and names of automata) in object
-                        console.log(listAuto);
+                        listFiles= JSON.parse(automata_question); //Transform the JSON file (where there are the folders and names of automata) in object
                         makeWindow();
                     }
 
@@ -869,7 +1068,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                             winLoadAutomaton.close();
                         } else {
                             winLoadAutomaton = libD.newWin({
-                                title:   "Load automaton",
+                                title:   "Load file",
                                 height:  "80%",
                                 width:   "75%",
                                 left:    "12.5%",
@@ -878,7 +1077,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                                 content: libD.jso2dom(["div#loaddistantfile.libD-ws-colors-auto libD-ws-size-auto", [
                                     ["div#pane-localfile", [
                                         ["p.title", _("From your computer")],
-                                        ["p", ["button#but-load-localfile",_("Load an automaton")]],
+                                        ["p", ["button#but-load-localfile",_("Load a file")]],
                                         ["input#input-file-auto",{"type":"file","style":"display:none"}], //To load file
                                     ]],
                                     ["div#load-automaton-main-container",[
@@ -897,92 +1096,129 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                             winLoadAutomaton.setAlwaysOnTop(1001); //To put in front window
 
                             //To load local file
-
                             document.getElementById("but-load-localfile").onclick = function() {
                                 var inputFile=document.getElementById("input-file-auto");
                                 inputFile.click(); //When we click on the button it allows the user to select a file
 
-                                 inputFile.onchange = function() { //When he had selected the file, it opens it
+                                inputFile.onchange = function() { //When he had selected the file, it opens it
 
-                                     document.getElementById("display-name-automaton").innerHTML=inputFile.value; //To display the name on the settings window
-                                     nameSelectAuto[numAutomaton] = inputFile.value;
 
-                                     divAutomaton.innerHTML=""; //Reset the div where we draw the automaton
-                                     var designer = new AudeDesigner(divAutomaton, true); //Create a designer to put the automaton in
-                                     var freader = new FileReader();
+                                    localNameSelectedFile[numAutomaton] = inputFile.value;
 
-                                     freader.onload = function () {
-                                         AudeGUI.openAutomaton(freader.result,designer);  //Display the automaton
-                                         automataL[numAutomaton] = designer.getAutomaton(0);
-                                         designer.autoCenterZoom();
-                                     };
-                                     freader.readAsText(inputFile.files[0], "utf-8");
+                                    var freader = new FileReader();
+
+                                    if (type==="automaton") {
+                                        document.getElementById("display-name-file").innerHTML=inputFile.value; //To display the name on the settings window
+                                        divAutomaton.innerHTML="";
+                                        var designer = new AudeDesigner(divAutomaton, true); //Create a designer to put the automaton in
+
+                                        freader.onload = function () { //load the file
+                                            designer.setAutomatonCode(freader.result);    //Display the automaton
+                                            automataL[numAutomaton]= designer.getAutomaton(0);
+                                            designer.autoCenterZoom();
+                                        };
+                                    }
+                                    else if(type==="re") {
+                                        document.getElementById("display-name-file-re").innerHTML=inputFile.value; //To display the name on the settings window
+                                        freader.onload = function () { //load the file
+                                                divAutomaton.innerHTML=freader.result;
+                                                localRELoaded = freader.result;
+                                        };
+                                    }
+                                    else if(type==="grammar") {
+                                        document.getElementById("display-name-file-grammar").innerHTML=inputFile.value; //To display the name on the settings window
+                                        freader.onload = function () { //load the file
+                                                divAutomaton.innerHTML=freader.result;
+                                                localGrammar = freader.result;
+                                        };
+                                    }
+                                    freader.readAsText(inputFile.files[0], "utf-8");
                                  };
                              }
 
 
                             var div = document.getElementById('load-automaton-question');
-                            var divListAuto = document.getElementById('load-automaton-question-list');
+                            var divListFiles = document.getElementById('load-automaton-question-list');
                             var divAutomaton = document.getElementById('display-loaded-automaton');
-                            var namesQuestion = Object.keys(listAuto); //The list of name exercice
+                            var namesQuestion = Object.keys(listFiles); //The list of name exercice
+
 
                             //Display the list of question
                             for (var i = 0, l=namesQuestion.length; i < l; i++) {
-                                var but = document.createElement("button");
-                                but.innerHTML = namesQuestion[i][0].toUpperCase() + namesQuestion[i].slice(1); //The first letter in uppercase
-                                but.className = "load-automaton-button";
-                                but.value = namesQuestion[i];
+                                if (listFiles[namesQuestion[i]].type===type) {
+                                    var but = document.createElement("button");
+                                    but.innerHTML = namesQuestion[i][0].toUpperCase() + namesQuestion[i].slice(1); //The first letter in uppercase
+                                    but.className = "load-automaton-button";
+                                    but.value = namesQuestion[i];
 
-                                //When we click on the button it shows the list of automata corresponding to the question
-                                but.addEventListener('click',function(e) {
-                                    if (selectedQuestion)
-                                        selectedQuestion.style.backgroundColor = 'inherit' ; //Change the color of the previous selected question
-                                    butDispListAutomata(e.target);
-                                    e.target.style.backgroundColor = 'rgba(239, 100, 100)'; //Change to red when we click
-                                    selectedQuestion = e.target;
-                                });
-                                but.addEventListener('mouseover',function(e) { //Change the color to grey when mouseover
-                                    if (getComputedStyle(e.target).backgroundColor!="rgb(239, 100, 100)")
-                                        e.target.style.backgroundColor = 'rgba(150, 150, 150)';
-                                });
-                                but.addEventListener('mouseout',function(e) { //Change the color to white when mouseout
-                                    if (getComputedStyle(e.target).backgroundColor!="rgb(239, 100, 100)")
-                                        e.target.style.backgroundColor = 'inherit' ;
-                                });
+                                    //When we click on the button it shows the list of automata corresponding to the question
+                                    but.addEventListener('click',function(e) {
+                                        if (selectedQuestion)
+                                            selectedQuestion.style.backgroundColor = 'inherit' ; //Change the color of the previous selected question
+                                        butDispListFiles(e.target);
+                                        e.target.style.backgroundColor = 'rgba(239, 100, 100)'; //Change to red when we click
+                                        selectedQuestion = e.target;
+                                    });
+                                    but.addEventListener('mouseover',function(e) { //Change the color to grey when mouseover
+                                        if (getComputedStyle(e.target).backgroundColor!="rgb(239, 100, 100)")
+                                            e.target.style.backgroundColor = 'rgba(150, 150, 150)';
+                                    });
+                                    but.addEventListener('mouseout',function(e) { //Change the color to white when mouseout
+                                        if (getComputedStyle(e.target).backgroundColor!="rgb(239, 100, 100)")
+                                            e.target.style.backgroundColor = 'inherit' ;
+                                    });
 
-                                div.appendChild(but);
-                            }
-
-                            //Display the list of automata
-                            function butDispListAutomata (question) {
-                                selectedQuestion = question.value;
-                                divListAuto.innerHTML = "<p class='title'>List of automata</p>";
-                                for (var j = 0, len=listAuto[question.value].length; j < len; j++) {
-                                    var auto = document.createElement("div");
-                                    auto.className = "load-button";
-                                    auto.innerHTML = listAuto[question.value][j].replace(/.txt$/,'');
-                                    divListAuto.appendChild(auto);
-
-                                    //Display the automaton
-                                    auto.addEventListener('click',butDispAutomaton.bind(null,question.value,listAuto[question.value][j]) );
+                                    div.appendChild(but);
                                 }
                             }
 
-                            //Display the selected automaton
-                            function butDispAutomaton (nameQuestion,nameAutomaton) {
-                                document.getElementById("display-name-automaton").innerHTML=nameAutomaton; //To display the name on the settings window
-                                nameSelectAuto[numAutomaton] = nameAutomaton;
+                            //Display the list of files
+                            function butDispListFiles (question) {
+                                selectedQuestion = question.value;
+                                divListFiles.innerHTML = "<p class='title'>List of files</p>";
+                                for (var j = 0, len=listFiles[question.value].tab.length; j < len; j++) {
+                                    if (listFiles[question.value].type===type) {
+                                        var auto = document.createElement("div");
+                                        auto.className = "load-button";
+                                        auto.innerHTML = listFiles[question.value].tab[j].replace(/.txt$/,'');
+                                        divListFiles.appendChild(auto);
 
-                                divAutomaton.innerHTML="";
-                                var designer = new AudeDesigner(divAutomaton, true); //Create a designer to put the automaton in
+                                        //Display the file when you click on the name
+                                        auto.addEventListener('click',butDispFile.bind(null,question.value,listFiles[question.value].tab[j]) );
+                                    }
+                                }
+                            }
 
-                                getFile("automata_question/"+nameQuestion+"/"+nameAutomaton,function(text) { //load the file
-                                    designer.setAutomatonCode(text);    //Display the automaton
-                                    //AudeGUI.openAutomaton(text,designer);  //Display the automaton
-                                    automataL[numAutomaton]= designer.getAutomaton(0);
-                                    designer.autoCenterZoom();
+                            //Display the selected file
+                            function butDispFile (nameQuestion,nameFile) {
 
-                                });
+                                localNameSelectedFile[numAutomaton] = nameFile;
+
+                                if (type==="automaton") {
+                                    document.getElementById("display-name-file").innerHTML=nameFile; //To display the name on the settings window
+                                    divAutomaton.innerHTML="";
+                                    var designer = new AudeDesigner(divAutomaton, true); //Create a designer to put the automaton in
+
+                                    getFile("automata_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
+                                        designer.setAutomatonCode(text);    //Display the automaton
+                                        automataL[numAutomaton]= designer.getAutomaton(0);
+                                        designer.autoCenterZoom();
+                                    });
+                                }
+                                else if(type==="re") {
+                                    document.getElementById("display-name-file-re").innerHTML=nameFile; //To display the name on the settings window
+                                    getFile("automata_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
+                                            divAutomaton.innerHTML=text;
+                                            localRELoaded = text;
+                                    });
+                                }
+                                else if(type==="grammar") {
+                                    document.getElementById("display-name-file-grammar").innerHTML=nameFile; //To display the name on the settings window
+                                    getFile("automata_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
+                                            divAutomaton.innerHTML=text;
+                                            localGrammarLoaded = text;
+                                    });
+                                }
                             }
                         }
                     }
@@ -1031,6 +1267,13 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 ["button", {"value": ("RE2automaton"), "class":"questionList-question-select"}, _("Give the automaton corresponding to the RE")],["br"],
                 ]));
                 break;
+            case 5:
+                div.appendChild(libD.jso2dom([
+                ["button", {"value": ("grammar2Automaton"), "class":"questionList-question-select"}, _("Give the automaton corresponding to the right linear grammar")],["br"],
+                ["button", {"value": ("automaton2Grammar"), "class":"questionList-question-select"}, _("Give the right linear grammar corresponding to the automaton")],["br"],
+                ["button", {"value": ("leftGrammar2RightGrammar"), "class":"questionList-question-select"}, _("Convert the left linear grammar to the right linear grammar")],["br"],
+                ]));
+                break;
 
             default:
                 div.appendChild(libD.jso2dom([
@@ -1043,9 +1286,10 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
                 //We create the question
                 var q = new Question ('','',e.target.value);
-                q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions,automataLoaded);
-                q.initializeAutomata();
-                q.initializeRegex();
+                q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
+                q.initializeAutomata(automataLoaded);
+                q.initializeRegex(RELoaded);
+                q.initializeGrammar(grammarLoaded);
                 q.correctionQuestion();
 
                 questionSelected = e.target.value;
@@ -1061,9 +1305,10 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 but.onclick = reDrawQuestionList;
                 var butRestart = document.getElementById("questionList-restart"); //The button permits to regenerate the question
                 butRestart.onclick = function () { //Recreate the page with a new automaton
-                    q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions,automataLoaded);
-                    q.initializeAutomata(); // Create a new automaton
-                    q.initializeRegex(); //Create a new regex if needed
+                    q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
+                    q.initializeAutomata(automataLoaded); // Create a new automaton
+                    q.initializeRegex(RELoaded); //Create a new regex if needed
+                    q.initializeGrammar(grammarLoaded);
                     q.correctionQuestion(); //Correct the question
                     div.innerHTML='';
                     drawQuestion(q,div);
@@ -1100,7 +1345,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "automaton":
                     question.userResponse = designerAnswer.getAutomaton(0); //Give the automaton
                     break;
-                case "input": case "re":
+                case "input": case "re": case "grammar":
                     question.userResponse = document.getElementById("question-answers-input").value; //Give the value of the input
                     break;
                 case "checkbox":
@@ -1119,15 +1364,17 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             correctionQuestion(question);
         });
 
+        //To display the response
         var butDispResp = document.getElementById("question-dispay-response");
         butDispResp.onclick = displayResponse.bind(null,question,"")
 
-
+        //Display the wording
         var divWording = document.getElementById("question-wording");
         divWording.innerHTML += question.wording;
         var divAutomatonQuestion = document.getElementById("question-automata-designer");
 
 
+        //Display other informations (automaton,table,grammar...)
         //If there are 2 automata needed
         if (question.need2AutomataQuestion()) {
             divAutomatonQuestion.appendChild(libD.jso2dom([
@@ -1153,10 +1400,15 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
         //Draw the RE
         } else if (question.underTypeQuestion === "RE2automaton") {
-            console.log("REGEX:");
-            console.log(question.regex);
             divAutomatonQuestion.appendChild(document.createTextNode(question.regex));
-        } else {
+        }
+
+        //Draw the the grammar
+        else if (question.underTypeQuestion === "grammar2Automaton" || question.underTypeQuestion === "leftGrammar2RightGrammar") {
+            divAutomatonQuestion.appendChild(document.createTextNode(question.grammar.toString()));
+        }
+
+        else {
             divAutomatonQuestion.style.display = "none";
         }
 
@@ -1168,7 +1420,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     ["div#question-answers-automaton",_("You can draw the automaton bellow.")]]));
                 var designerAnswer = new AudeDesigner(document.getElementById("question-answers-automaton"), false); //Contains the automata
                 break;
-            case "input": case "re":
+            case "input": case "re": case "grammar":
                 divAnswersUser.appendChild(libD.jso2dom([
                     ["input#question-answers-input",{"type":"text"}]]));
                 if(question.underTypeQuestion==="equivalenceStates")
@@ -1193,7 +1445,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     ["div#question-answers-table"]]));
                 createTable(document.getElementById("question-answers-table"));
                 var divT = document.getElementById('div-container-table');
-                divT.childNodes[4].style.display = "none"; //Remove buttons "create automaton" "X"
+                divT.childNodes[4].style.display = "none"; //Remove buttons "create automaton","X"
                 divT.childNodes[5].style.display = "none";
             break;
         }
@@ -1220,13 +1472,13 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     //display the solution in the div
     function displayResponse(question,div) {
         var response = question.response;
-        console.log(question.response);
+        question.save("yolo");
         switch (question.answerMode()) {
             case "automaton":
 
                 if (div==='' || div==undefined  ) { //Create an area to display the automaton response
                     var div=document.getElementById("question-wording").parentNode;
-                    if (document.getElementById("question-solution-automaton")!==null) { //If we already create we destroy the div
+                    if (document.getElementById("question-solution-automaton")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-automaton"));
                     }
                 }
@@ -1235,18 +1487,12 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 var designer = new AudeDesigner(document.getElementById("question-solution-automaton"), true);
                 designer.setAutomatonCode(automaton_code(response)); //Display the automaton response
                 designer.autoCenterZoom();
-/*
-                automaton2svg(response,function (res) {
-                    document.getElementById("question-solution-automaton").innerHTML = res;
-                    AudeGUI.notify(_("Program Result"), document.getElementById("question-solution-automaton"), "normal");
-                });
-*/
                 break;
 
-            case "input": case "re":
+            case "input": case "re": case "grammar":
                 if (div==='' || div==undefined  ) { //Create an area to display the input response
                     var div=document.getElementById("question-wording").parentNode;
-                    if (document.getElementById("question-solution-input")!==null) { //If we already create we destroy the div
+                    if (document.getElementById("question-solution-input")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-input"));
                     }
                 }
@@ -1259,20 +1505,19 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             case "checkbox":
                 if (div==='' || div==undefined  ) { //Create an area to display the input response
                     var div=document.getElementById("question-wording").parentNode;
-                    if (document.getElementById("question-solution-input")!==null) { //If we already create we destroy the div
+                    if (document.getElementById("question-solution-input")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-input"));
                     }
                 }
                 div.appendChild(libD.jso2dom([
                 ["span#question-solution-input"]]));
-                console.log(response);
                 document.getElementById("question-solution-input").innerHTML = response;
                 break;
 
             case "table":
                 if (div==='' || div==undefined  ) { //Create an area to display the input response
                     var div=document.getElementById("question-wording").parentNode;
-                    if (document.getElementById("question-solution-table")!==null) { //If we already create we destroy the div
+                    if (document.getElementById("question-solution-table")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-table"));
                     }
                 }
