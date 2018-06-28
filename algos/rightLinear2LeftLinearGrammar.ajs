@@ -1,0 +1,94 @@
+//Convert a right linear grammar to a left linear grammar
+//G can be a string or a grammar class
+//if str is 1 the function returns a string
+//if str is 0 the fonction returns a grammar
+export function rightLinear2LeftLinearGrammar (G,str)
+    if typeof G = "string" then
+        G := string2LinearGrammar(G)
+    end if
+    if G=undefined or isLeftLinear(G)=false then
+        return G
+    end if
+
+    let GL := new linearGrammar() //The new right linear grammar
+    let finalSymbols := G.getTerminalSymbols()
+    let nonFinalSymbols := G.getNonTerminalSymbols()
+    let rules := new Set(G.getProductionRules()) //We copy it beacause we modify it later
+    let axiom := G.getStartSymbol()
+
+
+    foreach fs in finalSymbols do
+        GL.addTerminalSymbol(fs)
+    done
+
+    foreach nfs in nonFinalSymbols do
+        GL.addNonTerminalSymbol(nfs)
+    done
+
+    GL.setStartSymbol(axiom)
+
+    //If there a rule axiom -> axiom finalSymbol then create S0 -> S and S0 is the new axiom
+    let nameAxiom := "S0"
+    foreach rule in rules do
+        if rule.nonTerminalSymbol=axiom and rule.nonTerminalSymbolBody!="" and rule.nonTerminalSymbolBody!=undefined then
+            while nameAxiom belongs to nonFinalSymbols do
+                nameAxiom +='0'
+            done
+            GL.setStartSymbol(nameAxiom)
+            rules.add(new Rule(nameAxiom,"",axiom))
+            axiom := nameAxiom
+            break;
+        end if
+    done
+
+    //Add the production rules
+    // Axiom -> p : Axiom -> p
+    // Axiom -> pA : A -> p
+    // A -> p : Axiom -> Ap
+    // A -> pB : B -> Ap
+    foreach rule in rules do
+        if rule.getNonTerminalSymbol() = axiom and (rule.getNonTerminalSymbolBody()=undefined or rule.getNonTerminalSymbolBody()="") then
+            GL.addRule(axiom,rule.getListSymbolTerminal())
+        else if rule.nonTerminalSymbol = axiom then
+            GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal())
+        else if rule.getNonTerminalSymbolBody() = undefined or rule.getNonTerminalSymbolBody() = "" then
+            if rule.getListSymbolTerminal()="ε" then
+                GL.addRule(axiom,"",rule.getNonTerminalSymbol(),"left")
+            else
+                GL.addRule(axiom,rule.getListSymbolTerminal(),rule.getNonTerminalSymbol(),"left")
+            end if
+        else
+            GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal(),rule.getNonTerminalSymbol(),"left")
+        end if
+    done
+
+    if str=0 or str=undefined then
+        return GL
+    else
+        return GL.toString()
+    end if
+end function
+
+
+export function isLeftLinear(G)
+    let rules := G.getProductionRules()
+    foreach rule in rules do
+        if rule.side="left" then
+            return true
+        end if
+    done
+end function
+
+
+run (
+    function ()
+        let input := window.prompt(
+            AudeGUI.l10n(
+            "Enter the left linear grammar"
+            ),
+        )
+    return rightLinear2LeftLinearGrammar(input,1)
+
+end function
+
+)
