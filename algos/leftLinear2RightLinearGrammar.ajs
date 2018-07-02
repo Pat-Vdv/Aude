@@ -52,13 +52,17 @@ export function leftLinear2RightLinearGrammar (G,str)
         else if rule.getNonTerminalSymbol() = axiom then
             GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal())
         else if rule.getNonTerminalSymbolBody() = undefined or rule.getNonTerminalSymbolBody() = "" then
-            if rule.getListSymbolTerminal()="ε" then //if A -> ε then Axiom -> A 
+            if rule.getListSymbolTerminal()="ε" then //if A -> ε then Axiom -> A
                 GL.addRule(axiom,"",rule.getNonTerminalSymbol())
             else
                 GL.addRule(axiom,rule.getListSymbolTerminal(),rule.getNonTerminalSymbol())
             end if
         else
-            GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal(),rule.getNonTerminalSymbol())
+            if rule.getListSymbolTerminal()="ε" then
+                GL.addRule(rule.getNonTerminalSymbolBody(),"",rule.getNonTerminalSymbol())
+            else
+                GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal(),rule.getNonTerminalSymbol())
+            end if
         end if
     done
 

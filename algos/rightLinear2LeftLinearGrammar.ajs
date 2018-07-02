@@ -58,7 +58,11 @@ export function rightLinear2LeftLinearGrammar (G,str)
                 GL.addRule(axiom,rule.getListSymbolTerminal(),rule.getNonTerminalSymbol(),"left")
             end if
         else
-            GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal(),rule.getNonTerminalSymbol(),"left")
+            if rule.getListSymbolTerminal()="ε" then
+                GL.addRule(rule.getNonTerminalSymbolBody(),"",rule.getNonTerminalSymbol(),"left")
+            else
+                GL.addRule(rule.getNonTerminalSymbolBody(),rule.getListSymbolTerminal(),rule.getNonTerminalSymbol(),"left")
+            end if
         end if
     done
 

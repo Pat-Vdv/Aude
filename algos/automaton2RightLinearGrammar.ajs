@@ -1,6 +1,8 @@
 
 // Transform an automaton to a right linear grammar
-export function automaton2RightLinearGrammar (A)
+//if str is 1 the function returns a string
+//if str is 0 the fonction returns a grammar
+export function automaton2RightLinearGrammar (A,str)
     let G := new linearGrammar()
 
     let alphabet := A.getAlphabet()
@@ -34,7 +36,11 @@ export function automaton2RightLinearGrammar (A)
         end if
     done
 
-    return(G)
+    if str=0 or str=undefined then
+        return(G)
+    else if str=1 then
+        return G.toString()
+    end if
 
 end function
 
@@ -43,6 +49,6 @@ run(
     function()
 
     let A := get_automaton(currentAutomaton)
-        return (automaton2RightLinearGrammar(A))
+        return (automaton2RightLinearGrammar(A,1))
     end function
 )
