@@ -1,5 +1,6 @@
 from leftLinear2RightLinearGrammar import leftLinear2RightLinearGrammar
 from leftLinear2RightLinearGrammar import isLeftLinear
+from splitWord import splitWord
 // Transform a linearGrammar into an automaton
 export function linearGrammar2Automaton (grammar)
 
@@ -54,7 +55,7 @@ export function linearGrammar2Automaton (grammar)
 			end if
         end if
     done
-
+	A := splitWord(A)
     return A
 end function
 
