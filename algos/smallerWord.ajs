@@ -50,8 +50,8 @@ export function dijkstra (A)
     end if
 end function
 
-//Return a littler word of the automaton
-export function giveLittlerWord (A)
+//Return a smaller word of the automaton
+export function smallerWord (A)
     let dist := dijkstra (A)
     if typeof dist = "string" then
         return dist
@@ -113,6 +113,6 @@ end function
 
 run(
     function ()
-        return giveLittlerWord(get_automaton(currentAutomaton))
+        return smallerWord(get_automaton(currentAutomaton))
     end function
 )

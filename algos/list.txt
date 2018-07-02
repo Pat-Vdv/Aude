@@ -22,9 +22,11 @@ automaton2regex.ajs     / Automaton → Reg. Exp.
 moore2mealy.ajs         / Moore machine → Mealy machine
 mealy2moore.ajs         / Mealy machine → Moore machine
 unitTests.ajs           / Unit tests for Aude
-htmltable2automaton.ajs	/Table representation → automaton
-littlerWord.ajs	/Littler word
+htmltable2automaton.ajs	/T able representation → automaton
+smallerWord.ajs	/ Smaller word
+createAutomaton.ajs / Create automaton
 automaton2RightLinearGrammar.ajs / Automaton → Right linear grammar
 linearGrammar2Automaton.ajs / Linear grammar → Automaton
 leftLinear2RightLinearGrammar.ajs / Left linear grammar → Right linear grammar
 rightLinear2LeftLinearGrammar.ajs / Right linear grammar → Left linear grammar
+splitWord.ajs / Create intermediate states
