@@ -1,14 +1,16 @@
-from completion import complete;
-from equivalence import automataAreEquivalent;
+from completion import complete
+from completion import isCompleted
+from equivalence import automataAreEquivalent
 
-export function complement(A)
-   let compA := complete(A);
+export function complement(A,completed)
+    if completed=false or completed=undefined then
+        A := complete(A,A.getAlphabet())
+    end if
+    foreach state in A.getStates() do
+        A.toggleFinalState(state)
+    done
 
-   foreach state in compA.getStates() do
-      compA.toggleFinalState(state)
-   done
-
-   return compA
+    return A
 end function
 
 export function automataAreComplement(A1, A2)
@@ -16,4 +18,21 @@ export function automataAreComplement(A1, A2)
     return automataAreEquivalent(A, A2, false)
 end function
 
-run(complement, get_automaton(currentAutomaton));
+run(
+    function ()
+        let A := get_automaton(currentAutomaton)
+        let rep := false
+        if isCompleted(A)=false then
+            let rep := confirm (AudeGUI.l10n(
+                "Automaton not completed! The program will complete it before giving the complemented automaton"
+                ))
+            if rep = false then
+                return AudeGUI.l10n(
+                    "Can't pursue the algorithm if the automaton is not completed"
+                )
+            end if
+
+        end if
+        return complement(A,rep)
+    end function
+);

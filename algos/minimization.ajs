@@ -140,4 +140,40 @@ export function isMinimized(A)
     return (numStateBefore = numStateAfter)
 end function
 
-run(minimize, get_automaton(currentAutomaton))
+run(
+    function()
+        let A := get_automaton(currentAutomaton)
+        let isDeter := true
+        let isComp := true
+        let rep := true
+
+        let isDeterA := isDeterminized(A)
+        let isCompA := isCompleted(A)
+        if isDeterA=false and isCompA=false then
+            let rep := confirm (AudeGUI.l10n(
+                "Automaton not determinized and not completed! The program will determinize and complete it before giving the minimize automaton"
+            ))
+            isDeter := false
+            isComp := false
+        else if isDeterA=false and isCompA=true then
+            let rep := confirm (AudeGUI.l10n(
+                "Automaton not determinized! The program will determinize it before giving the minimize automaton"
+            ))
+            isDeter := false
+        else if isDeterA=true and isCompA=false then
+            let rep := confirm (AudeGUI.l10n(
+                "Automaton not completed! The program will complete it before giving the minimize automaton"
+            ))
+            isComp := false
+        end if
+
+        if rep = false then
+            return AudeGUI.l10n(
+                "Can't pursue the algorithm if the automaton is not determinized and completed"
+            )
+        end if
+
+
+    return minimize(A,isDeter,isComp,A.getAlphabet())
+    end function
+)
