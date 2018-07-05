@@ -43,16 +43,39 @@
         }
         else if (AudeGUI.getCurrentMode()==="program" )
             drawHelpAlgo();
+        else if (AudeGUI.getCurrentMode()==="design" )
+            drawHelpDesign();
     }
+
+    function drawHelpDesign() {
+        let helpWindowContent = ["div#help-main", [
+            ["h3",_("How to draw automata ?")],
+            ["ul",[
+                ["li",_("To add a new state, double-click where you want the state to be.")],
+                ["li",_("To add a new transition Shift+click on the start state then click on the destination state.")],
+                ["li",_("To rename a state, to modify symbols of a transition, double-click on it.")],
+                ["li",_("To set a state as the initial state, ctrl+right click on the state.")],
+                ["li",_("To set a state as (non-)accepting, right-click on it")],
+                ["li",_("To remove a state or a transition, ctrl-click on it.")],
+            ]]
+        ]];
+
+        win = libD.newWin({ //Create a new window
+            title:      _("Help design"),
+            show:       true,
+            fullscreen: false,
+            top: "5%",
+            right: "1%",
+            content: libD.jso2dom(helpWindowContent) //Send the html
+        });
+    }
+
+
 
     /*
     * Create the page that shows the help for algorithm
     */
     function  drawHelpAlgo () {
-
-        console.log("Creation help");
-
-
 
         let helpWindowContent = ["div#help-main", [
             ["div#questionList-selection-chapter", [ //To select the chapter
@@ -158,12 +181,12 @@
                     ["div",_("# This is a comment")],
                     ["div",_("// This is another comment")],
                     ["div",_("/* This is a multiline")],
-                    ["div",("comment */")],
+                    ["div",_("comment */")],
                 ]];
                 break;
             case "variable":
                 content = ["div#help-command",[
-                    ["div",("The assignation in audescript uses "),["b",(":=")]],
+                    ["div",_("The assignation in audescript uses "),["b",(":=")]],
                     ["div",_("let variable := 0")],
                     ["div",_("const variable := 42")],
                 ]];
@@ -427,6 +450,7 @@
 
                 ]];
                 break;
+
             case "transition":
                 content = ["div#help-command",[
                     ["b",_("Add the transition to the automaton")],
@@ -487,7 +511,7 @@
         }
 
         var ele = getOffset (document.getElementById("help-main"));
-
+        //Display the selected help
         var winCommand = libD.newWin({ //Create a new window
             title:      _(command),
             show:       true,
