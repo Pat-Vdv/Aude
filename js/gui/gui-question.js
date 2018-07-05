@@ -19,78 +19,90 @@
 (function(pkg){
     //Transform a string ( (a,b),(c,d)... ) to a set
     pkg.str2Set = function(set,nbrElement) {
-    if (nbrElement===2 || nbrElement===undefined ) {
-        if (typeof set === 'string' || set instanceof String) {
-            var setT = new Set(); //The true set
-            var str = '' ;
-            while(/\( *([^,\(\)\{\} ]+) *, *([^,\(\)\{\} ]+) *\)/.test(set)) {
-                /\( *([^,\(\)\{\} ]+) *, *([^,\(\)\{\} ]+) *\)/.exec(set);
-                str = "("+RegExp.$1+","+RegExp.$2+")";
-                set=set.replace(/\( *([^,\(\)\{\} ]+) *, *([^,\(\)\{\} ]+) *\)/,'');
-                setT.add(str);
-            }
-            return setT;
-        }
-        return set;
-    }
-    else if (nbrElement===1) {
-        if (typeof set === 'string' || set instanceof String) {
-            var setT = new Set(); //The true set
-            var str = '' ;
-            while(/\(? *([^,\(\)\{\} ]+) *\)? *,?/.test(set)) {
-                /\(? *([^,\(\)\{\} ]+) *\)? *,?/.exec(set);
-                str = "("+RegExp.$1+")";
-                set=set.replace(/\(? *([^,\(\)\{\}]+) *\)? *,?/,'');
-                setT.add(str);
-            }
-            return setT;
-        }
-        return set;
-    }
-}
-
-//Return true if the setL is include in the setB (the elements have this form (a,b),(c,d) if nbrElement=2)
- pkg.setInclude = function(setL,setB,nbrElement) {
-    var pres= false, final = true,a,b,c,d;
-    if (nbrElement===2 || nbrElement===undefined) {
-        for (var eleL of setL) {
-            /(\d)+,(\d)+/.exec(eleL);
-            a = RegExp.$1;
-            b = RegExp.$2;
-            for (var eleB of setB) {
-                /\((\d+),(\d+)\)/.exec(eleB);
-                c = RegExp.$1;
-                d = RegExp.$2;
-                if (eleL===eleB || (a===d && b === c )) {
-                    pres = true;
+        if (nbrElement===2 || nbrElement===undefined ) {
+            if (typeof set === 'string' || set instanceof String) {
+                var setT = new Set(); //The true set
+                var str = '' ;
+                while(/\( *([^,\(\)\{\} ]+) *, *([^,\(\)\{\} ]+) *\)/.test(set)) {
+                    /\( *([^,\(\)\{\} ]+) *, *([^,\(\)\{\} ]+) *\)/.exec(set);
+                    str = "("+RegExp.$1+","+RegExp.$2+")";
+                    set=set.replace(/\( *([^,\(\)\{\} ]+) *, *([^,\(\)\{\} ]+) *\)/,'');
+                    setT.add(str);
                 }
+                return setT;
             }
-            final = final && pres;
-            pres=false;
+            return set;
         }
-        return final;
-    }
-    else if (nbrElement===1) {
-        for (var eleL of setL) {
-            for (var eleB of setB) {
-                if (eleL===eleB ) {
-                    pres = true;
+        else if (nbrElement===1) {
+            if (typeof set === 'string' || set instanceof String) {
+                var setT = new Set(); //The true set
+                var str = '' ;
+                while(/\(? *([^,\(\)\{\} ]+) *\)? *,?/.test(set)) {
+                    /\(? *([^,\(\)\{\} ]+) *\)? *,?/.exec(set);
+                    str = "("+RegExp.$1+")";
+                    set=set.replace(/\(? *([^,\(\)\{\}]+) *\)? *,?/,'');
+                    setT.add(str);
                 }
+                return setT;
             }
-            final = final && pres;
-            pres=false;
+            return set;
         }
-        return final;
     }
 
-}
-//Return true if 2 sets are identical ((0,1) and (1,0) are considered identical)
-pkg.identicalSets=function (seta,setb,nbrElement) {
-    setb=str2Set(String(setb),nbrElement); //transform to a Set
-    seta=str2Set(String(seta),nbrElement);
+    //Return true if the setL is include in the setB (the elements have this form (a,b),(c,d) if nbrElement=2)
+     pkg.setInclude = function(setL,setB,nbrElement) {
+        var pres= false, final = true,a,b,c,d;
+        if (nbrElement===2 || nbrElement===undefined) {
+            for (var eleL of setL) {
+                /(\d)+,(\d)+/.exec(eleL);
+                a = RegExp.$1;
+                b = RegExp.$2;
+                for (var eleB of setB) {
+                    /\((\d+),(\d+)\)/.exec(eleB);
+                    c = RegExp.$1;
+                    d = RegExp.$2;
+                    if (eleL===eleB || (a===d && b === c )) {
+                        pres = true;
+                    }
+                }
+                final = final && pres;
+                pres=false;
+            }
+            return final;
+        }
+        else if (nbrElement===1) {
+            for (var eleL of setL) {
+                for (var eleB of setB) {
+                    if (eleL===eleB ) {
+                        pres = true;
+                    }
+                }
+                final = final && pres;
+                pres=false;
+            }
+            return final;
+        }
+    }
+    //Return true if 2 sets are identical ((0,1) and (1,0) are considered identical)
+    pkg.identicalSets=function (seta,setb,nbrElement) {
+        setb=str2Set(String(setb),nbrElement); //transform to a Set
+        seta=str2Set(String(seta),nbrElement);
 
-    return setInclude(seta,setb,nbrElement) && setInclude(setb,seta,nbrElement);
-}
+        return setInclude(seta,setb,nbrElement) && setInclude(setb,seta,nbrElement);
+    }
+
+    // Convert an SVG code to an automaton.
+    // Used to validate a quiz.
+    pkg.svg2automaton = function (svg) {
+        var div  = document.createElement("div");
+        var designer = new AudeDesigner(div, true);
+        document.getElementById("div-quiz").appendChild(div);
+        div.display = "none";
+        designer.setAutomatonCode(svg);
+        var A = designer.getAutomaton(designer.currentIndex);
+        document.getElementById("div-quiz").removeChild(div);
+        return A;
+    }
 }(window));
 
 
@@ -98,13 +110,13 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     //List of all the question
     var underTypeQuestionList = ["complement","complete","product","minimize","equivalenceStates","equivalencyAutomata","automaton2Table","table2Automaton"
     ,"accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate","automaton2RE","RE2automaton","grammar2Automaton",
-"automaton2Grammar","leftGrammar2RightGrammar"];
+"automaton2Grammar","leftGrammar2RightGrammar","mcq1"];
     //Need automaton for the response
     var underTypeQuestionNeedAutomaton = ["complement","complete","product","minimize","determinize","determinize_minimize","eliminate",
     "determinize_eliminate","RE2automaton","grammar2Automaton"];
     //Need automaton for the wording
     var underTypeQuestionNeedAutomatonWording = ["complement","complete","product","minimize","equivalenceStates","equivalencyAutomata",
-    "table2Automaton","automaton2Table","accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate",
+    "automaton2Table","accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate",
     "automaton2RE","automaton2Grammar"];
 
     //For the creation of the automaton
@@ -125,7 +137,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     var automaton2HTMLTable = null;
     var createTable = null;
     var HTMLTable2automaton = null;
-    var giveLittlerWord = null;
+    var smallerWord = null;
     /*Chapter 2*/
     var determinize = null;
     var isDeterminized = null;
@@ -144,7 +156,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
      pkg.loadPrograms = function () {
     window.AudeGUI.Runtime.loadIncludes(["completion","equivalence", "product", "minimization","complementation","distinguishability","coaccessibility","accessibility",
-    "automaton2htmltable","htmltable2automaton","createAutomaton","littlerWord","determinization","epsElimination","regex2automaton","automaton2regex","automaton2RightLinearGrammar",
+    "automaton2htmltable","htmltable2automaton","createAutomaton","smallerWord","determinization","epsElimination","regex2automaton","automaton2regex","automaton2RightLinearGrammar",
     "linearGrammar2Automaton","leftLinear2RightLinearGrammar","rightLinear2LeftLinearGrammar"],
     function () {
         createAutomatonCoaccessible = audescript.m("createAutomaton").createAutomatonCoaccessible;
@@ -164,7 +176,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         HTMLTable2automaton = audescript.m("htmltable2automaton").HTMLTable2automaton;
         determinize = audescript.m("determinization").determinize;
         isDeterminized = audescript.m("determinization").isDeterminized;
-        giveLittlerWord = audescript.m("littlerWord").giveLittlerWord;
+        smallerWord = audescript.m("smallerWord").smallerWord;
         epsElim = audescript.m("epsElimination").epsElim;
         hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions
         regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
@@ -174,9 +186,9 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         linearGrammar2Automaton = audescript.m("linearGrammar2Automaton").linearGrammar2Automaton;
         automaton2RightLinearGrammar = audescript.m("automaton2RightLinearGrammar").automaton2RightLinearGrammar;
         isLeftLinear = audescript.m("leftLinear2RightLinearGrammar").isLeftLinear;
-        //regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
     });
     }
+
 
     //Class Question: wording, typeQuestion, underTypeQuestion, automata if needed,regex, a response, type of response, the response of the user
      pkg.Question =  function (wording,typeQuestion,underTypeQuestion,automaton,regex,grammar,response,typeResponse,userResponse) {
@@ -187,11 +199,11 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         this.wording =( wording==='' ? this.createWording(this.underTypeQuestion) : wording );
 
         if (typeQuestion!="MCQ" && typeQuestion!="RE" && typeQuestion!="Automaton" && typeQuestion!='')
-            console.log("Error: creation of question impossible. typeQuestion: "+typeQuestion +" is not valid");
+            throw new Error("Error: creation of question impossible. typeQuestion: "+typeQuestion +" is not valid");
         else
             this.typeQuestion = typeQuestion; //The type of the question (MCQ,Automaton,RE (Regular expression))
 
-        this.automaton=[0,0,0,0];
+        this.automaton=[null,null,null,null];
         var i =0;
         if (automaton) {
             for (var auto of automaton) {
@@ -200,10 +212,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             }
         }
 
-        if ((response==='' || response===undefined) && (automaton!== undefined && automaton!=='') )
-            this.correctionQuestion();
-        else
-            this.response = response;
+        this.response = response;
 
         if (typeResponse==='' || typeResponse===undefined)
             this.typeResponse = this.answerMode();
@@ -218,8 +227,31 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
     }
 
-
     pkg.Question.prototype = {
+
+        // Create a mcq: wording,the chapter (1-6), array choice, array of solution, otherInfo: for the wording automata, grammar, re
+        //
+        createMCQ : function (wording,chapter,choices,response,otherInfo) {
+            this.wording = wording;
+            this.typeQuestion = "mcq";
+            this.underTypeQuestion = "mcq"+chapter;
+            this.choices = choices; //An array of choices, choice is defined by an id and a text
+            this.response = response; //An array with all the correct answers which corresponds to the id of the choice
+
+            //Other information
+            if (otherInfo!==undefined && otherInfo!=null) {
+                if (Array.isArray(otherInfo)) {
+                    for (element of otherInfo) {
+                        this.otherInfo.tab.push(element);
+                    }
+                }
+                else {
+                    this.otherInfo.tab.push(otherInfo)
+                }
+                otherInfo.type = otherInfo[0].constructor.name; //The type of element //Automaton, grammar, er(String)
+            }
+        },
+
         //Create the wording corresponding to the type of question
         createWording: function (type) {
             switch (type)
@@ -335,87 +367,91 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     return "re";
                     break;
                 case "equivalencyAutomata" :
-                    return "checkbox";
+                    return "radio";
                     break;
                 case "automaton2Table":
                     return "table";
+                    break;
+                case "mcq1":
+                    return "checkbox";
                     break;
             }
         },
 
         //Create the response with the algorithm and put it in the .response
          correctionQuestion :  function () {
-            var response= null;
             switch (this.underTypeQuestion) {
                 case "complement":
-                    response = complement(this.automaton[0],this.automaton[0].getAlphabet());
+                    this.response = complement(this.automaton[0],this.automaton[0].getAlphabet());
                     break;
                 case "complete":
-                    response = complete(this.automaton[0],this.automaton[0].getAlphabet());
+                    this.response = complete(this.automaton[0],this.automaton[0].getAlphabet());
                     break;
                 case "minimize":
-                    response = minimize(this.automaton[0],this.automaton[0].getAlphabet());
+                    this.response = minimize(this.automaton[0],this.automaton[0].getAlphabet());
                     break;
                 case "product":
-                    response = product(this.automaton[0],this.automaton[1],false);
+                    this.response = product(this.automaton[0],this.automaton[1],false);
                     break;
                 case "equivalenceStates":
-                    response = notDistinguableStates(this.automaton[0]);
+                    this.response = notDistinguableStates(this.automaton[0]);
                     break;
                 case "equivalencyAutomata":
-                    response = automataAreEquivalent(this.automaton[0],this.automaton[1]);
+                    this.response = automataAreEquivalent(this.automaton[0],this.automaton[1]);
                     break;
                 case "automaton2Table":
-                    response = automaton2HTMLTable(this.automaton[0]);
+                    this.response = automaton2HTMLTable(this.automaton[0]);
                     break;
                 case "table2Automaton":
-                    response = this.automaton[0];
+                    this.response = this.automaton[0];
                     break;
                 case "coaccessible":
-                    response = coaccessibleStates(this.automaton[0]);
+                    this.response = coaccessibleStates(this.automaton[0]);
                     break;
                 case "accessible":
-                    response = accessibleStates(this.automaton[0]);
+                    this.response = accessibleStates(this.automaton[0]);
                     break;
                 case "word":
-                    response = giveLittlerWord(this.automaton[0]);
+                    this.response = smallerWord(this.automaton[0]);
                     break;
                 case "determinize":
-                    response = determinize(this.automaton[0]);
+                    this.response = determinize(this.automaton[0]);
                     break;
                 case "determinize_minimize":
-                    response = determinize(this.automaton[0],1);
+                    this.response = determinize(this.automaton[0],1);
                     break;
                 case "eliminate":
-                    response = epsElim(this.automaton[0]);
+                    this.response = epsElim(this.automaton[0]);
                     break;
                 case "determinize_eliminate":
-                    response = determinize(epsElim(this.automaton[0]));
+                    this.response = determinize(epsElim(this.automaton[0]));
                     break;
                 case "automaton2RE":
-                    response = automatonToRegex(this.automaton[0]);
+                    this.response = automatonToRegex(this.automaton[0]);
                     break;
                 case "RE2automaton":
-                    response = regexToAutomaton(this.regex)
+                    this.response = regexToAutomaton(this.regex)
                     break;
                 case "grammar2Automaton":
-                    response = linearGrammar2Automaton(this.grammar);
+                    this.response = linearGrammar2Automaton(this.grammar);
                     break;
                 case "automaton2Grammar":
-                    response = automaton2RightLinearGrammar(this.automaton[0]).toString(); //Return the string of the grammar
+                    this.response = automaton2RightLinearGrammar(this.automaton[0]).toString(); //Return the string of the grammar
                     break;
                 case "leftGrammar2RightGrammar":
-                    response = leftLinear2RightLinearGrammar(this.grammar,0).toString();
+                    this.response = leftLinear2RightLinearGrammar(this.grammar,0).toString();
+                    break;
+                case 'mcq': //Can't correct automatically a mcq
+                    break;
+                default:
                     break;
                 }
-                this.response=response;
         },
 
         //return true if the response is correct or false otherwise
         isCorrect: function () {
             response = this.response;
-
-            //If thue user needs to draw an automaton and didn't do it
+            //If the user needs to draw an automaton and didn't do it
             if(this.typeResponse==="automaton" && (this.userResponse===undefined || this.userResponse===null)) {
                 return false;
             }
@@ -472,9 +508,27 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "leftGrammar2RightGrammar": //Compare the 2 automata generated by the grammars, and look if the given grammar is right linear
                     return automataAreEquivalent( linearGrammar2Automaton(this.grammar),linearGrammar2Automaton(this.userResponse)) && isLeftLinear(this.userResponse)===false;
                     break;
+                case "mcq1": case "mcq2": case "mcq3": case "mcq4": case "mcq5": case "mcq6": //For the mcq
+                    var bool;
+                    if (this.response.length != this.userResponse.length) { //If the number of response is different
+                        return false;
+                    }
+                    for (var i=0,l= this.response.length;i<l;i++) { //Look for each response
+                        bool=false;
+                        for (var j=0,len= this.userResponse.length;j<len;j++ ) {
+                            if (this.response[i] == this.userResponse[j] )
+                                bool=true;
+                        }
+                        if (!bool)
+                            return false;
+                    }
+                    return true;
+                    break;
+                default: //Not a specified question
+                    break;
                 }
         },
-        //Settings for creation of automaton
+        //Settings for creation of automaton,there are arrays
         settingsCreateAutomaton : function (rand,st,al,fi,mo,tr) {
             this.nbrState = st.slice(); //Use slice to copy an array
             this.alphabet = al.slice();
@@ -489,7 +543,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             var j=0;
             for (var rand of this.randomly) {
                 if(rand==1 && (automata[j]===null || automata[j]===undefined)) {
-                    if (j==0 & this.needAutomatonQuestion() )
+                    if (j==0 & this.needAutomatonQuestion() || this.underTypeQuestion == "table2Automaton")
                         this.createAutomaton(0) ;
                     else if (j==1 && this.need2AutomataQuestion() )
                          this.createAutomaton(1) ;
@@ -499,91 +553,66 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 }
                 j++;
             }
-            console.log(this.automaton[0]);
         },
 
         //Initialize the regex needed for the question by generating it or use the given RE
         initializeRegex: function (re) {
-            if (re!==undefined && re!==null) {
+            if (re!==undefined && re!==null && this.randomly[2]==0 ) { //Set the re given
                 this.regex = re;
             }
-            else if (this.underTypeQuestion=="RE2automaton") {
-                //this.createAutomaton(0);
+            else if (this.underTypeQuestion=="RE2automaton") { //Create randomly a regex if non was given
+                this.createAutomaton(0);
                 this.regex = automatonToRegex(this.automaton[0]);
             }
         },
 
         //Initialize the grammar needed for the question by generating it or use the given grammar
         initializeGrammar: function (grammar) {
-            if (grammar!==undefined && grammar!==null ) {
+            if (grammar!==undefined && grammar!==null && this.randomly[3]==0 ) { //Set the given grammar
                 this.grammar = grammar;
             }
-            else if (this.underTypeQuestion=="grammar2Automaton") { //Need to have an automaton and convert it to a grammar
-                this.createAutomaton(0) ;
+            else if (this.underTypeQuestion=="grammar2Automaton") { //Create an automaton and convert it to a grammar
+                this.createAutomaton(0);
                 this.grammar = automaton2RightLinearGrammar(this.automaton[0]);
             }
-            else if (this.underTypeQuestion=="leftGrammar2RightGrammar") { //Need to have an automaton to convert to a right linear grammar then converts it to a left linear grammar
-                this.createAutomaton(0) ;
+            else if (this.underTypeQuestion=="leftGrammar2RightGrammar") { //Create an automaton to convert to a right linear grammar then convert it to a left linear grammar
+                this.createAutomaton(0);
                 this.grammar = rightLinear2LeftLinearGrammar(automaton2RightLinearGrammar(this.automaton[0]));
             }
         },
 
-
-
-        //Create randomly an automaton
+        //Create randomly an automaton and save it in the .automaton[numAuto]
         createAutomaton: function (numAuto) {
             var A = new Automaton();
-/*
-            var t= function (content) {
-                    console.log("fin charger");
-                    var text=content;
-                    console.log(text);
-
-                    var div  = document.createElement("div");
-                    var designer = new AudeDesigner(div, true);
-                    document.querySelectorAll('body')[0].appendChild(div);
-                    div.display = "none";
-                    designer.setAutomatonCode(text);
-                    A = designer.getAutomaton(0);
-                    document.querySelectorAll('body')[0].removeChild(div);
-                    console.log(A);
-            };
-            getFile("tt.txt",t);
-*/
             A = createAutomatonCoaccessible(this.nbrState[numAuto],this.alphabet[numAuto],this.nbrFinalStates[numAuto],this.mode[numAuto],this.nbTransitions[numAuto]);
-            if (typeof A === 'string' || A instanceof String) { //If there is a problem return a string
+            if (typeof A === 'string' || A instanceof String) { //If there is a problem the creation of automaton return a string
                 alert(A);
             }
             if (numAuto>1 ||numAuto<0 )
-                throw("Erreur createAutomaton");
+                throw new Error("Only support 2 automata");
             this.automaton[numAuto]=A
         },
 
-
-
         /*
-        Method to modify the property
+        Method to modify the properties
         */
-
+        //Add an Automaton on the numAuto
         addAutomaton : function (Automaton,numAuto) {
             if (numAuto===undefined)
                 this.automaton[0] = Automaton;
             else
                 this.automaton[numAuto] = Automaton;
         },
-
+        //Add a grammar
         addGrammar: function (grammar) {
             this.grammar = grammar;
         },
-
+        //Add a regular expression
         addRE: function (re) {
             this.regex = re;
         },
 
-
-        /*
-        Returns the question in a string json, or saves it if a name is given
-        */
+        //Returns the question in a string json, or saves it if a name is given
         save : function (nameFile) {
             if (nameFile===null  || nameFile===undefined) {
                 return JSON.stringify(this);
@@ -594,9 +623,39 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             saveAs(blob, fileName);
         },
 
-        //Load the string json given or load the file given
-        load : function (code) {
-            this= JSON.parse(code);
+        //Load the string json given or load the file given, file is a boolean,true means that code is a name of file
+        //Otherwise it means it's a string json
+        //The better is to give directly the json code
+        load : function (code,file) {
+            var obj = this;
+            // this;
+            if (file==false || file===undefined) {
+                obj = JSON.parse(code);
+                for (prop in obj){
+                    //To load an automaton if it is a string representation
+                    if(prop === "automaton" && (typeof obj.automaton[0]==="string" || obj.automaton[0] instanceof String)) {
+                        this.automaton = [];
+                        for(var i=0,l=obj.automaton.length;i<l;i++) {
+                            this.automaton.push(svg2automaton(obj.automaton[i]));
+                        }
+                    }
+                    else
+                        this[prop]=obj[prop];
+                }
+            }
+            else if (file==true) {
+                getFile(
+                    code,
+                    function(text) {
+                        obj.load(text);
+                        /*var a = JSON.parse(text);
+                        obj = a;  //The new object */
+                    },
+                    function (erreur) {
+                            throw new Error("Bug loading file");
+                    }
+                );
+            }
         },
 
 
@@ -616,7 +675,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     var questionList = null;
     var questionListContent = null;
     var chapterSelected = null; //Chapter selected by the user
-    var questionSelected = null; ////Question selected by the user
+    var questionSelected = null; //Question selected by the user
 
     var createTable = null;
     var automaton2HTMLTable = null;
@@ -625,7 +684,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     var grammarLoaded = null;
     var RELoaded = null;
     var automataLoaded = [null,null]; //If the users loads an automaton
-    var randomly = [1,1,0,0]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
+    var randomly = [1,1,1,1]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
     var nbrState = [5,4];
     var alphabet = [['a','b'],['a','b']];
     var nbrFinalStates = [1,1];
@@ -645,8 +704,6 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             }
             win.minimize();
         }
-
-
     };
 
     function openQuestionList () {
@@ -662,7 +719,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
     */
     function  drawQuestionList () {
 
-        //Before using the class question you need to us loadPrograms which loads the audescript program
+        //Before using the class question you need to use loadPrograms which loads the audescript program
         loadPrograms();
 
         //Needs for the creation of table
@@ -757,9 +814,10 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         if (settingsWin===null || !settingsWin.ws ) {
                 settingsWin = libD.newWin({
                 minimizable: false,
+                resizable: false,
                 title:       _("Setting for the questions"),
                 content : libD.jso2dom([
-                ["div#div-settings-question",[
+                ["div#div-settings-question",{"class":"libD-wm-content auto-size"},[
                     ["h1",_("Settings")],
                     ["div#questionList-selection-chapter", [ //To select the chapter
                         ["button",{"class":"load-mode","value": "auto1"}, _("Automaton1")],
@@ -931,7 +989,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     //Button to open a window for the selection on an automaton
                     document.getElementById('selection-automaton').onclick = chooseFile.bind(null,"automaton");
 
-                    //checkbox to choose if the automaton are chosen or generate randomly
+                    //Radio button to choose if the automaton are chosen or generate randomly
                     var chec = document.getElementById("input-automaton-generate");
 
                     //For the check input
@@ -950,7 +1008,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     var inputs = document.getElementsByClassName('input-settings-question');
 
                     //Local save to not lose modification when changing mode (automaton1 to automaton2 and vice-versa)
-                    chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0; console.log(localRandomly + " "+ numAutomaton )};
+                    chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0;};
 
                     inputs[0].onchange = function () {localNbrState[numAutomaton]=inputs[0].value};
                     inputs[1].onchange = function () {localAlphabet[numAutomaton]=inputs[1].value};
@@ -980,7 +1038,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     document.getElementById('selection-re').onclick = chooseFile.bind(null,"re");
                     //checkbox to choose if the automaton are chosen or generate randomly
                     var chec = document.getElementById("input-automaton-generate");
-                    chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0; console.log(localRandomly + " "+ numAutomaton )};
+                    chec.onchange = function () { chec.checked ? localRandomly[numAutomaton]=1 : localRandomly[numAutomaton]=0;};
                     //For the check input
                     if (localRandomly[numAutomaton]==1) {
                         chec.checked = true;
@@ -1022,7 +1080,6 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
                 //To hide and show the 2 names of divs given
                 function checkRemove (name1,name2) {
-                    console.log(numAutomaton);
                     if (chec.checked !== true) {
                         document.getElementById(name1).style.display = "none";
                         document.getElementById(name2).style.display = "inherit";
@@ -1043,7 +1100,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     var selectedQuestion = null;
 
                     getFile(
-                        "automata_question/listAutomata.json",
+                        "files_question/listFiles.json",
                         function(automata_question) {displayWin(automata_question)},
                         function (message, status) {
                                     var msg = null;
@@ -1101,34 +1158,34 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                                 inputFile.click(); //When we click on the button it allows the user to select a file
 
                                 inputFile.onchange = function() { //When he had selected the file, it opens it
-
-
                                     localNameSelectedFile[numAutomaton] = inputFile.value;
-
                                     var freader = new FileReader();
 
                                     if (type==="automaton") {
-                                        document.getElementById("display-name-file").innerHTML=inputFile.value; //To display the name on the settings window
-                                        divAutomaton.innerHTML="";
-                                        var designer = new AudeDesigner(divAutomaton, true); //Create a designer to put the automaton in
+                                        document.getElementById("display-name-file").innerHTML=inputFile.value; //To display the name of the file on the settings window
+                                        divContentFile.innerHTML="";
+                                        var designer = new AudeDesigner(divContentFile, true); //Create a designer to put the automaton in
 
                                         freader.onload = function () { //load the file
-                                            designer.setAutomatonCode(freader.result);    //Display the automaton
-                                            automataL[numAutomaton]= designer.getAutomaton(0);
+                                            if (/.txt$/.test(inputFile.value)) //Load a text file
+                                                designer.setAutomatonCode(freader.result); //Display the automaton
+                                            else if (/.svg$/.test(inputFile.value)) //Load a svg file
+                                                designer.setSVG(freader.result);
+                                            automataL[numAutomaton]= designer.getAutomaton(0); //Get the automaton displayed
                                             designer.autoCenterZoom();
                                         };
                                     }
                                     else if(type==="re") {
                                         document.getElementById("display-name-file-re").innerHTML=inputFile.value; //To display the name on the settings window
                                         freader.onload = function () { //load the file
-                                                divAutomaton.innerHTML=freader.result;
+                                                divContentFile.innerHTML=freader.result;
                                                 localRELoaded = freader.result;
                                         };
                                     }
                                     else if(type==="grammar") {
                                         document.getElementById("display-name-file-grammar").innerHTML=inputFile.value; //To display the name on the settings window
                                         freader.onload = function () { //load the file
-                                                divAutomaton.innerHTML=freader.result;
+                                                divContentFile.innerHTML=freader.result;
                                                 localGrammar = freader.result;
                                         };
                                     }
@@ -1139,7 +1196,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
                             var div = document.getElementById('load-automaton-question');
                             var divListFiles = document.getElementById('load-automaton-question-list');
-                            var divAutomaton = document.getElementById('display-loaded-automaton');
+                            var divContentFile = document.getElementById('display-loaded-automaton');
                             var namesQuestion = Object.keys(listFiles); //The list of name exercice
 
 
@@ -1180,7 +1237,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                                     if (listFiles[question.value].type===type) {
                                         var auto = document.createElement("div");
                                         auto.className = "load-button";
-                                        auto.innerHTML = listFiles[question.value].tab[j].replace(/.txt$/,'');
+                                        auto.innerHTML = listFiles[question.value].tab[j].replace(/.(txt)|(.svg)$/,'');
                                         divListFiles.appendChild(auto);
 
                                         //Display the file when you click on the name
@@ -1196,26 +1253,30 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
                                 if (type==="automaton") {
                                     document.getElementById("display-name-file").innerHTML=nameFile; //To display the name on the settings window
-                                    divAutomaton.innerHTML="";
-                                    var designer = new AudeDesigner(divAutomaton, true); //Create a designer to put the automaton in
+                                    divContentFile.innerHTML="";
+                                    var designer = new AudeDesigner(divContentFile, true); //Create a designer to put the automaton in
 
-                                    getFile("automata_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
-                                        designer.setAutomatonCode(text);    //Display the automaton
+                                    getFile("files_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
+                                        if (/.txt$/.test(nameFile)) //Load a text file
+                                            designer.setAutomatonCode(text); //Display the automaton
+                                        else if (/.svg$/.test(nameFile))  //Load a svg file
+                                            designer.setSVG(text); //Display the automaton
                                         automataL[numAutomaton]= designer.getAutomaton(0);
                                         designer.autoCenterZoom();
+                                        console.log(designer.getAutomaton(0));
                                     });
                                 }
                                 else if(type==="re") {
                                     document.getElementById("display-name-file-re").innerHTML=nameFile; //To display the name on the settings window
-                                    getFile("automata_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
-                                            divAutomaton.innerHTML=text;
+                                    getFile("files_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
+                                            divContentFile.innerHTML=text;
                                             localRELoaded = text;
                                     });
                                 }
                                 else if(type==="grammar") {
                                     document.getElementById("display-name-file-grammar").innerHTML=nameFile; //To display the name on the settings window
-                                    getFile("automata_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
-                                            divAutomaton.innerHTML=text;
+                                    getFile("files_question/"+nameQuestion+"/"+nameFile,function(text) { //load the file
+                                            divContentFile.innerHTML=text;
                                             localGrammarLoaded = text;
                                     });
                                 }
@@ -1233,6 +1294,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
         switch (parseInt(chapter))
         {   case 1:
                 div.appendChild(libD.jso2dom([
+                ["button", {"value": ("mcq1"), "class":"questionList-question-select"}, _("Multiple choice questions")],["br"],
                 ["button", {"value": ("complement"), "class":"questionList-question-select"}, _("Complement the automaton")],["br"],
                 ["button", {"value": ("complete"), "class":"questionList-question-select"}, _("Complete the automaton")],["br"],
                 ["button", {"value": ("product"), "class":"questionList-question-select"}, _("Do the product of 2 automata")],["br"],
@@ -1282,38 +1344,86 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
 
         var buttonQuestion = document.getElementsByClassName('questionList-question-select') //To display the question
         for (var i=0,l=buttonQuestion.length;i<l;i++) {
-            buttonQuestion[i].addEventListener('click', function(e) {
+            buttonQuestion[i].addEventListener('click',function(e) {
 
                 //We create the question
                 var q = new Question ('','',e.target.value);
-                q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
-                q.initializeAutomata(automataLoaded);
-                q.initializeRegex(RELoaded);
-                q.initializeGrammar(grammarLoaded);
-                q.correctionQuestion();
 
-                questionSelected = e.target.value;
-                var div = document.getElementById("questionList-container"); //Area to display the question
-                var divBut = document.getElementById("questionList-container-button-navigation"); //Area to display the question
-                div.innerHTML="";
-                divBut.appendChild(libD.jso2dom([
-                    ["button#menu-questionList", _("Menu questions")],
-                    ["button#questionList-restart", _("Restart")],
-                    ]
-                ));
-                var but = document.getElementById("menu-questionList"); //The button permits to return to the menu
-                but.onclick = reDrawQuestionList;
-                var butRestart = document.getElementById("questionList-restart"); //The button permits to regenerate the question
-                butRestart.onclick = function () { //Recreate the page with a new automaton
+                //For the mcq: need to load a file
+                if (e.target.value==="mcq1" || e.target.value==="mcq2" || e.target.value==="mcq3") {
+                    //Load the file which contains the list of all the files
+                    getFile("files_question/listFiles.json", function(content) {
+                        var listFolders = JSON.parse(content);
+                        var files = null; //The list of files
+                        for (var folder in listFolders) {
+                            if (folder === e.target.value) {
+                                files = listFolders[folder].tab;
+                            }
+                        }
+                        //Get hazardly a file
+                        var rand = Math.floor(Math.random() * (files.length));
+                        getFile("files_question/mcq1/"+files[rand], function(text) {
+                            q.load(text);
+                            next();
+                        },function() {alert("alaide");});
+                    },function() {alert("Can't load file")})
+                }
+                //Other question we initialize automaton/grammar... and correct automaticaly the question
+                else {
                     q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
-                    q.initializeAutomata(automataLoaded); // Create a new automaton
-                    q.initializeRegex(RELoaded); //Create a new regex if needed
+                    q.initializeAutomata(automataLoaded);
+                    q.initializeRegex(RELoaded);
                     q.initializeGrammar(grammarLoaded);
-                    q.correctionQuestion(); //Correct the question
-                    div.innerHTML='';
+                    q.correctionQuestion();
+                    next();
+                }
+
+                //To handle javascript asynchrone
+                function next() {
+                    questionSelected = e.target.value;
+                    var div = document.getElementById("questionList-container"); //Area to display the question
+                    var divBut = document.getElementById("questionList-container-button-navigation"); //Area to display the question
+                    div.innerHTML="";
+                    divBut.appendChild(libD.jso2dom([
+                        ["button#menu-questionList", _("Menu questions")],
+                        ["button#questionList-restart", _("Restart")],
+                        ]
+                    ));
+                    var but = document.getElementById("menu-questionList"); //The button permits to return to the menu
+                    but.onclick = reDrawQuestionList;
+                    var butRestart = document.getElementById("questionList-restart"); //The button permits to regenerate the question
+                    butRestart.onclick = function () { //Recreate the page with a new question
+
+                        if (questionSelected==="mcq1" || questionSelected==="mcq2" || questionSelected==="mcq3") {
+                            //Load the file which contains the list of all the files
+                            getFile("files_question/listFiles.json", function(content) {
+                                var listFolders = JSON.parse(content);
+                                var files = null; //The list of files
+                                for (var folder in listFolders) {
+                                    if (folder === e.target.value) {
+                                        files = listFolders[folder].tab;
+                                    }
+                                }
+                                //Get hazardly a file
+                                getFile("files_question/mcq1/"+files[Math.floor(Math.random() * (files.length))], function(text) {
+                                    q.load(text);
+                                    div.innerHTML='';
+                                    drawQuestion(q,div);
+                                });
+                            })
+                        }
+                        else {
+                            q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
+                            q.initializeAutomata(automataLoaded); // Create a new automaton
+                            q.initializeRegex(RELoaded); //Create a new regex if needed
+                            q.initializeGrammar(grammarLoaded);
+                            q.correctionQuestion(); //Correct the question
+                            div.innerHTML='';
+                            drawQuestion(q,div);
+                        }
+                    };
                     drawQuestion(q,div);
-                };
-                drawQuestion(q,div);
+                }
             });
         }
     }
@@ -1333,7 +1443,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             ["div#question-automata-designer"], //To put the automaton for the question
             ["div.button-container",[
                 ["button#question-validate",_("Validate")],
-                ["button#question-dispay-response",_("Display response")]
+                ["button#question-display-response",_("Display response")]
             ]],
             ["div#question-answers"], //Answer of the user
             ]
@@ -1345,10 +1455,10 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "automaton":
                     question.userResponse = designerAnswer.getAutomaton(0); //Give the automaton
                     break;
-                case "input": case "re": case "grammar":
+                case "input": case "re":
                     question.userResponse = document.getElementById("question-answers-input").value; //Give the value of the input
                     break;
-                case "checkbox":
+                case "radio":
                     var repCheck = "";
                     var radio =  document.getElementsByClassName("question-answers-radio"); //Give the checked radio-button
                     for (var i=0,l=radio.length;i<l;i++) {
@@ -1360,26 +1470,55 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 case "table":
                     question.userResponse = document.getElementById("question-answers-table"); //Give the div containing the table
                     break;
+                case "checkbox":
+                    var repCheck = [];
+                    var divCheckbox =  document.getElementById("question-answers-checkbox").firstChild; //Give the ul which contains the checkbox
+                    for (var i=0,l=divCheckbox.children.length;i<l;i++) {
+                        if (divCheckbox.children[i].children[0].children[0].checked) //Look if the checkbox is checked
+                            repCheck.push(divCheckbox.children[i].children[0].children[0].value);
+                    }
+                    question.userResponse = repCheck;
+                    break;
+                case "grammar":
+                    var divTerm = document.getElementById("question-answers-input-term-symbol");
+                    var divNonTerm = document.getElementById("question-answers-input-non-term-symbol");
+                    var divStart = document.getElementById("question-answers-input-start-symbol");
+                    var divRules = document.getElementById("question-answers-input-production-rules");
+                    var G = "({"+divTerm.value+"},{"+divNonTerm.value+"},"+divStart.value+",{"; //The grammar is created thanks to the input
+
+                    var rule = divRules.childNodes[0];
+                    G+=rule.childNodes[0].value+"->"+rule.childNodes[2].value
+                    for (var i=1,l=divRules.childElementCount;i<l;i++) { //For each rule we take the informations from the input
+                        rule = divRules.childNodes[i];
+                        if (rule.childNodes[0].value!=="" && rule.childNodes[2].value !== "")
+                            G+=","+rule.childNodes[0].value+"->"+rule.childNodes[2].value;
+                    }
+                    G+="})";
+                    question.userResponse = G;
+                    break;
             }
             correctionQuestion(question);
         });
-
         //To display the response
-        var butDispResp = document.getElementById("question-dispay-response");
+        var butDispResp = document.getElementById("question-display-response");
         butDispResp.onclick = displayResponse.bind(null,question,"")
 
         //Display the wording
         var divWording = document.getElementById("question-wording");
-        divWording.innerHTML += question.wording;
-        var divAutomatonQuestion = document.getElementById("question-automata-designer");
+        textFormat(question.wording,divWording,true);
+
+        //Display to display other informations for the question (automaton,er,grammar)
+        var divInformationWording = document.getElementById("question-automata-designer");
+        if (!question.needAutomatonQuestion())
+            divInformationWording.id = "question-wordindg-information";
 
 
         //Display other informations (automaton,table,grammar...)
         //If there are 2 automata needed
         if (question.need2AutomataQuestion()) {
-            divAutomatonQuestion.appendChild(libD.jso2dom([
+            divInformationWording.appendChild(libD.jso2dom([
                 ["div#question-automata-designer-right"]]));
-            divAutomatonQuestion.appendChild(libD.jso2dom([
+            divInformationWording.appendChild(libD.jso2dom([
                 ["div#question-automata-designer-left"]]));
             var designerRight = new AudeDesigner(document.getElementById("question-automata-designer-right"), true);
             designerRight.setAutomatonCode(automaton_code(question.automaton[0]));
@@ -1389,27 +1528,27 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
             designerLeft.autoCenterZoom();
         }
         //If there is 1 automaton needed
-        else if (question.needAutomatonQuestion() && question.underTypeQuestion !== "table2Automaton" ) {
-            var designer = new AudeDesigner(divAutomatonQuestion, true);
+        else if (question.needAutomatonQuestion()) {
+            var designer = new AudeDesigner(divInformationWording, true);
             designer.setAutomatonCode(automaton_code(question.automaton[0]));
             designer.autoCenterZoom();
 
         //Draw a table
         } else if (question.underTypeQuestion === "table2Automaton") {
-            divAutomatonQuestion.appendChild(automaton2HTMLTable(question.automaton[0]));
+            divInformationWording.appendChild(automaton2HTMLTable(question.automaton[0]));
 
         //Draw the RE
         } else if (question.underTypeQuestion === "RE2automaton") {
-            divAutomatonQuestion.appendChild(document.createTextNode(question.regex));
-        }
+            divInformationWording.appendChild(document.createTextNode(question.regex));
+
 
         //Draw the the grammar
-        else if (question.underTypeQuestion === "grammar2Automaton" || question.underTypeQuestion === "leftGrammar2RightGrammar") {
-            divAutomatonQuestion.appendChild(document.createTextNode(question.grammar.toString()));
-        }
+        } else if (question.underTypeQuestion === "grammar2Automaton" || question.underTypeQuestion === "leftGrammar2RightGrammar") {
+            divInformationWording.appendChild(document.createTextNode(question.grammar.toString()));
 
-        else {
-            divAutomatonQuestion.style.display = "none";
+
+        } else {
+            divInformationWording.style.display = "none";
         }
 
         //Area to allow the user to write the answer
@@ -1420,7 +1559,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     ["div#question-answers-automaton",_("You can draw the automaton bellow.")]]));
                 var designerAnswer = new AudeDesigner(document.getElementById("question-answers-automaton"), false); //Contains the automata
                 break;
-            case "input": case "re": case "grammar":
+            case "input": case "re":
                 divAnswersUser.appendChild(libD.jso2dom([
                     ["input#question-answers-input",{"type":"text"}]]));
                 if(question.underTypeQuestion==="equivalenceStates")
@@ -1428,7 +1567,59 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 else
                     document.getElementById("question-answers-input").placeholder="Write the answer here";
                 break;
-            case "checkbox":
+            case "grammar":
+                divAnswersUser.appendChild(libD.jso2dom([
+                    ["span",_("Write the terminal symbols: ")],
+                    ["input#question-answers-input-term-symbol"],["br"],
+                    ["span",_("Write the non terminal symbols: ")],
+                    ["input#question-answers-input-non-term-symbol"],["br"],
+                    ["select#question-answers-input-start-symbol",[
+                        ["option",_("Select the start symbol")],
+                    ]],
+                    ["div#question-answers-input-production-rules",[
+                        ["div.question-answers-input-rule",[
+                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Non terminal symbol")}],
+                            ["span.arrow",("→")],
+                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Body")}],
+                            ["button.question-answers-input-rule-remove",('X')],
+                        ]]
+                    ]],
+                    ["button#question-answers-add-rule",_("Add a rule")],
+                ]));
+
+                //Create the list od start symbol with the non terminal symbols
+                var startSymbol = document.getElementById("question-answers-input-start-symbol");
+                var nonTermSym = document.getElementById("question-answers-input-non-term-symbol");
+                nonTermSym.oninput = function () {
+                    var syms = nonTermSym.value.split(',');
+                    if (syms.length>0)
+                        startSymbol.innerHTML="<option>Select the start symbol</option>";
+                    for (var s of syms) {
+                        var option = document.createElement("option");
+                        option.value = s;
+                        option.textContent = s;
+                        startSymbol.appendChild(option);
+                    }
+                };
+
+                //To enter the production rules
+                var divRules = document.getElementById("question-answers-input-production-rules");
+                document.getElementById("question-answers-add-rule").onclick = function () {
+                    divRules.appendChild(libD.jso2dom([
+                        ["div.question-answers-input-rule",[
+                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Non terminal symbol")}],
+                            ["span.arrow",("→")],
+                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Body")}],
+                            ["button.question-answers-input-rule-remove",('X')],
+                        ]]
+                    ]));
+                    document.getElementsByClassName('question-answers-input-rule-remove')[divRules.childElementCount-1].onclick = function(e) {
+                        e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+                    }
+                };
+                break;
+
+            case "radio":
                 divAnswersUser.appendChild(libD.jso2dom([
                     ["form",[
                         ["fieldset",[
@@ -1440,6 +1631,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                     ]],
                 ]));
                 break;
+
             case "table":
                 divAnswersUser.appendChild(libD.jso2dom([
                     ["div#question-answers-table"]]));
@@ -1447,36 +1639,66 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 var divT = document.getElementById('div-container-table');
                 divT.childNodes[4].style.display = "none"; //Remove buttons "create automaton","X"
                 divT.childNodes[5].style.display = "none";
-            break;
+                break;
+
+            //For the mcq
+            case "checkbox":
+                var qid = 0; var refs=[];
+                var divCheckbox= document.createElement("div");
+                divCheckbox.id="question-answers-checkbox";
+                divAnswersUser.appendChild(divCheckbox);
+                divCheckbox.appendChild(document.createElement("ul"))
+
+                for (var j = 0, leng = question.choices.length; j < leng; ++j) {
+                    qid = question.choices[j].hasOwnProperty("id") ? question.choices[j].id : (parseInt(i, 10) + 1);
+                    divCheckbox.firstChild.appendChild(libD.jso2dom(["li", ["label", [
+                        ["input", {"type": "checkbox","value":qid}],
+                        ["span.quiz-answer-id", qid + ". "],
+                        ["span", {"#": j + "content"}]
+                    ]]], refs));
+
+                    if (question.choices[j].automaton) {
+                            automaton2svg(
+                                automatonFromObj(question.choices[j].automaton),
+                                function (res) {
+                                    refs[j + "content"].innerHTML = res;
+                                }
+                            );
+
+                    } else if (question.choices[j].html) {
+                        refs[j + "content"].innerHTML = question.choices[j].html;
+                    } else if (question.choices[j].text) {
+                        textFormat(question.choices[j].text, refs[j + "content"]);
+                    } else if (question.choices[j].html) {
+                        textFormat(question.choices[j].html, refs[j + "content"], true);
+                    }
+                }
+                break;
         }
     }
 
-
+    //Show if the user response is correct
     function correctionQuestion(question) {
         var dispResp;
         var div = document.createElement("div");
         if (question.isCorrect()===false) {
-            dispResp="Wrong answer";
+            dispResp=_("Wrong answer");
             div.style.color="red";
         }
-        else {
-            dispResp="True answer";
+        else if (question.isCorrect()===true) {
+            dispResp=_("True answer");
             div.style.color="green";
         }
-
         div.innerHTML = dispResp;
-
-        AudeGUI.notify(_("Correction"), div , "normal",4000);
+        AudeGUI.notify(("Correction"),div ,"normal",4000); //Show the notification
     }
 
-    //display the solution in the div
+    //Display the solution of the question in the div
     function displayResponse(question,div) {
         var response = question.response;
-        question.save("yolo");
         switch (question.answerMode()) {
             case "automaton":
-
-                if (div==='' || div==undefined  ) { //Create an area to display the automaton response
+                if (div==='' || div===undefined  ) { //Create an area to display the automaton response
                     var div=document.getElementById("question-wording").parentNode;
                     if (document.getElementById("question-solution-automaton")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-automaton"));
@@ -1490,7 +1712,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 break;
 
             case "input": case "re": case "grammar":
-                if (div==='' || div==undefined  ) { //Create an area to display the input response
+                if (div==='' || div===undefined  ) { //Create an area to display the input response
                     var div=document.getElementById("question-wording").parentNode;
                     if (document.getElementById("question-solution-input")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-input"));
@@ -1499,11 +1721,10 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 div.appendChild(libD.jso2dom([
                 ["span#question-solution-input"]]));
                 document.getElementById("question-solution-input").innerHTML = response;
-
                 break;
 
-            case "checkbox":
-                if (div==='' || div==undefined  ) { //Create an area to display the input response
+            case "radio":
+                if (div==='' || div===undefined  ) { //Create an area to display the input response
                     var div=document.getElementById("question-wording").parentNode;
                     if (document.getElementById("question-solution-input")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-input"));
@@ -1515,7 +1736,7 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 break;
 
             case "table":
-                if (div==='' || div==undefined  ) { //Create an area to display the input response
+                if (div==='' || div===undefined  ) { //Create an area to display the input response
                     var div=document.getElementById("question-wording").parentNode;
                     if (document.getElementById("question-solution-table")!==null) { //If we already created it we destroy the div
                         div.removeChild(document.getElementById("question-solution-table"));
@@ -1524,8 +1745,56 @@ pkg.identicalSets=function (seta,setb,nbrElement) {
                 div.appendChild(libD.jso2dom([
                 ["span#question-solution-table"]]));
                 document.getElementById("question-solution-table").appendChild(response);
+                break;
 
+            case "checkbox":
+                if (div==='' || div===undefined  ) { //Create an area to display the input response
+                    var div=document.getElementById("question-wording").parentNode;
+                        if (document.getElementById("question-solution-input")!==null) { //If we already created it we destroy the div
+                        div.removeChild(document.getElementById("question-solution-input"));
+                    }
+                }
+                div.appendChild(libD.jso2dom([
+                ["span#question-solution-input"]]));
+                document.getElementById("question-solution-input").innerHTML = "The correct choice: "+ response;
                 break;
         }
     }
+
+    //To diplay katex
+    function textFormat(text, node, html) {
+        if (!node) {
+            node = document.createElement("span");
+        }
+
+        node[html ? "innerHTML" : "textContent"] = text instanceof Array ? mathDisplay(text.join("")) : text;
+
+        renderMathInElement(
+            node, {
+                delimiters: [
+                    {left: "$$",  right: "$$",  display: true},
+                    {left: "$",   right: "$",   display: false},
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "\\(", right: "\\)", display: false}
+                ]
+            }
+        );
+        return node;
+    }
+
+    //Use katex to diplay math writting, no need to \\ backspace
+    //Not used
+    function mathDisplay(text) {
+        var final ="";
+        var form = "";
+        while (/([^\\]*)(\\[^ ]*)/.exec(text)) {
+            final += RegExp.$1;
+            form =katex.renderToString(RegExp.$2);
+            final += form;
+            text = text.replace(/([^\\]*)(\\[^ ]*)/,"");
+       }
+       return final+text;
+    }
+
+
 }(window));
