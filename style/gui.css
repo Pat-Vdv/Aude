@@ -100,7 +100,15 @@ body {
 
 #predef-algos {
     max-width:20ex;
+}
+
+#predef-algos-name {
+    width: 16ex;
+    text-align: left;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display:inline-block;
 }
 
 #toolbar select {
@@ -316,7 +324,7 @@ select {
    font-style:italic
 }
 
-#close-quiz, #close-quiz-editor, #close-questionList {
+#close-quiz, #close-quiz-editor, #close-question-settings {
    position:absolute;
    top:0;
    font-size:small;
@@ -360,7 +368,7 @@ select {
    background:#FAFAF1;
 }
 
-#quiz-answers>ul {
+#quiz-answers>ul, #question-answers-checkbox>ul {
    list-style:none;
    margin-left:0;
    padding-left:1em;
@@ -381,7 +389,7 @@ select {
    color:gray
 }
 
-#quiz-answers label {
+#quiz-answers label, #question-answers-checkbox label  {
    display:block;
    margin:0.5ex 0;
    border-radius:3px;
@@ -390,7 +398,7 @@ select {
    transition:500ms;
 }
 
-#quiz-answers label:hover {
+#quiz-answers label:hover, #question-answers-checkbox label:hover {
    background:#FFFFCC;
    box-shadow: 0 0 5px #FFFFCC
 }
@@ -982,29 +990,76 @@ input[type=button]:active, button:active {
     display:none !important;
 }
 
+/*To show algorithm*/
+#up-select-algo,#down-select-algo {
+    vertical-align:bottom;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#container-algos {
+    transition-property:display;
+    flex-direction: row;
+    background-color:  rgb(102, 199, 255);
+}
+
+#sup-container-algo-automata {
+    min-width: 50%;
+    text-align: left;
+}
+#container-algo-automata {
+    display: flex;
+    flex-direction: row;
+}
+
+#container-algo-gammar-re,#container-algo-re,#container-algo-gammar {
+    display: flex;
+    flex-direction: column;
+    min-width: 25%;
+}
+
+#container-algo-other {
+    display:flex;
+    flex-direction: column;
+    min-width: 25%;
+}
+
+#container-algo-automata-right,#container-algo-automata-left {
+    min-width: 40%;
+    display: flex;
+    flex-direction: column;
+}
+
+.cell-algo {
+    text-align: left;
+    text-decoration: none;
+    border: none;
+    background-color: inherit;
+}
+.cell-algo:hover {
+    background-image:linear-gradient(rgb(157,189,215),rgb(127,164,195));
+    color:white;
+    border:solid 1px black;
+}
+/*End to show algorithm*/
+
+/*Question list*/
+
 #questionList-selection-chapter {
     border: 2px solid #aaa;
-
-}
-.questionList-selection-chapter-cell {
-    border-left: 2px solid #bbb;
-    border-right: 2px solid #bbb;
+    margin: 10px;
+    border: 2px solid #bbb;
     padding: 0px;
-    border-bottom : 2px solid #aaa;
-    border-top : 2px solid #aaa;
+    display : flex;
+    flex-direction: row;
 }
-
 .questionList-selection-chapter-cell-button {
     font-size: 25px;
     padding: 0px;
     margin : 0px;
-    border: none;
+    border-left: 2px solid #bbb;
     text-decoration: none;
     background-color: rgba(239, 240, 241, 0.93) ;
-}
-
-.questionList-question-select:hover {
-    background-color: rgba(150, 150, 150 )  ;
 }
 
 #questionList-selection-question {
@@ -1020,13 +1075,275 @@ input[type=button]:active, button:active {
     text-decoration: none;
     cursor: pointer;
 }
+.questionList-question-select:hover {
+    background-color: rgba(150, 150, 150 )  ;
+}
+/*The container for the buttons (top right)*/
+#questionList-container-button-navigation {
+    display : flex;
+    flex-direction: row-reverse;
+}
+#close-questionList,#questionList-restart,#menu-questionList  {
+   font-size:small;
+   color:#C63;
+   text-decoration:none;
+   padding-right:1ex
+}
 
-#menu-questionList {
-    position:absolute;
-    top:0;
+#generate-automaton-specification-questionList {
+    position : absolute;
+    top:0%;
+    left:0%;
     font-size:small;
-    right:10%;
     color:#C63;
     text-decoration:none;
     padding-right:1ex
 }
+
+#question-wording {
+    padding: 10px;
+}
+
+#question-wordindg-information {
+    text-align: center;
+    padding: 20px;
+}
+
+/*If there are 2 automata to draw*/
+#question-automata-designer {
+    position:relative;
+    width:100%;
+    height:250px;
+    display : flex;
+    flex-direction: row;
+}
+
+#question-automata-designer-right {
+    position:relative;
+    box-sizing: border-box;
+    width : 50%;
+    height : inherit;
+}
+#question-automata-designer-left {
+    position:relative;
+    box-sizing: border-box;
+    width : 50%;
+    height : inherit;
+}
+
+#question-answers-automaton  {
+    position:relative;
+    padding: 10px;
+    height:500px;
+    margin: 20px;
+    border: 2px solid #bbb;
+    box-shadow: 6px 6px 5px grey;
+}
+
+#question-answers-input {
+    margin:50px;
+    min-width: 50%;
+}
+
+.arrow {
+    font-size: 2em;
+    vertical-align: bottom;
+    display: inline-block;
+}
+
+fieldset {
+    margin: 20px;
+    border: 2px solid #bbb;
+}
+
+.question-answers-radio {
+    margin:10px;
+}
+
+#question-solution-automaton {
+    position:absolute;
+    top:65%;
+    left:65%;
+    width: 30%;
+    height: 30%;
+    border: 2px solid #00802b;
+    box-shadow: 3px 3px 2px #404040 ;
+}
+#question-solution-table {
+    margin: 20px;
+    padding: 20px;
+}
+#question-solution-input {
+    margin: 20px;
+    padding: 5px;
+    border: 2px solid #00802b;
+    box-shadow: 3px 3px 2px #404040 ;
+}
+
+#div-settings-question {
+    background-color: grey;
+    padding:10px;
+}
+
+#div-settings-question-container-row {
+    display:flex;
+    flex-direction:row;
+}
+
+.div-settings-question-container-column {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+
+.span-settings-question {
+    margin:10px;
+}
+
+/*Load file for the question*/
+#selection-automaton, #selection-re, #selection-grammar {
+    margin:10px;
+}
+
+#load-automaton-question {
+    display: flex;
+    flex-direction: column;
+    margin : 5px;
+}
+
+.load-automaton-button {
+    margin: 1px;
+    background-color: inherit;
+    border: none;
+    text-decoration: none;
+}
+
+#load-automaton-question-list {
+    margin-top: 5px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+
+.load-button {
+    margin: 5px;
+    background-color: inherit;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.load-button:hover {
+    background-color: rgba(180, 180, 180 )  ;
+}
+
+#load-automaton-main-container {
+    display: flex;
+    flex-direction:row;
+    min-height: 100%;
+}
+
+#display-loaded-automaton {
+    position:relative;
+    width : 50%;
+}
+
+.load-automaton-sep {
+    display:inline-block;
+    height:inherit;
+    min-width: 3px;
+    margin:5px;
+    box-shadow: 2px 2px 1px #595959;
+    background-color: #a6a6a6;
+}
+/*End load an automaton for the question*/
+
+/*For the algorithm table to automaton*/
+#div-container-table {
+    background-color: grey;
+    border: 5px solid #aaa ;
+    margin: 10px;
+    padding: 10px;
+}
+
+#div-container-table-absolute {
+    position : absolute;
+    z-index : 100000;
+    top : 50px;
+    left : 100px;
+}
+
+#div-container-input-automaton {
+    display: inline-block;
+    margin: 10px;
+}
+
+.div-container-input-line-automaton,.div-container-input-line2-automaton {
+    display : flex;
+    flex-direction: row;
+}
+.div-container-input-states {
+    display : flex;
+    flex-direction: row-reverse;
+}
+
+.div-container-input-symbols{
+    display : flex;
+    flex-direction: column;
+}
+.div-container-input-transition {
+    display : flex;
+    flex-direction: column;
+}
+
+.cell-input-automaton {
+    border : 1px solid black !important;
+    max-width: 60px;
+    margin:0px !important;
+    padding:0px;
+}
+/*End algorithm table to automaton*/
+
+/*For the help window*/
+#help-main,#help-command {
+    background-color: #eee;
+    display: inline-block;
+    padding:5px;
+
+}
+
+#help-index {
+    margin: 8px;
+    box-shadow: 5px 5px 4px grey;
+    border: 2px solid #aaa;
+}
+
+.help-indent {
+    padding-left: 10px;
+}
+
+.help-instruction {
+    color : blue;
+}
+
+.help-selection-chapter, .load-mode {
+    font-size: 20px;
+    padding: 3px;
+    margin : 0px;
+    border-left: 2px solid #bbb;
+    text-decoration: none;
+    background-color: rgba(239, 240, 241, 0.93) ;
+}
+
+.help-index-button {
+    margin: 1px;
+    background-color: rgba(239, 240, 241, 0.93) ;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+}
+.help-index-button:hover {
+    background-color: rgba(150, 150, 150 )  ;
+}
+/*End help window*/
