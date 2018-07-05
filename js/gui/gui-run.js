@@ -24,7 +24,13 @@
     var _ = AudeGUI.l10n;
 
     var loadingProgNot = null;
-    var curAlgo = null;
+    var curAlgo = null; //Name of the selected algorithm
+    var algoAutomatonL = null;
+    var algoAutomatonR = null;
+    var algoRE = null;
+    var algoGrammar = null;
+    var algoOther = null;
+    var algoName = null;
 
     var modules = [];
     var loadedModule = {};
@@ -40,7 +46,13 @@
 
     AudeGUI.Runtime = {
         load: function () {
-            curAlgo = document.getElementById("predef-algos");
+            curAlgo="id";
+            algoName = document.getElementById("predef-algos-name");
+            algoAutomatonL = document.getElementById("container-algo-automata-left");
+            algoAutomatonR = document.getElementById("container-algo-automata-right");
+            algoRE = document.getElementById("container-algo-re");
+            algoGrammar = document.getElementById("container-algo-gammar");
+            algoOther = document.getElementById("container-algo-other");
         },
 
         run: function (fun, g, f) {
@@ -57,10 +69,35 @@
             var line = algo.split("/");
             var fname = line[0].trim();
             var descr = line[1].trim();
-            var option = document.createElement("option");
-            option.value = fname.replace(/\.ajs$/, "");
-            option.textContent = _(descr);
-            curAlgo.appendChild(option);
+            var type = line[2].trim();
+            var button = document.createElement("button");
+            button.className = "cell-algo";
+            button.value = fname.replace(/\.ajs$/, "");
+            button.textContent = _(descr);
+            button.onclick = function (e) {
+                curAlgo = e.target.value;
+                algoName.innerHTML = _(descr); //Change the name of the selected algo
+                document.getElementById("container-algos").style.display="none";
+            }
+            if (type ==="automaton") {
+                if (algoAutomatonL.childElementCount <= algoAutomatonR.childElementCount)
+                    algoAutomatonL.appendChild(button);
+                else
+                    algoAutomatonR.appendChild(button);
+            }
+            else if (type ==="re") {
+                algoRE.appendChild(button);
+            }
+            else if (type ==="grammar") {
+                algoGrammar.appendChild(button);
+            }
+            else if (type ==="other") {
+                algoOther.appendChild(button);
+            }
+            else {
+                console.log  ("Type algo not recognized")
+            }
+
         },
 
         callWithList: function (count, callback) {
@@ -207,13 +244,13 @@
                 loadingProgNot.close(true);
             }
 
-            if (curAlgo.value === "id") {
+            if (curAlgo === "id") {
                 AudeGUI.Results.set(AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex));
                 return;
             }
 
-            if (modules[curAlgo.value]) {
-                AudeGUI.Runtime.runProgram(modules[curAlgo.value], curAlgo.value);
+            if (modules[curAlgo]) {
+                AudeGUI.Runtime.runProgram(modules[curAlgo], curAlgo);
             } else {
                 loadingProgNot = libD.notify({
                     type: "info",
@@ -222,7 +259,7 @@
                     delay: 500
                 });
 
-                AudeGUI.Runtime.loadModule(curAlgo.value, AudeGUI.Runtime.launchPredefAlgo);
+                AudeGUI.Runtime.loadModule(curAlgo, AudeGUI.Runtime.launchPredefAlgo);
             }
         },
 
@@ -360,7 +397,7 @@
         },
 
         loadModule: function (moduleName, callback) {
-            if (modules[curAlgo.value]) {
+            if (modules[curAlgo]) {
                 if (callback) {
                     callback();
                 }

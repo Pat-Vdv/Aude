@@ -172,6 +172,17 @@ window.AudeGUI.initEvents = function () {
             AudeGUI.AutomataList.hide();
         };
 
+        //Show the list of predefined algo
+        document.getElementById("predef-algos").onclick = function () {
+            var listAlgos = document.getElementById("container-algos");
+            listAlgos.style.display = getComputedStyle(listAlgos).display === "none" ? "flex" : "none";
+            var up = document.getElementById("up-select-algo");
+            var down = document.getElementById("down-select-algo");
+            up.style.display = getComputedStyle(up).display === "none" ? "inline" :  "none";
+            down.style.display = getComputedStyle(down).display === "none" ?  "inline" : "none";
+        };
+
+        //Luanch the selected algo
         document.getElementById("algorun").onclick = AudeGUI.Runtime.launchPredefAlgo;
 
         document.getElementById("algo-exec").onclick = function () {

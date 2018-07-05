@@ -42,6 +42,7 @@
         <script src="js/automaton.js"></script>
         <script src="js/mealy.js"></script>
         <script src="js/moore.js"></script>
+        <script src="js/regularGrammar.js"></script>
         <script src="js/automaton2dot.js"></script>
         <script src="js/lib/requestAnimationFrame.js"></script>
         <script src="js/lib/katex/katex.min.js"></script>
@@ -108,7 +109,11 @@
                 <span>
                     <span class="sep"></span>
                     <span>
-                        <select id="predef-algos" class="designmode-specific"><option data-translated-content="true" value="id">Select an algo</option></select>
+                        <button id="predef-algos" class="designmode-specific">
+                            <span id="predef-algos-name" data-translated-content="true">Select an algo</span>
+                            <i id="up-select-algo">▴</i>
+                            <i id="down-select-algo" style="display:none">▾</i>
+                         </button>
                         <button id="algorun" class="designmode-specific" title="Run" data-translated-title="true"><span>⚙</span></button>
                         <button id="algo-exec" data-translated-content="true">Execute Program</button>
                     </span>
@@ -130,6 +135,28 @@
                 </span>
             </span>
         </div>
+
+        <div id="container-algos" style="display:none">
+            <div id="container-algo-gammar-re">
+                <div id="container-algo-re">
+                    <h3 data-translated-content="true">Regular expression</h3>
+                </div>
+                <div id="container-algo-gammar">
+                    <h3 data-translated-content="true">Grammar</h3>
+                </div>
+            </div>
+            <div id="sup-container-algo-automata">
+                <h3 data-translated-content="true">Automata</h3>
+                <div id="container-algo-automata">
+                    <div id="container-algo-automata-left"></div>
+                    <div id="container-algo-automata-right"></div>
+                </div>
+            </div>
+            <div id="container-algo-other">
+                <h3 data-translated-content="true">Other</h3>
+            </div>
+        </div>
+
         <div id="menu" class="disabled">
             <input type="file" id="fileautomaton" style="display:none" />
             <input type="file" id="fileprogram" style="display:none" />
