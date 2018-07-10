@@ -1,7 +1,7 @@
 //Take an html Table and convert it into an automaton
-export function HTMLTable2automaton (table)
+export function HTMLTable2automaton (table,audeInter)
     let A := new Automaton()
-    console.log(table)
+
     //The inputs state
     let sta := table.getElementsByClassName("div-container-input-states")[0].childNodes
     //The inputs symbol
@@ -9,17 +9,16 @@ export function HTMLTable2automaton (table)
 
     let tabState := []
     let tabSymbol := []
-
-    //Initialise states and initial states and final states
+    //Initialise states and final states
     foreach state in sta do
-        tabState.push(String(/[^\*>-]/.exec(state.value)))
+        tabState.push(String(/[^\*>-]+/.exec(state.value)))
         if /\->[^\*>-]+\*/.test(state.value) then //Initial and final state
-            A.addFinalState(String(/[^\*>-]/.exec(state.value)))
-            A.setInitialState(String(/[^*>-]/.exec(state.value)))
+            A.addFinalState(String(/[^\*>-]+/.exec(state.value)))
+            A.setInitialState(String(/[^*>-]+/.exec(state.value)))
         else if /\*/.test(state.value) then //Final state
-            A.addFinalState(String(/[^\*>-]/.exec(state.value)))
+            A.addFinalState(String(/[^\*>-]+/.exec(state.value)))
         else if /->/.test(state.value) then //Initial state
-            A.setInitialState(String(/[^*>-]/.exec(state.value)))
+            A.setInitialState(String(/[^*>-]+/.exec(state.value)))
         else //Normal State
             A.addState(state.value)
         end if
@@ -27,9 +26,7 @@ export function HTMLTable2automaton (table)
 
     //Initialise alphabet
     for each c in sym do
-        console.log(c.value)
         if String(c.value)="epsilon" or String(c.value)="\\e" then //To put epsilon
-            console.log("epsilon")
             A.setAlphabet([epsilon])
             tabSymbol.push(epsilon)
         else
@@ -37,30 +34,34 @@ export function HTMLTable2automaton (table)
             tabSymbol.push(c.value)
         end if
     end for
+
     //Initialise transition
     let trans := document.getElementsByClassName("div-container-input-transition")[0].childNodes
-
     let numCol := 0
     let numLine := 0
-    let listSymbols := undefined
+    let listSates := undefined
     let aLine := null
     foreach line in trans do
         aLine := line.childNodes //The list of input
-        foreach cell in aLine do
-            if cell.value.length>1 then
-                listSymbols := cell.value.split(',')
+        foreach cell in aLine do //For each input
+            if /,/.test(cell.value) then
+                listSates := cell.value.split(',')
             else if cell.value.length=0 then
-                listSymbols := null
+                listSates := null
             else
-                listSymbols := [cell.value]
+                listSates := [cell.value]
             end if
 
-            if listSymbols != undefined  then
-                foreach cara in listSymbols do
-                    A.addTransition(tabState[tabState.length-1-numCol],tabSymbol[numLine],cara)
+            if listSates != undefined  then //If there is a value in the cell
+                foreach s in listSates do
+                    if s belongs to tabState then
+                        A.addTransition(tabState[tabState.length-1-numCol],tabSymbol[numLine],s)
+                    else
+                        throw new Error("Try to create a transition toward a state that doesn't exist!")
+                    end if
                 end for
             end if
-            listSymbols := undefined
+            listSates := undefined
             numCol ++
         end for
         numLine ++
@@ -68,77 +69,93 @@ export function HTMLTable2automaton (table)
     end for
 
     //Print the response
-    AudeGUI.Results.set(A)
-
+    if audeInter != undefined then
+        AudeGUI.Results.set(A)
+    else
+        return A
+    end if
 end function
 
 //Create a table into divAffi
-function createTable (divAffi)
-    divAffi.appendChild(libD.jso2dom([
-                    ["div#div-container-table",[
-                        ["button",{"class":"button-table-automaton"},("Add state")],
-                        ["button",{"class":"button-table-automaton"},("Add symbol")],
-                        ["button",{"class":"button-table-automaton"},("Remove state")],
-                        ["button",{"class":"button-table-automaton"},("Remove symbol")],
-                        ["button",{"class":"button-table-automaton"},("Create Automaton")],
-                        ["button",{"class":"button-table-automaton"},("X")],
-                        ["br"],
-                        ["div#div-container-input-automaton",[
-                            ["div",{"class":"div-container-input-states"}, [
+export function createTable (audeInter,div)
+let  settingsWin := null
+    if document.getElementById("div-container-table")=null or document.getElementById("div-container-table")=undefined then
+        let divTable := (libD.jso2dom([
+                ["div#div-container-table",[
+                    ["button",{"class":"button-table-automaton"},("Add state")],
+                    ["button",{"class":"button-table-automaton"},("Add symbol")],
+                    ["button",{"class":"button-table-automaton"},("Remove state")],
+                    ["button",{"class":"button-table-automaton"},("Remove symbol")],
+                    ["button",{"class":"button-table-automaton"},("Create Automaton")],
+                    ["br"],
+                    ["div#div-container-input-automaton",[
+                        ["div",{"class":"div-container-input-states"}, [
+                            ["input",{"type":"text","class":"cell-input-automaton"}],
+                            ["input",{"type":"text","class":"cell-input-automaton"}],
+                        ]],
+                        ["div",{"class":"div-container-input-line2-automaton"},[
+                            ["div",{"class":"div-container-input-symbols"},[
                                 ["input",{"type":"text","class":"cell-input-automaton"}],
                                 ["input",{"type":"text","class":"cell-input-automaton"}],
                             ]],
-                            ["div",{"class":"div-container-input-line2-automaton"},[
-                                ["div",{"class":"div-container-input-symbols"},[
+                            ["div",{"class":"div-container-input-transition"},[
+                                ["div",{"class":"div-container-input-line-automaton"},[
                                     ["input",{"type":"text","class":"cell-input-automaton"}],
                                     ["input",{"type":"text","class":"cell-input-automaton"}],
                                 ]],
-                                ["div",{"class":"div-container-input-transition"},[
-                                    ["div",{"class":"div-container-input-line-automaton"},[
-                                        ["input",{"type":"text","class":"cell-input-automaton"}],
-                                        ["input",{"type":"text","class":"cell-input-automaton"}],
-                                    ]],
-                                    ["div",{"class":"div-container-input-line-automaton"},[
-                                        ["input",{"type":"text","class":"cell-input-automaton"}],
-                                        ["input",{"type":"text","class":"cell-input-automaton"}],
-                                    ]],
+                                ["div",{"class":"div-container-input-line-automaton"},[
+                                    ["input",{"type":"text","class":"cell-input-automaton"}],
+                                    ["input",{"type":"text","class":"cell-input-automaton"}],
                                 ]],
                             ]],
                         ]],
                     ]],
-                ]));
+                ]],
+            ]))
+        if audeInter != undefined and audeInter != "" then
+            settingsWin := libD.newWin({
+                "minimizable": false,
+                "title": ("Create automaton from table"),
+                "show": true,
+                "content" : divTable
+            })
+        else
+            div.appendChild(divTable)
+        end if
 
-
-    document.getElementsByClassName("cell-input-automaton")[1].value:=("->1")
-    document.getElementsByClassName("cell-input-automaton")[0].value:=("2")
-    document.getElementsByClassName("cell-input-automaton")[2].value:=("a")
-    document.getElementsByClassName("cell-input-automaton")[3].value:=("b")
-    let buttons := document.getElementsByClassName("button-table-automaton")
-    buttons[0].onclick:=addState
-    buttons[1].onclick:=addSymbol
-    buttons[2].onclick:=removeState
-    buttons[3].onclick:=removeSymbol
-    buttons[4].onclick:= HTMLTable2automaton.bind(null,document.getElementById("div-container-input-automaton"))
-    //Remove the table
-    buttons[5].onclick:= function() document.getElementById("div-container-table-absolute").parentNode.removeChild(document.getElementById("div-container-table-absolute")) end function
+        document.getElementsByClassName("cell-input-automaton")[1].value:=("->1")
+        document.getElementsByClassName("cell-input-automaton")[0].value:=("2")
+        document.getElementsByClassName("cell-input-automaton")[2].value:=("a")
+        document.getElementsByClassName("cell-input-automaton")[3].value:=("b")
+        let buttons := document.getElementsByClassName("button-table-automaton")
+        buttons[0].onclick:=addState
+        buttons[1].onclick:=addSymbol
+        buttons[2].onclick:=removeState
+        buttons[3].onclick:=removeSymbol
+        buttons[4].onclick:= HTMLTable2automaton.bind(null,document.getElementById("div-container-input-automaton"),audeInter)
+    else
+        throw new Error("Already launched the program")
+    end if
 end function
 
 //Add a new column
 function addState ()
+    resize(document.getElementById("div-container-table")) //Resize the window
     let tabLine := document.getElementsByClassName("div-container-input-line-automaton") //Get all the line
     let tabStates := document.getElementsByClassName("div-container-input-states")
     foreach line in tabLine do
         line.appendChild(libD.jso2dom([
-                ["input",{"type":"text","class":"cell-input-automaton"}]
-                ]));
+            ["input",{"type":"text","class":"cell-input-automaton"}]
+        ]));
     end for
     tabStates[0].insertBefore((libD.jso2dom([
-                ["input",{"type":"text","class":"cell-input-automaton"}]
-                ])),tabStates[0].childNodes[0])
+        ["input",{"type":"text","class":"cell-input-automaton"}]
+    ])),tabStates[0].childNodes[0])
 end function
 
 //Remove the last column
 function removeState ()
+    resize(document.getElementById("div-container-table")) //Resize the window
     let tabStates := document.getElementsByClassName("div-container-input-states")
     if tabStates[0].childNodes.length>1 then
         let tabLine := document.getElementsByClassName("div-container-input-line-automaton")
@@ -150,33 +167,35 @@ function removeState ()
 end function
 
 //Add a new line
-function addSymbol ()
+function addSymbol (settingsWin)
+    resize(document.getElementById("div-container-table")) //Resize the window
     let tabLine := document.getElementsByClassName("div-container-input-line-automaton")
     let nbColumn := tabLine[0].childNodes.length //Number of column to add
 
     //Add the line
     let tab := document.getElementsByClassName("div-container-input-transition")
     tab[0].appendChild(libD.jso2dom([
-                ["div",{"class":"div-container-input-line-automaton"}]
-                    ]));
+        ["div",{"class":"div-container-input-line-automaton"}]
+    ]));
 
     //Add a new cell in the symbols
     let tabSym := document.getElementsByClassName("div-container-input-symbols")
     tabSym[0].appendChild(libD.jso2dom([
-                ["input",{"type":"text","class":"cell-input-automaton"}]
-                    ]));
+        ["input",{"type":"text","class":"cell-input-automaton"}]
+    ]));
 
     //Add the column in the new line
     let line := document.getElementsByClassName("div-container-input-line-automaton")
     for i from 1 to nbColumn do
         line[line.length-1].appendChild(libD.jso2dom([
-                ["input",{"type":"text","class":"cell-input-automaton"}]
-                    ]));
+            ["input",{"type":"text","class":"cell-input-automaton"}]
+        ]));
     end for
 end function
 
 //Remove the last line
 function removeSymbol ()
+    resize(document.getElementById("div-container-table")) //Resize the window
     let sym := document.getElementsByClassName("div-container-input-symbols")
     if sym[0].childNodes.length >1 then
         let trans := document.getElementsByClassName("div-container-input-transition") //Get the container
@@ -187,15 +206,6 @@ end function
 
 run(
     function ()
-        if document.getElementById("div-container-table-absolute")=undefined then
-            let divBody := document.querySelectorAll("body")
-            divBody[0].appendChild(libD.jso2dom([
-                ["div#div-container-table-absolute"]
-                ]));
-            let div := document.getElementById("div-container-table-absolute")
-            createTable(div)
-        else
-            return "You have already created a table, you can't create another one!"
-        end if
+        createTable(1)
     end function
 )
