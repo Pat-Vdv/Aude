@@ -1,4 +1,6 @@
 from epsElimination import epsElim
+from regex2automaton import regexToAutomaton
+from linearGrammar2Automaton import linearGrammar2Automaton
 
 export function infiniteLanguage(A)
     A := epsElim(A)
@@ -48,4 +50,21 @@ export function infiniteLanguage(A)
     return visit(A.getInitialState(), {}, false)
 end function
 
-run(infiniteLanguage, get_automaton(currentAutomaton))
+run(
+    function()
+
+        function accept(radioButton,regex,grammar,win)
+            if radioButton[0].checked then //Automaton
+                AudeGUI.Results.set(infiniteLanguage(get_automaton(currentAutomaton)))
+            else if radioButton[1].checked then
+                AudeGUI.Results.set(infiniteLanguage(regexToAutomaton(regex)))
+            else if radioButton[2].checked then
+                AudeGUI.Results.set(infiniteLanguage(linearGrammar2Automaton(grammar)))
+            end if
+            win.close()
+        end function
+
+        drawSelectMode(accept)
+
+    end function
+)
