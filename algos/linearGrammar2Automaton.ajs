@@ -62,11 +62,11 @@ end function
 
 run(
     function()
-        let input := window.prompt(
-            AudeGUI.l10n(
-            "Enter the linear right grammar"
-            ),
-        )
-        return (linearGrammar2Automaton(input))
+        function accept()
+            AudeGUI.Results.set(linearGrammar2Automaton(getInputGrammar()));
+        end function
+
+        askGrammarAlgorithm(accept)
+
     end function
 )

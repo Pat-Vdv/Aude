@@ -84,15 +84,13 @@ export function isLeftLinear(G)
 end function
 
 
-run (
-    function ()
-        let input := window.prompt(
-            AudeGUI.l10n(
-            "Enter the left linear grammar"
-            ),
-        )
-    return leftLinear2RightLinearGrammar(input,1)
+run(
+    function()
+        function accept()
+            AudeGUI.Results.set(leftLinear2RightLinearGrammar(getInputGrammar(),true));
+        end function
 
-end function
+        askGrammarAlgorithm(accept)
 
+    end function
 )
