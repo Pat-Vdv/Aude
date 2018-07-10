@@ -24,7 +24,7 @@
     var _ = AudeGUI.l10n;
 
     var loadingProgNot = null;
-    var curAlgo = null; //Name of the selected algorithm
+    var curAlgo = new Object; //.name contains the name of the current
     var algoAutomatonL = null;
     var algoAutomatonR = null;
     var algoRE = null;
@@ -46,7 +46,7 @@
 
     AudeGUI.Runtime = {
         load: function () {
-            curAlgo="id";
+            curAlgo.name="id";
             algoName = document.getElementById("predef-algos-name");
             algoAutomatonL = document.getElementById("container-algo-automata-left");
             algoAutomatonR = document.getElementById("container-algo-automata-right");
@@ -75,23 +75,29 @@
             button.value = fname.replace(/\.ajs$/, "");
             button.textContent = _(descr);
             button.onclick = function (e) {
-                curAlgo = e.target.value;
+                curAlgo.name = e.target.value;
                 algoName.innerHTML = _(descr); //Change the name of the selected algo
-                document.getElementById("container-algos").style.display="none";
+                document.getElementById("container-algos").style.display="none"; //Hide the list of algos
+                document.getElementById("up-select-algo").style.display = "none";
+                document.getElementById("down-select-algo").style.display = "inline";
             }
             if (type ==="automaton") {
+                curAlgo.type='automaton';
                 if (algoAutomatonL.childElementCount <= algoAutomatonR.childElementCount)
                     algoAutomatonL.appendChild(button);
                 else
                     algoAutomatonR.appendChild(button);
             }
             else if (type ==="re") {
+                curAlgo.type = "re";
                 algoRE.appendChild(button);
             }
             else if (type ==="grammar") {
+                curAlgo.type = "grammar";
                 algoGrammar.appendChild(button);
             }
             else if (type ==="other") {
+                curAlgo.type = "automaton";
                 algoOther.appendChild(button);
             }
             else {
@@ -244,13 +250,13 @@
                 loadingProgNot.close(true);
             }
 
-            if (curAlgo === "id") {
+            if (curAlgo.name === "id") {
                 AudeGUI.Results.set(AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex));
                 return;
             }
 
-            if (modules[curAlgo]) {
-                AudeGUI.Runtime.runProgram(modules[curAlgo], curAlgo);
+            if (modules[curAlgo.name]) {
+                AudeGUI.Runtime.runProgram(modules[curAlgo.name], curAlgo.name);
             } else {
                 loadingProgNot = libD.notify({
                     type: "info",
@@ -259,7 +265,7 @@
                     delay: 500
                 });
 
-                AudeGUI.Runtime.loadModule(curAlgo, AudeGUI.Runtime.launchPredefAlgo);
+                AudeGUI.Runtime.loadModule(curAlgo.name, AudeGUI.Runtime.launchPredefAlgo);
             }
         },
 
@@ -337,7 +343,7 @@
                     get_automata,
                     get_mealy,
                     get_moore,
-                    AudeGUI.mainDesigner.currentIndex
+                    AudeGUI.mainDesigner.currentIndex,
                 );
 
                 if (typeof res !== "undefined") {
@@ -397,7 +403,7 @@
         },
 
         loadModule: function (moduleName, callback) {
-            if (modules[curAlgo]) {
+            if (modules[curAlgo.name]) {
                 if (callback) {
                     callback();
                 }
