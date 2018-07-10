@@ -30,3 +30,6 @@ linearGrammar2Automaton.ajs / Linear grammar → Automaton / grammar
 leftLinear2RightLinearGrammar.ajs / Left linear grammar → Right linear grammar / grammar
 rightLinear2LeftLinearGrammar.ajs / Right linear grammar → Left linear grammar / grammar
 splitWord.ajs / Create intermediate states / automaton
+difference.ajs / Difference / automaton
+union.ajs / Union of 2 automata / automaton
+concatenation.ajs / Concatenate 2 automata / automaton
