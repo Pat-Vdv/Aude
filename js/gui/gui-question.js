@@ -15,7 +15,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 (function(pkg){
     //Transform a string ( (a,b),(c,d)... ) to a set
     pkg.str2Set = function(set,nbrElement) {
@@ -110,7 +109,7 @@
     //List of all the question
     var underTypeQuestionList = ["complement","complete","product","minimize","equivalenceStates","equivalencyAutomata","automaton2Table","table2Automaton"
     ,"accessible","coaccessible","word","determinize","determinize_minimize","eliminate","determinize_eliminate","automaton2RE","RE2automaton","grammar2Automaton",
-"automaton2Grammar","leftGrammar2RightGrammar","mcq1"];
+    "automaton2Grammar","leftGrammar2RightGrammar","mcq1","mcq2","mcq3","mcq4","mcq5","mcq6"];
     //Need automaton for the response
     var underTypeQuestionNeedAutomaton = ["complement","complete","product","minimize","determinize","determinize_minimize","eliminate",
     "determinize_eliminate","RE2automaton","grammar2Automaton"];
@@ -191,14 +190,31 @@
 
 
     //Class Question: wording, typeQuestion, underTypeQuestion, automata if needed,regex, a response, type of response, the response of the user
-     pkg.Question =  function (wording,typeQuestion,underTypeQuestion,automaton,regex,grammar,response,typeResponse,userResponse) {
+     pkg.Question =  function (underTypeQuestion,wording,typeQuestion,automaton,regex,grammar,response,typeResponse,userResponse) {
 
         this.underTypeQuestion = underTypeQuestion;
 
         //The wording of the question (create automatically or we can specify it)
-        this.wording =( wording==='' ? this.createWording(this.underTypeQuestion) : wording );
+        this.wording =( wording===''||wording===undefined ? this.createWording(this.underTypeQuestion) : wording );
 
-        if (typeQuestion!="MCQ" && typeQuestion!="RE" && typeQuestion!="Automaton" && typeQuestion!='')
+        if (typeQuestion==undefined) {
+            if (/^mcq/.test(this.underTypeQuestion))
+                this.typeQuestion = "MCQ";
+            else if (this.underTypeQuestion=="automaton2regex")
+                this.typeQuestion = "RE";
+            else if (this.underTypeQuestion=="grammar2Automaton" || this.underTypeQuestion=="leftGrammar2RightGrammar")
+                this.typeQuestion = "grammar";
+            for(var i=0,l=underTypeQuestionNeedAutomatonWording.length;i<l;i++){
+                if (this.underTypeQuestion == underTypeQuestionNeedAutomatonWording[i])
+                    this.typeQuestion = "automaton";
+            }
+        }
+
+
+
+
+
+        else if (typeQuestion!="MCQ" && typeQuestion!="RE" && typeQuestion!="automaton")
             throw new Error("Error: creation of question impossible. typeQuestion: "+typeQuestion +" is not valid");
         else
             this.typeQuestion = typeQuestion; //The type of the question (MCQ,Automaton,RE (Regular expression))
@@ -648,8 +664,6 @@
                     code,
                     function(text) {
                         obj.load(text);
-                        /*var a = JSON.parse(text);
-                        obj = a;  //The new object */
                     },
                     function (erreur) {
                             throw new Error("Bug loading file");
@@ -677,6 +691,8 @@
     var chapterSelected = null; //Chapter selected by the user
     var questionSelected = null; //Question selected by the user
 
+    var contentListFilesParsed = null; //Content of the listFiles.json parsed
+
     var createTable = null;
     var automaton2HTMLTable = null;
 
@@ -684,7 +700,7 @@
     var grammarLoaded = null;
     var RELoaded = null;
     var automataLoaded = [null,null]; //If the users loads an automaton
-    var randomly = [1,1,1,1]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
+    var randomly = [0,1,1,1]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
     var nbrState = [5,4];
     var alphabet = [['a','b'],['a','b']];
     var nbrFinalStates = [1,1];
@@ -736,7 +752,7 @@
 
         let refs = {}; //  List of the references, {"#":"reference"}
         let questionListWindowContent = ["div#questionList.libD-ws-colors-auto libD-ws-size-auto", {"#":"root"}, [
-                ["button#generate-automaton-specification-questionList",_("Settings automaton generation")],
+                ["button#generate-automaton-specification-questionList",_("Settings")],
                 ["div#questionList-container-button-navigation",[
                 ["button#close-questionList", {"#": "close"}, _("Close the question list")]]],
                 ["div#questionList-container", [ //Contains the chapter, and question
@@ -819,7 +835,7 @@
                 content : libD.jso2dom([
                 ["div#div-settings-question",{"class":"libD-wm-content auto-size"},[
                     ["h1",_("Settings")],
-                    ["div#questionList-selection-chapter", [ //To select the chapter
+                    ["div#questionList-selection-option", [ //To select the chapter
                         ["button",{"class":"load-mode","value": "auto1"}, _("Automaton1")],
                         ["button",{"class":"load-mode","value": "auto2"}, _("Automaton2")],
                         ["button",{"class":"load-mode","value": "re"}, _("Regular expression")],
@@ -1098,24 +1114,27 @@
 
                     var listFiles = null; //List of all the automata for each exercice
                     var selectedQuestion = null;
-
-                    getFile(
-                        "files_question/listFiles.json",
-                        function(automata_question) {displayWin(automata_question)},
-                        function (message, status) {
-                                    var msg = null;
-                                    if (message === "status") {
-                                        msg = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
+                    if (contentListFilesParsed==null){
+                        getFile(
+                            "files_question/listFiles.json",
+                            function(content) {displayWin(content)},
+                            function (message, status) {
+                                        var msg = null;
+                                        if (message === "status") {
+                                            msg = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
+                                        }
+                                        if (message === "send") {
+                                            msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
+                                        }
+                                        AudeGUI.notify(_("Unable to get the list of needed files"), msg);
                                     }
-                                    if (message === "send") {
-                                        msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
-                                    }
-                                    AudeGUI.notify(_("Unable to get the list of needed files"), msg);
-                                }
-                    );
+                        );
+                    }
+                    else
+                        makeWindow();
 
-                    function displayWin (automata_question) {
-                        listFiles= JSON.parse(automata_question); //Transform the JSON file (where there are the folders and names of automata) in object
+                    function displayWin (content) {
+                        contentListFilesParsed= JSON.parse(content); //Transform the JSON file (where there are the folders and names of automata) in object
                         makeWindow();
                     }
 
@@ -1197,12 +1216,12 @@
                             var div = document.getElementById('load-automaton-question');
                             var divListFiles = document.getElementById('load-automaton-question-list');
                             var divContentFile = document.getElementById('display-loaded-automaton');
-                            var namesQuestion = Object.keys(listFiles); //The list of name exercice
+                            var namesQuestion = Object.keys(contentListFilesParsed); //The list of name exercice
 
 
                             //Display the list of question
                             for (var i = 0, l=namesQuestion.length; i < l; i++) {
-                                if (listFiles[namesQuestion[i]].type===type) {
+                                if (contentListFilesParsed[namesQuestion[i]].type===type) {
                                     var but = document.createElement("button");
                                     but.innerHTML = namesQuestion[i][0].toUpperCase() + namesQuestion[i].slice(1); //The first letter in uppercase
                                     but.className = "load-automaton-button";
@@ -1233,15 +1252,15 @@
                             function butDispListFiles (question) {
                                 selectedQuestion = question.value;
                                 divListFiles.innerHTML = "<p class='title'>List of files</p>";
-                                for (var j = 0, len=listFiles[question.value].tab.length; j < len; j++) {
-                                    if (listFiles[question.value].type===type) {
+                                for (var j = 0, len=contentListFilesParsed[question.value].tab.length; j < len; j++) {
+                                    if (contentListFilesParsed[question.value].type===type) {
                                         var auto = document.createElement("div");
                                         auto.className = "load-button";
-                                        auto.innerHTML = listFiles[question.value].tab[j].replace(/.(txt)|(.svg)$/,'');
+                                        auto.innerHTML = contentListFilesParsed[question.value].tab[j].replace(/.(txt)|(.svg)$/,'');
                                         divListFiles.appendChild(auto);
 
                                         //Display the file when you click on the name
-                                        auto.addEventListener('click',butDispFile.bind(null,question.value,listFiles[question.value].tab[j]) );
+                                        auto.addEventListener('click',butDispFile.bind(null,question.value,contentListFilesParsed[question.value].tab[j]) );
                                     }
                                 }
                             }
@@ -1263,7 +1282,6 @@
                                             designer.setSVG(text); //Display the automaton
                                         automataL[numAutomaton]= designer.getAutomaton(0);
                                         designer.autoCenterZoom();
-                                        console.log(designer.getAutomaton(0));
                                     });
                                 }
                                 else if(type==="re") {
@@ -1342,32 +1360,20 @@
                 ["span",{"class":"questionList-question"}, _("No question")]]));
         }
 
-        var buttonQuestion = document.getElementsByClassName('questionList-question-select') //To display the question
+        //To display the question when clicked
+        var buttonQuestion = document.getElementsByClassName('questionList-question-select')
         for (var i=0,l=buttonQuestion.length;i<l;i++) {
-            buttonQuestion[i].addEventListener('click',function(e) {
+            buttonQuestion[i].addEventListener('click',async function(e) {
 
                 //We create the question
-                var q = new Question ('','',e.target.value);
-
-                //For the mcq: need to load a file
-                if (e.target.value==="mcq1" || e.target.value==="mcq2" || e.target.value==="mcq3") {
-                    //Load the file which contains the list of all the files
-                    getFile("files_question/listFiles.json", function(content) {
-                        var listFolders = JSON.parse(content);
-                        var files = null; //The list of files
-                        for (var folder in listFolders) {
-                            if (folder === e.target.value) {
-                                files = listFolders[folder].tab;
-                            }
-                        }
-                        //Get hazardly a file
-                        var rand = Math.floor(Math.random() * (files.length));
-                        getFile("files_question/mcq1/"+files[rand], function(text) {
-                            q.load(text);
-                            next();
-                        },function() {alert("alaide");});
-                    },function() {alert("Can't load file")})
+                var q = new Question(e.target.value);
+                //If no automaton/grammar/re loaded and the automaton/grammar/re is not created hazardly
+                if (automataLoaded[0]===null && randomly[0]===0 || (RELoaded===null && randomly[2]===0) || grammarLoaded===null && randomly[3]===0) {
+                    await getListFiles(); //Load the first time the file
+                    await getRandomFiles(q,e.target.value); //Load a random automaton/grammar... from the file
+                    q.correctionQuestion();
                 }
+
                 //Other question we initialize automaton/grammar... and correct automaticaly the question
                 else {
                     q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
@@ -1375,58 +1381,110 @@
                     q.initializeRegex(RELoaded);
                     q.initializeGrammar(grammarLoaded);
                     q.correctionQuestion();
-                    next();
                 }
 
-                //To handle javascript asynchrone
-                function next() {
-                    questionSelected = e.target.value;
-                    var div = document.getElementById("questionList-container"); //Area to display the question
-                    var divBut = document.getElementById("questionList-container-button-navigation"); //Area to display the question
-                    div.innerHTML="";
-                    divBut.appendChild(libD.jso2dom([
-                        ["button#menu-questionList", _("Menu questions")],
-                        ["button#questionList-restart", _("Restart")],
-                        ]
-                    ));
-                    var but = document.getElementById("menu-questionList"); //The button permits to return to the menu
-                    but.onclick = reDrawQuestionList;
-                    var butRestart = document.getElementById("questionList-restart"); //The button permits to regenerate the question
-                    butRestart.onclick = function () { //Recreate the page with a new question
+                questionSelected = e.target.value;
+                var div = document.getElementById("questionList-container"); //Area to display the question
+                var divBut = document.getElementById("questionList-container-button-navigation"); //Area to display the question
+                div.innerHTML="";
+                divBut.appendChild(libD.jso2dom([
+                    ["button#menu-questionList", _("Menu questions")],
+                    ["button#questionList-restart", _("Restart")],
+                    ]
+                ));
+                var but = document.getElementById("menu-questionList"); //The button permits to return to the menu
+                but.onclick = reDrawQuestionList;
+                var butRestart = document.getElementById("questionList-restart"); //The button permits to regenerate the question
+                butRestart.onclick = async function () { //Recreate the page with a new question
 
-                        if (questionSelected==="mcq1" || questionSelected==="mcq2" || questionSelected==="mcq3") {
-                            //Load the file which contains the list of all the files
-                            getFile("files_question/listFiles.json", function(content) {
-                                var listFolders = JSON.parse(content);
-                                var files = null; //The list of files
-                                for (var folder in listFolders) {
-                                    if (folder === e.target.value) {
-                                        files = listFolders[folder].tab;
-                                    }
-                                }
-                                //Get hazardly a file
-                                getFile("files_question/mcq1/"+files[Math.floor(Math.random() * (files.length))], function(text) {
-                                    q.load(text);
-                                    div.innerHTML='';
-                                    drawQuestion(q,div);
-                                });
-                            })
-                        }
-                        else {
-                            q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
-                            q.initializeAutomata(automataLoaded); // Create a new automaton
-                            q.initializeRegex(RELoaded); //Create a new regex if needed
-                            q.initializeGrammar(grammarLoaded);
-                            q.correctionQuestion(); //Correct the question
-                            div.innerHTML='';
-                            drawQuestion(q,div);
-                        }
-                    };
-                    drawQuestion(q,div);
-                }
+                    //If no automaton loaded and the automaton is not created hazardly
+                    if (automataLoaded[0]===null && randomly[0]===0 || q.typeQuestion==="MCQ") {
+                        await getListFiles();
+                        await getRandomFiles(q,q.underTypeQuestion);
+                        q.correctionQuestion();
+                        div.innerHTML='';
+                        drawQuestion(q,div);
+                    }
+                    else {
+                        q.settingsCreateAutomaton(randomly,nbrState,alphabet,nbrFinalStates,mode,nbTransitions);
+                        q.initializeAutomata(automataLoaded); // Create a new automaton
+                        q.initializeRegex(RELoaded); //Create a new regex if needed
+                        q.initializeGrammar(grammarLoaded);
+                        q.correctionQuestion(); //Correct the question
+                        div.innerHTML='';
+                        drawQuestion(q,div);
+                    }
+                };
+                drawQuestion(q,div);
             });
         }
     }
+
+    //Get a random files for the given question
+    function getRandomFiles(q,nameQuestion) {
+        return new Promise (function(resolve,reject) {
+            if (contentListFilesParsed[nameQuestion]===undefined)
+                throw new Error("The exercice has no file to load");
+            else
+                var files = contentListFilesParsed[nameQuestion].tab; //The list of files for the question
+
+            var rand = Math.floor(Math.random() * (files.length));
+            getFile("files_question/"+nameQuestion+"/"+files[rand], async function(text) { //Get a random file
+                console.log(q.typeQuestion);
+                if(q.typeQuestion=="MCQ") //A mcq we load the question
+                    q.load(text);
+                else if(q.typeQuestion=="RE") //A RE we load the string(re)
+                    q.addRE(text);
+                else if(q.typeQuestion=="grammar") //A grammar we load the string(grammar)
+                    q.addGrammar(text);
+
+                else if(q.typeQuestion=="automaton") {
+                    var div = document.createElement("div");
+                    var designer = new AudeDesigner(div, true);
+                    designer.setAutomatonCode(text);
+                    q.addAutomaton(designer.getAutomaton(0)); //Load the automaton
+
+                    //Need to load a second automaton
+                    if (q.need2AutomataQuestion()) {
+                        if (/([\d])\./.test(files[rand])) {
+                            var T=(parseInt(RegExp.$1,10)%2+1)+".";
+                            var complFile = files[rand].replace(/([\d])\./,T);
+                            await function() { //Wait for the second file to be loaded
+                                return new Promise (function(resolve,reject) {
+                                    getFile("files_question/"+nameQuestion+"/"+complFile, function(text) {
+                                        designer.setAutomatonCode(text);
+                                        q.addAutomaton(designer.getAutomaton(0),1);
+                                        resolve();
+                                    })
+                                })
+                            }();
+                        }
+                        else {
+                            throw new error("Can't load the second automaton. Name of file invalid");
+                        }
+                    }
+                }
+                resolve();
+            },function() {throw new error("Error loading file");});
+        })
+    }
+
+    //Get the list of files and parse it
+    function getListFiles () {
+        return new Promise (function(resolve,reject) {
+            if (contentListFilesParsed!==null)
+                resolve();
+            else {
+                getFile("files_question/listFiles.json", function(content) {
+                    contentListFilesParsed = JSON.parse(content);
+                    resolve();
+                })
+            }
+        })
+    }
+
+
+
 
     //Redraw the menu as it was before selected a question
     function reDrawQuestionList () {
@@ -1480,21 +1538,7 @@
                     question.userResponse = repCheck;
                     break;
                 case "grammar":
-                    var divTerm = document.getElementById("question-answers-input-term-symbol");
-                    var divNonTerm = document.getElementById("question-answers-input-non-term-symbol");
-                    var divStart = document.getElementById("question-answers-input-start-symbol");
-                    var divRules = document.getElementById("question-answers-input-production-rules");
-                    var G = "({"+divTerm.value+"},{"+divNonTerm.value+"},"+divStart.value+",{"; //The grammar is created thanks to the input
-
-                    var rule = divRules.childNodes[0];
-                    G+=rule.childNodes[0].value+"->"+rule.childNodes[2].value
-                    for (var i=1,l=divRules.childElementCount;i<l;i++) { //For each rule we take the informations from the input
-                        rule = divRules.childNodes[i];
-                        if (rule.childNodes[0].value!=="" && rule.childNodes[2].value !== "")
-                            G+=","+rule.childNodes[0].value+"->"+rule.childNodes[2].value;
-                    }
-                    G+="})";
-                    question.userResponse = G;
+                    question.userResponse = getInputGrammar();
                     break;
             }
             correctionQuestion(question);
@@ -1568,55 +1612,7 @@
                     document.getElementById("question-answers-input").placeholder="Write the answer here";
                 break;
             case "grammar":
-                divAnswersUser.appendChild(libD.jso2dom([
-                    ["span",_("Write the terminal symbols: ")],
-                    ["input#question-answers-input-term-symbol"],["br"],
-                    ["span",_("Write the non terminal symbols: ")],
-                    ["input#question-answers-input-non-term-symbol"],["br"],
-                    ["select#question-answers-input-start-symbol",[
-                        ["option",_("Select the start symbol")],
-                    ]],
-                    ["div#question-answers-input-production-rules",[
-                        ["div.question-answers-input-rule",[
-                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Non terminal symbol")}],
-                            ["span.arrow",("→")],
-                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Body")}],
-                            ["button.question-answers-input-rule-remove",('X')],
-                        ]]
-                    ]],
-                    ["button#question-answers-add-rule",_("Add a rule")],
-                ]));
-
-                //Create the list od start symbol with the non terminal symbols
-                var startSymbol = document.getElementById("question-answers-input-start-symbol");
-                var nonTermSym = document.getElementById("question-answers-input-non-term-symbol");
-                nonTermSym.oninput = function () {
-                    var syms = nonTermSym.value.split(',');
-                    if (syms.length>0)
-                        startSymbol.innerHTML="<option>Select the start symbol</option>";
-                    for (var s of syms) {
-                        var option = document.createElement("option");
-                        option.value = s;
-                        option.textContent = s;
-                        startSymbol.appendChild(option);
-                    }
-                };
-
-                //To enter the production rules
-                var divRules = document.getElementById("question-answers-input-production-rules");
-                document.getElementById("question-answers-add-rule").onclick = function () {
-                    divRules.appendChild(libD.jso2dom([
-                        ["div.question-answers-input-rule",[
-                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Non terminal symbol")}],
-                            ["span.arrow",("→")],
-                            ["input.question-answers-input-non-term-symbol",{"type":"text","placeholder":_("Body")}],
-                            ["button.question-answers-input-rule-remove",('X')],
-                        ]]
-                    ]));
-                    document.getElementsByClassName('question-answers-input-rule-remove')[divRules.childElementCount-1].onclick = function(e) {
-                        e.target.parentNode.parentNode.removeChild(e.target.parentNode);
-                    }
-                };
+                inputGrammar(divAnswersUser);
                 break;
 
             case "radio":
