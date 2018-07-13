@@ -79,6 +79,9 @@ export function smallerWord (A)
         word += symbol
         currentState := nextState
     done
+    if word = "" then
+        word := "ε"
+    end if
     return word
 end function
 
