@@ -148,6 +148,8 @@
                 AudeGUI.Results.setMealy(res);
             } else if (res instanceof Moore) {
                 AudeGUI.Results.setMoore(res);
+            } else if (res instanceof Pushdown) {
+                AudeGUI.Results.setPushdownAutomaton(res);
             } else {
                 if (HTMLElement && res instanceof HTMLElement) {
                     AudeGUI.Results.setDOM(res);
@@ -210,6 +212,26 @@
 
             AudeGUI.Results.set(A);
         },
+
+        // Pushdown automaton → Automaton
+        setPushdownAutomaton : function (P) {
+            var A = new Automaton;
+
+            //Set the initial state
+            A.setInitialState(P.getInitialState());
+
+            //Set the final states
+            for(var s of P.getFinalStates()) {
+                A.setFinalState(s);
+            }
+
+            //Set the transition
+            for(var t of P.getTransitions()) {
+                A.addTransition(t.startState, t.symbol + ";" + t.stackSymbol + "/" + t.newStackSymbol , t.endState);
+            }
+            AudeGUI.Results.set(A);
+        },
+
 
         load: function () {
             results        = document.getElementById("results");

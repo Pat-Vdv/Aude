@@ -39,7 +39,7 @@
         var res = audescript.toJS(code, moduleName, fileName);
         data.includes = res.neededModules;
         return (
-            "(function (run, get_automaton, get_automata, get_mealy, get_moore, currentAutomaton) {" +
+            "(function (run, get_automaton, get_automata, get_mealy, get_moore, get_pushdown_automaton, currentAutomaton) {" +
             res.code + "})"
         );
     }
@@ -220,6 +220,71 @@
 
             return A;
         },
+            // Automaton → Pushdown automaton
+        get_pushdown_automaton: function (i,statesAsString) {
+            if (isNaN(i)) {
+                return null;
+            }
+
+            var A = null;
+
+            if (isNaN(i)) {
+                return null;
+            }
+            var A = AudeGUI.Runtime.get_automaton(i, true);
+
+            var P = new Pushdown();
+
+            P.setInitialState(A.getInitialState()); //Initialise the initial state
+
+            P.setInitialStackSymbol("Z"); //Initialise the stack symbol
+
+            for (var s of A.getFinalStates()) //Initialise the final states
+                P.setFinalState(s);
+
+            //Initialise transitions
+            var trans = A.getTransitions();
+            var tabTransition = [];
+            var c = "";
+            var i=0;
+            //For each transition
+            try {
+                for (var t of trans) {
+                    while(t.symbol[i]!=";" && i<t.symbol.length) {
+                        c += t.symbol[i];
+                        i++;
+                    }
+                    i++;
+                    tabTransition.push(c.trim()); //Symbol of transition
+                    c = "";
+                    while(t.symbol[i]!="/" && i<t.symbol.length) {
+                        c += t.symbol[i];
+                        i++;
+                    }
+                    i++;
+                    tabTransition.push(c.trim()); //Symbol of stack to replace
+                    c = "";
+                    while(String(t.symbol[i])!="\0" && i<t.symbol.length) {
+                        c += t.symbol[i];
+                        i++;
+                    }
+                    tabTransition.push(c.trim()); //The symbols to push to the stack
+
+
+                    
+                    P.addTransition(t.startState,tabTransition[0],tabTransition[1],t.endState,tabTransition[2]);
+                    tabTransition = [];
+                    c = "";
+                    i = 0;
+
+                }
+            } catch(e) {
+                console.error(e);
+                throw new Error(libD.format(_("get_pushdown_automaton: automaton not understood.")));
+            }
+            return P;
+
+        },
 
         get_automata: function (count, callback) {
             if (AudeGUI.AutomataList.length() < count) {
@@ -241,7 +306,8 @@
                 AudeGUI.Runtime.get_automaton,
                 AudeGUI.Runtime.get_automata,
                 AudeGUI.Runtime.get_mealy,
-                AudeGUI.Runtime.get_moore
+                AudeGUI.Runtime.get_moore,
+                AudeGUI.Runtime.get_pushdown_automaton
             );
         },
 
@@ -330,7 +396,7 @@
             return res;
         },
 
-        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore) {
+        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore,get_pushdown_automaton) {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
                 loadingProgNot = null;
@@ -343,6 +409,7 @@
                     get_automata,
                     get_mealy,
                     get_moore,
+                    get_pushdown_automaton,
                     AudeGUI.mainDesigner.currentIndex,
                 );
 
