@@ -22,40 +22,47 @@
     //Inputs to enter a grammar
     pkg.inputGrammar = function (divAnswersUser) {
         divAnswersUser.appendChild(libD.jso2dom([
-            ["span",_("Write directly the grammar: ")],
-            ["input#input-plain-grammar"],["br"],
-            ["Div",_("Or enter the grammar easily: ")],
-            ["span",_("Write the terminal symbols: ")],
-            ["input#input-term-symbol"],["br"],
-            ["span",_("Write the non terminal symbols: ")],
-            ["input#input-non-term-symbol"],["br"],
-            ["select#input-start-symbol",[
-                ["option",_("Select the start symbol")],
-            ]],
-            ["div#input-production-rules",[
-                ["div.question-answers-input-rule",[
-                    ["input.input-rule-non-term-symbol",{"type":"text","placeholder":_("Non terminal symbol")}],
-                    ["span.arrow",("→")],
-                    ["input.input-rule-non-term-symbol",{"type":"text","placeholder":_("Body")}],
-                    ["button.input-rule-remove",('X')],
-                ]]
-            ]],
-            ["button#add-rule",("Add a rule")],
+            ["div#input-block-grammar",[
+                ["span",_("Write directly the grammar: ")],
+                ["input#input-plain-grammar"],["br"],
+                ["div#div-enter-easy-grammar",_("Or enter easily the grammar: ")],
+                ["span",_("Write the terminal symbols: ")],
+                ["input#input-term-symbol"],["br"],
+                ["span",_("Write the non terminal symbols: ")],
+                ["input#input-non-term-symbol"],["br"],
+                ["select#input-start-symbol",[
+                    ["option",_("Select the start symbol")],
+                ]],
+                ["div#input-production-rules",[
+                    ["div.question-answers-input-rule",[
+                        ["input.input-rule-non-term-symbol",{"type":"text","placeholder":_("Non terminal symbol")}],
+                        ["span.arrow",("→")],
+                        ["input.input-rule-non-term-symbol",{"type":"text","placeholder":_("Body")}],
+                        ["button.input-rule-remove",('X')],
+                    ]]
+                ]],
+                ["button#add-rule",("Add a rule")],
+            ]]
         ]));
 
         //Create the list od start symbol with the non terminal symbols
         var startSymbol = document.getElementById("input-start-symbol");
         var nonTermSym = document.getElementById("input-non-term-symbol");
+        var startSymbolSelected = null;
         nonTermSym.oninput = function () {
+            startSymbolSelected = startSymbol.value; //Save the current value
             var syms = nonTermSym.value.split(',');
             if (syms.length>0)
-                startSymbol.innerHTML="<option>Select the start symbol</option>";
+                startSymbol.innerHTML="<option id='select-start-symbol'>Select the start symbol</option>";
             for (var s of syms) {
-                var option = document.createElement("option");
-                option.value = s;
-                option.textContent = s;
-                startSymbol.appendChild(option);
+                if (s !== "" && s !== " " ) {
+                    var option = document.createElement("option");
+                    option.value = s;
+                    option.textContent = s;
+                    startSymbol.appendChild(option);
+                }
             }
+            startSymbol.value = startSymbolSelected; //Reset the value after recreating the options
         };
 
         //To enter the production rules
@@ -134,26 +141,29 @@
                 content: div
             });
 
+
             var regex = document.getElementById("input-regex");
             var grammar = document.getElementById("input-grammar");
 
             inputGrammar(grammar);
             //Add the resize event when we add or delete a rule
             document.getElementById("add-rule").addEventListener("click",function() {
-                resize(div);
-                var removes = document.getElementsByClassName("inpur-rule-remove");
-                removes[removes.childElementCount-1].addEventListener("click",resize.bind(null,div));
+                win.resize();
+                var removes = document.getElementsByClassName("input-rule-remove");
+                var parent = document.getElementById("input-production-rules");
+                removes[parent.childElementCount-1].addEventListener("click",function()
+                {win.resize()});
             });
 
 
             var radioButton = document.getElementsByClassName("selection-mode-type")
             radioButton[0].oninput = function() {
-                resize(div);
+                win.resize();
                 regex.style.display = "none";
                 grammar.style.display = "none";
             }
             radioButton[1].oninput = function() {
-                resize(div)
+                win.resize();
                 if (getComputedStyle(regex).display == "none") {
                     regex.style.display = "inline";
                     grammar.style.display = "none";
@@ -162,7 +172,7 @@
                     regex.style.display = "none";
             }
             radioButton[2].oninput = function() {
-                resize(div);
+                win.resize();
                 if (getComputedStyle(grammar).display == "none") {
                     grammar.style.display = "inline";
                     regex.style.display = "none";
@@ -183,11 +193,12 @@
     }
 
     //Resize the window when adding elements
-    function resize(div) {
+    //Now use win.resize()
+    /*pkg.resize = function (div) {
         div.parentNode.className = "libD-wm-content auto-size";
         div.parentNode.parentNode.style.width = "";
         div.parentNode.parentNode.style.height = "";
-    }
+    }*/
 
     //Area to allow the users to write the grammar
     //Take a function in parameters, the function is launched when the user clicks on the button
@@ -212,10 +223,53 @@
             document.getElementById("validate-grammar").onclick = validate;
 
             //Add the resize event when we add or delete a rule
-            document.getElementById("add-rule").addEventListener("click",resize.bind(null,div));
+            document.getElementById("add-rule").addEventListener("click",function(){
+                win.resize();
+            });
         }
         else
             return "You have already launched the program!";
+    }
+
+    //Ask the value to create an automaton
+    //activate the function validate
+    pkg.askSettingsAutomaton = function (validate) {
+        let div = document.createElement('div');
+        div.className=("libD-ws-colors-auto auto-size");
+        div.appendChild(libD.jso2dom([
+            ["div#div-settings-question-container-row", [
+                ["div",{"class":"div-settings-question-container-column"}, [
+                    ["span",{"class":"span-settings-question"},_("Number of states: ")],
+                    ["span",{"class":"span-settings-question"},_("Alphabet ")],
+                    ["span",{"class":"span-settings-question"},_("Number of final states: ")],
+                    ["span",{"class":"span-settings-question","title":_("Automaton determinist: 1\nAutomaton non determinist: 2 \n\
+Automaton non determinist with ε-transitions: 3")},_("Mode: ")],
+                    ["span",{"class":"span-settings-question"},_("Number of transitions: ")],
+                ]],
+                ["div",{"class":"div-settings-question-container-column"}, [
+                    ["input",{"class":"input-settings-question","type":"number","min":"1"}],
+                    ["input",{"class":"input-settings-question","type":"text"}],
+                    ["input",{"class":"input-settings-question","type":"number","min":"0"}],
+                    ["input",{"class":"input-settings-question","type":"number","min":"1","max":"3"}],
+                    ["input",{"class":"input-settings-question","type":"number","min":"0"}],
+                ]],
+            ]],
+            ["button#validate-automaton",_("Validate")],
+        ]))
+
+        var win = libD.newWin({ //Create a new window
+            title:      _("Settings automaton"),
+            show:       true,
+            fullscreen: false,
+            content: div
+        });
+
+        //Validate the choice
+        document.getElementById("validate-automaton").onclick = function() {
+            var inputs = document.getElementsByClassName("input-settings-question");
+            var alphabet = inputs[1].value.split(',');
+            validate(inputs[0].value,alphabet,inputs[2].value,inputs[3].value,inputs[4].value);
+        }
     }
 
 
