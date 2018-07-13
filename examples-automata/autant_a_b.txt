@@ -1,0 +1,72 @@
+0
+1
+
+
+0 a;A/AA 0
+0 a;Z/AZ 0
+0 a;B/ε 0
+0 b;A/ε 1
+0 b;Z/BZ 1
+0 b;B/BB 1
+1 a;A/AA 0
+1 a;Z/AZ 0
+1 a;B/ε 0
+1 b;A/ε 1
+1 b;Z/BZ 1
+1 b;B/BB 1
+
+<representation type='image/svg+xml'>
+<svg width="1229" height="906" viewBox="0 0 682.778 503.333" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" data-id="graph0">
+<title>automaton</title>
+
+
+
+<g class="node" data-id="MA==">
+<title>0</title>
+<ellipse fill="white" stroke="#000000" cx="118.6416015625" cy="77.91111034817166" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="118.6416015625" y="82.11111111111111" font-family="Times,serif" font-size="14.00" fill="#000000">0</text>
+</g>
+
+<g class="edge" data-id="initialStateArrow">
+<title>_begin-&gt;0</title>
+<path fill="none" stroke="#000000" d="M62.6416015625,77.9111099243164C81.97493489583333,77.9111099243164 91.30826822916667,77.9111099243164 90.6416015625,77.9111099243164"></path>
+<polygon fill="#000000" stroke="#000000" points="100.6416015625,77.9111099243164 90.6416015625,73.9111099243164 95.6416015625,77.9111099243164 90.6416015625,77.9111099243164 90.6416015625,77.9111099243164 90.6416015625,77.9111099243164 95.6416015625,77.9111099243164 90.6416015625,81.9111099243164 100.6416015625,77.9111099243164 100.6416015625,77.9111099243164"></polygon>
+</g>
+
+<g class="edge" data-id="MA== MA==">
+<title>0-&gt;0</title>
+<path fill="none" stroke="black" d="M 112.2623 60.87381111111111 C 110.9605 51.05311111111111 113.08690000000001 41.91111111111111 118.64160000000001 41.91111111111111 C 122.1132 41.91111111111111 124.2457 45.4822111111111 125.03909999999999 50.5581111111111"></path>
+<polygon fill="black" stroke="black" points="128.539,50.88 125.021,60.8738 121.539,50.8675 128.539,50.88"></polygon>
+<text text-anchor="middle" x="118.6416015625" y="37.71111149258084" font-family="Times,serif" font-size="14.00">a;A/AA,a;Z/AZ , a;B/ε</text>
+</g>
+
+<g class="node" data-id="MQ==">
+<title>1</title>
+<ellipse fill="white" stroke="#000000" cx="412.44257269965277" cy="82.3555530971951" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="412.44257269965277" y="86.55555386013455" font-family="Times,serif" font-size="14.00" fill="#000000">1</text>
+</g>
+
+<g class="edge" data-id="MA== MQ==">
+<title>0-&gt;1</title>
+<path fill="none" stroke="black" d="M 136.6395423736477 78.1833718541264 C 219.24161794930774 79.43292594137014 301.84369352496776 80.68248002861388 384.44576910062784 81.93203411585762"></path>
+<polygon fill="black" stroke="black" points="384.499,78.4324 394.445,82.0833 384.393,85.4316 384.499,78.4324"></polygon>
+<text text-anchor="middle" x="271.5997659814362" y="76.13739492323465" font-family="Times,serif" font-size="14.00">b;A/ε, b;Z/BZ ,b;B/BB</text>
+</g>
+
+<g class="edge" data-id="MQ== MA==">
+<title>1-&gt;0</title>
+<path fill="none" stroke="black" d="M 396.1796967067557 90.07041398246125 C 384.51724820164685 95.60290468709343 368.9840472038866 98.86068832107493 353.7881103381988 100.37616941675512 C 273.3431828856278 108.39869484514313 247.86205077189803 107.9531271538626 167.4173326701229 97.11725624299655 C 159.10694347908958 95.99783927242538 150.69585655526495 94.35386148306023 143.55501592375316 90.6908511135778"></path>
+<polygon fill="black" stroke="black" points="145.152,87.5767 134.657,86.1267 141.958,93.805 145.152,87.5767"></polygon>
+<text text-anchor="middle" x="260.60272389019906" y="94.7467079263428" font-family="Times,serif" font-size="14.00">a;A/AA,a;Z/AZ, a;B/ε</text>
+</g>
+
+<g class="edge" data-id="MQ== MQ==">
+<title>1-&gt;1</title>
+<path fill="none" stroke="black" d="M 399.73137777777777 69.06295555555555 C 394.2991777777778 57.95855555555555 398.5362777777778 46.355555555555554 412.4425777777778 46.355555555555554 C 422.0030777777778 46.355555555555554 426.9934777777778 51.83975555555554 427.4135777777778 58.875855555555546"></path>
+<polygon fill="black" stroke="black" points="430.737,60.0583 425.154,69.0629 423.903,58.5423 430.737,60.0583"></polygon>
+<text text-anchor="middle" x="412.44257269965277" y="42.15555614895291" font-family="Times,serif" font-size="14.00">b;A/ε, b;Z/BZ, b;B/BB</text>
+</g>
+</g>
+</svg>
+</representation>
