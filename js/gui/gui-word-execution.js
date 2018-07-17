@@ -41,6 +41,7 @@
     var _ = AudeGUI.l10n;
 
     var executeWin = null;
+    var stackWin = null;
 
     AudeGUI.WordExecution = {
         load: function () {
@@ -60,13 +61,19 @@
             AudeGUI.Results.enable();
             if (!executeWin || !executeWin.ws) {
                 var refs = {};
+                var typeAutomaton = "automaton";
                 executeWin = libD.newWin({
                     minimizable: false,
+                    show: true,
                     title:       _("Execute the current automaton with a word"),
                     right:       document.getElementById("results").offsetWidth  + 10, // FIXME
                     top:         document.getElementById("toolbar").offsetHeight + 5,
                     content:     libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
                         ["div", {"#": "root"}, [
+                            ["input.run-word-type-automaton",{"type":"radio","name":"mode","value":"automaton","checked":"true"}],
+                            ["span",_("Automaton")],
+                            ["input.run-word-type-automaton",{"type":"radio","name":"mode","value":"pushdown"}],
+                            ["span",_("Pushdown automaton")],["br"],
                             ["label", {"for":"execute-word-input"}, _("Word: ")],
                             ["input#execute-word-input", {type: "text", "#": "word"}],
                             ["input", {type: "button", value: _("Run"),  "#": "run"}],
@@ -74,7 +81,20 @@
                         ]],
                         ["div", [
                             ["label", {"for":"execute-delay-input"}, _("Delay between steps (ms): ")],
-                            ["input#execute-delay-input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}]
+                            ["input#execute-delay-input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}],
+                            ["br"],
+                        ]],
+                        ["div#run-word-pushdown-parameters",{"style":"display:none"},[
+                            ["label", _("Initial stack symbol : ")],
+                            ["input#run-word-initial-stack-symbol", {type: "text", "#": "stackSymbol", value: "Z"}], ["br"],
+
+                        /*    ["label", _("Methode recognizing : ")],["br"],
+                            ["input",{"type":"radio","name":"recognize","mode":"stack","checked":"true"}],
+                            ["span",_("Stack empty")],["br"],
+                            ["input",{"type":"radio","name":"recognize","value":"final"}],
+                            ["span",_("Final states")],["br"],
+                            ["input",{"type":"radio","name":"recognize","value":"stackFinal"}],
+                            ["span",_("Stack empty and final states")],["br"],*/
                         ]]
                     ]], refs)
                 });
@@ -82,6 +102,7 @@
                 executeWin.addListener("close", function () {
                     wordDiv.textContent = "";
                     AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
+                    stackWin.close();
                 });
                 libD.wm.handleSurface(executeWin, refs.root);
                 refs.run.onclick = function () {
@@ -89,15 +110,15 @@
                     AudeGUI.WordExecution.stop();
                     AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
                     refs.delay.onchange();
-                    execute(false, refs.word.value, AudeGUI.mainDesigner.currentIndex);
+                    execute(false, typeAutomaton, refs.stackSymbol.value, refs.word.value, AudeGUI.mainDesigner.currentIndex);
                 };
 
                 refs.step.onclick = function () {
                     if (executionTimeout) {
                         clearTimeout(executionTimeout);
-                        execute(true);
+                        execute(true, typeAutomaton, refs.stackSymbol.value);
                     } else {
-                        execute(true, refs.word.value, AudeGUI.mainDesigner.currentIndex);
+                        execute(true, typeAutomaton, refs.stackSymbol.value, refs.word.value, AudeGUI.mainDesigner.currentIndex);
                     }
                 };
 
@@ -114,21 +135,36 @@
                         refs.run.onclick();
                     }
                 };
+
+                //Chose between automaton and pushown automaton
+                var type = document.getElementsByClassName("run-word-type-automaton");
+                type[0].oninput = function() {
+                    executeWin.resize();
+                    document.getElementById("run-word-pushdown-parameters").style.display = "none";
+                    typeAutomaton = "automaton";
+                };
+                type[1].oninput = function() {
+                    executeWin.resize();
+                    document.getElementById("run-word-pushdown-parameters").style.display = "inherit";
+                    typeAutomaton = "pushdown";
+                };
+
             }
             executeWin.show();
             executeWin.__refs.word.focus();
         }
     };
 
-    var accepting, word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep;
+    var accepting, word, index, stepNumber, currentAutomaton, currentStates, currentSymbolNumber, listOfExecutions, executionByStep, typeAutomaton;
 
-    function execute(byStep, w, ind) {
+    function execute(byStep, typeAuto, initStackSymbol, w, ind) {
         if (typeof w === "string") {
             word  = w;
             index = ind;
             currentSymbolNumber = 0;
             stepNumber = 0;
             executionByStep = byStep;
+            typeAutomaton = typeAuto;
         }
 
         if (byStep) {
@@ -169,6 +205,11 @@
                     word = word.substr(1);
                     currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
+                    //Work only on determinized pushdown automaton
+                    if (typeAutomaton === "pushdown") {
+                        redrawStack(currentTransitions);
+                    }
+
                     for (i = 0, len = currentTransitions.length; i < len; ++i) {
                         AudeGUI.mainDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
                     }
@@ -176,6 +217,9 @@
             } else {
                 currentAutomaton.runSymbol(word[0]);
                 word = word.substr(1);
+                if (typeAutomaton === "pushdown") {
+                    redrawStack(currentTransitions);
+                }
                 currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
             }
         } else {
@@ -204,11 +248,23 @@
             layer2.id = "word-layer2";
             wordDiv.appendChild(layer2);
 
-            currentAutomaton = AudeGUI.mainDesigner.getAutomaton(index, true);
+
+            if (typeAutomaton === "automaton")
+                currentAutomaton = AudeGUI.mainDesigner.getAutomaton(index, true);
+            else if (typeAutomaton === "pushdown") {
+                currentAutomaton = AudeGUI.Runtime.get_pushdown_automaton(index);
+                currentAutomaton.setInitialStackSymbol(initStackSymbol);
+                displayStack(initStackSymbol);
+            }
+
             var q_init = currentAutomaton.getInitialState();
             listOfExecutions = [[[q_init, epsilon]]];
             currentAutomaton.setCurrentState(q_init);
             currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
+
+            //If the automaton start with epsilon transition, we draw the stack with the modifications of the epsilon transition
+            if (typeAutomaton === "pushdown")
+                redrawStack(currentTransitions);
 
             accepting = false;
             currentStates = aude.toArray(currentAutomaton.getCurrentStates());
@@ -313,4 +369,110 @@
             }
         }
     }
+
+    //Display the window stack and initialise the stack with the initial stack symbol
+    function displayStack (initialSymbol) {
+        var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+            ["table#table-stack",[
+                ["tr",[
+                    ["th",_("Index")],
+                    ["th",_("Value")],
+                ]],
+            ]],
+        ]]);
+
+        if (!stackWin || !stackWin.ws) {
+            stackWin = libD.newWin({
+                minimizable: false,
+                show: true,
+                title:       _("Stack"),
+                right:       document.getElementById("results").offsetWidth  + 10, // FIXME
+                top:         document.getElementById("toolbar").offsetHeight + 5,
+                content:     cont,
+            })
+        }
+        else { //Reset the display of the stack
+            stackWin.content.replaceChild(cont,stackWin.content.children[0])
+        }
+        var i=0;
+        for (var c of initialSymbol.split("").reverse().join("")) {
+            var tr = libD.jso2dom(["tr",[
+                ["td",(String(i))],
+                ["td",(c)],
+            ]]);
+            if(i===0)
+                document.getElementById("table-stack").appendChild(tr);
+            else
+                document.getElementById("table-stack").insertBefore(tr,document.getElementById("table-stack").firstChild.nextSibling);
+            i++;
+        }
+    }
+
+
+
+    //After each taken transition, remove the stackSymbol and add the new stack symbol
+    function redrawStack(transitions) {
+        if (executionByStep) //If the execution is by step we inmpose a time to show the modification of the stack
+            timeExec = 500/transitions.length;
+        else
+            timeExec = EXECUTION_STEP_TIME/transitions.length;
+
+        var stack = document.getElementById("table-stack");
+
+        var compt=0;
+        //For each transition
+        for (trans of transitions) {
+
+            setTimeout(redLines.bind(null,trans.stackSymbol),(timeExec)*(compt)); //Add in red the lines to remove
+            setTimeout(removeSym.bind(null,trans.stackSymbol),(timeExec/2)+(timeExec*compt)); //Remove the lines in red
+            setTimeout(addSym.bind(null,trans.newStackSymbol),(timeExec/2)+(timeExec*compt)); //Add the new lines and color them in green
+            setTimeout(removeGreen.bind(null,trans.newStackSymbol),(timeExec)+(timeExec*compt)); //Remove the green color of the new lines
+
+
+            function redLines(stackSymbol) {
+                var i=1;
+                for (var c of stackSymbol) { //Draw in red the line to remove
+                    stack.children[i].style.backgroundColor = "red";
+                    i++;
+                }
+            }
+
+            function removeSym(stackSym) {
+                for (var c of stackSym)
+                    stack.removeChild(stack.children[1]);
+            }
+
+            function addSym(newStackSymbol) {
+                //Add the new stack symbol
+                for (var c of newStackSymbol.split("").reverse().join("")) {
+                    if(c!==pkg.epsilon && c!=="ε") {
+                        var line = libD.jso2dom([
+                            ["tr",{"style":"background-color:#5cd65c"},[ //Draw in green the line added
+                                ["td",(String(stack.childElementCount-1))],
+                                ["td",(c)],
+                            ]],
+                        ]);
+                        if (stack.childElementCount==1) //If there nothing in the stack
+                            stack.appendChild(line)
+                        else
+                            stack.insertBefore(line,stack.children[1]);
+                    }
+                }
+                stackWin.resize();
+            }
+
+            function removeGreen(newStackSymbol) {
+                var j = 1;
+                for (var c of newStackSymbol) {
+                    if(c!==pkg.epsilon && c!=="ε") {
+                        stack.children[j].style.backgroundColor = "inherit";
+                        j++;
+                    }
+                }
+            }
+            compt++;
+        }
+
+    }
+
 }(window));
