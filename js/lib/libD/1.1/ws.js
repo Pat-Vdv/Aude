@@ -1881,6 +1881,12 @@ libD.need(["sizepos", "numbers"], function () {
 			this.movable = b;
 		},
 
+		resize : function () {
+			this.dom.style.width = "";
+			this.dom.style.height = "";
+			this.content.className = "libD-wm-content auto-size";
+	    },
+
 		setRealTimeResizeEvent: libD.WS.prototype.setRealTimeResizeEvent
 	};
 
