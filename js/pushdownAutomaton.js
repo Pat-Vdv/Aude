@@ -4,6 +4,25 @@
 (function (pkg) {
     "use strict";
 
+    //Return true if the symbols are in top of the stack
+    function isTopStack(symbols,stack) {
+        var i=stack.length-1;
+        for (var c of symbols) {
+            if (c!==stack[i] || i<0)
+                return false;
+            i--;
+        }
+        return true;
+    }
+
+    //Push the given symbols to the stack
+    // pushSymbols("Cat") -> stack: [0:t,1:a,2:C]
+    function pushSymbol(symbols,stack) {
+        for (var c of symbols.split("").reverse().join("")) {
+            stack.push(c);
+        }
+    }
+
     pkg.Pushdown = function (states,inputAlphabet,stackAlphabet,transition,initialState,initialStackSymbol,finalStates) {
         this.states         = states         || new Set();
         this.inputAlphabet  = inputAlphabet  || new Set();
@@ -17,6 +36,7 @@
             this.currentStates = new Set();
             this.lastTakenTransitions = new Set();
             this.stack = []; //Stack of the automaton
+            this.pushSymbols(this.initialStackSymbol);
         }
     };
 
@@ -24,14 +44,42 @@
 
         /*Stack*/
 
-
         //Return the top of the stack
         getTopStack : function() {
             return this.stack[this.stack.length-1];
         },
 
+        //Return true if the top of the stack contains the symbols
+        isTopStack : function(symbols) {
+            var i=this.stack.length-1;
+            for (var c of symbols) {
+                if (c!==this.stack[i] || i<0)
+                    return false;
+                i--;
+            }
+            return true;
+        },
+
+        //Push the given symbols to the stack
+        // pushSymbols("Cat") -> stack: [0:t,1:a,2:C]
+        pushSymbols : function(symbols) {
+            for (var c of symbols.split("").reverse().join("")) {
+                this.stack.push(c);
+            }
+        },
+
         getStack : function() {
             return this.stack;
+        },
+
+        //Look at all current states, and see if one the stack is empty
+        isStackEmpty : function() {
+            for(var sta of this.getCurrentStatesStacks()) {
+                if (sta.stack.length === this.initialStackSymbol.length)
+                    return true
+            }
+            return false;
+
         },
 
 
@@ -249,6 +297,7 @@
                             if (!determinizedFunction && s === undefined) {
                                 return new Set();
                             }
+
                             return s;
                         }
 
@@ -296,14 +345,12 @@
         /*Initial stack Symbol*/
 
 
-        //Set the initial stack symbol
+        //Set the initial stack symbol and push it in the stack
         setInitialStackSymbol : function (s) {
             this.addStackSymbol(s);
             this.initialStackSymbol = s;
             this.stack = [];
-            for (var c of s) {
-                this.stack.push(c);
-            }
+            this.pushSymbols(s);
         },
 
         //Get the initial stack symbol
@@ -349,49 +396,62 @@
 
 
         //Set the current state of the automaton
-        setCurrentState: function (state) {
+        setCurrentState: function (stateStack) {
             this.lastTakenTransitions.clear();
-            if (this.hasState(state)) {
+            if (this.hasState(stateStack.state)) {
                 this.currentStates.clear();
-                this.currentStates.add(state);
+                this.currentStates.add(stateStack);
                 this.currentStatesAddAccessiblesByEpsilon();
             }
         },
 
         //Set the current states of the automaton
-        setCurrentStates: function (states) {
+        setCurrentStates: function (stateStacks) {
             this.lastTakenTransitions.clear();
-            states = aude.toSet(states);
-            if (states.subsetOf(this.states)) {
+            var sta = [];
+            for (var s of stateStacks)
+                sta.push(s.state);
+            sta = aude.toSet(sta);
+            if (sta.subsetOf(this.states)) {
                 this.currentStates.clear();
-                this.currentStates.unionInPlace(aude.toSet(states));
+                this.currentStates.unionInPlace(aude.toSet(stateStacks));
                 this.currentStatesAddAccessiblesByEpsilon();
             }
         },
 
         //Add a state to the current state
-        addCurrentState: function (state) {
-            if (this.hasState(state)) {
-                this.currentStates.add(state);
+        addCurrentState: function (stateStack) {
+
+            if (this.hasState(stateStack.state)) {
+                this.currentStates.add(stateStack);
                 this.currentStatesAddAccessiblesByEpsilon();
             }
         },
 
         //Add states to the current state
-        addCurrentStates: function (states) {
-            this.currentStates.unionInPlace(states);
+        addCurrentStates: function (stateStacks) {
+            this.currentStates.unionInPlace(stateStacks);
             this.currentStatesAddAccessiblesByEpsilon();
         },
 
         //Remove a state to the current state
-        removeCurrentState: function (state) {
-            this.currentStates.remove(state);
+        removeCurrentState: function (stateStacks) {
+            this.currentStates.remove(stateStacks);
             this.currentStatesAddAccessiblesByEpsilon();
+        },
+
+
+        //Return the set of currentState with their stack
+        getCurrentStatesStacks : function() {
+            return this.currentStates;
         },
 
         //Return the set of current states
         getCurrentStates: function () {
-            return this.currentStates;
+            var currentStates = new Set()
+            for (var st of this.currentStates)
+                currentStates.add(st.state);
+            return currentStates;
         },
 
         //This method looks at current states and transitions of the Automaton to add all states accessible with epsilon to the current states.
@@ -409,26 +469,24 @@
             }
 
             var i;
-
             function browseState(tab) {
-                if (!visited.has(tab.endState)) {
-                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i], pkg.epsilon, th.getTopStack(),tab.endState,tab.newStackSymbol));
-                    for (var c of th.getTopStack())
-                        th.stack.pop(c);
-                    if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" ) {
-                        for (var c of tab.newStackSymbol.split("").reverse().join(""))
-                            th.stack.push(c); //Add the new stack symbols in the stack
-                        }
-                    th.currentStates.add(tab.endState);
+                if (!visited.has(tab.endState) && isTopStack(tab.stackSymbol,cs[i].stack)) {
+                    var nStack = cs[i].stack.slice();
+                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, tab.stackSymbol, tab.endState, tab.newStackSymbol));
+                    for (var c of tab.stackSymbol)
+                        nStack.pop(c);
+                    if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" )
+                        pushSymbol(tab.newStackSymbol,nStack);
+                    th.currentStates.add({"state":tab.endState,"stack":nStack});
 
                     cont = true;
                 }
             }
             //For each current state
             for (i = 0; i < cs.length; ++i) {
-                if (!visited.has(cs[i])) { //If the current has not been visited
-                    visited.add(cs[i]); //Make it visited
-                    transitionFunction(cs[i], pkg.epsilon,this.getTopStack()).forEach(browseState); //Look
+                if (!visited.has(cs[i].state)) { //If the current has not been visited
+                    visited.add(cs[i].state); //Make it visited
+                    transitionFunction(cs[i].state, pkg.epsilon).forEach(browseState); //Look
                 }
             }
 
@@ -437,6 +495,7 @@
             }
         },
 
+        //TODO NOT WORKING
         //This methods returns the set of successors of a state. Its behavior is well defined only on determinized automata.
         getSuccessors: function (state, stackSymbol, symbol) {
             var successors = new Set();
@@ -455,7 +514,7 @@
             return successors;
         },
 
-
+        //TODO NOT WORKING
         getReachable : function (state, visited) {
             if (state === undefined) {
                 state = this.getInitialState();
@@ -505,15 +564,17 @@
 
             var i;
 
-            function addState(tab) { //TODO works only on determinized automaton
-                th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i], symbol, th.getTopStack(),tab.endState,tab.newStackSymbol));
-                for (var c of th.getTopStack())
-                    th.stack.pop(c);
-                if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" ) {
-                    for (var c of tab.newStackSymbol.split("").reverse().join(""))
-                        th.stack.push(c); //Add the new stack symbols in the stack
-                    }
-                th.currentStates.add(tab.endState);
+            function addState(tab) {
+                if(isTopStack(tab.stackSymbol,cs[i].stack)) {
+                    var nStack = cs[i].stack.slice();
+                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, tab.stackSymbol, tab.endState, tab.newStackSymbol));
+                    for (var c of tab.stackSymbol)
+                        nStack.pop(c);
+                    if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" )
+                        pushSymbol(tab.newStackSymbol,nStack);
+                    //th.currentStates.add({"state":tab.endState,"stack":nStack});
+                    th.addCurrentState({"state":tab.endState,"stack":nStack});
+                }
             }
 
             for (i = 0; i < cs.length; ++i) {
@@ -521,7 +582,7 @@
             }
 
             for (i = 0; i < cs.length; ++i) {
-                transitionFunction(cs[i], symbol, this.getTopStack()).forEach(addState); //Return all the transitions: with the curent symbol, current top stack symbol and current state
+                transitionFunction(cs[i].state, symbol).forEach(addState); //Return all the transitions: with the  stackSymbol, current top stack symbol and current state
             }
 
             this.currentStatesAddAccessiblesByEpsilon(transitionFunction);
@@ -542,18 +603,18 @@
         // final: word accepted if the current state is final
         // stackFinal: word accepted if the current state is final and the stack is empty
         acceptedWord: function (symbols,mode) {
-            var states      = aude.toArray(this.getCurrentStates()), //Save the current stack,states,last taken transitions
+            var states = aude.toArray(this.getCurrentStatesStacks()), //Save the current stack,states,last taken transitions
             stack = this.getStack().slice(),
             transitions = new Set(this.getLastTakenTransitions());
 
-            this.setCurrentState(this.getInitialState());
+            this.setCurrentState({"state":this.getInitialState(),"stack":this.getStack()});
             this.runWord(symbols);
             if (mode===0 || mode==="stack")
-                var accepted = this.getStack().length===this.getInitialStackSymbol().length && this.currentStates.card()>0; //The stack is empty (only the initial stackS ymbol) and we read all the symbols of the word
+                var accepted = this.isStackEmpty() && this.currentStates.card()>0; //The stack is empty (only the initial stackS ymbol) and we read all the symbols of the word
             else if (mode===1 || mode==="final")
                 var accepted = (this.currentStates.inter(this.finalStates)).card() !== 0; //End on a final state
             else if (mode===2 || mode==="stackFinal")
-                var accepted = (this.currentStates.inter(this.finalStates)).card() !== 0 && this.getStack().length===this.getInitialStackSymbol().length;
+                var accepted = (this.currentStates.inter(this.finalStates)).card() && this.isStackEmpty();
 
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;

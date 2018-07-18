@@ -42,6 +42,7 @@
 
     var executeWin = null;
     var stackWin = null;
+    var determinize = false;
 
     AudeGUI.WordExecution = {
         load: function () {
@@ -87,14 +88,8 @@
                         ["div#run-word-pushdown-parameters",{"style":"display:none"},[
                             ["label", _("Initial stack symbol : ")],
                             ["input#run-word-initial-stack-symbol", {type: "text", "#": "stackSymbol", value: "Z"}], ["br"],
-
-                        /*    ["label", _("Methode recognizing : ")],["br"],
-                            ["input",{"type":"radio","name":"recognize","mode":"stack","checked":"true"}],
-                            ["span",_("Stack empty")],["br"],
-                            ["input",{"type":"radio","name":"recognize","value":"final"}],
-                            ["span",_("Final states")],["br"],
-                            ["input",{"type":"radio","name":"recognize","value":"stackFinal"}],
-                            ["span",_("Stack empty and final states")],["br"],*/
+                            ["span",_("Determinized pushdown automaton: ")],
+                            ["input#run-word-determinize", {type:"checkbox","#": "determinize"}],
                         ]]
                     ]], refs)
                 });
@@ -102,10 +97,16 @@
                 executeWin.addListener("close", function () {
                     wordDiv.textContent = "";
                     AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
-                    stackWin.close();
+                    if (stackWin)
+                        stackWin.close();
                 });
                 libD.wm.handleSurface(executeWin, refs.root);
                 refs.run.onclick = function () {
+                    if(typeAutomaton==="pushdown" && refs.determinize.checked)
+                        determinize = true;
+                    else
+                        determinize = false;
+
                     refs.run.focus(); // make the virtual keyboard disappear on tablets
                     AudeGUI.WordExecution.stop();
                     AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
@@ -114,6 +115,11 @@
                 };
 
                 refs.step.onclick = function () {
+                    if(typeAutomaton==="pushdown" && refs.determinize.checked)
+                        determinize = true;
+                    else
+                        determinize = false;
+
                     if (executionTimeout) {
                         clearTimeout(executionTimeout);
                         execute(true, typeAutomaton, refs.stackSymbol.value);
@@ -185,7 +191,7 @@
                     currentStates = aude.toArray(currentAutomaton.getCurrentStates());
                     accepting = false;
                     for (i = 0, len = currentStates.length; i < len; ++i) {
-                        accepted = currentAutomaton.isAcceptingState(currentStates[i]);
+                        accepted = currentAutomaton.isAcceptingState(currentStates[i].state);
                         if (!accepting && accepted) {
                             accepting = true;
                         }
@@ -259,7 +265,10 @@
 
             var q_init = currentAutomaton.getInitialState();
             listOfExecutions = [[[q_init, epsilon]]];
-            currentAutomaton.setCurrentState(q_init);
+            if (typeAutomaton === "automaton")
+                currentAutomaton.setCurrentState(q_init);
+            else if (typeAutomaton === "pushdown")
+                currentAutomaton.setCurrentState({"state":q_init, "stack":currentAutomaton.getStack()});
             currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
             //If the automaton start with epsilon transition, we draw the stack with the modifications of the epsilon transition
@@ -268,6 +277,8 @@
 
             accepting = false;
             currentStates = aude.toArray(currentAutomaton.getCurrentStates());
+
+
 
             for (i = 0, len = currentStates.length; i < len; ++i) {
                 accepted = currentAutomaton.isAcceptingState(currentStates[i]);
@@ -372,105 +383,213 @@
 
     //Display the window stack and initialise the stack with the initial stack symbol
     function displayStack (initialSymbol) {
-        var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
-            ["table#table-stack",[
-                ["tr",[
-                    ["th",_("Index")],
-                    ["th",_("Value")],
-                ]],
-            ]],
-        ]]);
 
-        if (!stackWin || !stackWin.ws) {
-            stackWin = libD.newWin({
-                minimizable: false,
-                show: true,
-                title:       _("Stack"),
-                right:       document.getElementById("results").offsetWidth  + 10, // FIXME
-                top:         document.getElementById("toolbar").offsetHeight + 5,
-                content:     cont,
-            })
-        }
-        else { //Reset the display of the stack
-            stackWin.content.replaceChild(cont,stackWin.content.children[0])
-        }
-        var i=0;
-        for (var c of initialSymbol.split("").reverse().join("")) {
-            var tr = libD.jso2dom(["tr",[
-                ["td",(String(i))],
-                ["td",(c)],
+        //If the automaton is not determinized or has epsilon transition
+        if (!determinize) {
+            var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                ["table#table-tables-stack",[ //The table which contains all the table
+                    ["tr",[
+                        ["th",_("State: ")+ currentAutomaton.getInitialState()],
+                    ]],
+                    ["td",[
+                    ]]
+                ]],
             ]]);
-            if(i===0)
-                document.getElementById("table-stack").appendChild(tr);
-            else
-                document.getElementById("table-stack").insertBefore(tr,document.getElementById("table-stack").firstChild.nextSibling);
-            i++;
+
+            if (!stackWin || !stackWin.ws) {
+                stackWin = libD.newWin({
+                    minimizable: false,
+                    show: true,
+                    title:       _("Stacks"),
+                    right:       document.getElementById("results").offsetWidth  + 10, // FIXME
+                    top:         document.getElementById("toolbar").offsetHeight + 5,
+                    content:     cont,
+                })
+            }
+            else { //Reset the display of the stack
+                stackWin.content.replaceChild(cont,stackWin.content.children[0])
+            }
+
+            var table = libD.jso2dom([
+                ["table",[
+                    ["tr",[
+                        ["th",_("Index")],
+                        ["th",_("Value")],
+                    ]],
+                ]]
+            ]);
+            document.getElementById("table-tables-stack").children[1].appendChild(table);
+            var i=0;
+            for (var c of initialSymbol.split("").reverse().join("")) {
+                var tr = libD.jso2dom([
+                ["tr",[
+                    ["td",(String(i))],
+                    ["td",(c)],
+                ]]
+                ]);
+                if(i===0)
+                    table.appendChild(tr);
+                else
+                    table.insertBefore(tr,table.firstChild.nextSibling);
+                i++;
+            }
+        }
+
+        //If the automaton is determinized
+        else {
+            var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                ["table#table-stack",[
+                    ["tr",[
+                        ["th",_("Index")],
+                        ["th",_("Value")],
+                    ]],
+                ]],
+            ]]);
+
+            if (!stackWin || !stackWin.ws) {
+                stackWin = libD.newWin({
+                    minimizable: false,
+                    show: true,
+                    title:       _("Stack"),
+                    right:       document.getElementById("results").offsetWidth  + 10, // FIXME
+                    top:         document.getElementById("toolbar").offsetHeight + 5,
+                    content:     cont,
+                })
+            }
+            else { //Reset the display of the stack
+                stackWin.content.replaceChild(cont,stackWin.content.children[0])
+            }
+            var i=0;
+            for (var c of initialSymbol.split("").reverse().join("")) {
+                var tr = libD.jso2dom(["tr",[
+                    ["td",(String(i))],
+                    ["td",(c)],
+                ]]);
+                if(i===0)
+                    document.getElementById("table-stack").appendChild(tr);
+                else
+                    document.getElementById("table-stack").insertBefore(tr,document.getElementById("table-stack").firstChild.nextSibling);
+                i++;
+            }
         }
     }
 
 
-
     //After each taken transition, remove the stackSymbol and add the new stack symbol
     function redrawStack(transitions) {
-        if (executionByStep) //If the execution is by step we inmpose a time to show the modification of the stack
-            timeExec = 500/transitions.length;
-        else
-            timeExec = EXECUTION_STEP_TIME/transitions.length;
 
-        var stack = document.getElementById("table-stack");
-
-        var compt=0;
-        //For each transition
-        for (trans of transitions) {
-
-            setTimeout(redLines.bind(null,trans.stackSymbol),(timeExec)*(compt)); //Add in red the lines to remove
-            setTimeout(removeSym.bind(null,trans.stackSymbol),(timeExec/2)+(timeExec*compt)); //Remove the lines in red
-            setTimeout(addSym.bind(null,trans.newStackSymbol),(timeExec/2)+(timeExec*compt)); //Add the new lines and color them in green
-            setTimeout(removeGreen.bind(null,trans.newStackSymbol),(timeExec)+(timeExec*compt)); //Remove the green color of the new lines
+        //If the automaton is not determinized or has epsilon transition
+        if (!determinize) {
+            var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                ["table#table-tables-stack",[ //The table which contains all the table
+                    ["tr",[
+                    ]],
+                    ["tr",[
+                    ]]
+                ]],
+            ]]);
 
 
-            function redLines(stackSymbol) {
-                var i=1;
-                for (var c of stackSymbol) { //Draw in red the line to remove
-                    stack.children[i].style.backgroundColor = "red";
+            //For each stack
+            stackWin.content.replaceChild(cont,stackWin.content.children[0]); //Recreate all the tables
+            var table = document.getElementById("table-tables-stack");
+
+            for (cs of currentAutomaton.getCurrentStatesStacks()) {
+                table.children[0].appendChild(libD.jso2dom([
+                    ["th",_("State: ")+cs.state]
+                ]));
+
+                var newTable = libD.jso2dom([
+                    ["td",[
+                        ["table",[
+                            ["tr",[
+                                ["th",_("Index")],
+                                ["th",_("Value")],
+                            ]],
+                        ]],
+                    ]]
+                ]);
+                table.children[1].appendChild(newTable);
+                var i=0;
+                for (var c of cs.stack) {
+                    var tr = libD.jso2dom([
+                    ["tr",[
+                        ["td",(String(i))],
+                        ["td",(c)],
+                    ]]
+                    ]);
+                    if(i===0)
+                        newTable.children[0].appendChild(tr);
+                    else
+                        newTable.children[0].insertBefore(tr,newTable.children[0].firstChild.nextSibling);
                     i++;
                 }
             }
+            stackWin.resize();
+        }
 
-            function removeSym(stackSym) {
-                for (var c of stackSym)
-                    stack.removeChild(stack.children[1]);
-            }
+        //If the automaton is determinized
+        else {
+            if (executionByStep) //If the execution is by step we inmpose a time to show the modification of the stack
+                timeExec = 500/transitions.length;
+            else
+                timeExec = EXECUTION_STEP_TIME/transitions.length;
 
-            function addSym(newStackSymbol) {
-                //Add the new stack symbol
-                for (var c of newStackSymbol.split("").reverse().join("")) {
-                    if(c!==pkg.epsilon && c!=="ε") {
-                        var line = libD.jso2dom([
-                            ["tr",{"style":"background-color:#5cd65c"},[ //Draw in green the line added
-                                ["td",(String(stack.childElementCount-1))],
-                                ["td",(c)],
-                            ]],
-                        ]);
-                        if (stack.childElementCount==1) //If there nothing in the stack
-                            stack.appendChild(line)
-                        else
-                            stack.insertBefore(line,stack.children[1]);
+            var stack = document.getElementById("table-stack");
+
+            var compt=0;
+            //For each transition
+            for (trans of transitions) {
+
+                setTimeout(redLines.bind(null,trans.stackSymbol),(timeExec)*(compt)); //Add in red the lines to remove
+                setTimeout(removeSym.bind(null,trans.stackSymbol),(timeExec/2)+(timeExec*compt)); //Remove the lines in red
+                setTimeout(addSym.bind(null,trans.newStackSymbol),(timeExec/2)+(timeExec*compt)); //Add the new lines and color them in green
+                setTimeout(removeGreen.bind(null,trans.newStackSymbol),(timeExec)+(timeExec*compt)); //Remove the green color of the new lines
+
+
+                function redLines(stackSymbol) {
+                    var i=1;
+                    for (var c of stackSymbol) { //Draw in red the line to remove
+                        stack.children[i].style.backgroundColor = "red";
+                        i++;
                     }
                 }
-                stackWin.resize();
-            }
 
-            function removeGreen(newStackSymbol) {
-                var j = 1;
-                for (var c of newStackSymbol) {
-                    if(c!==pkg.epsilon && c!=="ε") {
-                        stack.children[j].style.backgroundColor = "inherit";
-                        j++;
+                function removeSym(stackSym) {
+                    for (var c of stackSym)
+                        stack.removeChild(stack.children[1]);
+                }
+
+                function addSym(newStackSymbol) {
+                    //Add the new stack symbol
+                    for (var c of newStackSymbol.split("").reverse().join("")) {
+                        if(c!==pkg.epsilon && c!=="ε") {
+                            var line = libD.jso2dom([
+                                ["tr",{"style":"background-color:#5cd65c"},[ //Draw in green the line added
+                                    ["td",(String(stack.childElementCount-1))],
+                                    ["td",(c)],
+                                ]],
+                            ]);
+                            if (stack.childElementCount==1) //If there nothing in the stack
+                                stack.appendChild(line)
+                            else
+                                stack.insertBefore(line,stack.children[1]);
+                        }
+                    }
+                    stackWin.resize();
+                }
+
+                function removeGreen(newStackSymbol) {
+                    var j = 1;
+                    for (var c of newStackSymbol) {
+                        if(c!==pkg.epsilon && c!=="ε") {
+                            stack.children[j].style.backgroundColor = "inherit";
+                            j++;
+                        }
                     }
                 }
+                compt++;
             }
-            compt++;
         }
 
     }
