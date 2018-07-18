@@ -235,8 +235,8 @@
                 startStates.add(transition.startState); //Add the start state and end state
                 endStates.add(transition.endState);
                 startState = aude.elementToString(transition.startState);
-                newStackSymbol = aude.elementToString(transition.newStackSymbol);
-                stackSymbol = aude.elementToString(transition.stackSymbol);
+                newStackSymbol = (transition.newStackSymbol);
+                stackSymbol = (transition.stackSymbol);
                 symbol = aude.elementToString(transition.symbol);
                 if (!symbolsByState[startState]) {
                     symbolsByState[startState] = new Set();
@@ -470,11 +470,17 @@
 
             var i;
             function browseState(tab) {
-                if (!visited.has(tab.endState) && isTopStack(tab.stackSymbol,cs[i].stack)) {
+                if (tab.stackSymbol===null && tab.newStackSymbol===null) {
+                    var nStack = cs[i].stack.slice();
+                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, null, tab.endState, null));
+                    th.addCurrentState({"state":tab.endState,"stack":nStack});
+                } else if (!visited.has(tab.endState) && (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack))) {
                     var nStack = cs[i].stack.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, tab.stackSymbol, tab.endState, tab.newStackSymbol));
-                    for (var c of tab.stackSymbol)
-                        nStack.pop(c);
+                    if (tab.stackSymbol!==pkg.epsilon) {
+                        for (var c of tab.stackSymbol)
+                            nStack.pop();
+                    }
                     if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" )
                         pushSymbol(tab.newStackSymbol,nStack);
                     th.currentStates.add({"state":tab.endState,"stack":nStack});
@@ -565,14 +571,20 @@
             var i;
 
             function addState(tab) {
-                if(isTopStack(tab.stackSymbol,cs[i].stack)) {
+                if (tab.stackSymbol===null && tab.newStackSymbol===null) {
+                    var nStack = cs[i].stack.slice();
+                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, null, tab.endState, null));
+                    th.addCurrentState({"state":tab.endState,"stack":nStack});
+                } else if (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack)) {
                     var nStack = cs[i].stack.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, tab.stackSymbol, tab.endState, tab.newStackSymbol));
-                    for (var c of tab.stackSymbol)
-                        nStack.pop(c);
-                    if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" )
+                    if (tab.stackSymbol!==pkg.epsilon) { //Pop the stack only if the transition is not a;ε/A
+                        for (var c of tab.stackSymbol)
+                            nStack.pop();
+                    }
+                    if (tab.newStackSymbol !== pkg.epsilon)
                         pushSymbol(tab.newStackSymbol,nStack);
-                    //th.currentStates.add({"state":tab.endState,"stack":nStack});
+
                     th.addCurrentState({"state":tab.endState,"stack":nStack});
                 }
             }
