@@ -198,8 +198,8 @@
         this.wording =( wording===''||wording===undefined ? this.createWording(this.underTypeQuestion) : wording );
 
         if (typeQuestion==undefined) {
-            if (/^mcq/.test(this.underTypeQuestion))
-                this.typeQuestion = "MCQ";
+            if (/^mcq/i.test(this.underTypeQuestion))
+                this.typeQuestion = "mcq";
             else if (this.underTypeQuestion=="automaton2regex")
                 this.typeQuestion = "RE";
             else if (this.underTypeQuestion=="grammar2Automaton" || this.underTypeQuestion=="leftGrammar2RightGrammar")
@@ -214,10 +214,10 @@
 
 
 
-        else if (typeQuestion!="MCQ" && typeQuestion!="RE" && typeQuestion!="automaton")
+        else if (typeQuestion!="mcq" && typeQuestion!="RE" && typeQuestion!="automaton")
             throw new Error("Error: creation of question impossible. typeQuestion: "+typeQuestion +" is not valid");
         else
-            this.typeQuestion = typeQuestion; //The type of the question (MCQ,Automaton,RE (Regular expression))
+            this.typeQuestion = typeQuestion; //The type of the question (mcq,Automaton,RE (Regular expression))
 
         this.automaton=[null,null,null,null];
         var i =0;
@@ -692,6 +692,7 @@
     var questionSelected = null; //Question selected by the user
 
     var contentListFilesParsed = null; //Content of the listFiles.json parsed
+    var randomQuestionDone = new Object() //The name of question already solved
 
     var createTable = null;
     var automaton2HTMLTable = null;
@@ -700,7 +701,7 @@
     var grammarLoaded = null;
     var RELoaded = null;
     var automataLoaded = [null,null]; //If the users loads an automaton
-    var randomly = [0,1,1,1]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
+    var randomly = [1,1,1,1]; //If 0 doesn't generate randomly an automaton, if 1 generates randomly
     var nbrState = [5,4];
     var alphabet = [['a','b'],['a','b']];
     var nbrFinalStates = [1,1];
@@ -828,84 +829,84 @@
         var localRELoaded = null;
 
         if (settingsWin===null || !settingsWin.ws ) {
-                settingsWin = libD.newWin({
-                minimizable: false,
-                resizable: false,
-                title:       _("Setting for the questions"),
-                content : libD.jso2dom([
-                ["div#div-settings-question",{"class":"libD-wm-content auto-size"},[
-                    ["h1",_("Settings")],
-                    ["div#questionList-selection-option", [ //To select the chapter
-                        ["button",{"class":"load-mode","value": "auto1"}, _("Automaton1")],
-                        ["button",{"class":"load-mode","value": "auto2"}, _("Automaton2")],
-                        ["button",{"class":"load-mode","value": "re"}, _("Regular expression")],
-                        ["button",{"class":"load-mode","value": "grammar"}, _("Grammar")],
-                    ]],
-                    ["div",[
-                        ["span",_("Generate randomly ")],
-                        ["input#input-automaton-generate",{"type":"checkbox","name":"randomAutomaton"}],
-                    ]],
-                    ["span#div-settings-question-automaton-random",[ //To enter information to generate randomly an automaton
-                        ["h2",_("Automaton generated randomly")],
-                        ["div#div-settings-question-container-row", [
-                            ["div",{"class":"div-settings-question-container-column"}, [
-                                ["span",{"class":"span-settings-question"},_("Number of states: ")],
-                                ["span",{"class":"span-settings-question"},_("Alphabet ")],
-                                ["span",{"class":"span-settings-question"},_("Number of final states: ")],
-                                ["span",{"class":"span-settings-question"},_("Mode: ")],
-                                ["span",{"class":"span-settings-question"},_("Number of transitions: ")],
-                            ]],
-                            ["div",{"class":"div-settings-question-container-column"}, [
-                                ["input",{"class":"input-settings-question","type":"text"}],
-                                ["input",{"class":"input-settings-question","type":"text"}],
-                                ["input",{"class":"input-settings-question","type":"text"}],
-                                ["input",{"class":"input-settings-question","type":"text"}],
-                                ["input",{"class":"input-settings-question","type":"text"}],
-                            ]],
-                        ]],
-                    ]],
-                    ["span#div-settings-question-automaton-select",{"style":"display:none"},[ //To select an automaton
-                        ["h2",_("Automaton selection")],
-                        ["div",_("Select an automaton from the list or from your computer")],
-                        ["button#selection-automaton",_("Open automaton")],
-                        ["span#",_("Selected automaton: "),[
-                            ["span#display-name-file",_("none")],
-                        ]],
-                        ["br"],
-                    ]],
-                    ["span#div-settings-question-re-random",{"style":"display:none"},[
-                        ["h2",_("Regular expression generated randomly")],
-                        ["div",_("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
-                        ["div",_("Prefearbly select a regular expression from files")],
-                    ]],
-                    ["span#div-settings-question-re-select",{"style":"display:none"},[ //To select a regular expression
-                        ["h2",_("Regular expression selection")],
-                        ["div",_("Select a regular expression from the list or from your computer")],
-                        ["button#selection-re",_("Open regular expression")],
-                        ["span#",_("Selected regular expression: "),[
-                            ["span#display-name-file-re",_("none")],
-                        ]],
-                        ["br"],
-                    ]],
-                    ["span#div-settings-question-grammar-random",{"style":"display:none"},[
-                        ["h2",_("Grammar generated randomly")],
-                        ["div",_("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
-                        ["div",_("Prefearbly select a grammar from files")],
-                    ]],
-                    ["span#div-settings-question-grammar-select",{"style":"display:none"},[ //To select a regular expression
-                        ["h2",_("Grammar selection")],
-                        ["div",_("Select a grammar from the list or from your computer")],
-                        ["button#selection-grammar",_("Open grammar")],
-                        ["span#",_("Selected grammar: "),[
-                            ["span#display-name-file-grammar",_("none")],
-                        ]],
-                        ["br"],
-                    ]],
-                    ["button#save-question-settings", _("Save")],
-                    ["button#save-exit-question-settings", _("Save and exit")],
+            settingsWin = libD.newWin({
+            minimizable: false,
+            resizable: false,
+            title:       _("Setting for the questions"),
+            content : libD.jso2dom([
+            ["div#div-settings-question",{"class":"libD-wm-content auto-size"},[
+                ["h1",_("Settings")],
+                ["div#questionList-selection-option", [ //To select the chapter
+                    ["button",{"class":"load-mode","value": "auto1"}, _("Automaton1")],
+                    ["button",{"class":"load-mode","value": "auto2"}, _("Automaton2")],
+                    ["button",{"class":"load-mode","value": "re"}, _("Regular expression")],
+                    ["button",{"class":"load-mode","value": "grammar"}, _("Grammar")],
                 ]],
+                ["div",[
+                    ["span",_("Generate randomly ")],
+                    ["input#input-automaton-generate",{"type":"checkbox","name":"randomAutomaton"}],
+                ]],
+                ["span#div-settings-question-automaton-random",[ //To enter information to generate randomly an automaton
+                    ["h2",_("Automaton generated randomly")],
+                    ["div#div-settings-question-container-row", [
+                        ["div",{"class":"div-settings-question-container-column"}, [
+                            ["span",{"class":"span-settings-question"},_("Number of states: ")],
+                            ["span",{"class":"span-settings-question"},_("Alphabet ")],
+                            ["span",{"class":"span-settings-question"},_("Number of final states: ")],
+                            ["span",{"class":"span-settings-question"},_("Mode: ")],
+                            ["span",{"class":"span-settings-question"},_("Number of transitions: ")],
+                        ]],
+                        ["div",{"class":"div-settings-question-container-column"}, [
+                            ["input",{"class":"input-settings-question","type":"text"}],
+                            ["input",{"class":"input-settings-question","type":"text"}],
+                            ["input",{"class":"input-settings-question","type":"text"}],
+                            ["input",{"class":"input-settings-question","type":"text"}],
+                            ["input",{"class":"input-settings-question","type":"text"}],
+                        ]],
+                    ]],
+                ]],
+                ["span#div-settings-question-automaton-select",{"style":"display:none"},[ //To select an automaton
+                    ["h2",_("Automaton selection")],
+                    ["div",_("Select an automaton from the list or from your computer")],
+                    ["button#selection-automaton",_("Open automaton")],
+                    ["span#",_("Selected automaton: "),[
+                        ["span#display-name-file",_("none")],
+                    ]],
+                    ["br"],
+                ]],
+                ["span#div-settings-question-re-random",{"style":"display:none"},[
+                    ["h2",_("Regular expression generated randomly")],
+                    ["div",_("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
+                    ["div",_("Prefearbly select a regular expression from files")],
+                ]],
+                ["span#div-settings-question-re-select",{"style":"display:none"},[ //To select a regular expression
+                    ["h2",_("Regular expression selection")],
+                    ["div",_("Select a regular expression from the list or from your computer")],
+                    ["button#selection-re",_("Open regular expression")],
+                    ["span#",_("Selected regular expression: "),[
+                        ["span#display-name-file-re",_("none")],
+                    ]],
+                    ["br"],
+                ]],
+                ["span#div-settings-question-grammar-random",{"style":"display:none"},[
+                    ["h2",_("Grammar generated randomly")],
+                    ["div",_("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
+                    ["div",_("Prefearbly select a grammar from files")],
+                ]],
+                ["span#div-settings-question-grammar-select",{"style":"display:none"},[ //To select a regular expression
+                    ["h2",_("Grammar selection")],
+                    ["div",_("Select a grammar from the list or from your computer")],
+                    ["button#selection-grammar",_("Open grammar")],
+                    ["span#",_("Selected grammar: "),[
+                        ["span#display-name-file-grammar",_("none")],
+                    ]],
+                    ["br"],
+                ]],
+                ["button#save-question-settings", _("Save")],
+                ["button#save-exit-question-settings", _("Save and exit")],
+            ]],
             ])});
-            settingsWin.setAlwaysOnTop(100);
+            settingsWin.setAlwaysOnTop(100); //The window will be a at top
         }
             settingsWin.show();
 
@@ -925,7 +926,7 @@
                         displayModeSelected(2);
                     else if (e.target.value==="grammar")
                         displayModeSelected(3);
-
+                    settingsWin.resize(); //Resize the window when we change mode
                 });
                 buttons[i].addEventListener('mouseover',function(e) { //Change the color to grey when mouseover
                     if (getComputedStyle(e.target).backgroundColor!="rgb(239, 100, 100)")
@@ -1106,6 +1107,7 @@
                         document.getElementById(name2).style.display = "none";
                         localRandomly[numAutomaton] = 1;
                     }
+                    settingsWin.resize(); //Resize the window when we change random generation
                 }
 
 
@@ -1119,15 +1121,15 @@
                             "files_question/listFiles.json",
                             function(content) {displayWin(content)},
                             function (message, status) {
-                                        var msg = null;
-                                        if (message === "status") {
-                                            msg = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
-                                        }
-                                        if (message === "send") {
-                                            msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
-                                        }
-                                        AudeGUI.notify(_("Unable to get the list of needed files"), msg);
-                                    }
+                                var msg = null;
+                                if (message === "status") {
+                                    msg = libD.format(_("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"), status);
+                                }
+                                if (message === "send") {
+                                    msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
+                                }
+                                AudeGUI.notify(_("Unable to get the list of needed files"), msg);
+                            }
                         );
                     }
                     else
@@ -1368,7 +1370,8 @@
                 //We create the question
                 var q = new Question(e.target.value);
                 //If no automaton/grammar/re loaded and the automaton/grammar/re is not created hazardly
-                if (automataLoaded[0]===null && randomly[0]===0 || (RELoaded===null && randomly[2]===0) || grammarLoaded===null && randomly[3]===0) {
+                if (q.typeQuestion=="mcq" || (automataLoaded[0]===null && randomly[0]===0 && q.typeQuestion=="automaton") ||
+                (RELoaded===null && randomly[2]===0 && q.typeQuestion=="RE") || grammarLoaded===null && randomly[3]===0 && q.typeQuestion=="grammar") {
                     await getListFiles(); //Load the first time the file
                     await getRandomFiles(q,e.target.value); //Load a random automaton/grammar... from the file
                     q.correctionQuestion();
@@ -1396,9 +1399,10 @@
                 but.onclick = reDrawQuestionList;
                 var butRestart = document.getElementById("questionList-restart"); //The button permits to regenerate the question
                 butRestart.onclick = async function () { //Recreate the page with a new question
-
+                    console.log(q);
                     //If no automaton loaded and the automaton is not created hazardly
-                    if (automataLoaded[0]===null && randomly[0]===0 || q.typeQuestion==="MCQ") {
+                    if (q.typeQuestion=="mcq" || (automataLoaded[0]===null && randomly[0]===0 && q.typeQuestion=="automaton") ||
+                    (RELoaded===null && randomly[2]===0 && q.typeQuestion=="RE") || grammarLoaded===null && randomly[3]===0 && q.typeQuestion=="grammar") {
                         await getListFiles();
                         await getRandomFiles(q,q.underTypeQuestion);
                         q.correctionQuestion();
@@ -1423,15 +1427,28 @@
     //Get a random files for the given question
     function getRandomFiles(q,nameQuestion) {
         return new Promise (function(resolve,reject) {
+            if (randomQuestionDone[nameQuestion] === undefined)
+                randomQuestionDone[nameQuestion] = [];
             if (contentListFilesParsed[nameQuestion]===undefined)
                 throw new Error("The exercice has no file to load");
             else
                 var files = contentListFilesParsed[nameQuestion].tab; //The list of files for the question
 
             var rand = Math.floor(Math.random() * (files.length));
+
+            if(randomQuestionDone[nameQuestion].length===files.length) { //If all exercices done, reset the array
+                console.log("You have done all the exercices.");
+                randomQuestionDone[nameQuestion].length=0;
+            }
+            while (randomQuestionDone[nameQuestion].indexOf(files[rand]) > -1) { //Look for the first exercice not already done
+                rand = (rand +1) % (files.length);
+            }
+            randomQuestionDone[nameQuestion].push(files[rand]);
+
+
             getFile("files_question/"+nameQuestion+"/"+files[rand], async function(text) { //Get a random file
-                console.log(q.typeQuestion);
-                if(q.typeQuestion=="MCQ") //A mcq we load the question
+
+                if(q.typeQuestion=="mcq") //A mcq we load the question
                     q.load(text);
                 else if(q.typeQuestion=="RE") //A RE we load the string(re)
                     q.addRE(text);
@@ -1631,10 +1648,9 @@
             case "table":
                 divAnswersUser.appendChild(libD.jso2dom([
                     ["div#question-answers-table"]]));
-                createTable(document.getElementById("question-answers-table"));
+                createTable("",document.getElementById("question-answers-table"));
                 var divT = document.getElementById('div-container-table');
                 divT.childNodes[4].style.display = "none"; //Remove buttons "create automaton","X"
-                divT.childNodes[5].style.display = "none";
                 break;
 
             //For the mcq

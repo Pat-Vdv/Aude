@@ -255,23 +255,32 @@
                         i++;
                     }
                     i++;
-                    tabTransition.push(c.trim()); //Symbol of transition
+                    if (c.trim()==="ε")
+                        tabTransition.push(epsilon);
+                    else
+                        tabTransition.push(c.trim()); //Symbol of transition
                     c = "";
+
                     while(t.symbol[i]!="/" && i<t.symbol.length) {
                         c += t.symbol[i];
                         i++;
                     }
                     i++;
-                    tabTransition.push(c.trim()); //Symbol of stack to replace
+                    if (c.trim()==="ε")
+                        tabTransition.push(epsilon);
+                    else
+                        tabTransition.push(c.trim()); ////Symbol of stack to replace
+
                     c = "";
                     while(String(t.symbol[i])!="\0" && i<t.symbol.length) {
                         c += t.symbol[i];
                         i++;
                     }
+
                     tabTransition.push(c.trim()); //The symbols to push to the stack
 
+                    console.log(tabTransition);
 
-                    
                     P.addTransition(t.startState,tabTransition[0],tabTransition[1],t.endState,tabTransition[2]);
                     tabTransition = [];
                     c = "";
