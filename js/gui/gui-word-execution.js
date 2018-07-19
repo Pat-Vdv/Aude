@@ -490,17 +490,27 @@
             ]]);
 
 
-            //For each stack
+
             stackWin.content.replaceChild(cont,stackWin.content.children[0]); //Recreate all the tables
             var table = document.getElementById("table-tables-stack");
 
+            //For each stack
+            var tabState = [];
             for (cs of currentAutomaton.getCurrentStatesStacks()) {
-                table.children[0].appendChild(libD.jso2dom([
-                    ["th",_("State: ")+cs.state]
+
+                if (tabState.indexOf(cs.state)<0) {
+                    tabState.push(cs.state);
+                    table.children[0].appendChild(libD.jso2dom([
+                        ["th",_("State: ")+cs.state]
+                    ]));
+                    table.children[1].appendChild(libD.jso2dom([
+                        ["td",[
+                    ]],
                 ]));
+                }
 
                 var newTable = libD.jso2dom([
-                    ["td",[
+                    ["span",{"style":"display:inline-block; margin-right:5px"},[
                         ["table",[
                             ["tr",[
                                 ["th",_("Index")],
@@ -509,7 +519,7 @@
                         ]],
                     ]]
                 ]);
-                table.children[1].appendChild(newTable);
+                table.children[1].children[tabState.indexOf(cs.state)].appendChild(newTable);
                 var i=0;
                 for (var c of cs.stack) {
                     var tr = libD.jso2dom([
@@ -519,9 +529,9 @@
                     ]]
                     ]);
                     if(i===0)
-                        newTable.children[0].appendChild(tr);
+                        newTable.firstChild.appendChild(tr);
                     else
-                        newTable.children[0].insertBefore(tr,newTable.children[0].firstChild.nextSibling);
+                        newTable.firstChild.insertBefore(tr,newTable.firstChild.firstChild.nextSibling);
                     i++;
                 }
             }
