@@ -279,9 +279,10 @@
 
                     tabTransition.push(c.trim()); //The symbols to push to the stack
 
-                    console.log(tabTransition);
-
-                    P.addTransition(t.startState,tabTransition[0],tabTransition[1],t.endState,tabTransition[2]);
+                    if (t.symbol===pkg.epsilon) //If the transition is composed of only ε
+                        P.addTransition(t.startState,epsilon,tabTransition[1],t.endState,tabTransition[2]);
+                    else
+                        P.addTransition(t.startState,tabTransition[0],tabTransition[1],t.endState,tabTransition[2]);
                     tabTransition = [];
                     c = "";
                     i = 0;

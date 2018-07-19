@@ -470,10 +470,12 @@
 
             var i;
             function browseState(tab) {
-                if (tab.stackSymbol===null && tab.newStackSymbol===null) {
+                if (!visited.has(tab.endState) && tab.stackSymbol===null && tab.newStackSymbol===null) {
+                    console.log("COUCOU");
                     var nStack = cs[i].stack.slice();
-                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, null, tab.endState, null));
-                    th.addCurrentState({"state":tab.endState,"stack":nStack});
+                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, null, tab.endState, null));
+                    th.currentStates.add({"state":tab.endState,"stack":nStack});
+                    cont = true;
                 } else if (!visited.has(tab.endState) && (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack))) {
                     var nStack = cs[i].stack.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, tab.stackSymbol, tab.endState, tab.newStackSymbol));
@@ -571,18 +573,14 @@
             var i;
 
             function addState(tab) {
-                if (tab.stackSymbol===null && tab.newStackSymbol===null) {
-                    var nStack = cs[i].stack.slice();
-                    th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, null, tab.endState, null));
-                    th.addCurrentState({"state":tab.endState,"stack":nStack});
-                } else if (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack)) {
+                if (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack)) {
                     var nStack = cs[i].stack.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, tab.stackSymbol, tab.endState, tab.newStackSymbol));
                     if (tab.stackSymbol!==pkg.epsilon) { //Pop the stack only if the transition is not a;ε/A
                         for (var c of tab.stackSymbol)
                             nStack.pop();
                     }
-                    if (tab.newStackSymbol !== pkg.epsilon)
+                    if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε")
                         pushSymbol(tab.newStackSymbol,nStack);
 
                     th.addCurrentState({"state":tab.endState,"stack":nStack});
