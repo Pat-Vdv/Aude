@@ -3,14 +3,15 @@ from completion import isCompleted
 from equivalence import automataAreEquivalent
 
 export function complement(A,completed)
+    var B := new Automaton(A)
     if completed=false or completed=undefined then
-        A := complete(A,A.getAlphabet())
+        B := complete(A,A.getAlphabet())
     end if
     foreach state in A.getStates() do
-        A.toggleFinalState(state)
+        B.toggleFinalState(state)
     done
 
-    return A
+    return B
 end function
 
 export function automataAreComplement(A1, A2)
