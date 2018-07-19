@@ -191,7 +191,7 @@
                     currentStates = aude.toArray(currentAutomaton.getCurrentStates());
                     accepting = false;
                     for (i = 0, len = currentStates.length; i < len; ++i) {
-                        accepted = currentAutomaton.isAcceptingState(currentStates[i].state);
+                        accepted = currentAutomaton.isAcceptingState(currentStates[i]);
                         if (!accepting && accepted) {
                             accepting = true;
                         }
