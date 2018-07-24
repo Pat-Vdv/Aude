@@ -268,7 +268,7 @@
             if (typeAutomaton === "automaton")
                 currentAutomaton.setCurrentState(q_init);
             else if (typeAutomaton === "pushdown")
-                currentAutomaton.setCurrentState({"state":q_init, "stack":currentAutomaton.getStack()});
+                currentAutomaton.setCurrentState({"state":q_init, "stack":currentAutomaton.getStack(),"transitions":[]});
             currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
             //If the automaton start with epsilon transition, we draw the stack with the modifications of the epsilon transition
@@ -519,6 +519,26 @@
                         ]],
                     ]]
                 ]);
+                //When we click on a table it shows the list of transitions
+                newTable.addEventListener("click",showTransitions.bind(null,cs.transitions));
+
+                function showTransitions (transi) {
+                    var str = document.createElement("div");
+                    var valueT = "";
+                    for (var t of transi) {
+                        valueT = document.createElement("div");
+                        valueT.addEventListener("click",transitionColor.bind(null,t))
+                        valueT.innerHTML = t.toString()
+                        str.appendChild(valueT);
+                    }
+                    AudeGUI.Results.set(str);
+                }
+
+                function  transitionColor (t) {
+                    AudeGUI.mainDesigner.transitionPulseColor(index, t.startState, t.symbol, t.endState, "red", 3000);
+                }
+
+
                 table.children[1].children[tabState.indexOf(cs.state)].appendChild(newTable);
                 var i=0;
                 for (var c of cs.stack) {
@@ -540,7 +560,7 @@
 
         //If the automaton is determinized
         else {
-            if (executionByStep) //If the execution is by step we inmpose a time to show the modification of the stack
+            if (executionByStep) //If the execution is by step we impose a time to show the modifications of the stack
                 timeExec = 500/transitions.length;
             else
                 timeExec = EXECUTION_STEP_TIME/transitions.length;
@@ -559,15 +579,19 @@
 
                 function redLines(stackSymbol) {
                     var i=1;
-                    for (var c of stackSymbol) { //Draw in red the line to remove
-                        stack.children[i].style.backgroundColor = "red";
-                        i++;
+                    if(stackSymbol!==pkg.epsilon && stackSymbol!=="ε") {
+                        for (var c of stackSymbol) { //Draw in red the line to remove
+                            stack.children[i].style.backgroundColor = "red";
+                            i++;
+                        }
                     }
                 }
 
                 function removeSym(stackSym) {
-                    for (var c of stackSym)
-                        stack.removeChild(stack.children[1]);
+                    if(stackSym!==pkg.epsilon && stackSym!=="ε") {
+                        for (var c of stackSym)
+                            stack.removeChild(stack.children[1]);
+                    }
                 }
 
                 function addSym(newStackSymbol) {

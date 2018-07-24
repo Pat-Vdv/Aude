@@ -470,14 +470,16 @@
 
             var i;
             function browseState(tab) {
-                if (!visited.has(tab.endState) && tab.stackSymbol===null && tab.newStackSymbol===null) {
-                    console.log("COUCOU");
+                if (!visited.has(tab.endState) && tab.stackSymbol===null && tab.newStackSymbol===null) { //For transition without modification of the stack
                     var nStack = cs[i].stack.slice();
+                    var nTransi = cs[i].transitions.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, null, tab.endState, null));
-                    th.currentStates.add({"state":tab.endState,"stack":nStack});
+                    nTransi.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, null, tab.endState, null));
+                    th.currentStates.add({"state":tab.endState,"stack":nStack,"transitions":nTransi});
                     cont = true;
                 } else if (!visited.has(tab.endState) && (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack))) {
                     var nStack = cs[i].stack.slice();
+                    var nTransi = cs[i].transitions.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, tab.stackSymbol, tab.endState, tab.newStackSymbol));
                     if (tab.stackSymbol!==pkg.epsilon) {
                         for (var c of tab.stackSymbol)
@@ -485,7 +487,8 @@
                     }
                     if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε" )
                         pushSymbol(tab.newStackSymbol,nStack);
-                    th.currentStates.add({"state":tab.endState,"stack":nStack});
+                    nTransi.push(new pkg.PushdownTransition(cs[i].state, pkg.epsilon, tab.stackSymbol, tab.endState, tab.newStackSymbol));
+                    th.currentStates.add({"state":tab.endState,"stack":nStack,"transitions":nTransi});
 
                     cont = true;
                 }
@@ -494,7 +497,7 @@
             for (i = 0; i < cs.length; ++i) {
                 if (!visited.has(cs[i].state)) { //If the current has not been visited
                     visited.add(cs[i].state); //Make it visited
-                    transitionFunction(cs[i].state, pkg.epsilon).forEach(browseState); //Look
+                    transitionFunction(cs[i].state, pkg.epsilon).forEach(browseState);
                 }
             }
 
@@ -575,6 +578,7 @@
             function addState(tab) {
                 if (tab.stackSymbol===pkg.epsilon || isTopStack(tab.stackSymbol,cs[i].stack)) {
                     var nStack = cs[i].stack.slice();
+                    var nTransi =cs[i].transitions.slice();
                     th.lastTakenTransitions.add(new pkg.PushdownTransition(cs[i].state, symbol, tab.stackSymbol, tab.endState, tab.newStackSymbol));
                     if (tab.stackSymbol!==pkg.epsilon) { //Pop the stack only if the transition is not a;ε/A
                         for (var c of tab.stackSymbol)
@@ -583,7 +587,8 @@
                     if (tab.newStackSymbol !== pkg.epsilon && tab.newStackSymbol !== "ε")
                         pushSymbol(tab.newStackSymbol,nStack);
 
-                    th.addCurrentState({"state":tab.endState,"stack":nStack});
+                    nTransi.push(new pkg.PushdownTransition(cs[i].state, symbol, tab.stackSymbol, tab.endState, tab.newStackSymbol));
+                    th.currentStates.add({"state":tab.endState,"stack":nStack,"transitions":nTransi});
                 }
             }
 
@@ -617,7 +622,7 @@
             stack = this.getStack().slice(),
             transitions = new Set(this.getLastTakenTransitions());
 
-            this.setCurrentState({"state":this.getInitialState(),"stack":this.getStack()});
+            this.setCurrentState({"state":this.getInitialState(),"stack":this.getStack(),"transitions":[]});
             this.runWord(symbols);
             if (mode===0 || mode==="stack")
                 var accepted = this.isStackEmpty() && this.currentStates.card()>0; //The stack is empty (only the initial stackS ymbol) and we read all the symbols of the word
