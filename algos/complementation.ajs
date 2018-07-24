@@ -7,7 +7,7 @@ export function complement(A,completed)
     if completed=false or completed=undefined then
         B := complete(A,A.getAlphabet())
     end if
-    foreach state in A.getStates() do
+    foreach state in B.getStates() do
         B.toggleFinalState(state)
     done
 
