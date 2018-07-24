@@ -25,7 +25,6 @@
 
 // NEEDS: automaton.js, mousewheel.js;
 
-// TODO: move initial state's arrow.
 
 (function (pkg) {
     "use strict";
@@ -379,6 +378,50 @@
         }
     }
 
+    //Correct the position of the initial state arrow
+    //Argument: the initial state arrow and its ellipse
+    function correctInitialArrow(InitialArrow,ellipse) {
+        var polygon = InitialArrow.children[2];
+        var path = InitialArrow.children[1];
+        if (polygon.parentNode.transform.animVal.length===0)
+            var saveAlpha = 0;
+        else
+            var saveAlpha = polygon.parentNode.transform.animVal.getItem("0").angle //Save the current rotation
+
+        var rx = ellipse.rx.baseVal.value;
+        var ry = ellipse.ry.baseVal.value;
+        var cx = ellipse.cx.baseVal.value;
+        var cy = ellipse.cy.baseVal.value;
+
+        if (cy>polygon.points[0].y) {
+            //Position of the circle
+            var x = cx - Math.cos(saveAlpha*Math.PI/180)*rx;
+            var y = cy - Math.sin(saveAlpha*Math.PI/180)*ry;
+        } else if (cy<=polygon.points[0].y) {
+            //Position of the circle
+            var x = cx - Math.cos(-saveAlpha*Math.PI/180)*rx
+            var y = cy + Math.sin(-saveAlpha*Math.PI/180)*ry;
+        }
+        var tx = x - polygon.points[0].x;
+        var ty = y - polygon.points[0].y;
+
+        polygon.parentNode.setAttribute("transform","rotate("+ 0 +" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+
+        for (var point of polygon.points) { //Translate the polygon
+            point.x += tx;
+            point.y += ty;
+        }
+
+        var tabPath = path.attributes.d.nodeValue.split(" "); //Translate the path
+        path.setAttribute("d",
+            "M" + (parseFloat(tabPath[0].split(",")[0].slice(1),10) +tx) + "," + (parseFloat(tabPath[0].split(",")[1],10) +ty) +
+            " C" + (parseFloat(tabPath[1].split(",")[0].slice(1),10) +tx) + "," + (parseFloat(tabPath[1].split(",")[1],10) +ty) +
+            " " + (parseFloat(tabPath[2].split(",")[0],10) +tx) + "," + (parseFloat(tabPath[2].split(",")[1],10) +ty) +
+            " " + (parseFloat(tabPath[3].split(",")[0],10) +tx) + "," + (parseFloat(tabPath[3].split(",")[1],10) +ty));
+
+        polygon.parentNode.setAttribute("transform","rotate("+ saveAlpha +" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+    }
+
     function AudeDesigner(svgContainer, readOnly) {
         this.nodeLists            = [];    // array containing all the automata's "nodeList"s
         this.initialStateArrows   = [];    // array containing all the automata's initial state's arrow
@@ -551,9 +594,12 @@
             path    = this.initialStateArrow.getElementsByTagName("path")[0];
             polygon = this.initialStateArrow.querySelector("polygon");
             title   = this.initialStateArrow.querySelector("title");
+            this.initialStateArrow.setAttribute("transform","rotate(0)"); //Reset the rotation
+            this.initialStateArrow.setAttribute("class","initialStateArrow");
         } else {
             this.initialStateArrow = this.initialStateArrows[this.currentIndex] = document.createElementNS(svgNS, "g");
             id(this.initialStateArrow, "initialStateArrow");
+            this.initialStateArrow.setAttribute("class","initialStateArrow");
             title = document.createElementNS(svgNS, "title");
             path =  document.createElementNS(svgNS, "path");
             polygon = document.createElementNS(svgNS, "polygon");
@@ -577,7 +623,7 @@
 
         path.setAttribute("d",
             "M" + (dx - 38)           + "," + cy +
-            "C" + (dx - (28 * 2 / 3)) + "," + cy +
+            " C" + (dx - (28 * 2 / 3)) + "," + cy +
             " " + (dx - (28 / 3))     + "," + cy +
             " " + dx10                + "," + cy);
 
@@ -1237,7 +1283,7 @@
             label.setAttribute("y", smallEllipse.cy.baseVal.value + 4);
 
             if (node === that.initialState) {
-                that.setInitialState(node);
+                correctInitialArrow(that.initialStateArrow,bigEllipse);
             }
         }
 
@@ -1427,7 +1473,10 @@
 
             if (that.initialState === nodeMoving) {
                 // moving the initial state arrow
-                that.setInitialState(nodeMoving);
+                if (coords.ellipse[1])
+                    correctInitialArrow(that.initialStateArrow,coords.ellipse[1]);
+                else
+                    correctInitialArrow(that.initialStateArrow,coords.ellipse[0]);
             }
 
             var coefTextX = 1,
@@ -1542,6 +1591,84 @@
 
             frameModifiedSVG = true;
         }
+
+        function prepareInitialArrowMove (e) {
+            that.stopMove = true;
+            that.svgContainer.onmousemove = mouseMove;
+            currentMoveAction = moveInitialArrow;
+            mouseCoords = e;
+            origMouseCoords = e;
+            that.svgContainer.style.cursor = "move";
+            setMoveAction(moveInitialArrow,e)
+        }
+
+        //Move the initial state arrow
+        function moveInitialArrow () {
+            if (!mouseCoords) {
+                return;
+            }
+
+            var e = mouseCoords;
+
+            requestAnimationFrame(moveInitialArrow);
+
+            if (e === true || that.stopMoveNode) {
+                return;
+            }
+
+            mouseCoords = true;
+
+            var ellipse = getBigEllipse(that.initialState);
+            var cx =ellipse.cx.baseVal.value;
+            var cy =ellipse.cy.baseVal.value;
+            var rx =ellipse.rx.baseVal.value;
+            var ry =ellipse.ry.baseVal.value;
+            var polygon = nodeMoving.children[2];
+            var path = nodeMoving.children[1];
+
+            var svgDim = ellipse.parentNode.parentNode.parentNode.viewBox.animVal;
+
+            var mouseX = (e.clientX / ellipse.parentNode.parentNode.parentNode.attributes.width.value) * (svgDim.width) + svgDim.x;
+            var mouseY = (e.clientY / ellipse.parentNode.parentNode.parentNode.attributes.height.value) * (svgDim.height) + svgDim.y;
+
+            var distMouseCircle = (Math.sqrt( Math.pow(mouseX-cx,2) + Math.pow(mouseY-cy,2)));
+            var alpha = Math.acos(( cx-mouseX)/distMouseCircle);
+
+            if(cy>mouseY) {
+                //Position of the circle corresponding on the click of mouse
+                var x = cx - Math.cos(alpha)*rx;
+                var y = cy - Math.sin(alpha)*ry;
+            }
+
+            else if(cy<=mouseY) {
+                //Position of the circle corresponding on the click of mouse
+                var x = cx - Math.cos(alpha)*rx
+                var y = cy + Math.sin(alpha)*ry;
+            }
+
+            var translationx = x-polygon.points[0].x;
+            var translationy = y-polygon.points[0].y;
+            for (var point of polygon.points) { //Translate the polygon
+                point.x += translationx;
+                point.y += translationy;
+            }
+
+            var tabPath = path.attributes.d.nodeValue.split(" "); //Translate the path
+            path.setAttribute("d",
+                "M" + (parseFloat(tabPath[0].split(",")[0].slice(1),10) +translationx) + "," + (parseFloat(tabPath[0].split(",")[1],10) +translationy) +
+                " C" + (parseFloat(tabPath[1].split(",")[0].slice(1),10) +translationx) + "," + (parseFloat(tabPath[1].split(",")[1],10) +translationy) +
+                " " + (parseFloat(tabPath[2].split(",")[0],10) +translationx) + "," + (parseFloat(tabPath[2].split(",")[1],10) +translationy) +
+                " " + (parseFloat(tabPath[3].split(",")[0],10) +translationx) + "," + (parseFloat(tabPath[3].split(",")[1],10) +translationy));
+
+           if(cy>mouseY) {
+                polygon.parentNode.setAttribute("transform","rotate("+ alpha*180/Math.PI+" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+            }
+            else if(cy<mouseY) {
+                polygon.parentNode.setAttribute("transform","rotate("+ -alpha*180/Math.PI+" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+            }
+
+        }
+
 
         function mouseMove(e) {
             if (origMouseCoords) {
@@ -2182,6 +2309,11 @@
                                 beginMoveTransitionLabel(e.target, e);
                             }
                         }
+                    } else if ( (nodeMoving = parentWithClass(e.target, "initialStateArrow"))) {
+                        if (cso === nodeMoving) {
+                            stopOverlay = true;
+                        }
+                        prepareInitialArrowMove(e); //Move the initial state arrow
                     } else if (!currentMoveAction) {
                         that.blockNewState = false;
                     }
