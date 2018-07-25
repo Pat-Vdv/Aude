@@ -1,0 +1,11 @@
+{"underTypeQuestion":"mcq1",
+"wording":"Soient A1 et A2 deux AEFDs et A = produit(A1,A2) l'AEFD produit de A1 et A2",
+"typeQuestion":"mcq",
+"response":["1","2","3"],
+"typeResponse":"checkbox",
+"userResponse":[],
+"choices":[
+{"id":"1","text":"L(A) = L(A1) $\\cap$ L(A2)"},
+{"id":"2","text":"L(A) $\\supset$ L(A1) $\\cap$ L(A2)"},
+{"id":"3","text":"L(A) $\\subset$ L(A1) $\\cap$ L(A2)"},
+{"id":"4","text":"L(A) = L(A1) . L(A2)"}]}

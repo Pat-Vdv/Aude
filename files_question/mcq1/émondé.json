@@ -1,0 +1,11 @@
+{"underTypeQuestion":"mcq1",
+"wording":"Qu-est-ce qu'un automate émondé?",
+"typeQuestion":"mcq",
+"response":["3"],
+"typeResponse":"checkbox",
+"userResponse":[],
+"choices":[
+{"id":"1","text":"Un automate qui ne reconnait aucun mots"},
+{"id":"2","text":"Un automate qui a tous ces états accepteurs"},
+{"id":"3","text":"Un automate dont tous ces états sont accessibles et co-accessibles"},
+{"id":"4","text":"Un automate dont tous ces états sont accessibles"}]}

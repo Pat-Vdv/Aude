@@ -1,0 +1,10 @@
+{"underTypeQuestion":"mcq1",
+"wording":"Quel est le language reconnu par le produit d'automates A et B sachant que L(A) $\\subseteq$ L(B)?",
+"typeQuestion":"mcq",
+"response":["1"],
+"typeResponse":"checkbox",
+"userResponse":[],
+"choices":[
+{"id":"1","text":"L(A)"},
+{"id":"2","text":"L(B)"},
+{"id":"3","text":"L(A) $\\cup$ L(B)"}]}

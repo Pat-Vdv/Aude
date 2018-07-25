@@ -1,0 +1,73 @@
+0
+1
+2
+
+0
+
+0 b 1
+0 a 2
+1 a 0
+1 b 0
+2 a 1
+
+<representation type='image/svg+xml'>
+<svg width="1639" height="906" viewBox="-123 -162 1639 906" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" data-id="graph0">
+<title>automaton</title>
+
+
+
+<g class="node" data-id="MA==">
+<title>0</title>
+<ellipse fill="white" stroke="#000000" cx="133.6416" cy="49.800000000000004" rx="18" ry="18" fill-opacity="0"></ellipse><ellipse fill="white" stroke="#000000" cx="133.6416" cy="49.800000000000004" rx="22" ry="22.000001907348633" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="133.6416015625" y="53.79999923706055" font-family="Times,serif" font-size="14.00" fill="#000000">0</text>
+</g>
+
+<g class="edge" data-id="initialStateArrow">
+<title>_begin-&gt;0</title>
+<path fill="none" stroke="#000000" d="M73.6416015625,49.79999923706055C92.97493489583333,49.79999923706055 102.30826822916667,49.79999923706055 101.6416015625,49.79999923706055"></path>
+<polygon fill="#000000" stroke="#000000" points="111.6416015625,49.79999923706055 101.6416015625,45.79999923706055 106.6416015625,49.79999923706055 101.6416015625,49.79999923706055 101.6416015625,49.79999923706055 101.6416015625,49.79999923706055 106.6416015625,49.79999923706055 101.6416015625,53.79999923706055 111.6416015625,49.79999923706055 111.6416015625,49.79999923706055"></polygon>
+</g>
+
+<g class="node" data-id="MQ==">
+<title>1</title>
+<ellipse fill="white" stroke="#000000" cx="290.0708" cy="49.800000000000004" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="290.0708" y="54.00000000000001" font-family="Times,serif" font-size="14.00" fill="#000000">1</text>
+</g>
+
+<g class="edge" data-id="MA== MQ==">
+<title>0-&gt;1</title>
+<path fill="none" stroke="black" d="M 151.93190241578355 37.57441456339807 C 155.141 35.78000000000001 162.5346 31.68390000000001 169.6416 28.80000000000001 C 179.9154 24.631 182.8503 24.143200000000007 193.8562 22.80000000000001 C 220.5526 19.54180000000001 229.1498 18.6875 254.0708 28.80000000000001 C 258.0684 30.422200000000004 262.1568 32.42790000000001 266.0767 34.55050000000001"></path>
+<polygon fill="black" stroke="black" points="267.889,31.5555 274.796,39.5899 264.386,37.6161 267.889,31.5555"></polygon>
+<text text-anchor="middle" x="211.8562" y="16.60000000000001" font-family="Times,serif" font-size="14.00">b</text>
+</g>
+
+<g class="node" data-id="Mg==">
+<title>2</title>
+<ellipse fill="white" stroke="#000000" cx="211.8562" cy="49.800000000000004" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="211.8562" y="54.00000000000001" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
+</g>
+
+<g class="edge" data-id="MA== Mg==">
+<title>0-&gt;2</title>
+<path fill="none" stroke="black" d="M 155.64160156249997 49.80000016231492 C 161.259 49.800000000000004 173.068 49.800000000000004 183.7018 49.800000000000004"></path>
+<polygon fill="black" stroke="black" points="183.814,46.2999 193.814,49.8 183.814,53.2999 183.814,46.2999"></polygon>
+<text text-anchor="middle" x="172.7489" y="45.60000000000001" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+
+<g class="edge" data-id="MQ== MA==">
+<title>1-&gt;0</title>
+<path fill="none" stroke="black" d="M 277.1335 63.02490000000001 C 265.7997 73.5961 248.296 87.6028 229.8562 93.60000000000001 C 214.6406 98.5485 209.0717 98.5485 193.8562 93.60000000000001 C 179.1619 88.82100000000001 165.0621 78.95580000000001 156.652307527998 72.29750772244616"></path>
+<polygon fill="black" stroke="black" points="154.18,74.783 149.026,65.5264 158.828,69.5485 154.18,74.783"></polygon>
+<text text-anchor="middle" x="211.8562" y="88.60000000000001" font-family="Times,serif" font-size="14.00">a,b</text>
+</g>
+
+<g class="edge" data-id="Mg== MQ==">
+<title>2-&gt;1</title>
+<path fill="none" stroke="black" d="M 229.9968 49.800000000000004 C 239.4736 49.800000000000004 251.2826 49.800000000000004 261.9164 49.800000000000004"></path>
+<polygon fill="black" stroke="black" points="262.029,46.2999 272.029,49.8 262.029,53.2999 262.029,46.2999"></polygon>
+<text text-anchor="middle" x="250.9635" y="45.60000000000001" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+</g>
+</svg>
+</representation>

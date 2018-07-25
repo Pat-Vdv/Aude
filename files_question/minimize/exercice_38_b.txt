@@ -1,0 +1,113 @@
+0
+1
+3
+
+0
+2
+
+0 b 0
+0 a 1
+1 a 1
+1 b 2
+3 b 0
+3 a 3
+2 a 3
+2 b 2
+
+<representation type='image/svg+xml'>
+<svg width="1639" height="906" viewBox="0 0 565.172 312.414" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" data-id="graph0">
+<title>automaton</title>
+
+
+
+<g class="node" data-id="MA==">
+<title>0</title>
+<ellipse fill="white" stroke="#000000" cx="137.6416" cy="94.8" rx="18" ry="18" fill-opacity="0"></ellipse>
+<ellipse fill="white" stroke="#000000" cx="137.6416" cy="94.8" rx="22" ry="22" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="137.6416" y="99" font-family="Times,serif" font-size="14.00" fill="#000000">0</text>
+</g>
+
+<g class="edge" data-id="initialStateArrow">
+<title>_begin-&gt;0</title>
+<path fill="none" stroke="#000000" d="M77.6416015625,94.80000305175781C96.97493489583333,94.80000305175781 106.30826822916667,94.80000305175781 105.6416015625,94.80000305175781"></path>
+<polygon fill="#000000" stroke="#000000" points="115.6416015625,94.80000305175781 105.6416015625,90.80000305175781 110.6416015625,94.80000305175781 105.6416015625,94.80000305175781 105.6416015625,94.80000305175781 105.6416015625,94.80000305175781 110.6416015625,94.80000305175781 105.6416015625,98.80000305175781 115.6416015625,94.80000305175781 115.6416015625,94.80000305175781"></polygon>
+</g>
+
+<g class="edge" data-id="MA== MA==">
+<title>0-&gt;0</title>
+<path fill="none" stroke="black" d="M 130.3247 73.8092 C 129.4213 63.712799999999994 131.8603 54.8 137.6416 54.8 C 141.3452 54.8 143.6771 58.4578 144.6374 63.741299999999995"></path>
+<polygon fill="black" stroke="black" points="148.138,63.7027 144.958,73.8092 141.141,63.9259 148.138,63.7027"></polygon>
+<text text-anchor="middle" x="137.6416" y="50.599999999999994" font-family="Times,serif" font-size="14.00">b</text>
+</g>
+
+<g class="node" data-id="MQ==">
+<title>1</title>
+<ellipse fill="white" stroke="#000000" cx="219.8562" cy="62.8" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="219.8562" y="67" font-family="Times,serif" font-size="14.00" fill="#000000">1</text>
+</g>
+
+<g class="edge" data-id="MA== MQ==">
+<title>0-&gt;1</title>
+<path fill="none" stroke="black" d="M 158.3878 86.725 C 169.0574 82.5722 182.1754 77.46629999999999 193.5489 73.0395"></path>
+<polygon fill="black" stroke="black" points="192.401,69.7306 202.989,69.365 194.94,76.2539 192.401,69.7306"></polygon>
+<text text-anchor="middle" x="180.7489" y="73.6" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+
+<g class="edge" data-id="MQ== MQ==">
+<title>1-&gt;1</title>
+<path fill="none" stroke="black" d="M 213.1225 45.762699999999995 C 211.7483 35.942099999999996 213.9929 26.799999999999997 219.8562 26.799999999999997 C 223.5207 26.799999999999997 225.7717 30.3711 226.6091 35.44709999999999"></path>
+<polygon fill="black" stroke="black" points="230.109,35.7693 226.59,45.7627 223.109,35.7561 230.109,35.7693"></polygon>
+<text text-anchor="middle" x="219.8562" y="22.599999999999994" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+
+<g class="node" data-id="Mg==">
+<title>2</title>
+<ellipse fill="white" stroke="#000000" cx="302.8562" cy="60.8" rx="18" ry="18" fill-opacity="0"></ellipse>
+<ellipse fill="white" stroke="#000000" cx="302.8562" cy="60.8" rx="22" ry="22" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="302.8562" y="65" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
+</g>
+
+<g class="edge" data-id="MQ== Mg==">
+<title>1-&gt;2</title>
+<path fill="none" stroke="black" d="M 237.8659 62.366 C 247.4044 62.136199999999995 259.4116 61.8469 270.5018 61.5796"></path>
+<polygon fill="black" stroke="black" points="270.662,58.0748 280.743,61.3328 270.83,65.0728 270.662,58.0748"></polygon>
+<text text-anchor="middle" x="259.3562" y="57.599999999999994" font-family="Times,serif" font-size="14.00">b</text>
+</g>
+
+<g class="node" data-id="Mw==">
+<title>3</title>
+<ellipse fill="white" stroke="#000000" cx="385.0708" cy="94.8" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="385.0708" y="99" font-family="Times,serif" font-size="14.00" fill="#000000">3</text>
+</g>
+
+<g class="edge" data-id="Mw== MA==">
+<title>3-&gt;0</title>
+<path fill="none" stroke="black" d="M 366.9957 94.8 C 325.5106 94.8 222.987 94.8 170.201 94.8"></path>
+<polygon fill="black" stroke="black" points="170.036,98.2999 160.036,94.8 170.036,91.2999 170.036,98.2999"></polygon>
+<text text-anchor="middle" x="259.3562" y="90.6" font-family="Times,serif" font-size="14.00">b</text>
+</g>
+
+<g class="edge" data-id="Mw== Mw==">
+<title>3-&gt;3</title>
+<path fill="none" stroke="black" d="M 378.3371 77.7627 C 376.9629 67.9421 379.2075 58.8 385.0708 58.8 C 388.7353 58.8 390.9863 62.3711 391.8237 67.4471"></path>
+<polygon fill="black" stroke="black" points="395.323,67.7693 391.804,77.7627 388.323,67.7561 395.323,67.7693"></polygon>
+<text text-anchor="middle" x="385.0708" y="54.599999999999994" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+
+<g class="edge" data-id="Mg== Mw==">
+<title>2-&gt;3</title>
+<path fill="none" stroke="black" d="M 323.6024 69.3796 C 334.272 73.7921 347.39 79.217 358.7635 83.92060000000001"></path>
+<polygon fill="black" stroke="black" points="360.301,80.7687 368.204,87.8247 357.625,87.2374 360.301,80.7687"></polygon>
+<text text-anchor="middle" x="345.9635" y="73.6" font-family="Times,serif" font-size="14.00">a</text>
+</g>
+
+<g class="edge" data-id="Mg== Mg==">
+<title>2-&gt;2</title>
+<path fill="none" stroke="black" d="M 295.1734 39.809200000000004 C 294.2249 29.7128 296.7858 20.799999999999997 302.8562 20.799999999999997 C 306.745 20.799999999999997 309.1935 24.45779999999999 310.2018 29.741299999999995"></path>
+<polygon fill="black" stroke="black" points="313.702,29.6977 310.539,39.8092 306.706,29.932 313.702,29.6977"></polygon>
+<text text-anchor="middle" x="302.8562" y="16.599999999999994" font-family="Times,serif" font-size="14.00">b</text>
+</g>
+</g>
+</svg>
+</representation>

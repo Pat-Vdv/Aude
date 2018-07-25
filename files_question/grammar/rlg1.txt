@@ -1,0 +1,1 @@
+({a,b},{A,S,W,T},W,{S -> Ab,S -> Sb,A -> Aa,A -> Ta,W -> Sε,T -> ε}) 
