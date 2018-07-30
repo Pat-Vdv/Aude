@@ -458,13 +458,11 @@ msgid "<h2>Welcome to {0}!</h2>"
 "    <li>To <strong>remove</strong> a state or a transition, ctrl-click on it.</li>"
 "</ul>"
 
-<<<<<<< HEAD
 msgstr "<h2>Bienvenue sur {0} !</h2>"
 "<h3> Vous n’avez encore jamais utilisé {0} ? </h3>"
 =======
 msgstr "<h2>Bienvenue sur {0}\u202F!</h2>"
 "<h3> Vous n’avez encore jamais utilisé {0}\u202F? </h3>"
->>>>>>> master
 "<ul>"
 "<li>Créez votre premier automate en cliquant sur le bouton <strong>Nouvel état</strong> en bas à gauche de l'écran.</li>"
 "<li>Vous pouvez appliquer un algorithme sur votre automate en cliquant sur le boutton <strong>Choisir un algo</strong> de la barre d’outils.</li>"
@@ -681,3 +679,492 @@ msgstr "minimisé, écrivez isMinimized(autoAnsw)"
 
 msgid "completed, write isCompleted(autoAnsw)"
 msgstr "complété, écrivez isCompleted(autoAnsw)"
+
+msgid  "Initial stack symbol : "
+msgstr "Symbole de fond de pile:"
+
+msgid  "Determinized pushdown automaton: "
+msgstr "Automate à pile déterminisé"
+
+msgid  "State: "
+msgstr "Etat :"
+
+msgid  "Stacks"
+msgstr "Piles"
+
+msgid  "Index"
+msgstr "Indice"
+
+msgid  "Value"
+msgstr "Valeur"
+
+msgid  "Stack"
+msgstr "Pile"
+
+msgid  "Write directly the grammar: "
+msgstr "Entrer directement la grammaire"
+
+msgid  "Or enter easily the grammar: "
+msgstr "Ou entrer la grammaire champ par champ"
+
+msgid  "Write the terminal symbols: "
+msgstr "Ecriver les symboles terminaux : "
+
+msgid  "Write the non terminal symbols: "
+msgstr "Ecriver les symboles non terminaux : "
+
+msgid  "Select the start symbol"
+msgstr "Sélectionner l'axiome"
+
+msgid  "Non terminal symbol"
+msgstr "Symbole non terminal"
+
+msgid  "Body"
+msgstr "Le corps"
+
+msgid  "Choose the entry of the algorithm: "
+msgstr "Choisissez le type d'entrée de l'algorithme"
+
+msgid  "Choose type"
+msgstr "Choisir le type"
+
+msgid  "Enter a grammar"
+msgstr "Entrer la grammar"
+
+msgid  "Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3"
+msgstr "Automate deterministe: 1\Automate non deterministe: 2 \Automate non deterministe avec ε-transitions: 3"
+
+msgid  "Settings automaton"
+msgstr "Options de l'automate"
+
+msgid  "Create the complementary automaton of the following automaton "
+msgstr "Dessiner l'automate complémentaire de l'automate suivant"
+
+msgid  "Create the complete automaton of the following automaton "
+msgstr "Déssiner l'automate complété de l'automate suivant"
+
+msgid  "Do the product of the following automata "
+msgstr "Dessiner le produit des 2 automates suivant"
+
+msgid  "Minimize the following automaton "
+msgstr "Minimiser l'automate suivant"
+
+msgid  "Write the equivalent states of the following automaton "
+msgstr "Ecriver la liste des états équivalents de l'automate suivant"
+
+msgid  "Are the following automatons equivalent? "
+msgstr "Est-ce que les automates sont équivalents ?"
+
+msgid  "Fill the table corresponding to the automaton "
+msgstr "Remplisser le tableau correspondant à l'automate"
+
+msgid  "Create the automaton corresponding to the following automaton "
+msgstr ""
+
+msgid  "Write the accessible states of the following automaton "
+msgstr "Lister les états accessibles de l'automate"
+
+msgid  "Write the co-accessible states of the following automaton "
+msgstr "Lister les états coaccessibles de l'automate"
+
+msgid  "Write a word recognized by the following automaton "
+msgstr "Ecriver un mot reconnu par l'automate"
+
+msgid  "Create the determinized automaton of the following automaton "
+msgstr "Dessiner l'automate déterminisé de l'automate suivant"
+
+msgid  "Create the determinized and minimize automaton of the following automaton "
+msgstr "Dessiner l'automate déterminisé et minimisé de l'automate suivant"
+
+msgid  "Eleminate the ε-transitions of the following automaton "
+msgstr "Eliminer les ε-transitions de l'automate suivant"
+
+msgid  "Eleminate the ε-transitions and determinize the following automaton "
+msgstr "Eliminer les ε-transitions et déterminisé de l'automate suivant"
+
+msgid  "Write the regular expression corresponding to the following automaton "
+msgstr "Ecriver l'expression régulière correspondant à l'automate"
+
+msgid  "Give the automaton corresponding to the following RE "
+msgstr "Donner l'automate correspondant à l'expression régulière"
+
+msgid  "Give the automaton corresponding to the following right linear grammar "
+msgstr "Dessiner l'automate correspondant à la grammaire linéaire"
+
+msgid  "Give the linear grammar corresponding to the following automaton "
+msgstr "Donner la grammaire linéaire correspondant à l'automate"
+
+msgid  "Give the right linear grammar corresponding to the following left linear grammar "
+msgstr "Donner la grammaire linéaire à droite correspondant à la grammaire linéaire à gauche suivante"
+
+msgid  "Settings"
+msgstr "Options"
+
+msgid  "Close the question list"
+msgstr "Fermer la page"
+
+msgid  "Chapter 1: Deterministic finite state machines"
+msgstr ""
+
+msgid  "Chapter 2: Non-deterministic finite state machines"
+msgstr ""
+
+msgid  "Chapter 3: Non-deterministic finite state machines with ε-transitions"
+msgstr ""
+
+msgid  "Chapter 4: Regular expressions and Kleene theorem"
+msgstr ""
+
+msgid  "Chapter 5: Grammars and regular grammars"
+msgstr ""
+
+msgid  "Chapter 6: Non-regular langages and iterative lemme"
+msgstr ""
+
+msgid  "No chapter selected."
+msgstr "Aucun chapitre sélectionné"
+
+msgid  "Question List"
+msgstr "List de quesitions"
+
+msgid  "Setting for the questions"
+msgstr "Option pour les questions"
+
+msgid  "Automaton1"
+msgstr "Automate 1"
+
+msgid  "Automaton2"
+msgstr "Automate 2"
+
+msgid  "Regular expression"
+msgstr "Expression régulière"
+
+msgid  "Grammar"
+msgstr "Grammaire"
+
+msgid  "Select file "
+msgstr "Fichier sélectionné"
+
+msgid  "Generate randomly "
+msgstr "Génération aléatoire"
+
+msgid  "Get random files "
+msgstr "Sélection aléatoire de fichiers"
+
+msgid  "Automaton generated randomly"
+msgstr "Automate généré aléatoirement"
+
+msgid  "Number of states: "
+msgstr "Nombre d'états :"
+
+msgid  "Alphabet "
+msgstr "Alphabet"
+
+msgid  "Number of final states: "
+msgstr "Nombre d'états finaux :"
+
+msgid  "Mode: "
+msgstr "Mode :"
+
+msgid  "Number of transitions: "
+msgstr "Nombre de transitions :"
+
+msgid  "Automaton selection"
+msgstr "Automate sélectionné"
+
+msgid  "Select an automaton from the list or from your computer"
+msgstr "Choisissez  un automate à partir de la liste déjà fournie or depuis votre ordinateur"
+
+msgid  "Open automaton"
+msgstr "Charger un automate"
+
+msgid  "Selected automaton: "
+msgstr "Sélectionner un automate :"
+
+msgid  "none"
+msgstr "aucun"
+
+msgid  "The automaton is selected randomly from files"
+msgstr "L'automate est sélectionné aléatoirement à partir des fichiers"
+
+msgid  "Regular expression generated randomly"
+msgstr "L'expression régulière est générée aléatoirement"
+
+msgid  "Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE"
+msgstr "Génère aléatoirement un automate en utilisant les paramètres de l'automate 1 et le convertit en expression régulière"
+
+msgid  "Prefearbly select a regular expression from files"
+msgstr "Il vaut mieux sélectionner une expression régulière à partir des fichiers"
+
+msgid  "Regular expression selection"
+msgstr "Sélection d'expression régulière"
+
+msgid  "Select a regular expression from the list or from your computer"
+msgstr "Choisissez  une expression régulière à partir de la liste déjà fournie or depuis votre ordinateur"
+
+msgid  "Open regular expression"
+msgstr "Charger une expression régulière"
+
+msgid  "Selected regular expression: "
+msgstr "Choisissez une expression régumière"
+
+msgid  "The regular expression is selected randomly from files"
+msgstr "L'expression régulière est sélectionnée aléatoirement à partir des fichiers"
+
+msgid  "Grammar generated randomly"
+msgstr "Grammaire générée aléatoirement"
+
+msgid  "Prefearbly select a grammar from files"
+msgstr "Il vaut mieux séléctionner une grammaire à partir des fichiers"
+
+msgid  "Grammar selection"
+msgstr "Sélection de grammaire"
+
+msgid  "Select a grammar from the list or from your computer"
+msgstr "Choisissez une grammaire à partir de la liste déjà fournie ou depuis votre ordinateur"
+
+msgid  "Open grammar"
+msgstr "Ouvri une grammaire"
+
+msgid  "Selected grammar: "
+msgstr "Grammaire choisie"
+
+msgid  "The grammar is selected randomly from files"
+msgstr "La grammaire est sélectionnée aléatoirement à parir des fichiers"
+
+msgid  "Save"
+msgstr "Enregistrer"
+
+msgid  "Save and exit"
+msgstr "Sauvegarder et quitter"
+
+msgid  "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
+msgstr "Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP : {0})"
+
+msgid  "This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information"
+msgstr ""
+
+msgid  "Unable to get the list of needed files"
+msgstr "Impossible de charger la liste des fichiers"
+
+msgid  "From your computer"
+msgstr "Depuis votre ordinateur"
+
+msgid  "Load a file"
+msgstr "Charger un fichier"
+
+msgid  "List of questions"
+msgstr "Liste des questions "
+
+msgid  "List of automata"
+msgstr "Liste des automates"
+
+msgid  "Multiple choice questions"
+msgstr "Question à choix multiples"
+
+msgid  "Complement the automaton"
+msgstr "Complémenter l'automate"
+
+msgid  "Complete the automaton"
+msgstr "Compléter l'automate"
+
+msgid  "Do the product of 2 automata"
+msgstr "Faire le produit de 2 automates"
+
+msgid  "Minimize the automaton"
+msgstr "Minimser l'automate"
+
+msgid  "List all the equivalent states"
+msgstr "Lister les états équivalents"
+
+msgid  "Equivalency between 2 automata"
+msgstr "Equivalence entre automates"
+
+msgid  "Give the tabular form of the automaton"
+msgstr "Donner la forme tabulaire de l'automate"
+
+msgid  "Give the automaton from the table"
+msgstr "Donner l'automate correspondant au tableau"
+
+msgid  "List the accessible states"
+msgstr "Lister les états accessibles"
+
+msgid  "List the co-accessible states"
+msgstr "Lister les états coaccessibles"
+
+msgid  "Give a word recognized by the automata"
+msgstr "Donner un mot reconnu par l'automate"
+
+msgid  "Determinize the automaton"
+msgstr "Déterminiser l'automate"
+
+msgid  "Determinize and minimize the automaton"
+msgstr "Déterminiser et minimiser l'automate"
+
+msgid  "Eliminate the ε-transitions"
+msgstr "Eliminer les ε-transitions transitions"
+
+msgid  "Determinize and eliminate the ε-transitions"
+msgstr "Eliminer les ε-transitions transitions et déterminiser"
+
+msgid  "Give a RE which corresponds to the automaton"
+msgstr "Donner une expression régulière correspondant à l'automate"
+
+msgid  "Give the automaton corresponding to the RE"
+msgstr "Donner l'automate correspondant à l\"expression régulière"
+
+msgid  "Give the automaton corresponding to the right linear grammar"
+msgstr "Donner l'automate correspondant à la grammaire linéaire"
+
+msgid  "Give the right linear grammar corresponding to the automaton"
+msgstr "Donner la grammaire linéaire à droite correspondant à l'automate"
+
+msgid  "Convert the left linear grammar to the right linear grammar"
+msgstr "Convertir la grammaire linéaire à gauche vers la grammaire linéaire à droite"
+
+msgid  "No question"
+msgstr "Aucune question"
+
+msgid  "Menu questions"
+msgstr "Menu"
+
+msgid  "Restart"
+msgstr "Recommencer"
+
+msgid  "Question: "
+msgstr "Question :"
+
+msgid  "Validate"
+msgstr "Valider"
+
+msgid  "Display response"
+msgstr "Afficher la réponse"
+
+msgid  "Wrong answer"
+msgstr "Réponse fausse"
+
+msgid  "True answer"
+msgstr "Réponse correcte"
+
+msgid  "Initial stack symbol : "
+msgstr "Symbole de fond de pile:"
+
+msgid  "Determinized pushdown automaton: "
+msgstr "Automate à pile déterminisé"
+
+msgid  "State: "
+msgstr "Etat :"
+
+msgid  "Stacks"
+msgstr "Piles"
+
+msgid  "Index"
+msgstr "Indice"
+
+msgid  "Value"
+msgstr "Valeur"
+
+msgid  "Stack"
+msgstr "Pile"
+
+msgid  "The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."
+msgstr "L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur « Continuer l’exécution » quand vous avez fait votre choix."
+
+msgid  "You didn’t select enough automata. Please select {0} automata."
+msgstr "Vous n’avez pas sélectionné assez d’automates. Veuillez en sélectionner {0}."
+
+msgid  "Automaton #{0}"
+msgstr "Automate n°{0}"
+
+msgid  "Write directly the grammar: "
+msgstr "Entrer directement la grammaire"
+
+msgid  "Or enter easily the grammar: "
+msgstr "Ou entrer la grammaire champ par champ"
+
+msgid  "Write the terminal symbols: "
+msgstr "Ecriver les symboles terminaux : "
+
+msgid  "Write the non terminal symbols: "
+msgstr "Ecriver les symboles non terminaux : "
+
+msgid  "Select the start symbol"
+msgstr "Sélectionner l'axiome"
+
+msgid  "Non terminal symbol"
+msgstr "Symbole non terminal"
+
+msgid  "Body"
+msgstr "Le corps"
+
+msgid  "Choose the entry of the algorithm: "
+msgstr "Choisissez le type d'entrée de l'algorithme"
+
+msgid  "Choose type"
+msgstr "Choisir le type"
+
+msgid  "Enter a grammar"
+msgstr "Entrer la grammar"
+
+msgid  "Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3"
+msgstr "Automate deterministe: 1\nAutomate non deterministe: 2 \nAutomate non deterministe avec ε-transitions: 3"
+
+msgid  "Settings automaton"
+msgstr "Options de l'automate"
+
+msgid  "Pushdown automaton"
+msgstr "Automate à pile"
+
+msgid "Deterministic finite state machines"
+msgstr "Automate à états finis déterministe"
+
+msgid "Non-deterministic finite state machines"
+msgstr "Automate à états finis non-déterministe"
+
+msgid "Non-deterministic finite state machines with ε-transitions"
+msgstr "Automates à états finis non-déterministes avec ε-transitions"
+
+msgid "Regular expressions and Kleene theorem"
+msgstr "Expressions régulières et théorème de Kleene"
+
+msgid "Grammars and regular grammars"
+msgstr "Grammaires et grammaires régulières"
+
+msgid "Non-regular langages and iterative lemme"
+msgstr "Langages non régulier et lemme de l'itération"
+
+msgid "Concatenate 2 automata"
+msgstr "Concaténer 2 automates"
+
+msgid "Create intermediate states"
+msgstr "Créer des états intermédiares"
+
+msgid "Difference"
+msgstr "Différence"
+
+msgid "Left linear grammar → Right linear grammar"
+msgstr "Grammaire linéaire à gauche → Grammaire linéaire à droite"
+
+msgid "Linear grammar → Automaton"
+msgstr "Grammaire linéaire → Automate"
+
+msgid "Right linear grammar → Left linear grammar"
+msgstr "Grammaire linéaire à droite → Grammaire linéaire à gauche"
+
+msgid "Smaller word"
+msgstr "Plus petit mot"
+
+msgid "Table representation → automaton"
+msgstr "Tableau → automate"
+
+msgid "Union of 2 automata"
+msgstr "Union de 2 automates"
+
+msgid "Automaton → Right linear grammar"
+msgstr "Automate → Grammaire linéaire à droite"
+
+msgid  "Create automaton"
+msgstr "Créer un automate"
+
+msgid  "Questions list"
+msgstr "Liste de questions"
