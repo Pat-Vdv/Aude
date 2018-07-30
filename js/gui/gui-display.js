@@ -135,7 +135,7 @@
 
 
             var win = libD.newWin({ //Create a new window
-                title:      _("Chose type"),
+                title:      _("Choose type"),
                 show:       true,
                 fullscreen: false,
                 content: div
@@ -237,13 +237,12 @@
         let div = document.createElement('div');
         div.className=("libD-ws-colors-auto auto-size");
         div.appendChild(libD.jso2dom([
-            ["div#div-settings-question-container-row", [
+            ["div",{"class":"div-settings-question-container-row"}, [
                 ["div",{"class":"div-settings-question-container-column"}, [
                     ["span",{"class":"span-settings-question"},_("Number of states: ")],
                     ["span",{"class":"span-settings-question"},_("Alphabet ")],
                     ["span",{"class":"span-settings-question"},_("Number of final states: ")],
-                    ["span",{"class":"span-settings-question","title":_("Automaton determinist: 1\nAutomaton non determinist: 2 \n\
-Automaton non determinist with ε-transitions: 3")},_("Mode: ")],
+                    ["span",{"class":"span-settings-question","title":_("Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3")},_("Mode: ")],
                     ["span",{"class":"span-settings-question"},_("Number of transitions: ")],
                 ]],
                 ["div",{"class":"div-settings-question-container-column"}, [

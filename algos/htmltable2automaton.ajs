@@ -77,8 +77,8 @@ export function HTMLTable2automaton (table,audeInter)
 end function
 
 //Create a table into divAffi
-export function createTable (audeInter,div)
 let  settingsWin := null
+export function createTable (audeInter,div)
     if document.getElementById("div-container-table")=null or document.getElementById("div-container-table")=undefined then
         let divTable := (libD.jso2dom([
                 ["div#div-container-table",[
@@ -140,7 +140,7 @@ end function
 
 //Add a new column
 function addState ()
-    resize(document.getElementById("div-container-table")) //Resize the window
+    settingsWin.resize() //Resize the window
     let tabLine := document.getElementsByClassName("div-container-input-line-automaton") //Get all the line
     let tabStates := document.getElementsByClassName("div-container-input-states")
     foreach line in tabLine do
@@ -155,7 +155,7 @@ end function
 
 //Remove the last column
 function removeState ()
-    resize(document.getElementById("div-container-table")) //Resize the window
+    settingsWin.resize() //Resize the window
     let tabStates := document.getElementsByClassName("div-container-input-states")
     if tabStates[0].childNodes.length>1 then
         let tabLine := document.getElementsByClassName("div-container-input-line-automaton")
@@ -167,8 +167,8 @@ function removeState ()
 end function
 
 //Add a new line
-function addSymbol (settingsWin)
-    resize(document.getElementById("div-container-table")) //Resize the window
+function addSymbol ()
+    settingsWin.resize() //Resize the window
     let tabLine := document.getElementsByClassName("div-container-input-line-automaton")
     let nbColumn := tabLine[0].childNodes.length //Number of column to add
 
@@ -195,7 +195,7 @@ end function
 
 //Remove the last line
 function removeSymbol ()
-    resize(document.getElementById("div-container-table")) //Resize the window
+    settingsWin.resize() //Resize the window
     let sym := document.getElementsByClassName("div-container-input-symbols")
     if sym[0].childNodes.length >1 then
         let trans := document.getElementsByClassName("div-container-input-transition") //Get the container

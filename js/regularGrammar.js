@@ -201,8 +201,7 @@
         if (c==="(")
             nextC();
         else
-            //AudeGUI.notify(("Correction"), "Erreur" , "normal",4000);
-            throw new Error("Erreur attendez (");
+            throw new Error("Erreur attendez (, caractère n°"+i);
         recSymTer();
         recComma();
         recSymNoTer();
@@ -213,7 +212,7 @@
         if (c===")")
             nextC();
             else
-                throw new Error("Erreur attendez )");
+                throw new Error("Erreur attendez ), caractère n°"+i);
 
 
         //Reconnait les symboles terminaux
@@ -224,7 +223,7 @@
                 if (c === '}')
                     nextC();
                 else
-                    throw new Error("Erreur Symter");
+                    throw new Error("Erreur Symter, caractère n°"+i);
             }
             else
                 nextC();
@@ -238,7 +237,7 @@
                 if (c === '}')
                     nextC();
                 else
-                    throw new Error("Erreur Symter");
+                    throw new Error("Erreur Symter, caractère n°"+i);
             }
             else
                 nextC();
@@ -267,7 +266,7 @@
                 nextC();
             }
             else
-                throw new Error("Axiome doit faire partie des symboles non terminaux ") ;
+                throw new Error("Axiome doit faire partie des symboles non terminaux, caractère n°"+i) ;
         }
 
         //Reconnait les règles de production
@@ -278,10 +277,10 @@
                 if (c = '}')
                     nextC();
                 else
-                    throw new Error("Erreur recProductionRules: attend }");
+                    throw new Error("Erreur recProductionRules: attend }, caractère n°"+i);
             }
             else
-                throw new Error("Erreur recProductionRules: attend {");
+                throw new Error("Erreur recProductionRules: attend {, caractère n°"+i);
             }
 
         //Reconnait une liste de regles de production
@@ -320,16 +319,16 @@
                             G.addRule(nonTer,ter,nonTerBody,"left");
                         }
                         else
-                            throw new Error("Erreur recRules");
+                            throw new Error("Erreur recRules, caractère n°"+i);
                         }
                     else
-                        throw new Error("Erreur recRules: attend un >");
+                        throw new Error("Erreur recRules: attend un >, caractère n°"+i);
                 }
                 else
-                    throw new Error("Erreur recRules: attend un -");
+                    throw new Error("Erreur recRules: attend un -, caractère n°"+i);
             }
             else
-                throw new Error("Erreur recRules: attend un symbole non Terminal c= ");
+                throw new Error("Erreur recRules: attend un symbole non Terminal c=, caractère n°"+i);
         }
 
         //Reconnait une suite de symboles terminaux
@@ -357,7 +356,7 @@
             if (c === ',')
                 nextC();
             else
-                throw new Error("Erreur: attend un virgule");
+                throw new Error("Erreur: attend une virgule, caractère n°"+i);
         }
 
         //Next caracter of the string

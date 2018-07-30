@@ -1,35 +1,35 @@
-determinization.ajs     / Determinize / automaton
-minimization.ajs        / Minimize / automaton
-completion.ajs          / Complete / automaton
+automaton2regex.ajs     / Automaton → Reg. Exp. / re
+automaton2RightLinearGrammar.ajs / Automaton → Right linear grammar / grammar
 complementation.ajs     / Complement / automaton
-product.ajs             / Product / automaton
-mirror.ajs              / Mirror / other
+completion.ajs          / Complete / automaton
 complicate.ajs          / Complicate / other
-mutate.ajs              / Mutate / other
-epsElimination.ajs      / ε-eliminate / automaton
-emptyLanguage.ajs       / Test empty language / other
-infiniteLanguage.ajs    / Test infinite language /other
-distinguishability.ajs  / List differentiable states / automaton
+concatenation.ajs / Concatenate 2 automata / automaton
+createAutomaton.ajs / Create automaton / other
+splitWord.ajs / Create intermediate states / automaton
+determinization.ajs     / Determinize / automaton
+difference.ajs / Difference / automaton
+equivalence.ajs         / Equiv. between 2 automata / automaton
+automaton2json.ajs      / JSON representation / other
+leftLinear2RightLinearGrammar.ajs / Left linear grammar → Right linear grammar / grammar
+linearGrammar2Automaton.ajs / Linear grammar → Automaton / grammar
 accessibility.ajs       / List accessible states / automaton
 coaccessibility.ajs     / List coaccessible states / automaton
-equivalence.ajs         / Equiv. between 2 automata / automaton
-normalization.ajs       / Simplify names of the states / automaton
-automaton2json.ajs      / JSON representation / other
-automaton2htmltable.ajs / Table representation / automaton
+distinguishability.ajs  / List differentiable states / automaton
+mealy2moore.ajs         / Mealy machine → Moore machine / other
+minimization.ajs        / Minimize / automaton
+mirror.ajs              / Mirror / automaton
+moore2mealy.ajs         / Moore machine → Mealy machine / other
+mutate.ajs              / Mutate / other
+product.ajs             / Product / automaton
 regex2automaton.ajs     / Reg. Exp. → automaton / re
 regex2minautomaton.ajs  / Reg. Exp. → minimized automaton / re
-automaton2regex.ajs     / Automaton → Reg. Exp. / re
-moore2mealy.ajs         / Moore machine → Mealy machine / other
-mealy2moore.ajs         / Mealy machine → Moore machine / other
-unitTests.ajs           / Unit tests for Aude / other
-htmltable2automaton.ajs	/ Table representation → automaton / automaton
-smallerWord.ajs	/ Smaller word / automaton
-createAutomaton.ajs / Create automaton / other
-automaton2RightLinearGrammar.ajs / Automaton → Right linear grammar / grammar
-linearGrammar2Automaton.ajs / Linear grammar → Automaton / grammar
-leftLinear2RightLinearGrammar.ajs / Left linear grammar → Right linear grammar / grammar
 rightLinear2LeftLinearGrammar.ajs / Right linear grammar → Left linear grammar / grammar
-splitWord.ajs / Create intermediate states / automaton
-difference.ajs / Difference / automaton
+normalization.ajs       / Simplify names of the states / automaton
+smallerWord.ajs	/ Smaller word / automaton
+automaton2htmltable.ajs / Table representation / automaton
+htmltable2automaton.ajs	/ Table representation → automaton / automaton
+emptyLanguage.ajs       / Test empty language / other
+infiniteLanguage.ajs    / Test infinite language /other
 union.ajs / Union of 2 automata / automaton
-concatenation.ajs / Concatenate 2 automata / automaton
+unitTests.ajs           / Unit tests for Aude / other
+epsElimination.ajs      / ε-eliminate / automaton

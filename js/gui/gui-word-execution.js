@@ -489,8 +489,6 @@
                 ]],
             ]]);
 
-
-
             stackWin.content.replaceChild(cont,stackWin.content.children[0]); //Recreate all the tables
             var table = document.getElementById("table-tables-stack");
 
@@ -498,11 +496,13 @@
             var tabState = [];
             for (cs of currentAutomaton.getCurrentStatesStacks()) {
 
-                if (tabState.indexOf(cs.state)<0) {
-                    tabState.push(cs.state);
-                    table.children[0].appendChild(libD.jso2dom([
+                if (tabState.indexOf(cs.state)<0) { //If it's the first time we encounter the state
+                    tabState.push(cs.state); //Array of all the current state
+                    var thState = libD.jso2dom([
                         ["th",_("State: ")+cs.state]
-                    ]));
+                    ]);
+                    table.children[0].appendChild(thState);
+
                     table.children[1].appendChild(libD.jso2dom([
                         ["td",[
                     ]],
@@ -519,6 +519,9 @@
                         ]],
                     ]]
                 ]);
+                if (cs.stack.length===currentAutomaton.getInitialStackSymbol().length) {
+                    newTable.style.backgroundColor = "#47d147";
+                }
                 //When we click on a table it shows the list of transitions
                 newTable.addEventListener("click",showTransitions.bind(null,cs.transitions));
 
@@ -555,12 +558,23 @@
                     i++;
                 }
             }
+            //Hide the table when clicking on the th
+            var j = 0;
+            for (var th of table.firstChild.children) { //The list of th
+                th.addEventListener("click",hideTab.bind(null,table,j));
+                j++;
+            }
+            function hideTab(table,j) {
+                for (var span of table.children[1].children[j].children)
+                    span.style.display = getComputedStyle(span).display == "none" ? "inline-block" : "none";
+            }
+
             stackWin.resize();
         }
 
         //If the automaton is determinized
         else {
-            if (executionByStep) //If the execution is by step we impose a time to show the modifications of the stack
+            if (executionByStep) //If the execution is by step we have a defined time to show the modifications of the stack
                 timeExec = 500/transitions.length;
             else
                 timeExec = EXECUTION_STEP_TIME/transitions.length;
