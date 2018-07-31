@@ -2533,6 +2533,26 @@
                 that.overlayHide();
             };
 
+            //Change the color of the state
+            stateOverlay.appendChild(document.createElement("li"));
+            stateOverlay.lastChild.appendChild(document.createElement("a"));
+            stateOverlay.lastChild.lastChild.href = "#";
+            stateOverlay.lastChild.lastChild.textContent = _("Color");
+
+            stateOverlay.lastChild.lastChild.onclick = function () {
+                var currentNode = that.currentOverlay;
+                that.overlayHide();
+                var input = document.createElement("input");
+                input.type = "color";
+                input.setAttribute("value", currentNode.children[1].attributes.fill.value);
+                input.click();
+                input.onchange = function() {
+                    //var color = "rgba("+parseInt(input.value.substr(1,2),16)+","+parseInt(input.value.substr(3,2),16)+","+parseInt(input.value.substr(5,2),16)+",0.5)";
+                    AudeGUI.mainDesigner.stateSmallSetBackgroundColor(that.currentIndex,currentNode,input.value);
+                }
+            };
+
+
             transitionOverlay = document.createElement("ul");
             transitionOverlay.classList.add(CSSP + "overlay");
 
@@ -2564,6 +2584,28 @@
                 deleteTransition(that.currentOverlay);
                 endNewTransitionEdit();
                 that.overlayHide();
+            };
+
+
+            //Change the color of the transition
+            transitionOverlay.appendChild(document.createElement("li"));
+            transitionOverlay.lastChild.appendChild(document.createElement("a"));
+            transitionOverlay.lastChild.lastChild.href = "#";
+            transitionOverlay.lastChild.lastChild.textContent = _("Color");
+
+            transitionOverlay.lastChild.lastChild.onclick = function () {
+                var t = that.currentOverlay; //The transition
+                that.resizeHandlesHide();
+                that.overlayHide();
+                var input = document.createElement("input");
+                input.type = "color";
+                input.setAttribute("value", t.children[1].attributes.stroke.value);
+                input.click();
+                input.onchange = function() {
+                    var startState = t.firstChild.textContent.substr(0,t.firstChild.textContent.indexOf('-'));
+                    var endState = t.firstChild.textContent.substring(t.firstChild.textContent.indexOf('-')+2, t.firstChild.textContent.length);
+                    AudeGUI.mainDesigner.transitionSetColor(that.currentIndex,startState,"",endState,input.value);
+                }
             };
         }
 
@@ -2905,6 +2947,10 @@
                 fill(getBigEllipse(state), color);
             }
         }
+    };
+    //Set the color of the node given for the small ellipse
+    AudeDesigner.prototype.stateSmallSetBackgroundColor = function (index, node, color) {
+        fill(getSmallEllipse(node), color);
     };
 
     AudeDesigner.prototype.stateRemoveBackgroundColor = function (index, state) {
