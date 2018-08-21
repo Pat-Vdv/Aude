@@ -259,7 +259,6 @@
                 currentAutomaton = AudeGUI.mainDesigner.getAutomaton(index, true);
             else if (typeAutomaton === "pushdown") {
                 currentAutomaton = AudeGUI.Runtime.get_pushdown_automaton(index);
-                currentAutomaton.setInitialStackSymbol(initStackSymbol);
                 displayStack(initStackSymbol);
             }
 
@@ -267,8 +266,12 @@
             listOfExecutions = [[[q_init, epsilon]]];
             if (typeAutomaton === "automaton")
                 currentAutomaton.setCurrentState(q_init);
-            else if (typeAutomaton === "pushdown")
-                currentAutomaton.setCurrentState({"state":q_init, "stack":currentAutomaton.getStack(),"transitions":[]});
+            else if (typeAutomaton === "pushdown") {
+                var nStack = [];
+                pushSymbol(initStackSymbol,nStack);
+                currentAutomaton.setInitialStackSymbol(initStackSymbol);
+                currentAutomaton.setCurrentState({"state":q_init, "stack":nStack,"transitions":[]});
+            }
             currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
             //If the automaton start with epsilon transition, we draw the stack with the modifications of the epsilon transition

@@ -237,8 +237,6 @@
 
             P.setInitialState(A.getInitialState()); //Initialise the initial state
 
-            P.setInitialStackSymbol("Z"); //Initialise the stack symbol
-
             for (var s of A.getFinalStates()) //Initialise the final states
                 P.setFinalState(s);
 

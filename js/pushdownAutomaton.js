@@ -1,6 +1,13 @@
 
 
-//Class to handle pushdown automaton
+//Push the given symbols to the stack
+// pushSymbols("Cat") -> stack: [0:t,1:a,2:C]
+function pushSymbol(symbols,stack) {
+    for (var c of symbols.split("").reverse().join("")) {
+        stack.push(c);
+    }
+}
+
 (function (pkg) {
     "use strict";
 
@@ -15,71 +22,40 @@
         return true;
     }
 
-    //Push the given symbols to the stack
-    // pushSymbols("Cat") -> stack: [0:t,1:a,2:C]
-    function pushSymbol(symbols,stack) {
-        for (var c of symbols.split("").reverse().join("")) {
-            stack.push(c);
-        }
-    }
-
+    //Class to handle pushdown automaton
     pkg.Pushdown = function (states,inputAlphabet,stackAlphabet,transition,initialState,initialStackSymbol,finalStates) {
         this.states         = states         || new Set();
         this.inputAlphabet  = inputAlphabet  || new Set();
         this.stackAlphabet  = stackAlphabet  || new Set();
         this.transition     = transition     || new Set();
         this.initialState   = initialState;
-        this.initialStackSymbol = initialStackSymbol || "Z";
+        this.initialStackSymbol = initialStackSymbol || "Z"; //A string of symbols
         this.finalStates = finalStates || new Set();
 
         if (!this.currentStates) {
             this.currentStates = new Set();
             this.lastTakenTransitions = new Set();
-            this.stack = []; //Stack of the automaton
-            this.pushSymbols(this.initialStackSymbol);
         }
     };
 
     pkg.Pushdown.prototype = {
 
-        /*Stack*/
-
-        //Return the top of the stack
-        getTopStack : function() {
-            return this.stack[this.stack.length-1];
-        },
-
-        //Return true if the top of the stack contains the symbols
-        isTopStack : function(symbols) {
-            var i=this.stack.length-1;
-            for (var c of symbols) {
-                if (c!==this.stack[i] || i<0)
-                    return false;
-                i--;
-            }
-            return true;
-        },
-
-        //Push the given symbols to the stack
-        // pushSymbols("Cat") -> stack: [0:t,1:a,2:C]
-        pushSymbols : function(symbols) {
-            for (var c of symbols.split("").reverse().join("")) {
-                this.stack.push(c);
-            }
-        },
-
-        getStack : function() {
-            return this.stack;
-        },
-
         //Look at all current states, and see if one the stack is empty
         isStackEmpty : function() {
             for(var sta of this.getCurrentStatesStacks()) {
                 if (sta.stack.length === this.initialStackSymbol.length)
-                    return true
+                    return true;
             }
             return false;
+        },
 
+        //Look at all the current states, and return true if one is final
+        isFinal : function() {
+            for(var state of this.getCurrentStates()) {
+                if(this.finalStates.has(state))
+                    return true;
+            }
+            return false;
         },
 
 
@@ -344,18 +320,16 @@
 
         /*Initial stack Symbol*/
 
-
-        //Set the initial stack symbol and push it in the stack
-        setInitialStackSymbol : function (s) {
-            this.addStackSymbol(s);
-            this.initialStackSymbol = s;
-            this.stack = [];
-            this.pushSymbols(s);
-        },
-
         //Get the initial stack symbol
         getInitialStackSymbol : function () {
             return this.initialStackSymbol;
+        },
+
+        //Set the initial stack symbol
+        setInitialStackSymbol : function (symbols) {
+            for (var c of symbols)
+                addStackSymbol(c);
+            this.initialStackSymbol = symbols;
         },
 
 
@@ -506,51 +480,6 @@
             }
         },
 
-        //TODO NOT WORKING
-        //This methods returns the set of successors of a state. Its behavior is well defined only on determinized automata.
-        getSuccessors: function (state, stackSymbol, symbol) {
-            var successors = new Set();
-            var allSymbols = arguments.length === 2;
-
-            this.trans.forEach(
-                function (t) {
-                    if (t.startState === state) {
-                        if ((allSymbols || t.symbol === symbol) && (t.stackSymbol === stackSymbol)) {
-                            successors.add(t.endState);
-                        }
-                    }
-                }
-            );
-
-            return successors;
-        },
-
-        //TODO NOT WORKING
-        getReachable : function (state, visited) {
-            if (state === undefined) {
-                state = this.getInitialState();
-            }
-
-            if (!visited) {
-                visited = new Set();
-            }
-
-            var that = this;
-
-            this.getSuccessors(state,this.getTopStack()).forEach(
-                function (s) {
-                    if (s !== state && !visited.has(s)) {
-                        visited.add(s);
-                        visited.unionInPlace(that.getReachable(s, visited));
-                    }
-                }
-            );
-
-            return visited;
-        },
-
-
-
         // This methods looks at current states and transitions of the Automaton to replace current states by all states accessible with the given symbol.
         runSymbol: function (symbol, transitionFunction, dontEraseTakenTransitions) {
             if (symbol === pkg.epsilon || symbol === "ε") {
@@ -619,21 +548,22 @@
         // stackFinal: word accepted if the current state is final and the stack is empty
         acceptedWord: function (symbols,mode) {
             var states = aude.toArray(this.getCurrentStatesStacks()), //Save the current stack,states,last taken transitions
-            stack = this.getStack().slice(),
             transitions = new Set(this.getLastTakenTransitions());
 
-            this.setCurrentState({"state":this.getInitialState(),"stack":this.getStack(),"transitions":[]});
+            var nStack = [];
+            pushSymbol(this.getInitialStackSymbol(),nStack);
+            this.setCurrentState({"state":this.getInitialState(), "stack":nStack, "transitions":[]}); //Initialise the current state
+
             this.runWord(symbols);
             if (mode===0 || mode==="stack")
                 var accepted = this.isStackEmpty() && this.currentStates.card()>0; //The stack is empty (only the initial stackS ymbol) and we read all the symbols of the word
             else if (mode===1 || mode==="final")
-                var accepted = (this.currentStates.inter(this.finalStates)).card() !== 0; //End on a final state
+                var accepted = this.isFinal(); //End on a final state
             else if (mode===2 || mode==="stackFinal")
-                var accepted = (this.currentStates.inter(this.finalStates)).card() && this.isStackEmpty();
+                var accepted = this.isFinal()&& this.isStackEmpty();
 
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;
-            this.stack = stack.slice();
             return accepted;
         },
 
