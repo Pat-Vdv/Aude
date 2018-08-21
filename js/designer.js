@@ -393,14 +393,13 @@
         var cx = ellipse.cx.baseVal.value;
         var cy = ellipse.cy.baseVal.value;
 
-        if (cy>polygon.points[0].y) {
-            //Position of the circle
-            var x = cx - Math.cos(saveAlpha*Math.PI/180)*rx;
-            var y = cy - Math.sin(saveAlpha*Math.PI/180)*ry;
-        } else if (cy<=polygon.points[0].y) {
-            //Position of the circle
-            var x = cx - Math.cos(-saveAlpha*Math.PI/180)*rx
-            var y = cy + Math.sin(-saveAlpha*Math.PI/180)*ry;
+        var t = rx*ry / (Math.sqrt(ry*ry*Math.pow(Math.cos(saveAlpha*Math.PI/180),2) + rx*rx*Math.pow(Math.sin(saveAlpha*Math.PI/180),2)));
+        if(cy>polygon.points[0].y) {
+            var x = cx - t * Math.cos(saveAlpha*Math.PI/180);
+            var y = cy - t * Math.sin(saveAlpha*Math.PI/180);
+        } else if(cy<=polygon.points[0].y) {
+            var x = cx - t * Math.cos(-saveAlpha*Math.PI/180);
+            var y = cy + t * Math.sin(-saveAlpha*Math.PI/180);
         }
         var tx = x - polygon.points[0].x;
         var ty = y - polygon.points[0].y;
@@ -1628,22 +1627,23 @@
 
             var svgDim = ellipse.parentNode.parentNode.parentNode.viewBox.animVal;
 
-            var mouseX = (e.clientX / ellipse.parentNode.parentNode.parentNode.attributes.width.value) * (svgDim.width) + svgDim.x;
-            var mouseY = (e.clientY / ellipse.parentNode.parentNode.parentNode.attributes.height.value) * (svgDim.height) + svgDim.y;
+            //Correction for the value y of the mouse
+            var correctionMouseY = 27 * (906/ellipse.parentNode.parentNode.parentNode.attributes.height.value);
+            //Position of the click of the mouse
+            var mouseX = (e.clientX) / that.svgZoom + svgDim.x,
+                mouseY = (e.clientY - correctionMouseY) / that.svgZoom + svgDim.y;
 
             var distMouseCircle = (Math.sqrt( Math.pow(mouseX-cx,2) + Math.pow(mouseY-cy,2)));
             var alpha = Math.acos(( cx-mouseX)/distMouseCircle);
 
+            //Position of the circle corresponding on the click of mouse
+            var t = rx*ry / (Math.sqrt(ry*ry*Math.pow(Math.cos(alpha),2) + rx*rx*Math.pow(Math.sin(alpha),2)));
             if(cy>mouseY) {
-                //Position of the circle corresponding on the click of mouse
-                var x = cx - Math.cos(alpha)*rx;
-                var y = cy - Math.sin(alpha)*ry;
-            }
-
-            else if(cy<=mouseY) {
-                //Position of the circle corresponding on the click of mouse
-                var x = cx - Math.cos(alpha)*rx
-                var y = cy + Math.sin(alpha)*ry;
+                var x =cx - t * Math.cos(alpha);
+                var y =cy - t * Math.sin(alpha);
+            } else if(cy<=mouseY) {
+                var x =cx - t * Math.cos(alpha);
+                var y =cy + t * Math.sin(alpha);
             }
 
             var translationx = x-polygon.points[0].x;
@@ -1660,6 +1660,7 @@
                 " " + (parseFloat(tabPath[2].split(",")[0],10) +translationx) + "," + (parseFloat(tabPath[2].split(",")[1],10) +translationy) +
                 " " + (parseFloat(tabPath[3].split(",")[0],10) +translationx) + "," + (parseFloat(tabPath[3].split(",")[1],10) +translationy));
 
+            //Rotation of the arrow
            if(cy>mouseY) {
                 polygon.parentNode.setAttribute("transform","rotate("+ alpha*180/Math.PI+" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
             }
