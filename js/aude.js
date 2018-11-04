@@ -96,7 +96,7 @@ var aude = {
 
         if (s[j] === "(" || s[j] === "[") {
             end = s[j] === "(" ? ")" : "]";
-            var tuple = (end === ")") ? new pkg.Tuple() : [];
+            var tuple = (end === ")") ? new Tuple() : []; //pkg.Tuple indéfini
             ++j;
             closed = false;
             while (j < len) {
