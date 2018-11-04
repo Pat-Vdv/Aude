@@ -1,10 +1,12 @@
 automaton2regex.ajs     / Automaton → Reg. Exp. / re
 automaton2RightLinearGrammar.ajs / Automaton → Right linear grammar / grammar
+breadthFirstSearch.ajs / Breadth first search / automaton
 complementation.ajs     / Complement / automaton
 completion.ajs          / Complete / automaton
 complicate.ajs          / Complicate / other
 concatenation.ajs / Concatenate 2 automata / automaton
 createAutomaton.ajs / Create automaton / other
+depthFirstSearch.ajs / Depth first search / automaton
 splitWord.ajs / Create intermediate states / automaton
 determinization.ajs     / Determinize / automaton
 difference.ajs / Difference / automaton

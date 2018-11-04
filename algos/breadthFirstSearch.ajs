@@ -1,0 +1,59 @@
+from depthFirstSearch import displayMenu
+//Return an array containing the name of states
+//Take an automaton and the state to begin
+//Can also take the trace of the algorithm
+function breadthFirstSearch (A,start,trace)
+
+    if start!= "" and isNaN(start)=false then //Convert the string number to an int
+        start:=parseInt(start)
+    fi
+    let source := start
+    if start=undefined or start=null or start="" then
+        source :=  A.getInitialState() //The first state
+    fi
+
+    let file := []
+    file.push(source)
+    let visited := {} //Set of visited state
+    visited.add(source)
+
+    let listState := [] //The list of states in order
+
+    if trace = undefined then //Doesn't need to fill the trace
+        while file is not empty do
+            let s := file.shift() //Take the first element of the file
+            listState.push(s)
+            foreach t in A.getSuccessors(s) do //For each child t of s
+                if t does not belong to visited then //If the child was not visited we add it to the file
+                    file.push(t)
+                    visited.add(t)
+                fi
+            done
+        done
+    else
+        while file is not empty do
+            let s := file.shift() //Take the first element of the file
+            listState.push(s)
+            let step := {} //step is composed of the states explored and the new states to visite
+            step.state := String(s)
+            step.toVisite := []
+            foreach t in A.getSuccessors(s) do //For each child t of s
+                if t does not belong to visited then //If the child was not visited we add it to the file
+                    file.push(t)
+                    visited.add(t)
+                    step.toVisite.push(String(t))
+                fi
+            done
+            trace.push(step)
+        done
+    end if
+
+    return listState
+end function
+
+run(
+    function()
+    let A := get_automaton(currentAutomaton)
+    displayMenu(A,breadthFirstSearch)
+    end function
+)
