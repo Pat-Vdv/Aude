@@ -1,117 +1,60 @@
-from coaccessibility import coaccessibleStates
-from accessibility import accessibleStates
 from emptyLanguage import emptyLanguage
 
+//Return the smallest word recognized by A
+export function smallerWord(A)
 
-//Return an object:
-//state : number which is the distance to the closest final state
-export function dijkstra (A)
     if emptyLanguage(A)=true then
         return "No word recognized!"
-    else
-        let coacces := coaccessibleStates(A)
-        let acces := accessibleStates(A)
-        let coacces_acces := coacces and acces
-        let finalStates := A.getFinalStates()
-        let trans := A.getTransitions()
-        let statesDist := new Object()
-
-        //Pour chaque état final
-        foreach fs in finalStates do
-            let currentState := fs
-            let visitedStates := {}
-            let toVisited := {fs}
-            statesDist[fs] := 0
-
-            while toVisited.size!=0
-            do
-                toVisited := toVisited \ visitedStates
-                currentState := toVisited.getItem()
-                toVisited := toVisited \ {currentState}
-                visitedStates.add(currentState)
-
-                //Ajouter les états qui permettent d'accéder à l'état courant
-                foreach t in trans do
-                    if (currentState = t.endState) then
-                        toVisited.add(t.startState)
-                        //For the espilon transitions
-                        if t.symbol=epsilon and (statesDist[t.startState]=undefined or statesDist[t.startState] > statesDist[currentState] ) then
-                            statesDist[t.startState] := statesDist[currentState]
-                        //For other transitions
-                        else if (statesDist[t.startState]=undefined or statesDist[t.startState] > statesDist[currentState]+1 ) then
-                        statesDist[t.startState] := statesDist[currentState]+1
-                        end if
-                    end if
-                done
-            done
-        done
-
-    return statesDist
     end if
-end function
 
-//Return a smaller word of the automaton
-export function smallerWord (A)
-    let dist := dijkstra (A)
-    if typeof dist = "string" then
-        return dist
-    end if
-    let finalStates := A.getFinalStates()
-    let trans := A.getTransitions()
 
-    let currentState := A.getInitialState ()
-    let word := ""
-    let nextState := currentState
-    let symbol := ""
-    while currentState does not belong to finalStates
-    do
-        foreach t in trans
-        do
-            //If it an epsilon transition
-            if t.symbol=epsilon and t.startState = currentState and dist[t.endState] = dist[nextState]  then
-                nextState := t.endState
-                symbol := ""
-            else if t.startState = currentState and dist[t.endState] < dist[nextState]  then
-                nextState := t.endState
-                symbol := t.symbol
-            end if
-        done
-        word += symbol
-        currentState := nextState
+    let initialState := A.getInitialState()
+    let dist := new Object() //The distance from the initial state
+    let word := new Object() //The little word from the initialState
+    let P := {}
+    let states := A.getStates()
+
+    foreach s in states do //Initialise the values
+        dist[s] := Infinity
+        word[s] := ""
     done
-    if word = "" then
-        word := "ε"
-    end if
-    return word
-end function
+    dist[initialState] := 0
 
-//Return a littler path (epsilon doesn't count as a transition)
-export function giveLittlerPath (A)
-    let dist := dijkstra (A)
-    if typeof dist = "string" then
-        return dist
-    end if
-    let finalStates := A.getFinalStates()
-    let trans := A.getTransitions()
-    let currentState := A.getInitialState ()
-    let nextState := currentState
-    let path := {currentState}
-
-    while currentState does not belong to finalStates
-    do
-        foreach t in trans
-        do
-            //If it an epsilon transition
-            if t.symbol=epsilon and t.startState = currentState and dist[t.endState] = dist[nextState]  then
-                nextState := t.endState
-            else if t.startState = currentState and dist[t.endState] < dist[nextState]  then
-                nextState := t.endState
-            end if
+    while states \ P is not empty do //While we did not visited all the states
+        let minS := (states \ P).keys().next().value //Get a value
+        //Get the state with the minimum dist[minS]
+        foreach s in states \ P do
+            if dist[s] < dist[minS] then
+                minS := s
+            fi
         done
-        currentState := nextState
-        path.add(currentState)
+        P.add(minS)
+
+        foreach t in A.getTransitions() do
+            if (minS = t.startState) then //For each state available by minS
+                if t.symbol = epsilon then
+                    if dist[minS] < dist[t.endState] then
+                        dist[t.endState] := dist[minS]
+                         word[t.endState] := word[minS]
+                    fi
+                else
+                    if dist[minS]+1 < dist[t.endState] then
+                        dist[t.endState] := dist[minS]+1
+                        word[t.endState] := word[minS] + t.symbol
+                    fi
+                fi
+            fi
+        done
     done
-    return path
+
+    let nearestFinalState := undefined
+    foreach s in states do
+        if A.isFinalState(s) and (nearestFinalState = undefined or dist[s] < dist[nearestFinalState]) then
+          nearestFinalState := s
+        fi
+    done
+
+    return word[nearestFinalState]
 end function
 
 run(
