@@ -53,3 +53,6 @@ msgstr ""
 
 msgid  "Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \"). Epsilons are written '\\e' or 'ɛ' (without quotes)."
 msgstr ""
+
+msgid  "Color"
+msgstr ""

@@ -52,3 +52,6 @@ msgstr "Annuler"
 
 msgid  "Sorry! the transition “{2}” from state “{0}” to state “{1}” could not be understood. Please check that the transition is a comma separated symbol list. Special characters must be put inside quotes (' or \"). Epsilons are written '\\e' or 'ɛ' (without quotes)."
 msgstr "Désolé ! la transition « {2} » de l'état « {0} » à l'état « {1} » n'a pas été comprise. Veuillez vérifier que la transition est une liste de symboles séparés par des virgules. Les caractères spéciaux doivent être placés entre guillemets (' ou \"). Les epsilons sont notés « \\e » ou « ɛ » (sans les guillemets)."
+
+msgid  "Color"
+msgstr "Colorier"

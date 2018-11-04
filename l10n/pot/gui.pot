@@ -1205,3 +1205,42 @@ msgstr ""
 
 msgid  "Questions list"
 msgstr ""
+
+msgid "Start"
+msgstr ""
+
+msgid "Stop"
+msgstr ""
+
+msgid "Restart"
+msgstr ""
+
+msgid "Next step"
+msgstr ""
+
+msgid "Previous step"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Start"
+msgstr ""
+
+msgid  "Select the start state of the search: "
+msgstr ""
+
+msgid  "Animate the search"
+msgstr ""
+
+msgid  "Breadth first search"
+msgstr ""
+
+msgid  "Depth first search"
+msgstr ""
+
+msgid  "All states accessible: "
+msgstr ""
+
+msgid  "All states co-accessible: "
+msgstr ""

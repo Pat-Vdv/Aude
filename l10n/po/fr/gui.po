@@ -1168,3 +1168,42 @@ msgstr "Créer un automate"
 
 msgid  "Questions list"
 msgstr "Liste de questions"
+
+msgid "Start"
+msgstr "Commencer"
+
+msgid "Stop"
+msgstr "Arréter"
+
+msgid "Restart"
+msgstr "Recommencer"
+
+msgid "Next step"
+msgstr "Pas suivant"
+
+msgid "Previous step"
+msgstr "Pas précédent"
+
+msgid "Search"
+msgstr "Parcours"
+
+msgid "Start"
+msgstr "Commencer"
+
+msgid  "Select the start state of the search: "
+msgstr "Choisissez l'état de départ: "
+
+msgid  "Animate the search"
+msgstr "Animer le parcours"
+
+msgid  "Breadth first search"
+msgstr "Parcours en largeur"
+
+msgid  "Depth first search"
+msgstr "Parcours en profondeur"
+
+msgid  "All states accessible: "
+msgstr "Tous les états accessibles: "
+
+msgid  "All states co-accessible: "
+msgstr "Tous les états co-accessibles: "
