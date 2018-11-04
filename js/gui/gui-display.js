@@ -45,7 +45,7 @@
             ]]
         ]));
 
-        //Create the list od start symbol with the non terminal symbols
+        //Create the list of start symbol with the non terminal symbols
         var startSymbol = document.getElementById("input-start-symbol");
         var nonTermSym = document.getElementById("input-non-term-symbol");
         var startSymbolSelected = null;
@@ -82,7 +82,8 @@
         }
     }
 
-    //Get the string grammar (to use after inputGrammar)
+    //Use inputGrammar grammar before using this function
+    //Get the string grammar from the inputGrammar and return a String corresponding to the grammar
     pkg.getInputGrammar = function (){
         var grammar = document.getElementById("input-plain-grammar");
         if (grammar.value === "") {
@@ -244,6 +245,8 @@
                     ["span",{"class":"span-settings-question"},_("Number of final states: ")],
                     ["span",{"class":"span-settings-question","title":_("Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3")},_("Mode: ")],
                     ["span",{"class":"span-settings-question"},_("Number of transitions: ")],
+                    ["span",{"class":"span-settings-question"},_("All states accessible: ")],
+                    ["span",{"class":"span-settings-question"},_("All states co-accessible: ")],
                 ]],
                 ["div",{"class":"div-settings-question-container-column"}, [
                     ["input",{"class":"input-settings-question","type":"number","min":"1"}],
@@ -251,6 +254,8 @@
                     ["input",{"class":"input-settings-question","type":"number","min":"0"}],
                     ["input",{"class":"input-settings-question","type":"number","min":"1","max":"3"}],
                     ["input",{"class":"input-settings-question","type":"number","min":"0"}],
+                    ["input",{"class":"input-settings-question","type":"checkbox"}],
+                    ["input",{"class":"input-settings-question","type":"checkbox"}],
                 ]],
             ]],
             ["button#validate-automaton",_("Validate")],
@@ -267,7 +272,16 @@
         document.getElementById("validate-automaton").onclick = function() {
             var inputs = document.getElementsByClassName("input-settings-question");
             var alphabet = inputs[1].value.split(',');
-            validate(inputs[0].value,alphabet,inputs[2].value,inputs[3].value,inputs[4].value);
+            if (inputs[5].checked && inputs[6].checked) {
+                var acces = 1;
+            } else if (!inputs[5].checked && inputs[6].checked) {
+                var acces = 2;
+            } else if (inputs[5].checked && !inputs[6].checked) {
+                var acces = 3;
+            } else  {
+                var acces = 0;
+            }
+            validate(inputs[0].value,alphabet,inputs[2].value,inputs[3].value,inputs[4].value,acces);
         }
     }
 

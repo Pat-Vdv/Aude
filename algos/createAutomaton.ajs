@@ -129,38 +129,63 @@ end function
 //Return true if all states are accessible
 function allStateAccessible(A)
     let b := accessibleStates(A)
-    foreach state in A.getStates() do
-        if state does not belong to b then
-            return false
-        end if
-    end for
-    return true
+    return b.size = A.getStates().size
 end function
 
 //Return true if all states are co-accessible
 function allStateCoaccessible(A)
     let b := coaccessibleStates(A)
-    foreach state in A.getStates() do
-        if state does not belong to b then
-            return false
-        end if
-    end for
-    return true
+    return b.size = A.getStates().size
 end function
 
 //Create an automaton where all states are accessible and coaccessible
 export function createAutomatonCoaccessible(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
     let A := null
+    if nbStates-1 > nbTransitions then
+        return "Can't create the automaton where all the states are accessible and coaccessible"
+    end if
     do
         A := createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
     while typeof A != "string" and ( not allStateAccessible(A) or not allStateCoaccessible(A) )
     return A
 end function
 
+//Create an automaton where all states are coaccessible
+function createAutomatonCoacces(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+    let A := null
+    if nbStates-1 > nbTransitions then
+        return "Can't create the automaton where all the states are coaccessible"
+    end if
+    do
+        A := createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+    while typeof A != "string" and not allStateCoaccessible(A)
+    return A
+end function
+
+//Create an automaton where all states are accessible
+function createAutomatonAccess(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+    let A := null
+    if nbStates-1 > nbTransitions then
+        return "Can't create the automaton where all the states are accessible"
+    end if
+    do
+        A := createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+    while typeof A != "string" and not allStateAccessible(A)
+    return A
+end function
+
 run(
     function()
-        function accept(states,alphabet,finalStates,type,transitions)
-            AudeGUI.Results.set(createAutomatonCoaccessible(states,alphabet,finalStates,type,transitions))
+        function accept(states,alphabet,finalStates,type,transitions,acces)
+            if acces = 1 then
+                AudeGUI.Results.set(createAutomatonCoaccessible(states,alphabet,finalStates,type,transitions))
+            else if acces = 2 then
+                AudeGUI.Results.set(createAutomatonCoacces(states,alphabet,finalStates,type,transitions))
+            else if acces = 3 then
+                AudeGUI.Results.set(createAutomatonAccess(states,alphabet,finalStates,type,transitions))
+            else if acces = 0 then
+                AudeGUI.Results.set(createAutomaton(states,alphabet,finalStates,type,transitions))
+            fi
         end function
         askSettingsAutomaton(accept)
 
