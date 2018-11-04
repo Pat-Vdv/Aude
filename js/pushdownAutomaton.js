@@ -33,14 +33,14 @@ function pushSymbol(symbols,stack) {
         this.finalStates = finalStates || new Set();
 
         if (!this.currentStates) {
-            this.currentStates = new Set();
+            this.currentStates = new Set(); // A current state is an object with a state, a stack, an array of transitions
             this.lastTakenTransitions = new Set();
         }
     };
 
     pkg.Pushdown.prototype = {
 
-        //Look at all current states, and see if one the stack is empty
+        //Look at all current states, and see if one of the stacks is empty
         isStackEmpty : function() {
             for(var sta of this.getCurrentStatesStacks()) {
                 if (sta.stack.length === this.initialStackSymbol.length)
@@ -52,7 +52,16 @@ function pushSymbol(symbols,stack) {
         //Look at all the current states, and return true if one is final
         isFinal : function() {
             for(var state of this.getCurrentStates()) {
-                if(this.finalStates.has(state))
+                if(this.isFinalState(state))
+                    return true;
+            }
+            return false;
+        },
+
+        //Look at all the current states, and return true if one is final and has its stack empty
+        isFinalAndStackEmpty : function() {
+            for(var sta of this.getCurrentStatesStacks()) {
+                if (sta.stack.length === this.initialStackSymbol.length && this.isFinalState(sta.state))
                     return true;
             }
             return false;
@@ -168,7 +177,7 @@ function pushSymbol(symbols,stack) {
         //(startState,symbol,stackSymbol,endState,newStackSymbol)
         addTransition : function(t,symbol,stackSymbol,endState,newStackSymbol) {
             if (arguments.length > 1) {
-                return this.addTransition(new pkg.PushdownTransition(t,symbol,stackSymbol,endState,newStackSymbol));
+                this.addTransition(new pkg.PushdownTransition(t,symbol,stackSymbol,endState,newStackSymbol));
             }
             this.addState(t.startState);
             this.addState(t.endState);
@@ -328,7 +337,7 @@ function pushSymbol(symbols,stack) {
         //Set the initial stack symbol
         setInitialStackSymbol : function (symbols) {
             for (var c of symbols)
-                addStackSymbol(c);
+                this.addStackSymbol(c);
             this.initialStackSymbol = symbols;
         },
 
@@ -543,7 +552,7 @@ function pushSymbol(symbols,stack) {
 
         //This method runs a word from the initial state and checks if this word is accepted by the automaton. It takes care to restore current states, last taken transitions and the stack after the run.
         //mode:
-        // stack: Word accepted if the stack is empty
+        // stack: Word accepted if the stack is empty(only the stack symbol in the stack)
         // final: word accepted if the current state is final
         // stackFinal: word accepted if the current state is final and the stack is empty
         acceptedWord: function (symbols,mode) {
@@ -560,7 +569,7 @@ function pushSymbol(symbols,stack) {
             else if (mode===1 || mode==="final")
                 var accepted = this.isFinal(); //End on a final state
             else if (mode===2 || mode==="stackFinal")
-                var accepted = this.isFinal()&& this.isStackEmpty();
+                var accepted = this.isFinalAndStackEmpty();
 
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;
