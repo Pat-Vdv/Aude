@@ -61,7 +61,7 @@
 
                     saveAs(
                         new Blob(
-                            [designer.getSVG(designer.currentIndex)],
+                            [designer.getSVG(designer.currentIndex,true)],
                             {type: "text/plain;charset=utf-8"}
                         ),
                         fn

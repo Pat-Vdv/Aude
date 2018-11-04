@@ -1058,9 +1058,9 @@
         return automaton2dot(A);
     };
 
-    AudeDesigner.prototype.getSVG = function (index) {
+    AudeDesigner.prototype.getSVG = function (index,dontCleanColors) {
         if (this.svgs[index]) {
-            this.cleanSVG(index);
+            this.cleanSVG(index,dontCleanColors);
             return AudeDesigner.outerHTML(dataIdToId(this.svgs[index])).trim();
         }
 
