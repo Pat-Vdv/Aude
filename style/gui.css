@@ -1044,6 +1044,13 @@ input[type=button]:active, button:active {
 /*End to show algorithm*/
 
 /*Question list*/
+#questionList-selection-option {
+    border: 2px solid #aaa;
+    margin: 10px;
+    border: 2px solid #bbb;
+    padding: 0px;
+    display : inline-block;
+}
 
 #questionList-selection-chapter {
     border: 2px solid #aaa;
@@ -1185,7 +1192,7 @@ fieldset {
     padding:10px;
 }
 
-#div-settings-question-container-row {
+.div-settings-question-container-row {
     display:flex;
     flex-direction:row;
 }
@@ -1263,7 +1270,6 @@ fieldset {
 #div-container-table {
     background-color: grey;
     border: 5px solid #aaa ;
-    margin: 10px;
     padding: 10px;
 }
 
@@ -1347,3 +1353,30 @@ fieldset {
     background-color: rgba(150, 150, 150 )  ;
 }
 /*End help window*/
+
+/*Inputs grammar*/
+#input-block-grammar {
+    padding:5px;
+}
+
+#div-enter-easy-grammar {
+    padding-top:10px;
+}
+
+
+/*End inputs grammar*/
+
+#div-menu-search {
+    padding: 5px;
+}
+
+.symbol-animation-search {
+    text-decoration: none;
+    border: none;
+    background-color: inherit;
+}
+
+.symbol-animation-search:hover {
+    border: 1px solid grey;
+    background-image: linear-gradient(to bottom right,rgb(150,150,150), rgb(100,100,100));
+}

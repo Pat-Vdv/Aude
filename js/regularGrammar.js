@@ -156,7 +156,7 @@
                 return this.nonTerminalSymbol +" -> "+this.listSymbolTerminal;
             }
             else if (this.listSymbolTerminal===undefined) {
-                return this.nonTerminalSymbol +" -> "+""+this.nonTerminalSymbolBody;
+                return this.nonTerminalSymbol +" -> "+this.nonTerminalSymbolBody;
             }
             else {
                 if (this.side === "right")
@@ -175,11 +175,16 @@
         },
 
         getListSymbolTerminal : function () {
-            if (this.listSymbolTerminal===undefined || this.listSymbolTerminal==="" )
+            if (this.listSymbolTerminal===undefined || this.listSymbolTerminal==="")
                 return "ε";
             else
                 return this.listSymbolTerminal;
         },
+        //Return the side of the rule
+        getSide : function () {
+            return this.side;
+        },
+
 
     }
 
@@ -190,7 +195,7 @@
 // To convert a string of a grammar to a grammar
 // ({Terminal symbol},{Non terminal symbol},Start symbol,{Production rules})
 //Ex ({a,b},{A,S,T},T,{A -> bS,S -> bS,A -> aA,T -> aA,S -> ε})
-// Can't handle multi caracter name for terminal and non termjnal symbol
+// Can't handle multi caracter name for terminal and non terminal symbol
 (function (pkg) {
 
     pkg.string2LinearGrammar = function (grammar) {
@@ -215,7 +220,7 @@
                 throw new Error("Erreur attendez ), caractère n°"+i);
 
 
-        //Reconnait les symboles terminaux
+        //Recognize the non terminal symbols
         function recSymTer () {
             if (c === '{') {
                 nextC();
@@ -229,7 +234,7 @@
                 nextC();
         }
 
-        //Reconnait les symboles non terminaux
+        //Recognize the non terminal symbols
         function recSymNoTer () {
             if (c = '{') {
                 nextC();
@@ -244,7 +249,7 @@
 
         }
 
-        //Reconnait une liste : a,b...
+        //Recognize a list : a,b...
         function recList (list) {
             if (/[^{}(), ]/.test(c)) {
                 if (list === "nonTer")
@@ -259,7 +264,7 @@
             }
         }
 
-        //Reconnait l'axiome
+        //Recognize the start symbol
         function recAxiome () {
             if (G.hasNonTerminalSymbols(c))  {
                 G.setStartSymbol(c);
@@ -269,7 +274,7 @@
                 throw new Error("Axiome doit faire partie des symboles non terminaux, caractère n°"+i) ;
         }
 
-        //Reconnait les règles de production
+        //Recognize the prodution rules
         function recProductionRules () {
             if (c === '{') {
                 nextC();
@@ -283,7 +288,7 @@
                 throw new Error("Erreur recProductionRules: attend {, caractère n°"+i);
             }
 
-        //Reconnait une liste de regles de production
+        //Recognize a list of rules
         function recListRules () {
             recRules();
             if (c === ',') {
@@ -296,7 +301,7 @@
         // nonTermSymbol -> nonTermSymbol
         // nonTermSymbol -> listTermSymbol
         // nonTermSymbol -> listTermSymbol nonTermSymbol
-        //Reconnait une regle de production
+        //Recognize a rule
         function recRules () {
             var nonTer = "";
             var ter = "";
@@ -331,7 +336,7 @@
                 throw new Error("Erreur recRules: attend un symbole non Terminal c=, caractère n°"+i);
         }
 
-        //Reconnait une suite de symboles terminaux
+        //Recognize a list terminal symbols
         function recListTerminalSymbol() {
             let str = "";
             while (G.hasTerminalSymbols(c) || c==="ε") {
@@ -341,7 +346,7 @@
             return str;
         }
 
-        //Reconnait une suite de symboles terminaux
+        //Recognizea  non terminal symbols
         function recNonTerminalSymbol() {
             var str = "";
             if (G.hasNonTerminalSymbols(c)) {
@@ -351,7 +356,7 @@
             return str;
         }
 
-        //Reconnait une virgule
+        //Recognize a coma
         function recComma () {
             if (c === ',')
                 nextC();
