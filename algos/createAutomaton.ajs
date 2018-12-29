@@ -1,12 +1,12 @@
-//Create  hazardly an automaton
+# Create  hazardly an automaton
 
 from mutate import randomNumber
 from accessibility import accessibleStates
 from coaccessibility import coaccessibleStates
 
 
-// Take a number of states, an alphabet, a number of final states, the type: 1:Determinist
-// 2:No determinist 3:Epsilon-transition , number of transitions (number or low,medium,high)
+# Take a number of states, an alphabet, a number of final states, the type (1: Determinist
+# 2: No determinist 3:E psilon-transition), a number of transitions (number or low, medium, high)
 export function createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
     let A := new Automaton
 
@@ -20,20 +20,20 @@ export function createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nb
         return "You asked more final states than states"
     end if
 
-    //Initialize the alphabet
+    # Initialize the alphabet
     foreach symbol in alphabet do
         A.addSymbol(symbol)
     done
 
-    //Creation of states
+    # Creation of states
     for i from 1 to nbStates do
         A.addState(i)
     done
 
-    //Set an initial state
+    # Set an initial state
     A.setInitialState(randomNumber(1,nbStates))
 
-    //Set final states
+    # Set final states
     let rand := randomNumber(1,nbStates)
     for i from 1 to nbFinalStates do
         while rand belongs to A.getFinalStates() do
@@ -42,7 +42,7 @@ export function createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nb
          A.setFinalState(rand)
     done
 
-    //Create transitions
+    # Create transitions
     if typeAutomaton=1 then
         A := createTransitionDeterminist(A,alphabet,nbStates,nbTransitions)
     else if typeAutomaton=2 then
@@ -54,7 +54,7 @@ export function createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nb
     return A
 end function
 
-//Create the transistions for a determinist automata
+# Create the transistions for a determinist automata
 function createTransitionDeterminist(A,alphabet,nbStates,nbTransitions)
     let transitions := null
     let state1 := null
@@ -66,14 +66,14 @@ function createTransitionDeterminist(A,alphabet,nbStates,nbTransitions)
             state1 := randomNumber(1,nbStates)
             state2 := randomNumber(1,nbStates)
             sym := alphabet[randomNumber(0,alphabet.length-1)]
-        //Add a transition that doesn't exist
+        # Add a transition that doesn't exist
         while A.hasTransition(state1,sym,state2) or otherTransition(A,state1,sym)
         A.addTransition(state1,sym,state2)
     done
     return A
 end function
 
-//Create the transistions for a non-determinist automaton
+# Create the transistions for a non-determinist automaton
 function createTransitionNonDeterminist(A,alphabet,nbStates,nbTransitions)
     let transitions := null
     let state1 := null
@@ -85,13 +85,13 @@ function createTransitionNonDeterminist(A,alphabet,nbStates,nbTransitions)
             state1 := randomNumber(1,nbStates)
             state2 := randomNumber(1,nbStates)
             sym := alphabet[randomNumber(0,alphabet.length-1)]
-        while A.hasTransition(state1,sym,state2)  //Add a transition that doesn't exist
+        while A.hasTransition(state1,sym,state2) # Add a transition that doesn't exist
         A.addTransition(state1,sym,state2)
     done
     return A
 end function
 
-//Create the transistions for a epsilon-transitions automaton
+# Create the transistions for a epsilon-transitions automaton
 function createTransitionEpsilon(A,alphabet,nbStates,nbTransitions)
     let transitions := null
     let state1 := null
@@ -109,14 +109,14 @@ function createTransitionEpsilon(A,alphabet,nbStates,nbTransitions)
             else
                 sym := alphabet[num]
             end if
-        while A.hasTransition(state1,sym,state2)  //Add a transition that doesn't exist
+        while A.hasTransition(state1,sym,state2)  # Add a transition that doesn't exist
         A.addTransition(state1,sym,state2)
     done
     return A
 end function
 
-//Takes an automaton, a state, a symbol and returns true if there is a transition
-//which starts from the state and symbol given
+# Takes an automaton, a state, a symbol and returns true if there is a transition
+# which starts from the state and symbol given
 function otherTransition(A,state,symbol)
     foreach states in A.getStates() do
         if A.hasTransition(state,symbol,states) then
@@ -126,19 +126,19 @@ function otherTransition(A,state,symbol)
     return false
 end function
 
-//Return true if all states are accessible
+# Return true if all states are accessible
 function allStateAccessible(A)
     let b := accessibleStates(A)
     return b.size = A.getStates().size
 end function
 
-//Return true if all states are co-accessible
+# Return true if all states are co-accessible
 function allStateCoaccessible(A)
     let b := coaccessibleStates(A)
     return b.size = A.getStates().size
 end function
 
-//Create an automaton where all states are accessible and coaccessible
+# Create an automaton where all states are accessible and coaccessible
 export function createAutomatonCoaccessible(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
     let A := null
     if nbStates-1 > nbTransitions then
@@ -150,7 +150,7 @@ export function createAutomatonCoaccessible(nbStates,alphabet,nbFinalStates,type
     return A
 end function
 
-//Create an automaton where all states are coaccessible
+# Create an automaton where all states are coaccessible
 function createAutomatonCoacces(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
     let A := null
     if nbStates-1 > nbTransitions then
@@ -162,7 +162,7 @@ function createAutomatonCoacces(nbStates,alphabet,nbFinalStates,typeAutomaton,nb
     return A
 end function
 
-//Create an automaton where all states are accessible
+# Create an automaton where all states are accessible
 function createAutomatonAccess(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
     let A := null
     if nbStates-1 > nbTransitions then

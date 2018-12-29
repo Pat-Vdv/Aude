@@ -2,10 +2,10 @@ from complementation import complement
 from product import product
 from completion import complete
 
-//Difference between 2 automata: A1-A2
-//The language recognized is L(A1) \ (L(A1) ∩ L(A2))
+# Difference between 2 automata: A1-A2
+# The language recognized is L(A1) \ (L(A1) ∩ L(A2))
 export function difference(A1, A2)
-    //Complete the second automaton, need it to do properly the product
+    # Complete the second automaton, need it to do properly the product
     A2 := complete(A2,A1.getAlphabet() U A2.getAlphabet())
 
     let notA2 := complement(A2)

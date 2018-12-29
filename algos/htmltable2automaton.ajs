@@ -1,32 +1,32 @@
-//Take an html Table and convert it into an automaton
+# Take an html Table and convert it into an automaton
 export function HTMLTable2automaton (table,audeInter)
     let A := new Automaton()
 
-    //The inputs state
+    # The inputs state
     let sta := table.getElementsByClassName("div-container-input-states")[0].childNodes
-    //The inputs symbol
+    # The inputs symbol
     let sym := table.getElementsByClassName("div-container-input-symbols")[0].childNodes
 
     let tabState := []
     let tabSymbol := []
-    //Initialise states and final states
+    # Initialise states and final states
     foreach state in sta do
         tabState.push(String(/[^\*>-]+/.exec(state.value)))
-        if /\->[^\*>-]+\*/.test(state.value) then //Initial and final state
+        if /\->[^\*>-]+\*/.test(state.value) then # Initial and final state
             A.addFinalState(String(/[^\*>-]+/.exec(state.value)))
             A.setInitialState(String(/[^*>-]+/.exec(state.value)))
-        else if /\*/.test(state.value) then //Final state
+        else if /\*/.test(state.value) then # Final state
             A.addFinalState(String(/[^\*>-]+/.exec(state.value)))
-        else if /->/.test(state.value) then //Initial state
+        else if /->/.test(state.value) then # Initial state
             A.setInitialState(String(/[^*>-]+/.exec(state.value)))
-        else //Normal State
+        else # Normal State
             A.addState(state.value)
         end if
     end for
 
-    //Initialise alphabet
+    # Initialise alphabet
     for each c in sym do
-        if String(c.value)="epsilon" or String(c.value)="\\e" then //To put epsilon
+        if String(c.value)="epsilon" or String(c.value)="\\e" then # To put epsilon
             A.setAlphabet([epsilon])
             tabSymbol.push(epsilon)
         else
@@ -35,15 +35,15 @@ export function HTMLTable2automaton (table,audeInter)
         end if
     end for
 
-    //Initialise transition
+    # Initialise transition
     let trans := document.getElementsByClassName("div-container-input-transition")[0].childNodes
     let numCol := 0
     let numLine := 0
     let listSates := undefined
     let aLine := null
     foreach line in trans do
-        aLine := line.childNodes //The list of input
-        foreach cell in aLine do //For each input
+        aLine := line.childNodes # The list of input
+        foreach cell in aLine do # For each input
             if /,/.test(cell.value) then
                 listSates := cell.value.split(',')
             else if cell.value.length=0 then
@@ -52,7 +52,7 @@ export function HTMLTable2automaton (table,audeInter)
                 listSates := [cell.value]
             end if
 
-            if listSates != undefined  then //If there is a value in the cell
+            if listSates != undefined  then # If there is a value in the cell
                 foreach s in listSates do
                     if s belongs to tabState then
                         A.addTransition(tabState[tabState.length-1-numCol],tabSymbol[numLine],s)
@@ -68,7 +68,7 @@ export function HTMLTable2automaton (table,audeInter)
         numCol :=0
     end for
 
-    //Print the response
+    # Print the response
     if audeInter != undefined then
         AudeGUI.Results.set(A)
     else
@@ -76,7 +76,7 @@ export function HTMLTable2automaton (table,audeInter)
     end if
 end function
 
-//Create a table into divAffi
+# Create a table into divAffi
 let  settingsWin := null
 export function createTable (audeInter,div)
     if document.getElementById("div-container-table")=null or document.getElementById("div-container-table")=undefined then
@@ -138,10 +138,10 @@ export function createTable (audeInter,div)
     end if
 end function
 
-//Add a new column
+# Add a new column
 function addState ()
-    settingsWin.resize() //Resize the window
-    let tabLine := document.getElementsByClassName("div-container-input-line-automaton") //Get all the line
+    settingsWin.resize() # Resize the window
+    let tabLine := document.getElementsByClassName("div-container-input-line-automaton") # Get all the line
     let tabStates := document.getElementsByClassName("div-container-input-states")
     foreach line in tabLine do
         line.appendChild(libD.jso2dom([
@@ -153,9 +153,9 @@ function addState ()
     ])),tabStates[0].childNodes[0])
 end function
 
-//Remove the last column
+# Remove the last column
 function removeState ()
-    settingsWin.resize() //Resize the window
+    settingsWin.resize() # Resize the window
     let tabStates := document.getElementsByClassName("div-container-input-states")
     if tabStates[0].childNodes.length>1 then
         let tabLine := document.getElementsByClassName("div-container-input-line-automaton")
@@ -166,25 +166,25 @@ function removeState ()
     end if
 end function
 
-//Add a new line
+# Add a new line
 function addSymbol ()
-    settingsWin.resize() //Resize the window
+    settingsWin.resize() # Resize the window
     let tabLine := document.getElementsByClassName("div-container-input-line-automaton")
-    let nbColumn := tabLine[0].childNodes.length //Number of column to add
+    let nbColumn := tabLine[0].childNodes.length # Number of column to add
 
-    //Add the line
+    # Add the line
     let tab := document.getElementsByClassName("div-container-input-transition")
     tab[0].appendChild(libD.jso2dom([
         ["div",{"class":"div-container-input-line-automaton"}]
     ]));
 
-    //Add a new cell in the symbols
+    # Add a new cell in the symbols
     let tabSym := document.getElementsByClassName("div-container-input-symbols")
     tabSym[0].appendChild(libD.jso2dom([
         ["input",{"type":"text","class":"cell-input-automaton"}]
     ]));
 
-    //Add the column in the new line
+    # Add the column in the new line
     let line := document.getElementsByClassName("div-container-input-line-automaton")
     for i from 1 to nbColumn do
         line[line.length-1].appendChild(libD.jso2dom([
@@ -193,12 +193,12 @@ function addSymbol ()
     end for
 end function
 
-//Remove the last line
+# Remove the last line
 function removeSymbol ()
-    settingsWin.resize() //Resize the window
+    settingsWin.resize() # Resize the window
     let sym := document.getElementsByClassName("div-container-input-symbols")
     if sym[0].childNodes.length >1 then
-        let trans := document.getElementsByClassName("div-container-input-transition") //Get the container
+        let trans := document.getElementsByClassName("div-container-input-transition") # Get the container
         trans[0].removeChild(trans[0].childNodes[trans[0].childNodes.length-1])
         sym[0].removeChild(sym[0].childNodes[sym[0].childNodes.length-1])
     end if

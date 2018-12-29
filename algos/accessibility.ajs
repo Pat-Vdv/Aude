@@ -1,4 +1,4 @@
-// Returns a set of all the accessibles states of the automaton
+# Returns a set of all the accessibles states of the automaton
 export function accessibleStates(A)
     let q0 := A.getInitialState()
     let Accessibles := {q0}

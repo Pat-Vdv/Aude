@@ -32,7 +32,7 @@ var aude = {
                 value: JSON.parse(
                     end === "\""
                         ? s.substring(j0, j + 1)
-                        : "\"" + s.substring(j0 + 1,j).replace(/"/g, "\\\"") + "\""
+                        : "\"" + s.substring(j0 + 1, j).replace(/"/g, "\\\"") + "\""
                 ),
                 lastIndex: lastIndex
             };
@@ -96,7 +96,7 @@ var aude = {
 
         if (s[j] === "(" || s[j] === "[") {
             end = s[j] === "(" ? ")" : "]";
-            var tuple = (end === ")") ? new Tuple() : []; //pkg.Tuple indéfini
+            var tuple = (end === ")") ? new Tuple() : [];
             ++j;
             closed = false;
             while (j < len) {
@@ -135,7 +135,7 @@ var aude = {
             ++j;
         }
 
-        var valName = s.substring(j0,j).trim();
+        var valName = s.substring(j0, j).trim();
 
         if (s[j] === "(") {
             var values = [];
@@ -146,7 +146,7 @@ var aude = {
                 }
                 ++j;
                 while (j < len && s[j] !== ")") {
-                    nextValue = aude.getNextValue(s,j,len, map);
+                    nextValue = aude.getNextValue(s, j, len, map);
                     j = nextValue.lastIndex;
                     values.push(nextValue.value);
                 }

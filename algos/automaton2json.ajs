@@ -2,7 +2,7 @@ let map := new Object
 map["\\e"] := epsilon
 map["ε"]   := epsilon
 
-// Converts an automaton into a JSON object
+# Converts an automaton into a JSON object
 export function automaton2json(A)
     function toString(e)
         if e = epsilon then
@@ -53,7 +53,7 @@ export function automaton2json(A)
     return result + "\n\t]\n}"
 end function
 
-// Takes a JSON object and converts it into an automaton
+# Takes a JSON object and converts it into an automaton
 export function object2automaton(o)
     let A := new Automaton
 
@@ -82,7 +82,7 @@ export function object2automaton(o)
     return A
 end function
 
-// Takes an object and converts it into a Mealy / Moore machine
+# Takes an object and converts it into a Mealy / Moore machine
 export function object2mealymoore(o, isMealy)
     let M := (
         if isMealy then

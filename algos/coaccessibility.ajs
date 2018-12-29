@@ -1,4 +1,4 @@
-// Returns a set of all the co-accessible states of the automaton
+# Returns a set of all the co-accessible states of the automaton
 export function coaccessibleStates(A)
     let Coaccessibles := A.getFinalStates().copy()
     let toVisit := A.getFinalStates().copy()

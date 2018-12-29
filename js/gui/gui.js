@@ -61,7 +61,7 @@
 
                     saveAs(
                         new Blob(
-                            [designer.getSVG(designer.currentIndex,true)],
+                            [designer.getSVG(designer.currentIndex, true)],
                             {type: "text/plain;charset=utf-8"}
                         ),
                         fn
@@ -231,7 +231,7 @@
             }
 
             if (!AudeGUI.notifier || !AudeGUI.notifier.displayed) {
-                AudeGUI.notifier = new libD.Notify({closeOnClick: true},time);
+                AudeGUI.notifier = new libD.Notify({closeOnClick: true}, time);
             }
 
             AudeGUI.notifier.setTitle(title);
@@ -285,28 +285,35 @@
         },
 
         // Open an automaton.
-        //If designer is defined put the automaton on the designer else put it on the mainDesigner
+        // If designer is defined put the automaton on the designer else
+        // put it on the mainDesigner
         // If code is a string:
         //   - if it starts by an xml preamble, we guess that this is an
         //     automaton in SVG format;
         //   - otherwise, it is an automaton in Aude format.
         // Otherwise, get the automaton from the DOM hidden file input to
         // open automata.
-        openAutomaton: function (code,designer) {
+        openAutomaton: function (code, designer) {
             if (typeof code === "string") {
                 if (code.trim().startsWith("<?xml") || code.startsWith("<svg") && (!automatonFileName || !automatonFileName.endsWith(".txt"))) {
-                    if (designer!==undefined) {
+                    if (designer === undefined) {
+                        AudeGUI.mainDesigner.setSVG(
+                            code,
+                            AudeGUI.mainDesigner.currentIndex
+                        );
+                    } else {
                         designer.setSVG(code);
-                    }
-                    else {
-                        AudeGUI.mainDesigner.setSVG(code, AudeGUI.mainDesigner.currentIndex);
                     }
                 } else {
                     AudeGUI.AutomatonCodeEditor.setText(code);
-                    if (designer!==undefined)
+                    if (designer === undefined) {
+                        AudeGUI.mainDesigner.setAutomatonCode(
+                            code,
+                            AudeGUI.mainDesigner.currentIndex
+                        );
+                    } else {
                         designer.setAutomatonCode(code);
-                    else
-                        AudeGUI.mainDesigner.setAutomatonCode(code, AudeGUI.mainDesigner.currentIndex);
+                    }
                 }
                 return;
             }
@@ -383,17 +390,17 @@
 
                     AudeGUI.ProgramEditor.enable();
 
-                    //Load the program from the local storage
-                    if (AudeGUI.ProgramEditor.getText()==="")
-                    {
-                        AudeGUI.Programs.open(localStorage.getItem("ProgramText"))
+                    // Load the program from the local storage
+                    if (AudeGUI.ProgramEditor.getText() === "") {
+                        AudeGUI.Programs.open(
+                            localStorage.getItem("ProgramText")
+                        );
                     }
 
                     AudeGUI.onResize();
                     break;
 
                 case "design":
-
                     if (!AudeGUI.examExam && AudeGUI.Results.deferedResultShow) {
                         setTimeout(AudeGUI.Results.enable, 0);
                         AudeGUI.Results.deferedResultShow = false;
@@ -450,8 +457,15 @@
         // res is a DOM element.
         programResultUpdated: function (dontNotify, res) {
             if (!dontNotify) {
-                if ((AudeGUI.notifier && AudeGUI.notifier.displayed) || !codeedit.classList.contains("disabled")) {
-                    AudeGUI.notify(_("Program Result"), res.cloneNode(true), "normal");
+                if (
+                    (AudeGUI.notifier && AudeGUI.notifier.displayed) ||
+                    !codeedit.classList.contains("disabled")
+                ) {
+                    AudeGUI.notify(
+                        _("Program Result"),
+                        res.cloneNode(true),
+                        "normal"
+                    );
                 }
             }
         },
@@ -662,7 +676,11 @@
                 AudeGUI.viz(
                     automaton2dot(A),
                     function (result) {
-                        callback(result.replace(/<\?[\s\S]*?\?>/g, "").replace(/<![\s\S]*?>/g, ""));
+                        callback(
+                            result
+                                .replace(/<\?[\s\S]*?\?>/g, "")
+                                .replace(/<![\s\S]*?>/g, "")
+                        );
                     }
                 );
             };

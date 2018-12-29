@@ -1,4 +1,4 @@
-//Union between 2 automata
+# Union between 2 automata
 export function union(A1, A2)
     let A := new Automaton()
     let statesA1 := A1.getStates()
@@ -10,24 +10,24 @@ export function union(A1, A2)
     let initialStateA2 := A2.getInitialState()
     let finalStatesA2 := A2.getFinalStates()
 
-    //Set the initial state of the automaton
+    # Set the initial state of the automaton
     let nameInitialState := 'S'
     while nameInitialState belongs to statesA1 union statesA2 do
         nameInitialState += 'S'
     done
     A.setInitialState(nameInitialState)
 
-    //Initialise transition for A1
+    # Initialise transition for A1
     foreach t in transiA1 do
         A.addTransition("A1_"+t.startState,t.symbol,"A1_"+t.endState);
     done
 
-    //Initialise transition for A2
+    # Initialise transition for A2
     foreach t in transiA2 do
         A.addTransition("A2_"+t.startState,t.symbol,"A2_"+t.endState);
     done
 
-    //Initialise final state
+    # Initialise final state
     foreach fS in finalStatesA1 do
         A.addFinalState("A1_"+fS);
     done
@@ -35,7 +35,7 @@ export function union(A1, A2)
         A.addFinalState("A2_"+fS);
     done
 
-    //Initialise the 2 epsilon transitions
+    # Initialise the 2 epsilon transitions
     A.addTransition(nameInitialState,epsilon,"A1_"+initialStateA1)
     A.addTransition(nameInitialState,epsilon,"A2_"+initialStateA2)
 

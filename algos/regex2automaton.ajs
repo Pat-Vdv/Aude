@@ -112,33 +112,33 @@ export function Automata_CAT(A1, A2)
 
 end function
 
-#   Regular expressions : Grammar (based on Yliès Falcone's lesson)
+#  Regular expressions : Grammar (based on Yliès Falcone's lesson)
 #
-#   regex:
-#      ø
-#      Symbol
-#      regex + regex
-#      regex · regex
-#      regex *
-#      ( regex )
+#  regex:
+#     ø
+#     Symbol
+#     regex + regex
+#     regex · regex
+#     regex *
+#     ( regex )
 #
 #
-#   Note: Spaces are ignored "·" can be writen "." or can be ignored.
+#  Note: Spaces are ignored "·" can be writen "." or can be ignored.
 #
-#   Symbol:
-#      letter
-#      LETTER
-#      figure
-#      ε
-#      \e             →   ε
-#      \ anyCaracter  →   anyCaracter
+#  Symbol:
+#     letter
+#     LETTER
+#     figure
+#     ε
+#     \e             →   ε
+#     \ anyCaracter  →   anyCaracter
 #
-#   Regular Expressions : Semantic
+#  Regular Expressions : Semantic
 #
-#      Operator precedence:
-#          *
-#          ·
-#          +
+#     Operator precedence:
+#         *
+#         ·
+#         +
 
 
 export function regexToAutomaton(regex)
@@ -232,13 +232,13 @@ export function regexToAutomaton(regex)
             if e1.type = "binary" and e1.o = "+" and not e1.paren then
                 if e2.type = "binary" and e2.o = "+" and not e2.paren then
 
-#                   ·                   +
-#                /    \                / \
-#               +      +              a   +
-#              / \    / \      =>        / \
-#             a   b  c   d              ·   d
-#                                      / \
-#                                     b   c
+#                  ·                   +
+#               /    \                / \
+#              +      +              a   +
+#             / \    / \      =>        / \
+#            a   b  c   d              ·   d
+#                                     / \
+#                                    b   c
 
                     let rese2:= new Object
                     let e2e1 := new Object
@@ -261,11 +261,11 @@ export function regexToAutomaton(regex)
                     return res
                 else
 
-#                   ·                    +
-#                /    \                /   \
-#               +    (not +)          a     ·
-#              / \             =>        /    \
-#             a   b                     b   (not +)
+#                  ·                    +
+#               /    \                /   \
+#              +    (not +)          a     ·
+#             / \             =>        /    \
+#            a   b                     b   (not +)
 
                     let rese2 := new Object
                     rese2.type := "binary"
@@ -281,11 +281,11 @@ export function regexToAutomaton(regex)
                 end if
             else if e2.type = "binary" and e2.o = "+" and not e2.paren then
 
-#                      ·                    +
-#                    /   \                 / \
-#               (not +)   +      =>       ·   d
-#                        / \             / \
-#                       c   d      (not +)  c
+#                     ·                    +
+#                   /   \                 / \
+#              (not +)   +      =>       ·   d
+#                       / \             / \
+#                      c   d      (not +)  c
 
 
                 let rese1 := new Object
@@ -300,9 +300,9 @@ export function regexToAutomaton(regex)
                 res.e2   := e2.e2
                 return res
             else
-#                       ·
-#                      / \          =>  (unchanged)
-#                (not +) (not +)
+#                      ·
+#                     / \          =>  (unchanged)
+#               (not +) (not +)
 
                  res.type := "binary"
                  res.o    := "."

@@ -227,11 +227,15 @@
 
             //Set the transition
             for(var t of P.getTransitions()) {
-                A.addTransition(t.startState, t.symbol + ";" + t.stackSymbol + "/" + t.newStackSymbol , t.endState);
+                A.addTransition(
+                    t.startState,
+                    t.symbol + ";" + t.stackSymbol + "/" + t.newStackSymbol,
+                    t.endState
+                );
             }
+
             AudeGUI.Results.set(A);
         },
-
 
         load: function () {
             results        = document.getElementById("results");

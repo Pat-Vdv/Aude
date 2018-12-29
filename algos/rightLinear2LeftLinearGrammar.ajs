@@ -1,7 +1,7 @@
-//Convert a right linear grammar to a left linear grammar
-//G can be a string or a grammar class
-//if str is 1 the function returns a string
-//if str is 0 the fonction returns a grammar
+# Convert a right linear grammar to a left linear grammar
+# G can be a string or a grammar class
+# if str is 1 the function returns a string
+# if str is 0 the fonction returns a grammar
 export function rightLinear2LeftLinearGrammar (G,str)
     if typeof G = "string" then
         G := string2LinearGrammar(G)
@@ -10,10 +10,10 @@ export function rightLinear2LeftLinearGrammar (G,str)
         return G
     end if
 
-    let GL := new linearGrammar() //The new right linear grammar
+    let GL := new linearGrammar() # The new right linear grammar
     let finalSymbols := G.getTerminalSymbols()
     let nonFinalSymbols := G.getNonTerminalSymbols()
-    let rules := new Set(G.getProductionRules()) //We copy it beacause we modify it later
+    let rules := new Set(G.getProductionRules()) # We copy it beacause we modify it later
     let axiom := G.getStartSymbol()
 
 
@@ -27,7 +27,7 @@ export function rightLinear2LeftLinearGrammar (G,str)
 
     GL.setStartSymbol(axiom)
 
-    //If there a rule axiom -> axiom finalSymbol then create S0 -> S and S0 is the new axiom
+    # If there a rule axiom -> axiom finalSymbol then create S0 -> S and S0 is the new axiom
     let nameAxiom := "S0"
     foreach rule in rules do
         if rule.nonTerminalSymbol=axiom and rule.nonTerminalSymbolBody!="" and rule.nonTerminalSymbolBody!=undefined then
@@ -41,11 +41,11 @@ export function rightLinear2LeftLinearGrammar (G,str)
         end if
     done
 
-    //Add the production rules
-    // Axiom -> p : Axiom -> p
-    // Axiom -> pA : A -> p
-    // A -> p : Axiom -> Ap
-    // A -> pB : B -> Ap
+    # Add the production rules
+    # Axiom -> p : Axiom -> p
+    # Axiom -> pA : A -> p
+    # A -> p : Axiom -> Ap
+    # A -> pB : B -> Ap
     foreach rule in rules do
         if rule.getNonTerminalSymbol() = axiom and (rule.getNonTerminalSymbolBody()=undefined or rule.getNonTerminalSymbolBody()="") then
             GL.addRule(axiom,rule.getListSymbolTerminal())

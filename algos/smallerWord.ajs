@@ -1,6 +1,6 @@
 from emptyLanguage import emptyLanguage
 
-//Return the smallest word recognized by A
+# Return the smallest word recognized by A
 export function smallerWord(A)
 
     if emptyLanguage(A)=true then
@@ -9,20 +9,20 @@ export function smallerWord(A)
 
 
     let initialState := A.getInitialState()
-    let dist := new Object() //The distance from the initial state
-    let word := new Object() //The little word from the initialState
+    let dist := new Object() # The distance from the initial state
+    let word := new Object() # The little word from the initialState
     let P := {}
     let states := A.getStates()
 
-    foreach s in states do //Initialise the values
+    foreach s in states do # Initialise the values
         dist[s] := Infinity
         word[s] := ""
     done
     dist[initialState] := 0
 
-    while states \ P is not empty do //While we did not visited all the states
-        let minS := (states \ P).keys().next().value //Get a value
-        //Get the state with the minimum dist[minS]
+    while states \ P is not empty do # While we did not visited all the states
+        let minS := (states \ P).keys().next().value # Get a value
+        # Get the state with the minimum dist[minS]
         foreach s in states \ P do
             if dist[s] < dist[minS] then
                 minS := s
@@ -31,7 +31,7 @@ export function smallerWord(A)
         P.add(minS)
 
         foreach t in A.getTransitions() do
-            if (minS = t.startState) then //For each state available by minS
+            if (minS = t.startState) then # For each state available by minS
                 if t.symbol = epsilon then
                     if dist[minS] < dist[t.endState] then
                         dist[t.endState] := dist[minS]

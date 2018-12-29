@@ -64,7 +64,7 @@ end function
 if typeof Node = "function" and typeof document = "object" and document instanceof Node then
     run(
         (function(A)
-            //The automaton needs to be completed
+            # The automaton needs to be completed
             let rep := true
             if isCompleted(A)=false then
                 let rep := confirm (AudeGUI.l10n(

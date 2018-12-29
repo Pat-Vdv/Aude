@@ -777,7 +777,7 @@
         var children = parent.childNodes;
         for (var i = 0; i < children.length; i++) {
             children[i].id = "quiz-editor-choice" + i;
-            children[i].childNodes[1].placeholder = libD.format(_("Choice {0}…"), (i+1));
+            children[i].childNodes[1].placeholder = libD.format(_("Choice {0}…"), (i + 1));
         }
         mcqNumberOfChoices--;
     }

@@ -37,8 +37,8 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
 
                 if not visit(q1, q2) then
                 # we visit (s1', s2') with
-                #  - s1' the destination state of the transition (s1, symbol, dest) in A1
-                #  - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
+                # - s1' the destination state of the transition (s1, symbol, dest) in A1
+                # - s2' the destination state of the corresponding transition (s2, symbol, dest) in A2
                     return false
                 end if
             else
@@ -54,7 +54,7 @@ end function
 
 
 function runFunction(A,B)
-    //The automaton needs to be minimized
+    # The automaton needs to be minimized
     let isMini := true
     if isMinimized(A)=false or isMinimized(B)=false then
         let rep := confirm (AudeGUI.l10n(

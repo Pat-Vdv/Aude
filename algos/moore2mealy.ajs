@@ -1,8 +1,8 @@
-// Using the transition function, we're going to examine the next state of a transition
-// and we're going to create a new outputMealy function that associates to each state and input
-// an output related to the next state, following the output function of the moore machine
+# Using the transition function, we're going to examine the next state of a transition
+# and we're going to create a new outputMealy function that associates to each state and input
+# an output related to the next state, following the output function of the moore machine
 
-// Takes a moore machine and returns the equivalent mealy machine
+# Takes a moore machine and returns the equivalent mealy machine
 export function moore2mealy(moore)
     let mealy := new Mealy();
     mealy.setInitialState(moore.getInitialState());

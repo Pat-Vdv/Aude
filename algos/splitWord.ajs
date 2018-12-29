@@ -1,4 +1,4 @@
-//Take an automaton and split the transitions if symbols are words
+# Take an automaton and split the transitions if symbols are words
 export function splitWord(Auto)
     let A := new Automaton(Auto.getStates(),Auto.getAlphabet(),Auto.getInitialState(),Auto.getTransitions(),Auto.getFinalStates())
     let transi := A.getTransitions()
@@ -7,8 +7,8 @@ export function splitWord(Auto)
     let endState := null
     let precedentState := null
     let word := null
-    foreach t in transi do //For each transition
-        if t.symbol.length>1 then //If the symbols is a word
+    foreach t in transi do # For each transition
+        if t.symbol.length>1 then # If the symbols is a word
             startState := t.startState
             precedentState := startState
             endState := t.endState

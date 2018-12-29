@@ -1,448 +1,448 @@
-msgid "Program Result"
+msgid  "Program Result"
 msgstr "Résultat"
 
-msgid "\nStack trace: \n"
+msgid  "\nStack trace: \n"
 msgstr "\nPile de l’erreur\u202F: \n"
 
-msgid "Error on line {0}, character {1}"
+msgid  "Error on line {0}, character {1}"
 msgstr "Erreur ligne {0}, caractère {1}"
 
-msgid "Error on line {0}"
+msgid  "Error on line {0}"
 msgstr "Erreur à la ligne {0}"
 
-msgid "Execute the current automaton with a word"
+msgid  "Execute the current automaton with a word"
 msgstr "Exécuter l’automate actuel sur un mot"
 
-msgid "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
+msgid  "Which name do you want to give to the exported file? (give a .dot extension to save as dot format, .svg to save as svg, .txt to save as automaton code)"
 msgstr "Quel nom voulez-vous donner au fichier exporté\u202F? (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format texte)"
 
-msgid "Which name do you want to give to the exported text file?"
+msgid  "Which name do you want to give to the exported text file?"
 msgstr "Quel nom voulez-vous donner au fichier texte exporté\u202F?"
 
-msgid "get_automaton: automaton n°{0} could not be understood."
+msgid  "get_automaton: automaton n°{0} could not be understood."
 msgstr "get_automaton: impossible de lire l’automate n°{0}."
 
-msgid "get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."
+msgid  "get_automaton: automaton n°{0} doesn’t exist or doesn’t have an initial state."
 msgstr "get_automaton: l’automate n°{0} n’existe pas ou n’a pas d’état initial."
 
-msgid "Please enter a name for the file in which the program will be saved."
+msgid  "Please enter a name for the file in which the program will be saved."
 msgstr "Veuillez saisir un nom pour le fichier dans lequel le programme sera enregistré."
 
-msgid "Please enter a name for the file in which the automaton will be saved (give a .dot extension to save as dot format, .svg to save as svg, .txt to save in Aude format)."
+msgid  "Please enter a name for the file in which the automaton will be saved (give a .dot extension to save as dot format, .svg to save as svg, .txt to save in Aude format)."
 msgstr "Veuillez saisir un nom pour le fichier dans lequel l’automate sera enregistré (donnez l’extension .dot pour enregistrer au format dot, .svg pour une image svg, .txt pour le format Aude)."
 
-msgid "Syntax error: bad import parameter in {0}"
+msgid  "Syntax error: bad import parameter in {0}"
 msgstr "Erreur de syntaxe\u202F: mauvais paramètre pour «\u202Fimport\u202F» dans {0}"
 
-msgid "Error: import of {0} in {2} failed: '{1}'."
+msgid  "Error: import of {0} in {2} failed: '{1}'."
 msgstr "Erreur\u202F: l’import de {0} depuis {2} a échoué\u202F: «\u202F{1}\u202F»."
 
-msgid "Error: import: absolute paths are not supported in this version (in '{0}')'"
+msgid  "Error: import: absolute paths are not supported in this version (in '{0}')'"
 msgstr "Erreur\u202F: import\u202F: les chemins absolus ne sont pas pris en charge dans cette version (depuis «\u202F{0}\u202F»)."
 
-msgid "Mode:"
+msgid  "Mode:"
 msgstr "Mode\u202F:"
 
-msgid "Execute Program"
+msgid  "Execute Program"
 msgstr "Lancer le programme"
 
-msgid "Design"
+msgid  "Design"
 msgstr "Dessin"
 
-msgid "Program"
+msgid  "Program"
 msgstr "Programme"
 
-msgid "Automaton code"
+msgid  "Automaton code"
 msgstr "Code de l’automate"
 
-msgid "Open"
+msgid  "Open"
 msgstr "Ouvrir"
 
-msgid "Save"
+msgid  "Save"
 msgstr "Enregistrer"
 
-msgid "Save As"
+msgid  "Save As"
 msgstr "Enregistrer sous"
 
-msgid "Automaton:"
+msgid  "Automaton:"
 msgstr "Automate\u202F:"
 
-msgid "Program:"
+msgid  "Program:"
 msgstr "Programme\u202F:"
 
-msgid "Export"
+msgid  "Export"
 msgstr "Exporter"
 
-msgid "Redraw"
+msgid  "Redraw"
 msgstr "Redessiner"
 
-msgid "Run a word"
+msgid  "Run a word"
 msgstr "Exécuter un mot"
 
-msgid "Export result"
+msgid  "Export result"
 msgstr "Exporter le résultat"
 
-msgid "Automaton n°"
+msgid  "Automaton n°"
 msgstr "Automate n°"
 
-msgid "result.txt"
+msgid  "result.txt"
 msgstr "resultat.txt"
 
-msgid "automaton.txt"
+msgid  "automaton.txt"
 msgstr "automate.txt"
 
-msgid "Word: "
+msgid  "Word: "
 msgstr "Mot\u202F: "
 
-msgid "Run"
+msgid  "Run"
 msgstr "Exécuter"
 
-msgid "Step"
+msgid  "Step"
 msgstr "Un pas"
 
-msgid "Delay between steps (ms): "
+msgid  "Delay between steps (ms): "
 msgstr "Pause entre les étapes (ms)\u202F: "
 
-msgid "Edit this automaton"
+msgid  "Edit this automaton"
 msgstr "Éditer cet automate"
 
-msgid "To add a new state, double-click on the drawing area where you want it to be."
+msgid  "To add a new state, double-click on the drawing area where you want it to be."
 msgstr "Pour ajouter un nouvel état, double-cliquez sur la surface de dessin à l’endroit où vous voulez le placer."
 
-msgid "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
+msgid  "To add a new transition, Shift+click on the start state then click on the destination state.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
 msgstr "Pour ajouter une nouvelle transition, cliquez sur l’état de départ en appuyant sur Maj puis cliquez sur l’état de destination.<br /><a href='#' onclick='return helpSymbols()'>Montrer l’aide sur comment saisir les symboles</a>."
 
-msgid "To rename a state, double-click on it."
+msgid  "To rename a state, double-click on it."
 msgstr "Pour renommer un état, double-cliquez dessus."
 
-msgid "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
+msgid  "To modify symbols of a transition, double-click on its label.<br /><a href='#' onclick='return helpSymbols()'>Show how to input symbols</a>."
 msgstr "Pour modifier les symboles d’une transition, double-cliquez sur son étiquette.<br /><a href='#' onclick='return helpSymbols()'>Montrer l’aide sur comment saisir les symboles</a>."
 
-msgid "To remove a state, Ctrl+click on it."
+msgid  "To remove a state, Ctrl+click on it."
 msgstr "Pour supprimer un état, cliquez dessus en maintenant Ctrl enfoncé."
 
-msgid "To remove a transition, Ctrl+click on its arrow."
+msgid  "To remove a transition, Ctrl+click on its arrow."
 msgstr "Pour supprimer une transition, cliquez sur sa flèche en maintenant Ctrl enfoncé."
 
-msgid "To set a state as (non-)accepting, right-click on it."
+msgid  "To set a state as (non-)accepting, right-click on it."
 msgstr "Pour rendre un état (non-)accepteur, cliquez droit sur celui-ci."
 
-msgid "To set a state as the initial state, Ctrl+right-click on it."
+msgid  "To set a state as the initial state, Ctrl+right-click on it."
 msgstr "Pour rendre un état initial, ctrl+cliquez dessus avec le bouton droit de la souris."
 
-msgid "To make a transition straight, Shift+click on its arrow or its label."
+msgid  "To make a transition straight, Shift+click on its arrow or its label."
 msgstr "Pour rendre une transition droite, cliquez sur sa flèche ou son étiquette avec la touche Shift enfoncée."
 
-msgid "New state"
+msgid  "New state"
 msgstr "Nouvel état"
 
-msgid "New transition"
+msgid  "New transition"
 msgstr "Nouvelle transition"
 
-msgid "Modify state's name"
+msgid  "Modify state's name"
 msgstr "Modifier le nom d’un état"
 
-msgid "Modify transitions' symbols"
+msgid  "Modify transitions' symbols"
 msgstr "Modifier les symboles d’une transition"
 
-msgid "Remove a state"
+msgid  "Remove a state"
 msgstr "Supprimer un état"
 
-msgid "Remove a transition"
+msgid  "Remove a transition"
 msgstr "Supprimer une transition"
 
-msgid "Toggle accepting/non accepting"
+msgid  "Toggle accepting/non accepting"
 msgstr "Changer accepteur/non accepteur"
 
-msgid "Set a state as initial"
+msgid  "Set a state as initial"
 msgstr "Rendre un état initial"
 
-msgid "Make a transition straight"
+msgid  "Make a transition straight"
 msgstr "Rendre une transition droite"
 
-msgid "Toggle help"
+msgid  "Toggle help"
 msgstr "Afficher / Masquer l’aide"
 
-msgid "Howto: input symbols"
+msgid  "Howto: input symbols"
 msgstr "Comment saisir des symboles"
 
-msgid "<p>In the window which will invite you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surround them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>"
+msgid  "<p>In the window which will invite you to input symbols, simply enter the symbol you want to attach to the transition.</p><p>If you want to attach more than one symbol, separate them with commas.</p><p>If you want to input symbols containing spaces or commas, surround them with double quotes.</p><p>If you need to input a symbol containing double-quotes or slashes, put a slash behind them and surround the symbol with double-quotes.</p><p>to insert an epsilon (ε-transition), you can input it directly or use <code>\\e</code></p>"
 msgstr "<p>Dans la fenêtre qui vous proposera de saisir des symboles, entrez simplement le symbole que vous voulez associer à la transition.</p><p>Si vous voulez saisir plusieurs symboles, séparez-les par des virgules.</p><p>Si vous voulez saisir des symboles contenant des espaces ou des virgules, encadrez-les par des guillemets doubles.</p><p>Si vous avez besoin de saisir un symbole contenant des guillemets ou des slashs, précédez ces deux caractères par un slash et encadrez le symbole par des guillemets.</p><p>Pour insérer un epsilon (ε-transition), vous pouvez le saisir directement ou utiliser <code>\\e</code>.</p>"
 
-msgid "Create a new automaton"
+msgid  "Create a new automaton"
 msgstr "Créer un nouvel automate"
 
-msgid "Remove current automaton"
+msgid  "Remove current automaton"
 msgstr "Supprimer cet automate"
 
-msgid "There is no automaton to save."
+msgid  "There is no automaton to save."
 msgstr "Il n’y a pas d’automate à enregistrer."
 
-msgid "Automaton"
+msgid  "Automaton"
 msgstr "Automate"
 
-msgid "Determinize"
+msgid  "Determinize"
 msgstr "Déterminiser"
 
-msgid "Simplify names of the states"
+msgid  "Simplify names of the states"
 msgstr "Simplifier les noms des états"
 
-msgid "ε-eliminate"
+msgid  "ε-eliminate"
 msgstr "ε-éliminer"
 
-msgid "Minimize"
+msgid  "Minimize"
 msgstr "Minimiser"
 
-msgid "Complicate"
+msgid  "Complicate"
 msgstr "Compliquer"
 
-msgid "Mutate"
+msgid  "Mutate"
 msgstr "Muter"
 
-msgid "List differentiable states"
+msgid  "List differentiable states"
 msgstr "Lister les état distingables"
 
-msgid "List accessible states"
+msgid  "List accessible states"
 msgstr "Lister les états accessibles"
 
-msgid "List coaccessible states"
+msgid  "List coaccessible states"
 msgstr "Lister les états coaccessibles"
 
-msgid "Test empty language"
+msgid  "Test empty language"
 msgstr "Tester language vide"
 
-msgid "Test infinite language"
+msgid  "Test infinite language"
 msgstr "Tester language infini"
 
-msgid "Moore machine → Mealy machine"
+msgid  "Moore machine → Mealy machine"
 msgstr "Machine de Moore → machine de Mealy"
 
-msgid "Mealy machine → Moore machine"
+msgid  "Mealy machine → Moore machine"
 msgstr "Machine de Mealy → machine de Moore"
 
-msgid "Complicate the current automaton by choosing one or more of the following options\n1 - Add a not accessible state\n2 - Add a transition between two not coaccessibles\n3 - Add a transition to a not coaccessible state\n4 - Copy transitions"
+msgid  "Complicate the current automaton by choosing one or more of the following options\n1 - Add a not accessible state\n2 - Add a transition between two not coaccessibles\n3 - Add a transition to a not coaccessible state\n4 - Copy transitions"
 msgstr "Compliquer l’automate courant en choisssant une ou plusieurs des options suivantes :\n1 - Ajouter un état non-accessible\n2 - Ajouter une transition entre deux états non co-accessibles\n3 - Ajouter une transition vers un état non co-accessible\n4 - Copier des transitions"
 
-msgid "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"
+msgid  "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"
 msgstr "Transformez l’automate courant en choisissant une ou plusieurs options parmis les suivantes :\n1 - Changer un symbole\n2 - Supprimer une transition\n3 - Ajouter une transition\n4 - Ajouter un état et des transitions\n5 - Inverser une transition\n6 - Renommer les états\n7 - Rendre un état non-accepteur\n8 - Supprimer des epsilon-transitions\n9 - Supprimer un état\n10 - Rendre un état accepteur"
 
-msgid "JSON representation"
+msgid  "JSON representation"
 msgstr "Représentation JSON"
 
-msgid "Table representation"
+msgid  "Table representation"
 msgstr "Représentation en tableau"
 
-msgid "Load a Quiz"
+msgid  "Load a Quiz"
 msgstr "Charger un Quiz"
 
-msgid "Loading the quiz failed"
+msgid  "Loading the quiz failed"
 msgstr "Erreur lors du chargement du Quiz"
 
-msgid "The quiz seems to be malformed: {0}"
+msgid  "The quiz seems to be malformed: {0}"
 msgstr "Le quiz semble mal formé\u202F: {0}"
 
-msgid "Start the Quiz"
+msgid  "Start the Quiz"
 msgstr "Démarrer le quiz"
 
-msgid "Close the Quiz"
+msgid  "Close the Quiz"
 msgstr "Fermer le quiz"
 
-msgid "Close"
+msgid  "Close"
 msgstr "Fermer"
 
-msgid "Quiz:"
+msgid  "Quiz:"
 msgstr "Quiz\u202F: "
 
-msgid "Quiz"
+msgid  "Quiz"
 msgstr "Quiz"
 
-msgid "Question {0}: "
+msgid  "Question {0}: "
 msgstr "Question {0}\u202F: "
 
-msgid "Next question"
+msgid  "Next question"
 msgstr "Question suivante"
 
-msgid "Previous question"
+msgid  "Previous question"
 msgstr "Question précédente"
 
-msgid "The Quiz is finished! Here are the details of the correction."
+msgid  "The Quiz is finished! Here are the details of the correction."
 msgstr "Le quiz est terminé\u202F! Voici les détails de la correction."
 
-msgid "Error in the Quiz"
+msgid  "Error in the Quiz"
 msgstr "Erreur dans le quiz"
 
-msgid "There is an error in the Quiz: {0}"
+msgid  "There is an error in the Quiz: {0}"
 msgstr "Il y a une erreur dans le quiz\u202F: {0}"
 
-msgid "Question {0} has no answers."
+msgid  "Question {0} has no answers."
 msgstr "La question {0} n’a pas de réponse."
 
-msgid "You can draw the automaton bellow."
+msgid  "You can draw the automaton bellow."
 msgstr "Vous pouvez dessiner l’automate ci-dessous."
 
-msgid "Equiv. between 2 automata"
+msgid  "Equiv. between 2 automata"
 msgstr "Équiv. entre 2 automates"
 
-msgid "Reg. Exp. → automaton"
+msgid  "Reg. Exp. → automaton"
 msgstr "Exp. Reg. → automate"
 
-msgid "Reg. Exp. → minimized automaton"
+msgid  "Reg. Exp. → minimized automaton"
 msgstr "Exp. Reg. → automate minimisé"
 
-msgid "Automaton → Reg. Exp."
+msgid  "Automaton → Reg. Exp."
 msgstr "Automate → Exp. Reg."
 
-msgid "Complete"
+msgid  "Complete"
 msgstr "Compléter"
 
-msgid "Complement"
+msgid  "Complement"
 msgstr "Complémenter"
 
-msgid "Product"
+msgid  "Product"
 msgstr "Produit"
 
-msgid "Mirror"
+msgid  "Mirror"
 msgstr "Miroir"
 
-msgid "Wrong answer for {0}."
+msgid  "Wrong answer for {0}."
 msgstr "Réponse incorrecte pour {0}."
 
-msgid "The given automaton accepts too many words."
+msgid  "The given automaton accepts too many words."
 msgstr "L’automate donné accepte trop de mots."
 
-msgid "The empty word is accepted while it shouldn’t be."
+msgid  "The empty word is accepted while it shouldn’t be."
 msgstr "Le mot vide est accepté alors qu’il ne devrait pas l’être."
 
-msgid "The empty word is not accepted while it should be."
+msgid  "The empty word is not accepted while it should be."
 msgstr "Le mot vide n’est pas accepté alors qu’il devrait l’être."
 
-msgid "Word <i>{0}</i> is accepted while it shouldn’t be."
+msgid  "Word <i>{0}</i> is accepted while it shouldn’t be."
 msgstr "Le mot <i>{0}</i> est accepté alors qu’il ne devrait pas l’être."
 
-msgid "Word <i>{0}</i> is not accepted while it should be."
+msgid  "Word <i>{0}</i> is not accepted while it should be."
 msgstr "Le mot <i>{0}</i> n’est pas accepté alors qu’il devrait l‘être."
 
-msgid "The given automaton isn’t equivalent to the expected one."
+msgid  "The given automaton isn’t equivalent to the expected one."
 msgstr "L’automate donné n’est pas équivalent à l’automate attendu."
 
-msgid "The given regular expression isn’t equivalent to the expected one."
+msgid  "The given regular expression isn’t equivalent to the expected one."
 msgstr "L’expression régulière donnée n’est pas équivalent à l’automate attendu."
 
-msgid "The given automaton isn’t determinized."
+msgid  "The given automaton isn’t determinized."
 msgstr "L’automate donné n’est pas déterminisé"
 
-msgid "The given automaton isn’t minimized."
+msgid  "The given automaton isn’t minimized."
 msgstr "L’automate donné n’est pas minimisé."
 
-msgid "The given automaton isn’t complete."
+msgid  "The given automaton isn’t complete."
 msgstr "L’automate donné n’est pas complet."
 
-msgid "Question type not known"
+msgid  "Question type not known"
 msgstr "Type de question inconnu"
 
-msgid "Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>"
+msgid  "Type of question {0} is not known. Known types are: <ul><li>\"mcq\" for multiple choices question,</li><li>\"word\" (to draw an automaton which accepts a given list of words).</li></ul>"
 msgstr "Le type de la question {0} est inconnu. Les types reconnus sont\u202F: <ul><li>\"mcq\" pour question à choix multiples,</li><li>\"word\" (pour dessiner un automate qui accepte une liste donnée de mots).</li></ul>"
 
-msgid "Question was not answered."
+msgid  "Question was not answered."
 msgstr "Vous n’avez pas répondu à la question."
 
-msgid "We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)"
+msgid  "We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)"
 msgstr "Nous souhaitons ne pas vous donner de note. Votre progression est la chose la plus importante, au delà de toute note arbitraire, absolue et dénuée de sens. Continuez vos efforts\u202F;-)"
 
-msgid "Correct answer?"
+msgid  "Correct answer?"
 msgstr "Réponse correcte\u202F?"
 
-msgid "Comments"
+msgid  "Comments"
 msgstr "Commentaires"
 
-msgid "Instruction"
+msgid  "Instruction"
 msgstr "Énoncé"
 
-msgid "Yes"
+msgid  "Yes"
 msgstr "Oui"
 
-msgid "No"
+msgid  "No"
 msgstr "Non"
 
-msgid "Previous page"
+msgid  "Previous page"
 msgstr "Page précédente"
 
-msgid "Automaton given in the quiz is not correct."
+msgid  "Automaton given in the quiz is not correct."
 msgstr "L’automate donné dans le quiz n’est pas correct."
 
-msgid "Regular expression given in the quiz is not valid."
+msgid  "Regular expression given in the quiz is not valid."
 msgstr "L’expression régulière donnée dans le quiz n’est pas valide."
 
-msgid "No automaton or regular expression was given in the quiz."
+msgid  "No automaton or regular expression was given in the quiz."
 msgstr "Aucun automate ou aucune expression régulière n’a été donné dans le quiz."
 
-msgid "Automaton given in the quiz is not correct."
+msgid  "Automaton given in the quiz is not correct."
 msgstr "L’automate donné dans le quiz n’est pas correct."
 
-msgid "Select an algo"
+msgid  "Select an algo"
 msgstr "Choisir un algo"
 
-msgid "You didn’t select enough automata. Please select {0} automata."
+msgid  "You didn’t select enough automata. Please select {0} automata."
 msgstr "Vous n’avez pas sélectionné assez d’automates. Veuillez en sélectionner {0}."
 
-msgid "Automaton #{0}"
+msgid  "Automaton #{0}"
 msgstr "Automate n°{0}"
 
-msgid "You can choose the order in which automata will be used in algorithms."
+msgid  "You can choose the order in which automata will be used in algorithms."
 msgstr "Vous pouvez choisir l’ordre dans lequel les automates seront utilisés dans les algorithmes."
 
-msgid "Continue execution"
+msgid  "Continue execution"
 msgstr "Continuer l’exécution"
 
-msgid "The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."
+msgid  "The algorithm you want to use needs {0} automata. Please select these automata in the order you want and click \"Continue execution\" when you are ready."
 msgstr "L’algorithme que vous voulez utiliser requiert {0} automates. Veuillez sélectionner ces automates dans l’ordre que vous voulez et cliquez sur «\u202FContinuer l’exécution\u202F» quand vous avez fait votre choix."
 
-msgid "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
+msgid  "This order will be used for future algorithm executions. If you want to change this order, you can call this list using the <img src=\"{0}\" /> toolbar icon.<br />Notice: Algorithms taking only one automaton work with the current automaton, they don’t use this ordering."
 msgstr "Cet ordre sera utilisé pour les exécutions d’algorithme futures. Si vous voulez changer cet ordre, vous pouvez rappeler cette liste en utilisant l’icône <img src=\"{0}\" /> de la barre d’outils.<br />Note\u202F: Les algorithmes qui ne prennent qu’un automate travaillent sur l’automate courant, ils n’utilisent pas cet ordre."
 
-msgid "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
+msgid  "The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"
 msgstr "Le fichier n’a pas été trouvé ou vous n’avez pas le droit de le lire (status HTTP\u202F: {0})"
 
-msgid "Unable to get the list of predefined algorithms"
+msgid  "Unable to get the list of predefined algorithms"
 msgstr "Impossible d’avoir la liste des algorithmes prédéfinis"
 
-msgid "Ready to use quizzes"
+msgid  "Ready to use quizzes"
 msgstr "Quiz prêts à être utilisés"
 
-msgid "Built-in algorithms"
+msgid  "Built-in algorithms"
 msgstr "Algorithmes intégrés"
 
-msgid "Examples of automaton"
+msgid  "Examples of automaton"
 msgstr "Exemples d’automate"
 
-msgid "Load a quiz"
+msgid  "Load a quiz"
 msgstr "Ouvrir un quiz"
 
-msgid "Load a program"
+msgid  "Load a program"
 msgstr "Ouvrir un programme"
 
-msgid "Load an automaton"
+msgid  "Load an automaton"
 msgstr "Ouvrir un automate"
 
-msgid "Loading program failed."
+msgid  "Loading program failed."
 msgstr "L’ouverture du programme a échoué"
 
-msgid "Loading automaton failed."
+msgid  "Loading automaton failed."
 msgstr "L’ouverture de l’automate a échoué."
 
-msgid "Loading quiz failed."
+msgid  "Loading quiz failed."
 msgstr "L’ouverture du quiz a échoué."
 
-msgid "From your computer"
+msgid  "From your computer"
 msgstr "Depuis votre ordinateur"
 
-msgid "Choose and order the parameter automata"
+msgid  "Choose and order the parameter automata"
 msgstr "Choisir et ordonner les automates paramètres"
 
-msgid "Order the parameter automata"
+msgid  "Order the parameter automata"
 msgstr "Ordonner les automates paramètres"
 
-msgid "<h2>Welcome to {0}!</h2>"
+msgid  "<h2>Welcome to {0}!</h2>"
 "<h3> Never used {0} before? </h3>"
 "<ul>"
 "    <li>Create your first automaton by clicking on the <strong>New state</strong> button at the bottom left of the screen.</li>"
@@ -477,7 +477,7 @@ msgstr "<h2>Bienvenue sur {0}\u202F!</h2>"
 "    <li>Pour <strong>supprimer</strong> un état ou une transition, ctrl-cliquez dessus.</li>"
 "</ul>"
 
-msgid "<h3> Quizzes </h3>"
+msgid  "<h3> Quizzes </h3>"
 "<p>To load a quiz, click on the \"Load a Quiz\" toolbar button. You can keep on using all the features of the program, like running algorithms, during the quiz whenever it is possible to draw an automaton.</p>"
 "<p> Now it’s your turn!</p>"
 
@@ -494,190 +494,190 @@ msgstr "Vous devez corriger l’automate dans le mode dessin avant d’accéder 
 msgid  "Zoom and center automatically"
 msgstr "Zoomer et centrer automatiquement"
 
-msgid "Undo"
+msgid  "Undo"
 msgstr "Annuler"
 
-msgid "Redo"
+msgid  "Redo"
 msgstr "Refaire"
 
-msgid "Menu"
+msgid  "Menu"
 msgstr "Menu"
 
-msgid "Add a question"
+msgid  "Add a question"
 msgstr "Ajouter une question"
 
-msgid "Edit or Create  a Quiz"
+msgid  "Edit or Create  a Quiz"
 msgstr "Éditer ou créer un quiz"
 
-msgid "Example: Which of the following assertions are correct? (check the correct answers)"
+msgid  "Example: Which of the following assertions are correct? (check the correct answers)"
 msgstr "Example : Parmi ces assertions, lesquelles sont correctes ? (cochez les réponses correctes)"
 
-msgid "Example: For the following languages, give an automaton that recognizes it (if such an automaton exists)."
+msgid  "Example: For the following languages, give an automaton that recognizes it (if such an automaton exists)."
 msgstr "Exemple : Pour les langages suivants, donnez un automate qui les reconnaît (si un tel automate existe)."
 
-msgid "Example: For the following minimal automaton, give a regular expression that is equivalent."
+msgid  "Example: For the following minimal automaton, give a regular expression that is equivalent."
 msgstr "Example : Pour l’automate minimal suivant, donnez une expression régulière équivalente."
 
-msgid "Multiple Choice Question"
+msgid  "Multiple Choice Question"
 msgstr "Question à Choix Multiples"
 
-msgid "Find an automaton"
+msgid  "Find an automaton"
 msgstr "Trouver un automate"
 
-msgid "Find a regular expression"
+msgid  "Find a regular expression"
 msgstr "Trouver une expression régulière"
 
-msgid "Search…"
+msgid  "Search…"
 msgstr "Chercher…"
 
-msgid "Close the Quiz Editor"
+msgid  "Close the Quiz Editor"
 msgstr "Fermer l’éditeur de quiz"
 
-msgid "Questions"
+msgid  "Questions"
 msgstr "Questions"
 
-msgid "Question"
+msgid  "Question"
 msgstr "Question"
 
-msgid "Answers"
+msgid  "Answers"
 msgstr "Réponses"
 
-msgid "Answer"
+msgid  "Answer"
 msgstr "Réponse"
 
-msgid "Points"
+msgid  "Points"
 msgstr "Points"
 
-msgid "Edit"
+msgid  "Edit"
 msgstr "Modifier"
 
-msgid "Nb"
+msgid  "Nb"
 msgstr "N°"
 
-msgid "Quiz Editor"
+msgid  "Quiz Editor"
 msgstr "Éditeur de quiz"
 
-msgid "New quiz"
+msgid  "New quiz"
 msgstr "Nouveau quiz"
 
-msgid "Do you really want to start a new quiz from scratch?"
+msgid  "Do you really want to start a new quiz from scratch?"
 msgstr "Voulez-vous vraiment commencer un nouveau quiz ?"
 
-msgid "Do you really want to abandon your modifications to the quiz?"
+msgid  "Do you really want to abandon your modifications to the quiz?"
 msgstr "Voulez-vous vraiment abandonnez vos modifications au quiz ?"
 
-msgid "Write the different possible answers and check the correct ones."
+msgid  "Write the different possible answers and check the correct ones."
 msgstr "Écrivez les différentes réponses possibles et cochez celles qui sont correctes."
 
-msgid "Choice {0}…"
+msgid  "Choice {0}…"
 msgstr "Choix {0}…"
 
-msgid "New Question"
+msgid  "New Question"
 msgstr "Nouvelle question"
 
-msgid "Add"
+msgid  "Add"
 msgstr "Ajouter"
 
-msgid "Add an answer"
+msgid  "Add an answer"
 msgstr "Ajouter une réponse"
 
-msgid "Validate"
+msgid  "Validate"
 msgstr "Valider"
 
-msgid "Show the quiz overview"
+msgid  "Show the quiz overview"
 msgstr "Afficher le quiz"
 
-msgid "Quiz Overview"
+msgid  "Quiz Overview"
 msgstr "Vue d’ensemble du quiz"
 
-msgid "January"
+msgid  "January"
 msgstr "janvier"
 
-msgid "February"
+msgid  "February"
 msgstr "février"
 
-msgid "March"
+msgid  "March"
 msgstr "mars"
 
-msgid "April"
+msgid  "April"
 msgstr "avril"
 
-msgid "May"
+msgid  "May"
 msgstr "mai"
 
-msgid "June"
+msgid  "June"
 msgstr "juin"
 
-msgid "July"
+msgid  "July"
 msgstr "juillet"
 
-msgid "August"
+msgid  "August"
 msgstr "août"
 
-msgid "September"
+msgid  "September"
 msgstr "septembre"
 
-msgid "October"
+msgid  "October"
 msgstr "octobre"
 
-msgid "November"
+msgid  "November"
 msgstr "novembre"
 
-msgid "December"
+msgid  "December"
 msgstr "décembre"
 
-msgid "Quiz title:"
+msgid  "Quiz title:"
 msgstr "Titre du quiz :"
 
-msgid "Your name:"
+msgid  "Your name:"
 msgstr "Votre nom :"
 
-msgid "Description:"
+msgid  "Description:"
 msgstr "Description :"
 
-msgid "There is no question in this quiz yet. Click on the button bellow to add a new question."
+msgid  "There is no question in this quiz yet. Click on the button bellow to add a new question."
 msgstr "Il n’y a pas encore de question dans ce quiz. Cliquez sur le bouton ci-dessous pour ajouter une nouvelle question."
 
-msgid "Write your question…"
+msgid  "Write your question…"
 msgstr "Écrivez votre question…"
 
-msgid "Write a regular expression…"
+msgid  "Write a regular expression…"
 msgstr "Écrivez une expression régulière…"
 
-msgid "Draw an automaton"
+msgid  "Draw an automaton"
 msgstr "Dessiner un automate"
 
-msgid "Automaton answer"
+msgid  "Automaton answer"
 msgstr "Automate réponse"
 
-msgid "Write your audescript code here…"
+msgid  "Write your audescript code here…"
 msgstr "Écrivez votre code audescript ici…"
 
-msgid "Write the regular expression…"
+msgid  "Write the regular expression…"
 msgstr "Écrivez l’expression régulière…"
 
-msgid "Loading…"
+msgid  "Loading…"
 msgstr "Chargement…"
 
-msgid "Your regular expression is going to be checked."
+msgid  "Your regular expression is going to be checked."
 msgstr "Votre expression régulière va être vérifiée."
 
-msgid "This regular expresion does not seem valid."
+msgid  "This regular expresion does not seem valid."
 msgstr "Cette expression régulière ne semble pas valide."
 
-msgid "Recognized operations: “.”, “*”, “+”."
+msgid  "Recognized operations: “.”, “*”, “+”."
 msgstr "Opérations reconnues: «\u202F.\u202F», «\u202F*\u202F», «\u202F+\u202F»."
 
-msgid "If you want the automaton answer to be:"
+msgid  "If you want the automaton answer to be:"
 msgstr "Si vous voulez que l’automate réponse soit:"
 
-msgid "determinized, write isDeterminized(autoAnsw)"
+msgid  "determinized, write isDeterminized(autoAnsw)"
 msgstr "determinisé, écrivez isDeterminized(autoAnsw)"
 
-msgid "minimized, write isMinimized(autoAnsw)"
+msgid  "minimized, write isMinimized(autoAnsw)"
 msgstr "minimisé, écrivez isMinimized(autoAnsw)"
 
-msgid "completed, write isCompleted(autoAnsw)"
+msgid  "completed, write isCompleted(autoAnsw)"
 msgstr "complété, écrivez isCompleted(autoAnsw)"
 
 msgid  "Initial stack symbol : "
@@ -818,7 +818,7 @@ msgstr ""
 msgid  "Chapter 5: Grammars and regular grammars"
 msgstr ""
 
-msgid  "Chapter 6: Non-regular langages and iterative lemme"
+msgid  "Chapter 6: Non-regular langages and iterative lemma"
 msgstr ""
 
 msgid  "No chapter selected."
@@ -1043,7 +1043,7 @@ msgstr "Afficher la réponse"
 msgid  "Wrong answer"
 msgstr "Réponse fausse"
 
-msgid  "True answer"
+msgid  "Correct answer"
 msgstr "Réponse correcte"
 
 msgid  "Initial stack symbol : "
@@ -1115,52 +1115,52 @@ msgstr "Options de l'automate"
 msgid  "Pushdown automaton"
 msgstr "Automate à pile"
 
-msgid "Deterministic finite state machines"
+msgid  "Deterministic finite state machines"
 msgstr "Automate à états finis déterministe"
 
-msgid "Non-deterministic finite state machines"
+msgid  "Non-deterministic finite state machines"
 msgstr "Automate à états finis non-déterministe"
 
-msgid "Non-deterministic finite state machines with ε-transitions"
+msgid  "Non-deterministic finite state machines with ε-transitions"
 msgstr "Automates à états finis non-déterministes avec ε-transitions"
 
-msgid "Regular expressions and Kleene theorem"
+msgid  "Regular expressions and Kleene theorem"
 msgstr "Expressions régulières et théorème de Kleene"
 
-msgid "Grammars and regular grammars"
+msgid  "Grammars and regular grammars"
 msgstr "Grammaires et grammaires régulières"
 
-msgid "Non-regular langages and iterative lemme"
+msgid  "Non-regular langages and iterative lemma"
 msgstr "Langages non régulier et lemme de l'itération"
 
-msgid "Concatenate 2 automata"
+msgid  "Concatenate 2 automata"
 msgstr "Concaténer 2 automates"
 
-msgid "Create intermediate states"
+msgid  "Create intermediate states"
 msgstr "Créer des états intermédiares"
 
-msgid "Difference"
+msgid  "Difference"
 msgstr "Différence"
 
-msgid "Left linear grammar → Right linear grammar"
+msgid  "Left linear grammar → Right linear grammar"
 msgstr "Grammaire linéaire à gauche → Grammaire linéaire à droite"
 
-msgid "Linear grammar → Automaton"
+msgid  "Linear grammar → Automaton"
 msgstr "Grammaire linéaire → Automate"
 
-msgid "Right linear grammar → Left linear grammar"
+msgid  "Right linear grammar → Left linear grammar"
 msgstr "Grammaire linéaire à droite → Grammaire linéaire à gauche"
 
-msgid "Smaller word"
+msgid  "Smaller word"
 msgstr "Plus petit mot"
 
-msgid "Table representation → automaton"
+msgid  "Table representation → automaton"
 msgstr "Tableau → automate"
 
-msgid "Union of 2 automata"
+msgid  "Union of 2 automata"
 msgstr "Union de 2 automates"
 
-msgid "Automaton → Right linear grammar"
+msgid  "Automaton → Right linear grammar"
 msgstr "Automate → Grammaire linéaire à droite"
 
 msgid  "Create automaton"
@@ -1169,25 +1169,25 @@ msgstr "Créer un automate"
 msgid  "Questions list"
 msgstr "Liste de questions"
 
-msgid "Start"
+msgid  "Start"
 msgstr "Commencer"
 
-msgid "Stop"
+msgid  "Stop"
 msgstr "Arréter"
 
-msgid "Restart"
+msgid  "Restart"
 msgstr "Recommencer"
 
-msgid "Next step"
+msgid  "Next step"
 msgstr "Pas suivant"
 
-msgid "Previous step"
+msgid  "Previous step"
 msgstr "Pas précédent"
 
-msgid "Search"
+msgid  "Search"
 msgstr "Parcours"
 
-msgid "Start"
+msgid  "Start"
 msgstr "Commencer"
 
 msgid  "Select the start state of the search: "
@@ -1207,3 +1207,36 @@ msgstr "Tous les états accessibles: "
 
 msgid  "All states co-accessible: "
 msgstr "Tous les états co-accessibles: "
+
+msgid  "Enter couples of states"
+msgstr "Saisissez des couples d'états"
+
+msgid  "Enter the answer here"
+msgstr "Sasissez la réponse ici"
+
+msgid  "File list"
+msgstr "Liste des fichiers"
+
+msgid  "How to draw automata?"
+msgstr "Comment dessiner des automates ?"
+
+msgid "To add a new state, double-click where you want the state to be."
+msgstr "Pour ajouter un nouvel état, double-cliquez là où vous voulez le placer."
+
+msgid  "To add a new transition Shift+click on the start state then click on the destination state.")],
+msgstr "Pour ajouter une nouvelle transition, cliquez sur l’état de départ en appuyant sur Maj puis cliquez sur l’état de destination."
+
+msgid "To rename a state, to modify symbols of a transition, double-click on it."
+msgstr "Pour renommer un état, pour  modifier les symboles d'une transition, double-cliquez dessus."
+
+msgid  "To set a state as the initial state, ctrl+right click on the state."
+msgstr "Pour rendre un état initial, ctrl-cliquez dessus avec le bouton droit de votre souris."
+
+msgid "To remove a state or a transition, ctrl-click on it."
+msgstr "Pour supprimer un état ou une transition, ctrl-cliquez dessus."
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Other"
+msgstr "Autre"

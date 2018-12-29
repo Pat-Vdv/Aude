@@ -66,73 +66,116 @@
                 executeWin = libD.newWin({
                     minimizable: false,
                     show: true,
-                    title:       _("Execute the current automaton with a word"),
-                    right:       document.getElementById("results").offsetWidth  + 10, // FIXME
-                    top:         document.getElementById("toolbar").offsetHeight + 5,
-                    content:     libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
-                        ["div", {"#": "root"}, [
-                            ["input.run-word-type-automaton",{"type":"radio","name":"mode","value":"automaton","checked":"true"}],
-                            ["span",_("Automaton")],
-                            ["input.run-word-type-automaton",{"type":"radio","name":"mode","value":"pushdown"}],
-                            ["span",_("Pushdown automaton")],["br"],
-                            ["label", {"for":"execute-word-input"}, _("Word: ")],
-                            ["input#execute-word-input", {type: "text", "#": "word"}],
-                            ["input", {type: "button", value: _("Run"),  "#": "run"}],
-                            ["input", {type: "button", value: _("Step"), "#": "step"}]
+                    title: _("Execute the current automaton with a word"),
+                    right: document.getElementById("results").offsetWidth  + 10, // FIXME
+                    top:   document.getElementById("toolbar").offsetHeight + 5,
+                    content: libD.jso2dom(
+                        ["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                            ["div", {"#": "root"}, [
+                                ["input.run-word-type-automaton", {
+                                        "type": "radio",
+                                        "name": "mode",
+                                        "value": "automaton",
+                                        "checked": "true"
+                                }],
+
+                                ["span",_("Automaton")],
+
+                                ["input.run-word-type-automaton", {
+                                    "type": "radio",
+                                    "name": "mode",
+                                    "value": "pushdown"
+                                }],
+
+                                ["span",_("Pushdown automaton")], ["br"],
+
+                                ["label", {"for": "execute-word-input"}, _("Word: ")],
+                                ["input#execute-word-input", {type: "text", "#": "word"}],
+                                ["input", {type: "button", value: _("Run"),  "#": "run"}],
+                                ["input", {type: "button", value: _("Step"), "#": "step"}]
+                            ]],
+
+                            ["div", [
+                                ["label", {"for":"execute-delay-input"}, _("Delay between steps (ms): ")],
+                                ["input#execute-delay-input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}],
+                                ["br"],
+                            ]],
+
+                            ["div#run-word-pushdown-parameters",{"style":"display:none"},[
+                                ["label", _("Initial stack symbol : ")],
+                                ["input#run-word-initial-stack-symbol", {type: "text", "#": "stackSymbol", value: "Z"}], ["br"],
+                                ["span",_("Determinized pushdown automaton: ")],
+                                ["input#run-word-determinize", {type:"checkbox","#": "determinize"}],
+                            ]]
                         ]],
-                        ["div", [
-                            ["label", {"for":"execute-delay-input"}, _("Delay between steps (ms): ")],
-                            ["input#execute-delay-input", {type: "text", "#": "delay", value: EXECUTION_STEP_TIME}],
-                            ["br"],
-                        ]],
-                        ["div#run-word-pushdown-parameters",{"style":"display:none"},[
-                            ["label", _("Initial stack symbol : ")],
-                            ["input#run-word-initial-stack-symbol", {type: "text", "#": "stackSymbol", value: "Z"}], ["br"],
-                            ["span",_("Determinized pushdown automaton: ")],
-                            ["input#run-word-determinize", {type:"checkbox","#": "determinize"}],
-                        ]]
-                    ]], refs)
+                        refs
+                    )
                 });
+
                 executeWin.__refs = refs;
+
                 executeWin.addListener("close", function () {
                     wordDiv.textContent = "";
                     AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
-                    if (stackWin)
+                    if (stackWin) {
                         stackWin.close();
+                    }
                 });
+
                 libD.wm.handleSurface(executeWin, refs.root);
                 refs.run.onclick = function () {
-                    if(typeAutomaton==="pushdown" && refs.determinize.checked)
-                        determinize = true;
-                    else
-                        determinize = false;
+                    determinize = (
+                        typeAutomaton==="pushdown" &&
+                        refs.determinize.checked
+                    );
 
-                    refs.run.focus(); // make the virtual keyboard disappear on tablets
+                    // Make the virtual keyboard disappear on tablets
+                    refs.run.focus();
+
                     AudeGUI.WordExecution.stop();
                     AudeGUI.mainDesigner.cleanSVG(AudeGUI.mainDesigner.currentIndex);
                     refs.delay.onchange();
-                    execute(false, typeAutomaton, refs.stackSymbol.value, refs.word.value, AudeGUI.mainDesigner.currentIndex);
+
+                    execute(
+                        false,
+                        typeAutomaton,
+                        refs.stackSymbol.value,
+                        refs.word.value,
+                        AudeGUI.mainDesigner.currentIndex
+                    );
                 };
 
                 refs.step.onclick = function () {
-                    if(typeAutomaton==="pushdown" && refs.determinize.checked)
-                        determinize = true;
-                    else
-                        determinize = false;
+                    determinize = (
+                        typeAutomaton === "pushdown" &&
+                        refs.determinize.checked
+                    );
 
                     if (executionTimeout) {
                         clearTimeout(executionTimeout);
-                        execute(true, typeAutomaton, refs.stackSymbol.value);
+                        execute(
+                            true,
+                            typeAutomaton,
+                            refs.stackSymbol.value
+                        );
                     } else {
-                        execute(true, typeAutomaton, refs.stackSymbol.value, refs.word.value, AudeGUI.mainDesigner.currentIndex);
+                        execute(
+                            true,
+                            typeAutomaton,
+                            refs.stackSymbol.value,
+                            refs.word.value,
+                            AudeGUI.mainDesigner.currentIndex
+                        );
                     }
                 };
 
                 refs.delay.onchange = function () {
                     EXECUTION_STEP_TIME = parseInt(refs.delay.value, 10);
+
                     if (isNaN(EXECUTION_STEP_TIME)) {
                         EXECUTION_STEP_TIME = localStorage.EXECUTION_STEP_TIMEv;
                     }
+
                     localStorage.EXECUTION_STEP_TIME = EXECUTION_STEP_TIME;
                 };
 
@@ -142,13 +185,15 @@
                     }
                 };
 
-                //Chose between automaton and pushown automaton
+                // Chose between automaton and pushown automaton
                 var type = document.getElementsByClassName("run-word-type-automaton");
+
                 type[0].oninput = function() {
                     executeWin.resize();
                     document.getElementById("run-word-pushdown-parameters").style.display = "none";
                     typeAutomaton = "automaton";
                 };
+
                 type[1].oninput = function() {
                     executeWin.resize();
                     document.getElementById("run-word-pushdown-parameters").style.display = "inherit";
@@ -184,7 +229,10 @@
                 if (stepNumber % 2) {
                     if (currentStates) {
                         for (i = 0, len = currentStates.length; i < len; ++i) {
-                            AudeGUI.mainDesigner.stateRemoveBackgroundColor(index, currentStates[i].toString());
+                            AudeGUI.mainDesigner.stateRemoveBackgroundColor(
+                                index,
+                                currentStates[i].toString()
+                            );
                         }
                     }
 
@@ -211,25 +259,40 @@
                     word = word.substr(1);
                     currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
-                    //Work only on determinized pushdown automaton
+                    // Work only on determinized pushdown automaton
                     if (typeAutomaton === "pushdown") {
                         redrawStack(currentTransitions);
                     }
 
                     for (i = 0, len = currentTransitions.length; i < len; ++i) {
-                        AudeGUI.mainDesigner.transitionPulseColor(index, currentTransitions[i].startState, currentTransitions[i].symbol, currentTransitions[i].endState, CURRENT_TRANSITION_COLOR, CURRENT_TRANSITION_PULSE_TIME_FACTOR * (byStep ? CURRENT_TRANSITION_PULSE_TIME_STEP : EXECUTION_STEP_TIME));
+                        AudeGUI.mainDesigner.transitionPulseColor(
+                            index,
+                            currentTransitions[i].startState,
+                            currentTransitions[i].symbol,
+                            currentTransitions[i].endState,
+                            CURRENT_TRANSITION_COLOR,
+                            CURRENT_TRANSITION_PULSE_TIME_FACTOR * (
+                                byStep
+                                    ? CURRENT_TRANSITION_PULSE_TIME_STEP
+                                    : EXECUTION_STEP_TIME
+                            )
+                        );
                     }
                 }
             } else {
                 currentAutomaton.runSymbol(word[0]);
                 word = word.substr(1);
+
                 if (typeAutomaton === "pushdown") {
                     redrawStack(currentTransitions);
                 }
-                currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
+
+                currentTransitions = aude.toArray(
+                    currentAutomaton.getLastTakenTransitions(
+                ));
             }
         } else {
-            stepNumber = 0; // we start everything.
+            stepNumber = 0; // We start everything.
 
             if (index === undefined) {
                 index = AudeGUI.mainDesigner.currentIndex;
@@ -254,29 +317,38 @@
             layer2.id = "word-layer2";
             wordDiv.appendChild(layer2);
 
-
-            if (typeAutomaton === "automaton")
+            if (typeAutomaton === "automaton") {
                 currentAutomaton = AudeGUI.mainDesigner.getAutomaton(index, true);
-            else if (typeAutomaton === "pushdown") {
+            } else if (typeAutomaton === "pushdown") {
                 currentAutomaton = AudeGUI.Runtime.get_pushdown_automaton(index);
                 displayStack(initStackSymbol);
             }
 
             var q_init = currentAutomaton.getInitialState();
             listOfExecutions = [[[q_init, epsilon]]];
-            if (typeAutomaton === "automaton")
+
+            if (typeAutomaton === "automaton") {
                 currentAutomaton.setCurrentState(q_init);
-            else if (typeAutomaton === "pushdown") {
+            } else if (typeAutomaton === "pushdown") {
                 var nStack = [];
                 pushSymbol(initStackSymbol,nStack);
                 currentAutomaton.setInitialStackSymbol(initStackSymbol);
-                currentAutomaton.setCurrentState({"state":q_init, "stack":nStack,"transitions":[]});
+                currentAutomaton.setCurrentState({
+                    "state": q_init,
+                    "stack": nStack,
+                    "transitions": []
+                });
             }
-            currentTransitions = aude.toArray(currentAutomaton.getLastTakenTransitions());
 
-            //If the automaton start with epsilon transition, we draw the stack with the modifications of the epsilon transition
-            if (typeAutomaton === "pushdown")
+            currentTransitions = aude.toArray(
+                currentAutomaton.getLastTakenTransitions()
+            );
+
+            // If the automaton start with epsilon transition, we draw the stack
+            // with the modifications of the epsilon transition
+            if (typeAutomaton === "pushdown") {
                 redrawStack(currentTransitions);
+            }
 
             accepting = false;
             currentStates = aude.toArray(currentAutomaton.getCurrentStates());
@@ -302,8 +374,6 @@
             }
         }
 
-        var j, leng;
-
         if (currentTransitions) {
             var t, l, transitionsByStartState = {};
 
@@ -314,7 +384,10 @@
                     transitionsByStartState[t.startState] = [];
                 }
 
-                transitionsByStartState[t.startState].push([t.endState, t.symbol]);
+                transitionsByStartState[t.startState].push([
+                    t.endState,
+                    t.symbol
+                ]);
             }
 
             var newListOfExecutions = [], startState, newL;
@@ -323,7 +396,8 @@
                 l = listOfExecutions[i];
                 startState = l[l.length - 1][0];
                 if (transitionsByStartState[startState]) {
-                    for (j = 0, leng = transitionsByStartState[startState].length; j < leng; ++j) {
+                    var leng = transitionsByStartState[startState].length;
+                    for (var j = 0; j < leng; ++j) {
                         newL = l.slice();
                         newL.push(transitionsByStartState[startState][j]);
                         newListOfExecutions.push(newL);
@@ -352,7 +426,18 @@
 
                 for (j = 0, leng = listOfExecutions[i].length; j < leng; ++j) {
                     s = listOfExecutions[i][j][1];
-                    res += j ? ": " + (s === epsilon ? "ε" : aude.elementToString(s, automataMap)) + " → " + aude.elementToString(listOfExecutions[i][j][0]) : aude.elementToString(listOfExecutions[i][j][0]);
+
+                    if (j) {
+                        res = (
+                            ": " + (
+                                s === epsilon
+                                    ? "ε"
+                                    : aude.elementToString(s, automataMap)
+                            ) + " → "
+                        )
+                    }
+
+                    res += aude.elementToString(listOfExecutions[i][j][0]);
                 }
 
                 div.textContent = res;
@@ -374,7 +459,12 @@
 
             if (!executionByStep) {
                 if (stepNumber && EXECUTION_STEP_TIME) {
-                    executionTimeout = setTimeout(execute, EXECUTION_STEP_TIME - ((stepNumber % 2) ? 0 : 1) * EXECUTION_STEP_TIME / 2);
+                    executionTimeout = setTimeout(
+                        execute,
+                        EXECUTION_STEP_TIME - (
+                            (stepNumber % 2) ? 0 : 1
+                        ) * EXECUTION_STEP_TIME / 2
+                    );
                 } else {
                     execute();
                 }
@@ -384,220 +474,166 @@
         }
     }
 
-    //Display the window stack and initialise the stack with the initial stack symbol
+    // Display the window stack and initialise the stack with the initial stack symbol
     function displayStack (initialSymbol) {
-
-        //If the automaton is not determinized or has epsilon transition
-        if (!determinize) {
-            var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
-                ["table#table-tables-stack",[ //The table which contains all the table
-                    ["tr",[
-                        ["th",_("State: ")+ currentAutomaton.getInitialState()],
+        if (determinize) {
+            // If the automaton is determinized
+            var cont = libD.jso2dom(
+                ["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                    ["table#table-stack", [
+                        ["tr", [
+                            ["th", _("Index")],
+                            ["th", _("Value")],
+                        ]],
                     ]],
-                    ["td",[
-                    ]]
-                ]],
-            ]]);
+                ]]
+            );
 
             if (!stackWin || !stackWin.ws) {
                 stackWin = libD.newWin({
                     minimizable: false,
                     show: true,
-                    title:       _("Stacks"),
-                    right:       document.getElementById("results").offsetWidth  + 10, // FIXME
-                    top:         document.getElementById("toolbar").offsetHeight + 5,
-                    content:     cont,
+                    title: _("Stack"),
+                    right: document.getElementById("results").offsetWidth  + 10, // FIXME
+                    top:   document.getElementById("toolbar").offsetHeight + 5,
+                    content: cont,
+                })
+            } else {
+                // Reset the display of the stack
+                stackWin.content.replaceChild(
+                    cont,
+                    stackWin.content.children[0]
+                );
+            }
+
+            var i = 0;
+            for (var c of initialSymbol.split("").reverse().join("")) {
+                var tr = libD.jso2dom(["tr", [
+                    ["td", i],
+                    ["td", c],
+                ]]);
+
+                if (i === 0) {
+                    document.getElementById("table-stack").appendChild(tr);
+                } else {
+                    document.getElementById("table-stack").insertBefore(
+                        tr,
+                        document.getElementById("table-stack").firstChild.nextSibling
+                    );
+                }
+
+                i++;
+            }
+        } else {
+            // If the automaton is not determinized or has epsilon transition
+            var cont = libD.jso2dom(
+                ["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                    // The table which contains all the tables
+                    ["table#table-tables-stack", [
+                        ["tr", ["th",
+                            _("State: ") + currentAutomaton.getInitialState()
+                        ]],
+                        ["td"]
+                    ]],
+                ]]
+            );
+
+            if (!stackWin || !stackWin.ws) {
+                stackWin = libD.newWin({
+                    minimizable: false,
+                    show: true,
+                    title: _("Stacks"),
+                    right: document.getElementById("results").offsetWidth  + 10, // FIXME
+                    top:   document.getElementById("toolbar").offsetHeight + 5,
+                    content: cont,
                 })
             }
-            else { //Reset the display of the stack
-                stackWin.content.replaceChild(cont,stackWin.content.children[0])
+            else {
+                // Reset the display of the stack
+                stackWin.content.replaceChild(
+                    cont,
+                    stackWin.content.children[0]
+                );
             }
 
             var table = libD.jso2dom([
                 ["table",[
-                    ["tr",[
-                        ["th",_("Index")],
-                        ["th",_("Value")],
-                    ]],
+                    ["tr", [
+                        ["th", _("Index")],
+                        ["th", _("Value")],
+                    ]]
                 ]]
             ]);
+
             document.getElementById("table-tables-stack").children[1].appendChild(table);
-            var i=0;
+
+            var i = 0;
             for (var c of initialSymbol.split("").reverse().join("")) {
-                var tr = libD.jso2dom([
-                ["tr",[
-                    ["td",(String(i))],
-                    ["td",(c)],
-                ]]
-                ]);
-                if(i===0)
+                var tr = libD.jso2dom(
+                    ["tr", [
+                        ["td", (String(i))],
+                        ["td", (c)],
+                    ]]
+                );
+
+                if (i === 0) {
                     table.appendChild(tr);
-                else
-                    table.insertBefore(tr,table.firstChild.nextSibling);
-                i++;
-            }
-        }
+                } else {
+                    table.insertBefore(tr, table.firstChild.nextSibling);
+                }
 
-        //If the automaton is determinized
-        else {
-            var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
-                ["table#table-stack",[
-                    ["tr",[
-                        ["th",_("Index")],
-                        ["th",_("Value")],
-                    ]],
-                ]],
-            ]]);
-
-            if (!stackWin || !stackWin.ws) {
-                stackWin = libD.newWin({
-                    minimizable: false,
-                    show: true,
-                    title:       _("Stack"),
-                    right:       document.getElementById("results").offsetWidth  + 10, // FIXME
-                    top:         document.getElementById("toolbar").offsetHeight + 5,
-                    content:     cont,
-                })
-            }
-            else { //Reset the display of the stack
-                stackWin.content.replaceChild(cont,stackWin.content.children[0])
-            }
-            var i=0;
-            for (var c of initialSymbol.split("").reverse().join("")) {
-                var tr = libD.jso2dom(["tr",[
-                    ["td",(String(i))],
-                    ["td",(c)],
-                ]]);
-                if(i===0)
-                    document.getElementById("table-stack").appendChild(tr);
-                else
-                    document.getElementById("table-stack").insertBefore(tr,document.getElementById("table-stack").firstChild.nextSibling);
                 i++;
             }
         }
     }
 
-
-    //After each taken transition, remove the stackSymbol and add the new stack symbol
+    // After each taken transition, remove the stackSymbol and add the new stack symbol
     function redrawStack(transitions) {
-
-        //If the automaton is not determinized or has epsilon transition
-        if (!determinize) {
-            var cont = libD.jso2dom(["div.libD-ws-colors-auto", {"style": "height:100%"}, [
-                ["table#table-tables-stack",[ //The table which contains all the table
-                    ["tr",[
-                    ]],
-                    ["tr",[
-                    ]]
-                ]],
-            ]]);
-
-            stackWin.content.replaceChild(cont,stackWin.content.children[0]); //Recreate all the tables
-            var table = document.getElementById("table-tables-stack");
-
-            //For each stack
-            var tabState = [];
-            for (cs of currentAutomaton.getCurrentStatesStacks()) {
-
-                if (tabState.indexOf(cs.state)<0) { //If it's the first time we encounter the state
-                    tabState.push(cs.state); //Array of all the current state
-                    var thState = libD.jso2dom([
-                        ["th",_("State: ")+cs.state]
-                    ]);
-                    table.children[0].appendChild(thState);
-
-                    table.children[1].appendChild(libD.jso2dom([
-                        ["td",[
-                    ]],
-                ]));
-                }
-
-                var newTable = libD.jso2dom([
-                    ["span",{"style":"display:inline-block; margin-right:5px"},[
-                        ["table",[
-                            ["tr",[
-                                ["th",_("Index")],
-                                ["th",_("Value")],
-                            ]],
-                        ]],
-                    ]]
-                ]);
-                if (cs.stack.length===currentAutomaton.getInitialStackSymbol().length) {
-                    newTable.style.backgroundColor = "#47d147";
-                }
-                //When we click on a table it shows the list of transitions
-                newTable.addEventListener("click",showTransitions.bind(null,cs.transitions));
-
-                function showTransitions (transi) {
-                    var str = document.createElement("div");
-                    var valueT = "";
-                    for (var t of transi) {
-                        valueT = document.createElement("div");
-                        valueT.addEventListener("click",transitionColor.bind(null,t))
-                        valueT.innerHTML = t.toString()
-                        str.appendChild(valueT);
-                    }
-                    AudeGUI.Results.set(str);
-                }
-
-                function  transitionColor (t) {
-                    AudeGUI.mainDesigner.transitionPulseColor(index, t.startState, t.symbol, t.endState, "red", 3000);
-                }
-
-
-                table.children[1].children[tabState.indexOf(cs.state)].appendChild(newTable);
-                var i=0;
-                for (var c of cs.stack) {
-                    var tr = libD.jso2dom([
-                    ["tr",[
-                        ["td",(String(i))],
-                        ["td",(c)],
-                    ]]
-                    ]);
-                    if(i===0)
-                        newTable.firstChild.appendChild(tr);
-                    else
-                        newTable.firstChild.insertBefore(tr,newTable.firstChild.firstChild.nextSibling);
-                    i++;
-                }
-            }
-            //Hide the table when clicking on the th
-            var j = 0;
-            for (var th of table.firstChild.children) { //The list of th
-                th.addEventListener("click",hideTab.bind(null,table,j));
-                j++;
-            }
-            function hideTab(table,j) {
-                for (var span of table.children[1].children[j].children)
-                    span.style.display = getComputedStyle(span).display == "none" ? "inline-block" : "none";
-            }
-
-            stackWin.resize();
-        }
-
-        //If the automaton is determinized
-        else {
-            if (executionByStep) //If the execution is by step we have a defined time to show the modifications of the stack
-                timeExec = 500/transitions.length;
-            else
-                timeExec = EXECUTION_STEP_TIME/transitions.length;
+        if (determinize) {
+            // If the automaton is determinized
+            timeExec = (
+                // If the execution is by step we have a defined time to show
+                // the modifications of the stack
+                executionByStep
+                    ? 500 / transitions.length
+                    : EXECUTION_STEP_TIME / transitions.length
+            );
 
             var stack = document.getElementById("table-stack");
 
-            var compt=0;
-            //For each transition
+            var compt = 0;
+
+            // For each transition
             for (trans of transitions) {
+                // Add the lines to remove in red
+                setTimeout(
+                    redLines.bind(null, trans.stackSymbol),
+                    timeExec * compt
+                );
 
-                setTimeout(redLines.bind(null,trans.stackSymbol),(timeExec)*(compt)); //Add in red the lines to remove
-                setTimeout(removeSym.bind(null,trans.stackSymbol),(timeExec/2)+(timeExec*compt)); //Remove the lines in red
-                setTimeout(addSym.bind(null,trans.newStackSymbol),(timeExec/2)+(timeExec*compt)); //Add the new lines and color them in green
-                setTimeout(removeGreen.bind(null,trans.newStackSymbol),(timeExec)+(timeExec*compt)); //Remove the green color of the new lines
+                // Remove the lines in red
+                setTimeout(
+                    removeSym.bind(null, trans.stackSymbol),
+                    (timeExec / 2) + (timeExec * compt)
+                );
 
+                // Add the new lines and color them in green
+                setTimeout(
+                    addSym.bind(null, trans.newStackSymbol),
+                    (timeExec / 2) + (timeExec * compt)
+                );
+
+                // Remove the green color of the new lines
+                setTimeout(
+                    removeGreen.bind(null, trans.newStackSymbol),
+                    (timeExec) + (timeExec * compt)
+                );
 
                 function redLines(stackSymbol) {
-                    var i=1;
-                    if(stackSymbol!==pkg.epsilon && stackSymbol!=="ε") {
-                        for (var c of stackSymbol) { //Draw in red the line to remove
+                    var i = 1;
+                    if (stackSymbol !== pkg.epsilon && stackSymbol !== "ε") {
+                        for (var c of stackSymbol) {
+                            // Draw the line to remove in red
                             stack.children[i].style.backgroundColor = "red";
                             i++;
                         }
@@ -605,44 +641,179 @@
                 }
 
                 function removeSym(stackSym) {
-                    if(stackSym!==pkg.epsilon && stackSym!=="ε") {
-                        for (var c of stackSym)
+                    if (stackSym !== pkg.epsilon && stackSym !== "ε") {
+                        for (var c of stackSym) {
                             stack.removeChild(stack.children[1]);
+                        }
                     }
                 }
 
                 function addSym(newStackSymbol) {
-                    //Add the new stack symbol
+                    // Add the new stack symbol
                     for (var c of newStackSymbol.split("").reverse().join("")) {
-                        if(c!==pkg.epsilon && c!=="ε") {
+                        if (c !== pkg.epsilon && c !== "ε") {
                             var line = libD.jso2dom([
-                                ["tr",{"style":"background-color:#5cd65c"},[ //Draw in green the line added
-                                    ["td",(String(stack.childElementCount-1))],
-                                    ["td",(c)],
+                                ["tr", {"style":"background-color:#5cd65c"}, [
+                                    // Draw the added line in green
+                                    ["td", stack.childElementCount - 1],
+                                    ["td", c],
                                 ]],
                             ]);
-                            if (stack.childElementCount==1) //If there nothing in the stack
+
+                            if (stack.childElementCount === 1) {
+                                // If there nothing in the stack
                                 stack.appendChild(line)
-                            else
-                                stack.insertBefore(line,stack.children[1]);
+                            } else {
+                                stack.insertBefore(line, stack.children[1]);
+                            }
                         }
                     }
+
                     stackWin.resize();
                 }
 
                 function removeGreen(newStackSymbol) {
                     var j = 1;
                     for (var c of newStackSymbol) {
-                        if(c!==pkg.epsilon && c!=="ε") {
+                        if(c !== pkg.epsilon && c !== "ε") {
                             stack.children[j].style.backgroundColor = "inherit";
                             j++;
                         }
                     }
                 }
+
                 compt++;
             }
+        } else {
+            // If the automaton is not determinized or has epsilon transition
+            var cont = libD.jso2dom(
+                ["div.libD-ws-colors-auto", {"style": "height:100%"}, [
+                    ["table#table-tables-stack", [
+                        // The table which contains all the tables
+                        ["tr"],
+                        ["tr"]
+                    ]],
+                ]]
+            );
+
+            // Recreate all the tables
+            stackWin.content.replaceChild(cont,stackWin.content.children[0]);
+
+            var table = document.getElementById("table-tables-stack");
+
+            // For each stack
+            var tabState = [];
+
+            for (cs of currentAutomaton.getCurrentStatesStacks()) {
+                if (tabState.indexOf(cs.state)<0) {
+                    // If it's the first time we encounter the state
+
+                    // Array of all the current state
+                    tabState.push(cs.state);
+
+                    var thState = libD.jso2dom([
+                        ["th",_("State: ")+cs.state]
+                    ]);
+
+                    table.children[0].appendChild(thState);
+                    table.children[1].appendChild(document.createElement("td"));
+                }
+
+                var newTable = libD.jso2dom([
+                    ["span", {"style": "display:inline-block; margin-right:5px"}, [
+                        ["table", [
+                            ["tr", [
+                                ["th",_("Index")],
+                                ["th",_("Value")],
+                            ]],
+                        ]],
+                    ]]
+                ]);
+
+                if (cs.stack.length === currentAutomaton.getInitialStackSymbol().length) {
+                    newTable.style.backgroundColor = "#47d147";
+                }
+
+                // When we click on a table it shows the list of transitions
+                newTable.addEventListener(
+                    "click",
+                    showTransitions.bind(null, cs.transitions)
+                );
+
+                function showTransitions(transi) {
+                    var str = document.createElement("div");
+                    var valueT = "";
+
+                    for (var t of transi) {
+                        valueT = document.createElement("div");
+
+                        valueT.addEventListener(
+                            "click",
+                            transitionColor.bind(null,t)
+                        );
+
+                        valueT.textContent = t.toString()
+                        str.appendChild(valueT);
+                    }
+
+                    AudeGUI.Results.set(str);
+                }
+
+                function transitionColor (t) {
+                    AudeGUI.mainDesigner.transitionPulseColor(
+                        index,
+                        t.startState,
+                        t.symbol,
+                        t.endState,
+                        "red",
+                        3000
+                    );
+                }
+
+                table.children[1].children[tabState.indexOf(cs.state)].appendChild(newTable);
+
+                var i = 0;
+
+                for (var c of cs.stack) {
+                    var tr = libD.jso2dom([
+                        ["tr", [
+                            ["td", i],
+                            ["td", c],
+                        ]]
+                    ]);
+
+                    if (i === 0) {
+                        newTable.firstChild.appendChild(tr);
+                    } else {
+                        newTable.firstChild.insertBefore(
+                            tr,
+                            newTable.firstChild.firstChild.nextSibling
+                        );
+                    }
+
+                    i++;
+                }
+            }
+
+            // Hide the table when clicking on the th
+            var j = 0;
+            for (var th of table.firstChild.children) {
+                // The list of th
+                th.addEventListener("click", hideTab.bind(null, table, j));
+                j++;
+            }
+
+            function hideTab(table, j) {
+                for (var span of table.children[1].children[j].children) {
+                    span.style.display = (
+                        getComputedStyle(span).display == "none"
+                            ? "inline-block"
+                            : "none"
+                    );
+                }
+            }
+
+            stackWin.resize();
         }
-
     }
-
 }(window));

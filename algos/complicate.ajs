@@ -1,7 +1,7 @@
 from mutate import addState, addTransitionFromState, randomNumber, addEpsilonTransitionToState, addEpsilonTransitionFromState, getRandomElement, newStateName
 from coaccessibility import coaccessibleStates
 
-// Adds a not accessible state to the automaton
+# Adds a not accessible state to the automaton
 export function addNotAccessible(A)
     let stateName := newStateName(A)
     addState(A, stateName)
@@ -13,14 +13,14 @@ export function addNotAccessible(A)
     done
 end function
 
-// Adds a random transition between two not coaccessible states
+# Adds a random transition between two not coaccessible states
 export function transitionNotCoaccessible(A)
-    // extraction of not coaccessible states from the automaton
+    # extraction of not coaccessible states from the automaton
     let coaStates := coaccessibleStates(A)
     let states := A.getStates()
     let notcoaStates := states \ coaStates
 
-    // we can only add a transition if there is a state.
+    # we can only add a transition if there is a state.
     if notcoaStates.size > 0 then
         let randomNotCoaState1 := getRandomElement(notcoaStates)
         let randomNotCoaState2 := getRandomElement(notcoaStates)
@@ -30,9 +30,9 @@ export function transitionNotCoaccessible(A)
     end if
 end function
 
-// Adds a random transition that goes to a not coaccessible state
+# Adds a random transition that goes to a not coaccessible state
 export function addTransitionToANotCoaccessible(A)
-    // extraction of not coaccessible states from the automaton
+    # extraction of not coaccessible states from the automaton
     let coaStates := coaccessibleStates(A)
     let states := A.getStates()
     let notcoaStates := states \ coaStates
@@ -47,9 +47,9 @@ export function addTransitionToANotCoaccessible(A)
     return A
 end function
 
-// Adds states and transitions to the automaton by copying certain states and
-// transitions in the original automaton to complicate it thus resulting in a
-// non deterministic finite state automaton
+# Adds states and transitions to the automaton by copying certain states and
+# transitions in the original automaton to complicate it thus resulting in a
+# non deterministic finite state automaton
 export function copyTransitions(A)
     if A.getTransitions() is empty then
         return
@@ -57,8 +57,8 @@ export function copyTransitions(A)
 
     let f := A.getTransitionFunction()
 
-    // we take a random transition instead of a state
-    // just in case the automaton isn't complete
+    # we take a random transition instead of a state
+    # just in case the automaton isn't complete
     let randomTransition := getRandomElement(A.getTransitions())
     let startState := randomTransition.startState
     let symbol     := randomTransition.symbol
@@ -66,21 +66,21 @@ export function copyTransitions(A)
 
     let random := randomNumber(1, A.getStates().size)
     let i := 0
-    // we should be careful in case we're forced to enter the loop
-    // and the automaton can't give us any transitions
+    # we should be careful in case we're forced to enter the loop
+    # and the automaton can't give us any transitions
     while i < random do
         let newState := newStateName(A)
-        // we add a new state we're copying is final
-        // then the newState will be final too
-        // this way the langage the automaton recognizes doesn't change
+        # we add a new state we're copying is final
+        # then the newState will be final too
+        # this way the langage the automaton recognizes doesn't change
         A.addState(newState)
 
         if A.getFinalStates() contains endState then
             A.addFinalState(newState)
         end if
 
-        // we connect an existant state to the new state
-        // by copying an existent transition
+        # we connect an existant state to the new state
+        # by copying an existent transition
         A.addTransition(startState, symbol, newState)
 
         if (f(endState).getItem()) = undefined then
@@ -107,7 +107,7 @@ run(
             "1 3 4"
         )
 
-        // extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
+        # extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
         let I := []
         var n := 0
         foreach c in input do
@@ -123,7 +123,7 @@ run(
             I.push(n)
         end if
 
-        // for each case we execute the associated function
+        # for each case we execute the associated function
         foreach c in I do
            if c = 1 then
                addNotAccessible(A)

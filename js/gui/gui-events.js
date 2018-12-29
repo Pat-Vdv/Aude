@@ -172,25 +172,47 @@ window.AudeGUI.initEvents = function () {
             AudeGUI.AutomataList.hide();
         };
 
-        //Show the list of predefined algo
+        // Show the list of predefined algo
         document.getElementById("predef-algos").onclick = function () {
             var listAlgos = document.getElementById("container-algos");
-            listAlgos.style.display = getComputedStyle(listAlgos).display === "none" ? "flex" : "none";
+
+            listAlgos.style.display = (
+                getComputedStyle(listAlgos).display === "none"
+                    ? "flex"
+                    : "none"
+            );
+
             var up = document.getElementById("up-select-algo");
             var down = document.getElementById("down-select-algo");
-            up.style.display = getComputedStyle(up).display === "none" ? "inline" :  "none";
-            down.style.display = getComputedStyle(down).display === "none" ?  "inline" : "none";
+
+            up.style.display = (
+                getComputedStyle(up).display === "none"
+                    ? "inline"
+                    : "none"
+            );
+
+            down.style.display = (
+                getComputedStyle(down).display === "none"
+                    ?  "inline"
+                    : "none"
+            );
         };
 
-        //Luanch the selected algo
+        // Luanch the selected algo
         document.getElementById("algorun").onclick = AudeGUI.Runtime.launchPredefAlgo;
 
         document.getElementById("algo-exec").onclick = function () {
-            localStorage.setItem("ProgramText",AudeGUI.ProgramEditor.getText()); //Store the program in the local storage
+            // Store the program in the local storage
+
+            localStorage.setItem(
+                "ProgramText",
+                AudeGUI.ProgramEditor.getText()
+            );
+
             AudeGUI.Runtime.loadAS(AudeGUI.ProgramEditor.getText());
         };
 
-        //For the help
+        // For the help
         document.getElementById("help").onclick = function () {
             AudeGUI.Help.run();
         };
@@ -209,6 +231,10 @@ window.AudeGUI.initEvents = function () {
     }
 
     document.getElementById("automaton_plus").onchange = function () {
-        AudeGUI.setCurrentAutomatonIndex(parseInt(document.getElementById("automaton_plus").value, 10));
+        AudeGUI.setCurrentAutomatonIndex(
+            parseInt(
+                document.getElementById("automaton_plus").value,
+                10)
+        );
     };
 };

@@ -19,7 +19,7 @@ export function determinize(A, complete)
                 done
 
                 if complete or QDest is not empty then
-                    // if completion is not asked, don't create a sink state
+                    # if completion is not asked, don't create a sink state
                     addDeterminizedState(QDest)
                     DetA.addTransition(newQ, symbol, QDest)
                 end if
@@ -50,7 +50,7 @@ export function isDeterminized(A)
    let Alphabet := A.getAlphabet()
 
    foreach state in trans() do
-      // epsilon transition:
+      # epsilon transition:
       if trans(state, epsilon) is not empty then
          return false
       end if

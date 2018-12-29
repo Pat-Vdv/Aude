@@ -1,6 +1,6 @@
-// initialOutput is the output of the initial state for the Moore machine
-// since it depends on the mealy machine, it is to be deetermined each time
-// initialOutput is an element of input_alphabet
+# initialOutput is the output of the initial state for the Moore machine
+# since it depends on the mealy machine, it is to be deetermined each time
+# initialOutput is an element of input_alphabet
 export function mealy2moore(mealy, initialOutput)
      let moore := new Moore()
 
@@ -10,28 +10,28 @@ export function mealy2moore(mealy, initialOutput)
 
      moore.setInitialState([mealy.getInitialState(), initialOutput])
 
-    // a set containing all the [next_state,output] couples
-    // that we've deduced from the Mealy machine
-    // they represent the new Moore machine statesœ
+    # a set containing all the [next_state,output] couples
+    # that we've deduced from the Mealy machine
+    # they represent the new Moore machine statesœ
     let stateAndOutputSet := new Set()
 
     foreach s in mealy.getStates() do
         foreach a in mealy.getInputAlphabet() do
-            let stateAndOutput := mealy.next(s, a) // next() returns an array: [next_state, output]
+            let stateAndOutput := mealy.next(s, a) # next() returns an array: [next_state, output]
             stateAndOutputSet.add(stateAndOutput)
             moore.setOutput(stateAndOutput, stateAndOutput[1])
             moore.addInputSymbol(a)
         done
     done
 
-    // if the initial state has no transition coming towards it
-    // then it is not present in the stateAndOutputSet, nor is it a state for moore
+    # if the initial state has no transition coming towards it
+    # then it is not present in the stateAndOutputSet, nor is it a state for moore
     if stateAndOutputSet does not contain [mealy.getInitialState(), initialOutput] then
         stateAndOutputSet.add([mealy.getInitialState(), initialOutput])
         moore.setOutput(moore.getInitialState(), initialOutput)
     end if
 
-    // now we add the new transitions
+    # now we add the new transitions
     foreach c in stateAndOutputSet do
         foreach a in moore.getInputAlphabet() do
             var nextC := mealy.next(c[0], a)

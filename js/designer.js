@@ -62,7 +62,7 @@
         }
     }
 
-    // translate the node with the vector (tx,ty)
+    // Translate the node with the vector (tx, ty)
     function translate(n, tx, ty) {
         var attrsx = ["x", "cx", "x1", "x2"],
             attrsy = ["y", "cy", "y1", "y2"],
@@ -149,7 +149,7 @@
         return p;
     }
 
-    // Given a SVG <ellispe /> and its center (cx, cy), a point (x,y), a distance to the ellipse in pixels,
+    // Given a SVG <ellispe /> and its center (cx, cy), a point (x, y), a distance to the ellipse in pixels,
     // gives the coordinates of the point placed around the ellipse to the desired distance.
     // Parameters:
     //  - ellipse : svg <ellipse /> node.
@@ -184,7 +184,7 @@
         return addDist(p, cx, cy, distanceToEllipse);
     }
 
-    // Position the triangle polygonPoints of a transition correctly on the svg <ellipse /> at point p{x,y}.
+    // Position the triangle polygonPoints of a transition correctly on the svg <ellipse /> at point p{x, y}.
     // Parameters :
     //  - polygonPoints : points of the SVG node representing the triangle
     //  - ellipse : the SVG node representing the ellipse
@@ -378,47 +378,79 @@
         }
     }
 
-    //Correct the position of the initial state arrow
-    //Argument: the initial state arrow and its ellipse
-    function correctInitialArrow(InitialArrow,ellipse) {
-        var polygon = InitialArrow.children[2];
-        var path = InitialArrow.children[1];
-        if (polygon.parentNode.transform.animVal.length===0)
-            var saveAlpha = 0;
-        else
-            var saveAlpha = polygon.parentNode.transform.animVal.getItem("0").angle //Save the current rotation
+    // Fix the position of the initial state arrow
+    // Argument: the initial state arrow and its ellipse
+    function fixInitialArrow(initialArrow, ellipse) {
+        var polygon = initialArrow.children[2];
+        var path = initialArrow.children[1];
+
+        // Save the current rotation
+        var saveAlpha = (
+            polygon.parentNode.transform.animVal.length === 0
+                ? 0
+                : polygon.parentNode.transform.animVal.getItem("0").angle
+        );
 
         var rx = ellipse.rx.baseVal.value;
         var ry = ellipse.ry.baseVal.value;
         var cx = ellipse.cx.baseVal.value;
         var cy = ellipse.cy.baseVal.value;
 
-        var t = rx*ry / (Math.sqrt(ry*ry*Math.pow(Math.cos(saveAlpha*Math.PI/180),2) + rx*rx*Math.pow(Math.sin(saveAlpha*Math.PI/180),2)));
-        if(cy>polygon.points[0].y) {
-            var x = cx - t * Math.cos(saveAlpha*Math.PI/180);
-            var y = cy - t * Math.sin(saveAlpha*Math.PI/180);
-        } else if(cy<=polygon.points[0].y) {
-            var x = cx - t * Math.cos(-saveAlpha*Math.PI/180);
-            var y = cy + t * Math.sin(-saveAlpha*Math.PI/180);
+        var t = rx * ry / Math.sqrt(
+            ry * ry * Math.pow(Math.cos(saveAlpha * Math.PI / 180), 2) +
+            rx * rx * Math.pow(Math.sin(saveAlpha * Math.PI / 180), 2)
+        );
+
+        if (cy > polygon.points[0].y) {
+            var x = cx - t * Math.cos(saveAlpha * Math.PI / 180);
+            var y = cy - t * Math.sin(saveAlpha * Math.PI / 180);
+        } else if (cy <= polygon.points[0].y) {
+            var x = cx - t * Math.cos(-saveAlpha * Math.PI / 180);
+            var y = cy + t * Math.sin(-saveAlpha * Math.PI / 180);
         }
+
         var tx = x - polygon.points[0].x;
         var ty = y - polygon.points[0].y;
 
-        polygon.parentNode.setAttribute("transform","rotate("+ 0 +" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+        polygon.parentNode.setAttribute(
+            "transform",
+            "rotate(" +
+                0 + " " + polygon.points[0].x + " " +
+                polygon.points[0].y +
+            ")");
 
-        for (var point of polygon.points) { //Translate the polygon
+        // Translate the polygon
+        for (var point of polygon.points) {
             point.x += tx;
             point.y += ty;
         }
 
-        var tabPath = path.attributes.d.nodeValue.split(" "); //Translate the path
-        path.setAttribute("d",
-            "M" + (parseFloat(tabPath[0].split(",")[0].slice(1),10) +tx) + "," + (parseFloat(tabPath[0].split(",")[1],10) +ty) +
-            " C" + (parseFloat(tabPath[1].split(",")[0].slice(1),10) +tx) + "," + (parseFloat(tabPath[1].split(",")[1],10) +ty) +
-            " " + (parseFloat(tabPath[2].split(",")[0],10) +tx) + "," + (parseFloat(tabPath[2].split(",")[1],10) +ty) +
-            " " + (parseFloat(tabPath[3].split(",")[0],10) +tx) + "," + (parseFloat(tabPath[3].split(",")[1],10) +ty));
+        // Translate the path
+        var tabPath = path.attributes.d.nodeValue.split(" ");
+        path.setAttribute(
+            "d",
+            "M" +
+                (parseFloat(tabPath[0].split(",")[0].slice(1), 10) + tx) + "," +
+                (parseFloat(tabPath[0].split(",")[1], 10) + ty) +
+            " C" +
+                (parseFloat(tabPath[1].split(",")[0].slice(1), 10) + tx) + "," +
+                (parseFloat(tabPath[1].split(",")[1], 10) + ty) +
+            " " +
+                (parseFloat(tabPath[2].split(",")[0], 10) + tx) + "," +
+                (parseFloat(tabPath[2].split(",")[1], 10) + ty) +
+            " " +
+                (parseFloat(tabPath[3].split(",")[0], 10) + tx) + "," +
+                (parseFloat(tabPath[3].split(",")[1], 10) + ty)
+        );
 
-        polygon.parentNode.setAttribute("transform","rotate("+ saveAlpha +" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+        polygon.parentNode.setAttribute(
+            "transform",
+            "rotate(" +
+                saveAlpha + " " +
+                polygon.points[0].x + " " +
+                polygon.points[0].y +
+            ")"
+        );
     }
 
     function AudeDesigner(svgContainer, readOnly) {
@@ -585,7 +617,7 @@
         this.triggerUndoRedoEvent();
     };
 
-    //set the initial state for the current automaton
+    // Set the initial state for the current automaton
     AudeDesigner.prototype.setInitialState = function (node) {
         var path, polygon, title;
 
@@ -593,12 +625,16 @@
             path    = this.initialStateArrow.getElementsByTagName("path")[0];
             polygon = this.initialStateArrow.querySelector("polygon");
             title   = this.initialStateArrow.querySelector("title");
-            this.initialStateArrow.setAttribute("transform","rotate(0)"); //Reset the rotation
-            this.initialStateArrow.setAttribute("class","initialStateArrow");
+
+            // Reset the rotation
+            this.initialStateArrow.setAttribute("transform", "rotate(0)");
+            this.initialStateArrow.setAttribute("class", "initialStateArrow");
         } else {
-            this.initialStateArrow = this.initialStateArrows[this.currentIndex] = document.createElementNS(svgNS, "g");
+            this.initialStateArrow = document.createElementNS(svgNS, "g");
+            this.initialStateArrows[this.currentIndex] = this.initialStateArrow;
+
             id(this.initialStateArrow, "initialStateArrow");
-            this.initialStateArrow.setAttribute("class","initialStateArrow");
+            this.initialStateArrow.setAttribute("class", "initialStateArrow");
             title = document.createElementNS(svgNS, "title");
             path =  document.createElementNS(svgNS, "path");
             polygon = document.createElementNS(svgNS, "polygon");
@@ -621,10 +657,10 @@
         let dx5  = dx - 5;
 
         path.setAttribute("d",
-            "M" + (dx - 38)           + "," + cy +
+            "M"  + (dx - 38)           + "," + cy +
             " C" + (dx - (28 * 2 / 3)) + "," + cy +
-            " " + (dx - (28 / 3))     + "," + cy +
-            " " + dx10                + "," + cy);
+            " "  + (dx - (28 / 3))     + "," + cy +
+            " "  + dx10                + "," + cy);
 
         polygon.setAttribute("points",
                   dx   + "," + cy       +
@@ -882,7 +918,7 @@
         }
     };
 
-    //IMPORTANT: call this whenever you mess around with the svg container.
+    // IMPORTANT: call this whenever you mess around with the svg container.
     AudeDesigner.prototype.redraw = function () {
         if (this.svgNode) {
             this.setViewBoxSize();
@@ -1058,9 +1094,9 @@
         return automaton2dot(A);
     };
 
-    AudeDesigner.prototype.getSVG = function (index,dontCleanColors) {
+    AudeDesigner.prototype.getSVG = function (index, dontCleanColors) {
         if (this.svgs[index]) {
-            this.cleanSVG(index,dontCleanColors);
+            this.cleanSVG(index, dontCleanColors);
             return AudeDesigner.outerHTML(dataIdToId(this.svgs[index])).trim();
         }
 
@@ -1282,7 +1318,7 @@
             label.setAttribute("y", smallEllipse.cy.baseVal.value + 4);
 
             if (node === that.initialState) {
-                correctInitialArrow(that.initialStateArrow,bigEllipse);
+                fixInitialArrow(that.initialStateArrow, bigEllipse);
             }
         }
 
@@ -1333,7 +1369,7 @@
                 }
             }
 
-            var seg = segs.getItem(segs.numberOfItems-1);
+            var seg = segs.getItem(segs.numberOfItems - 1);
 
             pointOnEllipse(
                 targetEllipse,
@@ -1472,10 +1508,11 @@
 
             if (that.initialState === nodeMoving) {
                 // moving the initial state arrow
-                if (coords.ellipse[1])
-                    correctInitialArrow(that.initialStateArrow,coords.ellipse[1]);
-                else
-                    correctInitialArrow(that.initialStateArrow,coords.ellipse[0]);
+                if (coords.ellipse[1]) {
+                    fixInitialArrow(that.initialStateArrow, coords.ellipse[1]);
+                } else {
+                    fixInitialArrow(that.initialStateArrow, coords.ellipse[0]);
+                }
             }
 
             var coefTextX = 1,
@@ -1591,18 +1628,18 @@
             frameModifiedSVG = true;
         }
 
-        function prepareInitialArrowMove (e) {
+        function prepareInitialArrowMove(e) {
             that.stopMove = true;
             that.svgContainer.onmousemove = mouseMove;
             currentMoveAction = moveInitialArrow;
             mouseCoords = e;
             origMouseCoords = e;
             that.svgContainer.style.cursor = "move";
-            setMoveAction(moveInitialArrow,e)
+            setMoveAction(moveInitialArrow, e);
         }
 
-        //Move the initial state arrow
-        function moveInitialArrow () {
+        // Move the initial state arrow
+        function moveInitialArrow() {
             if (!mouseCoords) {
                 return;
             }
@@ -1618,58 +1655,83 @@
             mouseCoords = true;
 
             var ellipse = getBigEllipse(that.initialState);
-            var cx =ellipse.cx.baseVal.value;
-            var cy =ellipse.cy.baseVal.value;
-            var rx =ellipse.rx.baseVal.value;
-            var ry =ellipse.ry.baseVal.value;
+            var cx = ellipse.cx.baseVal.value;
+            var cy = ellipse.cy.baseVal.value;
+            var rx = ellipse.rx.baseVal.value;
+            var ry = ellipse.ry.baseVal.value;
             var polygon = nodeMoving.children[2];
             var path = nodeMoving.children[1];
 
             var svgDim = ellipse.parentNode.parentNode.parentNode.viewBox.animVal;
 
-            //Correction for the value y of the mouse
-            var correctionMouseY = 27 * (906/ellipse.parentNode.parentNode.parentNode.attributes.height.value);
-            //Position of the click of the mouse
+            // Correction for the value y of the mouse
+            var correctionMouseY = 27 * (906 / ellipse.parentNode.parentNode.parentNode.attributes.height.value);
+
+            // Position of the click of the mouse
             var mouseX = (e.clientX) / that.svgZoom + svgDim.x,
                 mouseY = (e.clientY - correctionMouseY) / that.svgZoom + svgDim.y;
 
-            var distMouseCircle = (Math.sqrt( Math.pow(mouseX-cx,2) + Math.pow(mouseY-cy,2)));
-            var alpha = Math.acos(( cx-mouseX)/distMouseCircle);
+            var distMouseCircle = (Math.sqrt( Math.pow(mouseX - cx, 2) + Math.pow(mouseY - cy, 2)));
+            var alpha = Math.acos((cx - mouseX) / distMouseCircle);
 
-            //Position of the circle corresponding on the click of mouse
-            var t = rx*ry / (Math.sqrt(ry*ry*Math.pow(Math.cos(alpha),2) + rx*rx*Math.pow(Math.sin(alpha),2)));
-            if(cy>mouseY) {
-                var x =cx - t * Math.cos(alpha);
-                var y =cy - t * Math.sin(alpha);
-            } else if(cy<=mouseY) {
-                var x =cx - t * Math.cos(alpha);
-                var y =cy + t * Math.sin(alpha);
+            // Position of the circle corresponding on the click of mouse
+            var t = rx * ry / Math.sqrt(
+                ry * ry * Math.pow(Math.cos(alpha), 2) +
+                rx * rx * Math.pow(Math.sin(alpha), 2)
+            );
+
+            if (cy > mouseY) {
+                var x = cx - t * Math.cos(alpha);
+                var y = cy - t * Math.sin(alpha);
+            } else if (cy <= mouseY) {
+                var x = cx - t * Math.cos(alpha);
+                var y = cy + t * Math.sin(alpha);
             }
 
-            var translationx = x-polygon.points[0].x;
-            var translationy = y-polygon.points[0].y;
-            for (var point of polygon.points) { //Translate the polygon
-                point.x += translationx;
-                point.y += translationy;
+            var translationX = x - polygon.points[0].x;
+            var translationY = y - polygon.points[0].y;
+            for (var point of polygon.points) { // Translate the polygon
+                point.x += translationX;
+                point.y += translationY;
             }
 
-            var tabPath = path.attributes.d.nodeValue.split(" "); //Translate the path
-            path.setAttribute("d",
-                "M" + (parseFloat(tabPath[0].split(",")[0].slice(1),10) +translationx) + "," + (parseFloat(tabPath[0].split(",")[1],10) +translationy) +
-                " C" + (parseFloat(tabPath[1].split(",")[0].slice(1),10) +translationx) + "," + (parseFloat(tabPath[1].split(",")[1],10) +translationy) +
-                " " + (parseFloat(tabPath[2].split(",")[0],10) +translationx) + "," + (parseFloat(tabPath[2].split(",")[1],10) +translationy) +
-                " " + (parseFloat(tabPath[3].split(",")[0],10) +translationx) + "," + (parseFloat(tabPath[3].split(",")[1],10) +translationy));
+            var tabPath = path.attributes.d.nodeValue.split(" "); // Translate the path
+            path.setAttribute(
+                "d",
+                "M" +
+                    (parseFloat(tabPath[0].split(",")[0].slice(1), 10) + translationX) + "," +
+                    (parseFloat(tabPath[0].split(",")[1], 10) + translationY) +
+                " C" +
+                    (parseFloat(tabPath[1].split(",")[0].slice(1), 10) + translationX) + "," +
+                    (parseFloat(tabPath[1].split(",")[1], 10) + translationY) +
+                " " +
+                    (parseFloat(tabPath[2].split(",")[0], 10) + translationX) + "," +
+                    (parseFloat(tabPath[2].split(",")[1], 10) + translationY) +
+                " " +
+                    (parseFloat(tabPath[3].split(",")[0], 10) + translationX) + "," +
+                    (parseFloat(tabPath[3].split(",")[1], 10) + translationY)
+            );
 
-            //Rotation of the arrow
-           if(cy>mouseY) {
-                polygon.parentNode.setAttribute("transform","rotate("+ alpha*180/Math.PI+" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+            // Rotation of the arrow
+           if(cy > mouseY) {
+                polygon.parentNode.setAttribute(
+                    "transform",
+                    "rotate(" +
+                        alpha * 180 / Math.PI + " " +
+                        polygon.points[0].x + " " + polygon.points[0].y +
+                    ")"
+                );
             }
-            else if(cy<mouseY) {
-                polygon.parentNode.setAttribute("transform","rotate("+ -alpha*180/Math.PI+" "+polygon.points[0].x+" "+ polygon.points[0].y+")");
+            else if(cy < mouseY) {
+                polygon.parentNode.setAttribute(
+                    "transform",
+                    "rotate(" +
+                        (-alpha * 180 / Math.PI) + " " +
+                        polygon.points[0].x + " " + polygon.points[0].y +
+                    ")"
+                );
             }
-
         }
-
 
         function mouseMove(e) {
             if (origMouseCoords) {
@@ -1833,7 +1895,7 @@
                         var text = document.createElementNS(svgNS, "text");
                         text.textContent = AudeDesigner.formatTrans(trans || "\\e");
                         text.setAttribute("text-anchor", "middle");
-                        text.setAttribute("font-family", "Times Roman,serif");
+                        text.setAttribute("font-family", "Times Roman, serif");
                         text.setAttribute("font-size", "14.00");
                         cleanTransitionPos(that.svgNode, pathEdit, polygon.points, text, nodeEdit, endState);
                         g.appendChild(pathEdit);
@@ -2314,7 +2376,9 @@
                         if (cso === nodeMoving) {
                             stopOverlay = true;
                         }
-                        prepareInitialArrowMove(e); //Move the initial state arrow
+
+                        // Move the initial state arrow
+                        prepareInitialArrowMove(e);
                     } else if (!currentMoveAction) {
                         that.blockNewState = false;
                     }
@@ -2534,7 +2598,7 @@
                 that.overlayHide();
             };
 
-            //Change the color of the state
+            // Change the color of the state
             stateOverlay.appendChild(document.createElement("li"));
             stateOverlay.lastChild.appendChild(document.createElement("a"));
             stateOverlay.lastChild.lastChild.href = "#";
@@ -2548,11 +2612,18 @@
                 input.setAttribute("value", currentNode.children[1].attributes.fill.value);
                 input.click();
                 input.onchange = function() {
-                    //var color = "rgba("+parseInt(input.value.substr(1,2),16)+","+parseInt(input.value.substr(3,2),16)+","+parseInt(input.value.substr(5,2),16)+",0.5)";
-                    AudeGUI.mainDesigner.stateSmallSetBackgroundColor(that.currentIndex,currentNode,input.value);
+                    // var color = "rgba(" +
+                    //     parseInt(input.value.substr(1, 2), 16) + "," +
+                    //     parseInt(input.value.substr(3, 2), 16) + "," +
+                    //     parseInt(input.value.substr(5, 2), 16) +
+                    // ", 0.5)";
+                    AudeGUI.mainDesigner.stateSmallSetBackgroundColor(
+                        that.currentIndex,
+                        currentNode,
+                        input.value
+                    );
                 }
             };
-
 
             transitionOverlay = document.createElement("ul");
             transitionOverlay.classList.add(CSSP + "overlay");
@@ -2588,24 +2659,43 @@
             };
 
 
-            //Change the color of the transition
+            // Change the color of the transition
             transitionOverlay.appendChild(document.createElement("li"));
             transitionOverlay.lastChild.appendChild(document.createElement("a"));
             transitionOverlay.lastChild.lastChild.href = "#";
             transitionOverlay.lastChild.lastChild.textContent = _("Color");
 
             transitionOverlay.lastChild.lastChild.onclick = function () {
-                var t = that.currentOverlay; //The transition
+                var t = that.currentOverlay; // The transition
                 that.resizeHandlesHide();
                 that.overlayHide();
                 var input = document.createElement("input");
                 input.type = "color";
-                input.setAttribute("value", t.children[1].attributes.stroke.value);
+
+                input.setAttribute(
+                    "value",
+                    t.children[1].attributes.stroke.value
+                );
+
                 input.click();
                 input.onchange = function() {
-                    var startState = t.firstChild.textContent.substr(0,t.firstChild.textContent.indexOf('-'));
-                    var endState = t.firstChild.textContent.substring(t.firstChild.textContent.indexOf('-')+2, t.firstChild.textContent.length);
-                    AudeGUI.mainDesigner.transitionSetColor(that.currentIndex,startState,"",endState,input.value);
+                    var startState = t.firstChild.textContent.substr(
+                        0,
+                        t.firstChild.textContent.indexOf('-')
+                    );
+
+                    var endState = t.firstChild.textContent.substring(
+                        t.firstChild.textContent.indexOf('-') + 2,
+                        t.firstChild.textContent.length
+                    );
+
+                    AudeGUI.mainDesigner.transitionSetColor(
+                        that.currentIndex,
+                        startState,
+                        "",
+                        endState,
+                        input.value
+                    );
                 }
             };
         }
@@ -2949,7 +3039,8 @@
             }
         }
     };
-    //Set the color of the node given for the small ellipse
+
+    // Set the color of the node given for the small ellipse
     AudeDesigner.prototype.stateSmallSetBackgroundColor = function (index, node, color) {
         fill(getSmallEllipse(node), color);
     };

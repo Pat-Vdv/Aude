@@ -1,6 +1,6 @@
 from emptyLanguage import emptyLanguage
 
-//Concatenate 2 automata
+# Concatenate 2 automata
 export function concatenate(A1, A2)
     let A := new Automaton()
     let statesA1 := A1.getStates()
@@ -12,31 +12,31 @@ export function concatenate(A1, A2)
     let initialStateA2 := A2.getInitialState()
     let finalStatesA2 := A2.getFinalStates()
 
-    //Set the initial state of the automaton
+    # Set the initial state of the automaton
     A.setInitialState("A1_"+initialStateA1)
 
-    //Initialise transition for A1
+    # Initialise transition for A1
     foreach t in transiA1 do
         A.addTransition("A1_"+t.startState,t.symbol,"A1_"+t.endState)
     done
 
-    //Initialise transition for A2
+    # Initialise transition for A2
     foreach t in transiA2 do
         A.addTransition("A2_"+t.startState,t.symbol,"A2_"+t.endState)
     done
 
-    //Initialise final state
+    # Initialise final state
     foreach fS in finalStatesA2 do
         A.addFinalState("A2_"+fS)
     done
 
-    //If the first automaton recognize no word create an epsilon transition from initial State of A1 to initial State of A2
+    # If the first automaton recognize no word create an epsilon transition from initial State of A1 to initial State of A2
     if emptyLanguage(A1) then
         A.addTransition("A1_"+initialStateA1,epsilon,"A2_"+initialStateA2)
         return A
     end if
 
-    //Initialise the epsilon transitions: finalState of A1 -> initial state of A2
+    # Initialise the epsilon transitions: finalState of A1 -> initial state of A2
     foreach fS in finalStatesA1 do
         A.addTransition("A1_"+fS,epsilon,"A2_"+initialStateA2)
     done

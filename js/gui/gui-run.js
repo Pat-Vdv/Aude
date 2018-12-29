@@ -24,7 +24,10 @@
     var _ = AudeGUI.l10n;
 
     var loadingProgNot = null;
-    var curAlgo = new Object; //.name contains the name of the current
+
+    //.name contains the name of the current
+    var curAlgo = {};
+
     var algoAutomatonL = null;
     var algoAutomatonR = null;
     var algoRE = null;
@@ -46,7 +49,7 @@
 
     AudeGUI.Runtime = {
         load: function () {
-            curAlgo.name="id";
+            curAlgo.name = "id";
             algoName = document.getElementById("predef-algos-name");
             algoAutomatonL = document.getElementById("container-algo-automata-left");
             algoAutomatonR = document.getElementById("container-algo-automata-right");
@@ -74,36 +77,48 @@
             button.className = "cell-algo";
             button.value = fname.replace(/\.ajs$/, "");
             button.textContent = _(descr);
+
             button.onclick = function (e) {
                 curAlgo.name = e.target.value;
-                algoName.innerHTML = _(descr); //Change the name of the selected algo
-                document.getElementById("container-algos").style.display="none"; //Hide the list of algos
+
+                //Change the name of the selected algo
+                algoName.innerHTML = _(descr);
+
+                //Hide the list of algos
+                document.getElementById("container-algos").style.display="none";
+
                 document.getElementById("up-select-algo").style.display = "none";
                 document.getElementById("down-select-algo").style.display = "inline";
             }
-            if (type ==="automaton") {
-                curAlgo.type='automaton';
-                if (algoAutomatonL.childElementCount <= algoAutomatonR.childElementCount)
-                    algoAutomatonL.appendChild(button);
-                else
-                    algoAutomatonR.appendChild(button);
-            }
-            else if (type ==="re") {
-                curAlgo.type = "re";
-                algoRE.appendChild(button);
-            }
-            else if (type ==="grammar") {
-                curAlgo.type = "grammar";
-                algoGrammar.appendChild(button);
-            }
-            else if (type ==="other") {
-                curAlgo.type = "automaton";
-                algoOther.appendChild(button);
-            }
-            else {
-                console.log  ("Type algo not recognized")
-            }
 
+            switch (type) {
+                case "automaton":
+                    curAlgo.type='automaton';
+                    if (algoAutomatonL.childElementCount <= algoAutomatonR.childElementCount) {
+                        algoAutomatonL.appendChild(button);
+                    } else {
+                        algoAutomatonR.appendChild(button);
+                    }
+                    break;
+
+                case "re":
+                    curAlgo.type = "re";
+                    algoRE.appendChild(button);
+                    break;
+
+                case "grammar":
+                    curAlgo.type = "grammar";
+                    algoGrammar.appendChild(button);
+                    break;
+
+                case "other":
+                    curAlgo.type = "automaton";
+                    algoOther.appendChild(button);
+                    break;
+
+                default:
+                    console.log("Algo type not recognized");
+            }
         },
 
         callWithList: function (count, callback) {
@@ -220,8 +235,9 @@
 
             return A;
         },
-            // Automaton → Pushdown automaton
-        get_pushdown_automaton: function (i,statesAsString) {
+
+        // Automaton → Pushdown automaton
+        get_pushdown_automaton: function (i, statesAsString) {
             if (isNaN(i)) {
                 return null;
             }
@@ -231,67 +247,96 @@
             if (isNaN(i)) {
                 return null;
             }
+
             var A = AudeGUI.Runtime.get_automaton(i, true);
 
             var P = new Pushdown();
 
-            P.setInitialState(A.getInitialState()); //Initialise the initial state
+            P.setInitialState(A.getInitialState());
 
-            for (var s of A.getFinalStates()) //Initialise the final states
+            for (var s of A.getFinalStates()) {
                 P.setFinalState(s);
+            }
 
-            //Initialise transitions
             var trans = A.getTransitions();
             var tabTransition = [];
             var c = "";
             var i=0;
-            //For each transition
+
+            // For each transition
             try {
                 for (var t of trans) {
-                    while(t.symbol[i]!=";" && i<t.symbol.length) {
+                    while(t.symbol[i] != ";" && i < t.symbol.length) {
                         c += t.symbol[i];
                         i++;
                     }
+
                     i++;
-                    if (c.trim()==="ε")
+
+                    if (c.trim() === "ε") {
                         tabTransition.push(epsilon);
-                    else
-                        tabTransition.push(c.trim()); //Symbol of transition
+                    } else {
+                        // Transition symbol
+                        tabTransition.push(c.trim());
+                    }
+
                     c = "";
 
-                    while(t.symbol[i]!="/" && i<t.symbol.length) {
+                    while (t.symbol[i] !== "/" && i < t.symbol.length) {
                         c += t.symbol[i];
                         i++;
                     }
+
                     i++;
-                    if (c.trim()==="ε")
-                        tabTransition.push(epsilon);
-                    else
-                        tabTransition.push(c.trim()); ////Symbol of stack to replace
+
+                    tabTransition.push(
+                        (c.trim()==="ε")
+                            ? epsilon
+                            : c.trim() // Symbol of stack to replace
+                    );
 
                     c = "";
-                    while(String(t.symbol[i])!="\0" && i<t.symbol.length) {
+                    while (String(t.symbol[i]) !== "\0" && i < t.symbol.length) {
                         c += t.symbol[i];
                         i++;
                     }
 
-                    tabTransition.push(c.trim()); //The symbols to push to the stack
+                    //The symbols to push to the stack
+                    tabTransition.push(c.trim());
 
-                    if (t.symbol===pkg.epsilon) //If the transition is composed of only ε
-                        P.addTransition(t.startState,epsilon,tabTransition[1],t.endState,tabTransition[2]);
-                    else
-                        P.addTransition(t.startState,tabTransition[0],tabTransition[1],t.endState,tabTransition[2]);
+                    //If the transition is composed of only ε
+                    if (t.symbol === pkg.epsilon) {
+                        P.addTransition(
+                            t.startState,
+                            epsilon,
+                            tabTransition[1],
+                            t.endState,
+                            tabTransition[2]
+                        );
+                    } else {
+                        P.addTransition(
+                            t.startState,
+                            tabTransition[0],
+                            tabTransition[1],
+                            t.endState,
+                            tabTransition[2]
+                        );
+                    }
+
                     tabTransition = [];
                     c = "";
                     i = 0;
-
                 }
             } catch(e) {
                 console.error(e);
-                throw new Error(libD.format(_("get_pushdown_automaton: automaton not understood.")));
+                throw new Error(
+                    libD.format(
+                        _("get_pushdown_automaton: automaton not understood.")
+                    )
+                );
             }
-            return P;
 
+            return P;
         },
 
         get_automata: function (count, callback) {
@@ -404,7 +449,7 @@
             return res;
         },
 
-        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore,get_pushdown_automaton) {
+        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore, get_pushdown_automaton) {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
                 loadingProgNot = null;

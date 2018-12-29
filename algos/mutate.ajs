@@ -1,11 +1,11 @@
 from normalization import normalize
 
-// Returns a random whole number in the [minimum, maximum] interval
+# Returns a random whole number in the [minimum, maximum] interval
 export function randomNumber(minimum, maximum)
     return Math.floor((Math.random()) * (maximum - minimum + 1)) + minimum
 end function
 
-// Returns a random transition from a set of transitions
+# Returns a random transition from a set of transitions
 export function getRandomElement(set, fallbackElement)
     return (
         if set is empty then
@@ -15,8 +15,8 @@ export function getRandomElement(set, fallbackElement)
     )
 end function
 
-// Finds a name for a new state
-// in the automaton and makes sure this state name doesn't already exist
+# Finds a name for a new state
+# in the automaton and makes sure this state name doesn't already exist
 export function newStateName(A)
     let stateName := A.getStates().size
     while stateName belongs to A.getStates() do
@@ -26,17 +26,17 @@ export function newStateName(A)
 end function
 
 
-// Changes the symbol of a random transition in A
+# Changes the symbol of a random transition in A
 export function changeSymbol(A)
     if A.getTransitions() is empty or A.getAlphabet().size < 2 then
         return
     end if
 
-    // we choose a random transition of the automaton A
+    # we choose a random transition of the automaton A
     let randomTransition := getRandomElement(A.getTransitions())
 
-    // we choose a random symbol from the alphabet of A
-    // different from the symbol of randomTransition
+    # we choose a random symbol from the alphabet of A
+    # different from the symbol of randomTransition
     let randomSymbol := null
     do
         randomSymbol := getRandomElement(A.getAlphabet())
@@ -46,7 +46,7 @@ export function changeSymbol(A)
     A.addTransition(randomTransition.startState, randomSymbol, randomTransition.endState)
 end function
 
-// Removes a random transition from the automaton
+# Removes a random transition from the automaton
 export function removeTransition(A)
     let transitions := A.getTransitions()
     if transitions is not empty then
@@ -54,21 +54,21 @@ export function removeTransition(A)
     end if
 end function
 
-// Adds a random "wrong" transition in the automaton
+# Adds a random "wrong" transition in the automaton
 export function addTransition(A)
     let randomInput := getRandomElement(A.getAlphabet(), "a")
 
-    // we choose two random states of A
+    # we choose two random states of A
     let firstRandomState := getRandomElement(A.getStates())
     let secondRandomState := getRandomElement(A.getStates())
 
-    // we add the new transition to A
+    # we add the new transition to A
     A.addTransition(firstRandomState, randomInput, secondRandomState)
 
     return A
 end function
 
-// Adds a random transition that starts at startState
+# Adds a random transition that starts at startState
 export function addTransitionFromState(A, startState)
     let randomSymbol := getRandomElement(A.getAlphabet(), "a")
     let randomState := getRandomElement(A.getStates())
@@ -76,14 +76,14 @@ export function addTransitionFromState(A, startState)
     return A
 end function
 
-// Adds an epsilon transition that starts at startState
+# Adds an epsilon transition that starts at startState
 export function addEpsilonTransitionFromState(A, startState)
     let randomState := getRandomElement(A.getStates())
     A.addTransition(startState, epsilon.toString(), randomState)
     return A
 end function
 
-// Adds a random transition that arrives at endState
+# Adds a random transition that arrives at endState
 export function addTransitionToState(A, endState)
     let randomSymbol := getRandomElement(A.getAlphabet())
     let randomState := getRandomElement(A.getStates())
@@ -91,7 +91,7 @@ export function addTransitionToState(A, endState)
     return A
 end function
 
-// Adds an epsilon transition transition that arrives at endState
+# Adds an epsilon transition transition that arrives at endState
 export function addEpsilonTransitionToState(A, endState)
     let randomState := getRandomElement(A.getStates())
     A.addTransition(randomState, epsilon.toString(), endState)
@@ -99,7 +99,7 @@ export function addEpsilonTransitionToState(A, endState)
 end function
 
 
-// Adds a new state to an automaton
+# Adds a new state to an automaton
 export function addState(A, stateName)
     if stateName = undefined then
         stateName := newStateName(A)
@@ -108,7 +108,7 @@ export function addState(A, stateName)
     return stateName
 end function
 
-// Adds a new state and new transitions towards and from this state
+# Adds a new state and new transitions towards and from this state
 export function addStateAndTransitions(A)
     let newState := addState(A)
 
@@ -127,15 +127,15 @@ export function addStateAndTransitions(A)
     done
 end function
 
-// REMARK : to add a new state and transitions to this state
-// use addState(A, stateName) and addTransitionToState(A, stateName)
+# REMARK : to add a new state and transitions to this state
+# use addState(A, stateName) and addTransitionToState(A, stateName)
 
-// Inverses a random transition of the automaton
+# Inverses a random transition of the automaton
 export function inverseTransition(A)
-    // if endState = startState then this function will not change the automaton
-    // so we'll make sure to check the transition before inversing it
+    # if endState = startState then this function will not change the automaton
+    # so we'll make sure to check the transition before inversing it
 
-    // we put in the T set all the transitions that have a distinct startState and endState
+    # we put in the T set all the transitions that have a distinct startState and endState
     let T := new Set()
     foreach transition in A.getTransitions() do
         if transition.startState != transition.endState then
@@ -150,17 +150,17 @@ export function inverseTransition(A)
     end if
 end function
 
-// Takes an automaton and returns another automaton identical to A missing a final state
+# Takes an automaton and returns another automaton identical to A missing a final state
 export function removeFinalState(A)
     if A.getFinalStates() is not empty then
         A.toggleFinalState(getRandomElement(A.getFinalStates()))
     end if
 end function
 
-// If the automaton contains epsilon transitions
-// then this function removes one of the epsilon transitions from the automaton
+# If the automaton contains epsilon transitions
+# then this function removes one of the epsilon transitions from the automaton
 export function removeEpsilonTransition(A)
-    // we count the number of epsilon transitions present in A
+    # we count the number of epsilon transitions present in A
     let counter := 0
     foreach transition in A.getTransitions() do
         if transition.symbol = 'ε' then
@@ -169,11 +169,11 @@ export function removeEpsilonTransition(A)
     end foreach
 
     if counter = 0 then
-        return // A has no epsilon transitions
+        return # A has no epsilon transitions
     end if
 
-    // FIXME think about doing the other method where we store the epsilon transitions at
-    // the beginning and then we won't have to go over all of the transitions twice
+    # FIXME think about doing the other method where we store the epsilon transitions at
+    # the beginning and then we won't have to go over all of the transitions twice
 
     let random := randomNumber(1, counter)
     let i := 1
@@ -189,7 +189,7 @@ export function removeEpsilonTransition(A)
     end foreach
 end function
 
-// Removes a state from the automaton that isn't the initial state
+# Removes a state from the automaton that isn't the initial state
 export function removeState(A)
     let statesWithoutInitial := A.getStates() \ {A.getInitialState()}
 
@@ -199,7 +199,7 @@ export function removeState(A)
 end function
 
 
-// Transforms a random state into a final state
+# Transforms a random state into a final state
 export function addFinal (A)
     let nonFinalStates := A.getStates() \ A.getFinalStates()
     if nonFinalStates is not empty then
@@ -216,7 +216,7 @@ run(
             "2 1 10"
         )
 
-        // extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
+        # extracting from input the set of numbers separated by commas/spaces/anything_else_that's_not_a_number
         let I := []
         let n := 0
         foreach c in input do
@@ -231,7 +231,7 @@ run(
             I.push(n)
         end if
 
-        // for each case we execute the associated function
+        # for each case we execute the associated function
         foreach c in I do
            if c = 1 then
                changeSymbol(A)

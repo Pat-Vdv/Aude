@@ -54,7 +54,7 @@ run(
     function()
 
         function accept(radioButton,regex,grammar,win)
-            if radioButton[0].checked then //Automaton
+            if radioButton[0].checked then # Automaton
                 AudeGUI.Results.set(infiniteLanguage(get_automaton(currentAutomaton)))
             else if radioButton[1].checked then
                 AudeGUI.Results.set(infiniteLanguage(regexToAutomaton(regex)))
