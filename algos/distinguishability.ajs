@@ -1,12 +1,6 @@
-from completion import complete
-from completion import isCompleted
-
 # This function takes an automaton A and returns a set of
 # couples of states that are differentiable two at a time.
-export function distinguableStates(A,completed)
-    if completed=false or completed = undefined then
-        A := complete(A)
-    end if
+export function distinguableStates(A)
    let F     := A.getFinalStates()
    let Q     := A.getStates()
    let Sigma := A.getAlphabet()
@@ -23,7 +17,8 @@ export function distinguableStates(A,completed)
          foreach q in Q do
             if (p, q) does not belong to D and (q, p) does not belong to D and p!=q then
                foreach a in Sigma do
-                  if (delta(p, a), delta(q, a)) belongs to D or (delta(q, a), delta(p, a)) belongs to D then
+                  let def :=  (delta(q, a) = undefined and delta(p, a) != undefined) or (delta(q, a) != undefined and delta(p, a) = undefined)
+                  if (delta(p, a), delta(q, a)) belongs to D or (delta(q, a), delta(p, a)) belongs to D or def  then
                      D.add( (p, q) )
                      D.add( (q, p) )
                   end if
@@ -64,22 +59,7 @@ end function
 if typeof Node = "function" and typeof document = "object" and document instanceof Node then
     run(
         (function(A)
-            # The automaton needs to be completed
-            let rep := true
-            if isCompleted(A)=false then
-                let rep := confirm (AudeGUI.l10n(
-                "Automaton not completed! The program will complete it before giving the distinguable states"
-                ))
-                if rep = false then
-                    return AudeGUI.l10n(
-                        "Can't pursue the algorithm if the automaton is not completed"
-                    )
-                else
-                    rep := false
-                end if
-            end if
-
-            let res    := distinguableStates(A,rep)
+            let res    := distinguableStates(A)
             let states := A.getStates().getList();
             let len    := states.length
             let table  := document.createElement("table")
@@ -123,5 +103,5 @@ if typeof Node = "function" and typeof document = "object" and document instance
         get_automaton(currentAutomaton)
    )
 else
-   run (distinguableStates, get_automaton(currentAutomaton))
+   run(distinguableStates, get_automaton(currentAutomaton))
 end if

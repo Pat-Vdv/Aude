@@ -38,35 +38,4 @@ export function product(A1, A2, deter)
    return prodA
 end function
 
-function runProduct(A,B)
-    let deter := true
-    let rep := true
-    let isDeterA := isDeterminized(A)
-    let isDeterB := isDeterminized(B)
-
-    if isDeterA=false and isDeterB=false then
-        rep := confirm (AudeGUI.l10n(
-            "Automaton 1 and 2 not determinized! The program will determinized them before giving the equivalence"
-        ))
-        deter := false
-    else if isDeterA=true and isDeterB=false then
-        rep := confirm (AudeGUI.l10n(
-            "Automaton 2 not determinized! The program will determinized it before giving the equivalence"
-        ))
-        deter := false
-    else if isDeterA=false and isDeterB=true then
-        rep := confirm (AudeGUI.l10n(
-            "Automaton 1 not determinized! The program will determinized it before giving the equivalence"
-        ))
-        deter := false
-    end if
-    if rep = false then
-        return AudeGUI.l10n(
-                "Can't pursue the algorithm if the automata are not determinized"
-            )
-    end if
-    return product(A,B,deter)
-
-end function
-
-run(get_automata, 2, runProduct)
+run(get_automata, 2, product)

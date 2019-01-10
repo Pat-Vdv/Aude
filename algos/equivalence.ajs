@@ -1,5 +1,4 @@
 from minimization import minimize
-from minimization import isMinimized
 
 export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
     if not symetryAlreadyDone then
@@ -52,24 +51,4 @@ export function automataAreEquivalent(A1, A2, symetryAlreadyDone)
     return visit(A1.getInitialState(), A2.getInitialState()) and (symetryAlreadyDone or automataAreEquivalent(A2, A1, true))
 end function
 
-
-function runFunction(A,B)
-    # The automaton needs to be minimized
-    let isMini := true
-    if isMinimized(A)=false or isMinimized(B)=false then
-        let rep := confirm (AudeGUI.l10n(
-            "Automaton not minimized! The program will minimize it before giving the equivalence"
-        ))
-        if rep = false then
-            return AudeGUI.l10n(
-                "Can't pursue the algorithm if the automata are not minimized"
-            )
-        else
-            isMini := false
-        end if
-    end if
-    return automataAreEquivalent(A,B,isMini)
-end function
-
-
-run(get_automata,2,runFunction)
+run(get_automata, 2, automataAreEquivalent)
