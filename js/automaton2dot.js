@@ -89,10 +89,10 @@
         }
 
         var res                = catln("digraph ", JSON.stringify(title), " {\n\trankdir=LR\n\t_begin [style = invis];"),
-            nonacceptingStates = aude.toArray(a.getNonFinalStates()),
-            acceptingStates    = aude.toArray(a.getFinalStates()),
-            transitions        = aude.toArray(a.getTransitions()),
-            states             = aude.toArray(a.getStates()),
+            nonacceptingStates = a.getNonFinalStates().getSortedList(),
+            acceptingStates    = a.getFinalStates().getSortedList(),
+            transitions        = a.getTransitions().getSortedList(),
+            states             = a.getStates().getSortedList(),
             initialState       = a.getInitialState(),
             leng               = states.length,
             table              = [];
