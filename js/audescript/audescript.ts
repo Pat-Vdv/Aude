@@ -1,6 +1,6 @@
 /// <reference path="./typings/tsd.d.ts" />
 /*
-    Copyright (C) 2015 JAKSE Raphaël
+    Copyright (C) 2015-2019 JAKSE Raphaël
 
     The JavaScript code in this page is free software: you can
     redistribute it and/or modify it under the terms of the GNU
@@ -56,11 +56,7 @@ class AudescriptASTStatement {
 
     static needParentheses(ast : AudescriptASTExpression, parent? : AudescriptASTInfixedOp) {
         if (ast instanceof AudescriptASTTernary) {
-            if (parent && parent.op[parent.op.length - 1] === "=" && parent.op !== "=" && parent.op !== "/=" && parent.op !== "!=") {
-                return false;
-            } else {
-                return true;
-            }
+            return !(parent && parent.op[parent.op.length - 1] === "=" && parent.op !== "=" && parent.op !== "/=" && parent.op !== "!=");
         }
 
         if (ast instanceof AudescriptASTBracketParenBrace) {
@@ -656,22 +652,28 @@ class AudescriptASTStatement {
     }
 
     static checkNotInfixedOpNotAssignement(ast : AudescriptASTStatement) : void {
-        if (ast instanceof AudescriptASTInfixedOp && ast.op !== "call" && (ast.op[ast.op.length -1] !== "=" || ast.op === "=" || ast.op === "!=")) {
-            if (ast.op === "=") {
+        if (ast instanceof AudescriptASTBracketParenBrace || (ast instanceof AudescriptASTInfixedOp && ast.op !== "call" && (ast.op[ast.op.length -1] !== "=" || ast.op === "=" || ast.op === "!="))) {
+            if (ast instanceof AudescriptASTInfixedOp) {
+                if (ast.op === "=") {
+                    ast.lexerStateBegin.parseError(
+                        format(
+                            _("Expecting a statement, not an expression (operator {0}). Maybe you meant ':='?"),
+                            "'" + ast.op + "'"
+                        )
+                    );
+                } else {
+                    ast.lexerStateBegin.parseError(
+                        format(
+                            _("Expecting a statement, not an expression (operator {0})"),
+                            "'" + ast.op + "'"
+                        )
+                    );
+                }
+            } else {
                 ast.lexerStateBegin.parseError(
-                    format(
-                        _("Expecting a statement, not an expression (operator {0}). Maybe you meant ':='?"),
-                        "'" + ast.op + "'"
-                    )
+                    format(_("Expecting a statement, not an expression"))
                 );
             }
-
-            ast.lexerStateBegin.parseError(
-                format(
-                    _("Expecting a statement, not an expression (operator {0})"),
-                    "'" + ast.op + "'"
-                )
-            );
         }
     }
 
