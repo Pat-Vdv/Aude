@@ -897,7 +897,7 @@ msgstr ""
 msgid  "Alphabet "
 msgstr ""
 
-msgid  "Number of final states: "
+msgid  "Number of accepting states: "
 msgstr ""
 
 msgid  "Mode: "
@@ -1137,8 +1137,14 @@ msgstr ""
 msgid  "Enter a grammar"
 msgstr ""
 
-msgid  "Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3"
-msgstr ""
+msgid  "Deterministic automaton"
+msgstr "Automate déterministe"
+
+msgid  "Non deterministic automaton"
+msgstr "Automate non déterministe"
+
+msgid "Non deterministic automaton with ε-transitions"
+msgstr "Automate non déterministe avec ε-transitions"
 
 msgid  "Settings automaton"
 msgstr ""

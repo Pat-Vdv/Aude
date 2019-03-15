@@ -4,20 +4,35 @@ from mutate import randomNumber
 from reachability import reachableStates
 from coreachability import coreachableStates
 
-
-# Take a number of states, an alphabet, a number of final states, the type (1: Determinist
-# 2: No determinist 3:E psilon-transition), a number of transitions (number or low, medium, high)
-export function createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+# Take:
+#  - a number of states
+#  - an alphabet
+#  - a number of final states
+#  - the type (1: Determinist, 2: No determinist, 3: Epsilon-transition),
+#  - a number of transitions (number or low, medium, high)
+export function createAutomaton(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
     let A := new Automaton
 
-    if typeAutomaton=1 and nbTransitions > nbStates*alphabet.length then
-        return "Too much transitions: the maximum number is: "+nbStates*alphabet.length+" and you asked: "+ nbTransitions
-    else if typeAutomaton=2 and nbTransitions > nbStates*nbStates*alphabet.length then
-        return "Too much transitions: the maximum number is: "+nbStates*nbStates*alphabet.length+" and you asked: "+ nbTransitions
-    else if typeAutomaton=3 and nbTransitions > nbStates*nbStates*(alphabet.length+1) then
-        return "Too much transitions: the maximum number is: "+nbStates*nbStates*(alphabet.length+1)+" and you asked: "+ nbTransitions
-    else if nbStates<nbFinalStates then
-        return "You asked more final states than states"
+    if typeAutomaton = 1 and nbTransitions > nbStates * alphabet.length then
+        return (
+            "Too much transitions. The maximum number is: " +
+                (nbStates * alphabet.length) +
+            " and you requested: " + nbTransitions
+        );
+    else if typeAutomaton = 2 and nbTransitions > nbStates * nbStates * alphabet.length then
+        return (
+            "Too much transitions. The maximum number is: " + (
+                nbStates * nbStates * alphabet.length
+            ) + " and you requested: " + nbTransitions
+        );
+    else if typeAutomaton = 3 and nbTransitions > nbStates * nbStates * (alphabet.length + 1) then
+        return (
+            "Too much transitions. The maximum number is: " + (
+                nbStates * nbStates * (alphabet.length + 1)
+            ) + " and you requested: " + nbTransitions
+        )
+    else if nbStates < nbAcceptingStates then
+        return "You requested more accepting states than states"
     end if
 
     # Initialize the alphabet
@@ -63,18 +78,19 @@ function createTransitionDeterminist(A, alphabet, nbStates, nbTransitions)
     for i from 1 to nbTransitions do
         transitions := A.getTransitions()
         do
-            state1 := randomNumber(1,nbStates)
-            state2 := randomNumber(1,nbStates)
-            sym := alphabet[randomNumber(0,alphabet.length-1)]
-        # Add a transition that doesn't exist
-        while A.hasTransition(state1,sym,state2) or otherTransition(A,state1,sym)
-        A.addTransition(state1,sym,state2)
+            state1 := randomNumber(1, nbStates)
+            state2 := randomNumber(1, nbStates)
+            sym := alphabet[randomNumber(0, alphabet.length-1)]
+            # Add a transition that doesn't exist
+        while A.hasTransition(state1, sym, state2) or otherTransition(A, state1, sym)
+
+        A.addTransition(state1, sym, state2)
     done
     return A
 end function
 
 # Create the transistions for a non-determinist automaton
-function createTransitionNonDeterminist(A,alphabet,nbStates,nbTransitions)
+function createTransitionNonDeterminist(A, alphabet, nbStates, nbTransitions)
     let transitions := null
     let state1 := null
     let state2 := null
@@ -82,17 +98,18 @@ function createTransitionNonDeterminist(A,alphabet,nbStates,nbTransitions)
     for i from 1 to nbTransitions do
         transitions := A.getTransitions()
         do
-            state1 := randomNumber(1,nbStates)
-            state2 := randomNumber(1,nbStates)
-            sym := alphabet[randomNumber(0,alphabet.length-1)]
-        while A.hasTransition(state1,sym,state2) # Add a transition that doesn't exist
-        A.addTransition(state1,sym,state2)
+            state1 := randomNumber(1, nbStates)
+            state2 := randomNumber(1, nbStates)
+            sym := alphabet[randomNumber(0, alphabet.length-1)]
+            # Add a transition that doesn't exist
+        while A.hasTransition(state1, sym, state2)
+        A.addTransition(state1, sym, state2)
     done
     return A
 end function
 
 # Create the transistions for a epsilon-transitions automaton
-function createTransitionEpsilon(A,alphabet,nbStates,nbTransitions)
+function createTransitionEpsilon(A, alphabet, nbStates, nbTransitions)
     let transitions := null
     let state1 := null
     let state2 := null
@@ -101,94 +118,130 @@ function createTransitionEpsilon(A,alphabet,nbStates,nbTransitions)
     for i from 1 to nbTransitions do
         transitions := A.getTransitions()
         do
-            state1 := randomNumber(1,nbStates)
-            state2 := randomNumber(1,nbStates)
-            num := randomNumber(0,alphabet.length)
+            state1 := randomNumber(1, nbStates)
+            state2 := randomNumber(1, nbStates)
+            num := randomNumber(0, alphabet.length)
             if num = alphabet.length then
                 sym := epsilon
             else
                 sym := alphabet[num]
             end if
-        while A.hasTransition(state1,sym,state2)  # Add a transition that doesn't exist
-        A.addTransition(state1,sym,state2)
+            # Add a transition that doesn't exist
+        while A.hasTransition(state1, sym, state2)
+        A.addTransition(state1, sym, state2)
     done
     return A
 end function
 
 # Takes an automaton, a state, a symbol and returns true if there is a transition
 # which starts from the state and symbol given
-function otherTransition(A,state,symbol)
+function otherTransition(A, state, symbol)
     foreach states in A.getStates() do
-        if A.hasTransition(state,symbol,states) then
+        if A.hasTransition(state, symbol, states) then
             return true
         end if
     done
     return false
 end function
 
-# Return true if all states are accessible
-function allStateAccessible(A)
-    let b := accessibleStates(A)
+# Return true if all states are reachable
+function allStateReachable(A)
+    let b := reachableStates(A)
     return b.size = A.getStates().size
 end function
 
-# Return true if all states are co-accessible
-function allStateCoaccessible(A)
-    let b := coaccessibleStates(A)
+# Return true if all states are co-reachable
+function allStateCoreachable(A)
+    let b := coreachableStates(A)
     return b.size = A.getStates().size
 end function
 
-# Create an automaton where all states are accessible and coaccessible
-export function createAutomatonCoaccessible(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+# Create an automaton where all states are reachable and co-reachable
+export function createAutomatonCoreachable(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
     let A := null
-    if nbStates-1 > nbTransitions then
-        return "Can't create the automaton where all the states are accessible and coaccessible"
+
+    if nbStates - 1 > nbTransitions then
+        return "Can't create the automaton where all the states are reachable and co-reachable"
     end if
+
     do
-        A := createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
-    while typeof A != "string" and ( not allStateAccessible(A) or not allStateCoaccessible(A) )
+        A := createAutomaton(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
+    while typeof A != "string" and ( not allStateReachable(A) or not allStateCoreachable(A) )
+
     return A
 end function
 
-# Create an automaton where all states are coaccessible
-function createAutomatonCoacces(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+# Create an automaton where all states are co-reachable
+function createAutomatonCoacces(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
     let A := null
+
     if nbStates-1 > nbTransitions then
-        return "Can't create the automaton where all the states are coaccessible"
+        return "Can't create the automaton where all the states are co-reachable"
     end if
+
     do
-        A := createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
-    while typeof A != "string" and not allStateCoaccessible(A)
+        A := createAutomaton(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
+    while typeof A != "string" and not allStateCoreachable(A)
     return A
 end function
 
-# Create an automaton where all states are accessible
-function createAutomatonAccess(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
+# Create an automaton where all states are reachable
+function createAutomatonAccess(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
     let A := null
     if nbStates-1 > nbTransitions then
-        return "Can't create the automaton where all the states are accessible"
+        return "Can't create the automaton where all the states are reachable"
     end if
     do
-        A := createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nbTransitions)
-    while typeof A != "string" and not allStateAccessible(A)
+        A := createAutomaton(nbStates, alphabet, nbAcceptingStates, typeAutomaton, nbTransitions)
+    while typeof A != "string" and not allStateReachable(A)
     return A
 end function
 
 run(
     function()
-        function accept(states,alphabet,finalStates,type,transitions,acces)
+        function accept(states, alphabet, finalStates, type, transitions, acces)
             if acces = 1 then
-                AudeGUI.Results.set(createAutomatonCoaccessible(states,alphabet,finalStates,type,transitions))
+                AudeGUI.Results.set(
+                    createAutomatonCoreachable(
+                        states,
+                        alphabet,
+                        finalStates,
+                        type,
+                        transitions
+                    )
+                )
             else if acces = 2 then
-                AudeGUI.Results.set(createAutomatonCoacces(states,alphabet,finalStates,type,transitions))
+                AudeGUI.Results.set(
+                    createAutomatonCoacces(
+                        states,
+                        alphabet,
+                        finalStates,
+                        type,
+                        transitions
+                    )
+                )
             else if acces = 3 then
-                AudeGUI.Results.set(createAutomatonAccess(states,alphabet,finalStates,type,transitions))
+                AudeGUI.Results.set(
+                    createAutomatonAccess(
+                        states,
+                        alphabet,
+                        finalStates,
+                        type,
+                        transitions
+                    )
+                )
             else if acces = 0 then
-                AudeGUI.Results.set(createAutomaton(states,alphabet,finalStates,type,transitions))
+                AudeGUI.Results.set(
+                    createAutomaton(
+                        states,
+                        alphabet,
+                        finalStates,
+                        type,
+                        transitions
+                    )
+                )
             fi
         end function
         askSettingsAutomaton(accept)
-
-
     end function
 )

@@ -1169,5 +1169,4 @@
         A = designer.getAutomaton(designer.currentIndex);
         return (A.getStates().card() === 1) && (A.getAlphabet().card() === 0) && (A.getInitialState() === "") && (A.getTransitions().card() === 0) && (A.getFinalStates().card() === 0);
     }
-
 }(window));

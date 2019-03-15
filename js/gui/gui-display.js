@@ -23,12 +23,12 @@
     pkg.inputGrammar = function (divAnswersUser) {
         divAnswersUser.appendChild(libD.jso2dom([
             ["div#input-block-grammar", [
-                ["span", _("Write directly the grammar: ")],
+                ["span", _("Write directly the grammar:")],
                 ["input#input-plain-grammar"], ["br"],
-                ["div#div-enter-easy-grammar", _("Or enter easily the grammar: ")],
-                ["span", _("Write the terminal symbols: ")],
+                ["div#div-enter-easy-grammar", _("Or enter easily the grammar:")],
+                ["span", _("Write the terminal symbols:")],
                 ["input#input-term-symbol"], ["br"],
-                ["span", _("Write the non terminal symbols: ")],
+                ["span", _("Write the non terminal symbols:")],
                 ["input#input-non-term-symbol"], ["br"],
                 ["select#input-start-symbol", [
                     ["option", _("Select the start symbol")],
@@ -155,7 +155,7 @@
             div.className = "libD-ws-colors-auto auto-size";
             div.id = "selection-mode-algorithm";
             div.appendChild(libD.jso2dom([
-                ["div", _("Choose the entry of the algorithm: ")],
+                ["div", _("Choose the entry of the algorithm:")],
                 ["input.selection-mode-type", {"type": "radio", "name": "mode", "value": "automaton", "checked": "true"}],
                 ["span", _("Automaton")], ["br"],
                 ["input.selection-mode-type", {"type": "radio", "name": "mode", "value": "RE"}],
@@ -293,51 +293,9 @@
         div.className = "libD-ws-colors-auto auto-size";
 
         div.appendChild(libD.jso2dom([
-            ["div.div-settings-question-container-row", [
-                ["div.div-settings-question-container-column", [
-                    ["span.span-settings-question", _("Number of states: ")],
-                    ["span.span-settings-question", _("Alphabet ")],
-                    ["span.span-settings-question", _("Number of final states: ")],
-                    ["span.span-settings-question", {
-                        "title": _("Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3")
-                    }, _("Mode: ")],
-                    ["span.span-settings-question", _("Number of transitions: ")],
-                    ["span.span-settings-question", _("All states accessible: ")],
-                    ["span.span-settings-question", _("All states co-accessible: ")],
-                ]],
-                ["div.div-settings-question-container-column",  [
-                    ["input.input-settings-question", {
-                        "type": "number",
-                        "min": "1"
-                    }],
-
-                    ["input.input-settings-question", {
-                        "type": "text"
-                    }],
-
-                    ["input.input-settings-question", {
-                        "type": "number",
-                        "min": "0"
-                    }],
-
-                    ["input.input-settings-question", {
-                        "type": "number",
-                        "min": "1",
-                        "max": "3"
-                    }],
-
-                    ["input.input-settings-question", {
-                        "type": "number",
-                        "min": "0"
-                    }],
-
-                    ["input.input-settings-question", {"type": "checkbox"}],
-                    ["input.input-settings-question", {"type": "checkbox"}],
-                ]],
-            ]],
-
-            ["button#validate-automaton", _("Validate")],
-        ]))
+            AudeGUI.QuestionList.tableRandomAutomateGeneration(),
+            ["div", {"style": "text-align:right"}, ["button#validate-automaton", _("Validate")]]
+        ]));
 
         var win = libD.newWin({ // Create a new window
             title:      _("Settings automaton"),

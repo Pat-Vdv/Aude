@@ -161,8 +161,8 @@
     var complement                    = null;
     var distinguableStates            = null;
     var notDistinguableStates         = null;
-    var coreachableStates            = null;
-    var reachableStates              = null;
+    var coreachableStates             = null;
+    var reachableStates               = null;
     var automaton2HTMLTable           = null;
     var createTable                   = null;
     var HTMLTable2automaton           = null;
@@ -187,15 +187,11 @@
     var automaton2RightLinearGrammar  = null;
     var isLeftLinear                  = null;
 
-    function hideDivSettingQuestion(setting) {
-        document.getElementById("div-settings-question-" + setting).style.display = "none";
-    }
-
     pkg.loadPrograms = function () {
         window.AudeGUI.Runtime.loadIncludes([
             "completion", "equivalence", "product", "minimization",
-            "complementation", "distinguishability", "coaccessibility",
-            "accessibility", "automaton2htmltable", "htmltable2automaton",
+            "complementation", "distinguishability", "coreachability",
+            "reachability", "automaton2htmltable", "htmltable2automaton",
             "createAutomaton", "smallerWord", "determinization",
             "epsElimination", "regex2automaton", "automaton2regex",
             "automaton2RightLinearGrammar", "linearGrammar2Automaton",
@@ -211,8 +207,8 @@
             complement = audescript.m("complementation").complement;
             distinguableStates = audescript.m("distinguishability").distinguableStates;
             notDistinguableStates = audescript.m("distinguishability").notDistinguableStates;
-            coreachableStates = audescript.m("coaccessibility").coreachableStates;
-            reachableStates = audescript.m("accessibility").reachableStates;
+            coreachableStates = audescript.m("coreachability").coreachableStates;
+            reachableStates = audescript.m("reachability").reachableStates;
             automaton2HTMLTable = audescript.m("automaton2htmltable").automaton2HTMLTable;
             createTable = audescript.m("htmltable2automaton").createTable;
             HTMLTable2automaton = audescript.m("htmltable2automaton").HTMLTable2automaton;
@@ -262,7 +258,7 @@
             typeQuestion !== "RE" &&
             typeQuestion !== "automaton"
         ) {
-            throw new Error("Error: creation of question impossible. typeQuestion: " + typeQuestion +" is not valid");
+            throw new Error("Error: creation of question impossible. typeQuestion:" + typeQuestion +" is not valid");
         } else {
             // The type of the question (mcq, Automaton, RE (Regular expression))
             this.typeQuestion = typeQuestion;
@@ -924,6 +920,54 @@
                 return;
             }
             win.minimize();
+        },
+
+        tableRandomAutomateGeneration: function () {
+            return ["table", [
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for": "create-automaton-nbstates"}, _("Number of states:")]],
+                    ["td", ["input.input-settings-question#create-automaton-nbstates", {
+                        "type": "number",
+                        "min": "1"
+                    }]]
+                ]],
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for": "create-automaton-alphabet"}, _("Alphabet")]],
+                    ["td", ["input.input-settings-question#create-automaton-alphabet", {
+                        "type": "text"
+                    }]]
+                ]],
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for": "create-automaton-nbaccepting"}, _("Number of accepting states:")]],
+                    ["td", ["input.input-settings-question#create-automaton-nbaccepting", {
+                        "type": "number",
+                        "min": "0"
+                    }]]
+                ]],
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for": "create-automaton-mode"}, _("Mode:")]],
+                    ["td", ["select.input-settings-question#create-automaton-mode", [
+                        ["option", {"value": 1}, _("Deterministic automaton")],
+                        ["option", {"value": 2}, _("Non deterministic automaton")],
+                        ["option", {"value": 3}, _("Non deterministic automaton with ε-transitions")],
+                    ]]]
+                ]],
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for": "create-automaton-nbtrans"}, _("Number of transitions:")]],
+                    ["td", ["input.input-settings-question#create-automaton-nbtrans", {
+                        "type": "number",
+                        "min": "0"
+                    }]]
+                ]],
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for":"create-automaton-allstatesreachable"}, _("All states are reachable:")]],
+                    ["td", ["input.input-settings-question#create-automaton-allstatesreachable", {"type": "checkbox"}]]
+                ]],
+                ["tr", [
+                    ["td", ["label.span-settings-question", {"for": "create-automaton-allstatescoreachable"}, _("All states are co-reachable:")]],
+                    ["td", ["input.input-settings-question#create-automaton-allstatescoreachable", {"type": "checkbox"}]]
+                ]],
+            ]];
         }
     };
 
@@ -1092,97 +1136,84 @@
                             ["button.load-mode", {"value": "re"}, _("Regular expression")],
                             ["button.load-mode", {"value": "grammar"}, _("Grammar")],
                         ]],
-                        ["div", {"class": "div-settings-question-container-row"}, [
-                            ["div", {"class": "div-settings-question-container-column"}, [
-                                ["span", _("Select file ")],
-                                ["span", _("Generate randomly ")],
-                                ["span", _("Get random files ")],
+                        ["table", [
+                            ["tr", [
+                                ["td", ["label", {"for": "question-selection-select-file"}, _("Select file ")]],
+                                ["td", ["input#question-selection-select-file.input-automaton-generate", {"type": "radio", "name": "randomAutomaton", "value": "selectFiles"}]],
                             ]],
-                            ["div", {"class": "div-settings-question-container-column"}, [
-                                ["input.input-automaton-generate", {"type": "radio", "name": "randomAutomaton", "value": "selectFiles"}],
-                                ["input.input-automaton-generate", {"type": "radio", "name": "randomAutomaton", "value": "randomAutomaton"}],
-                                ["input.input-automaton-generate", {"type": "radio", "name": "randomAutomaton", "value": "randomFiles"}],
+                            ["tr", [
+                                ["td", ["label", {"for": "question-selection-random-automaton"}, _("Generate randomly ")]],
+                                ["td", ["input#question-selection-random-automaton.input-automaton-generate", {"type": "radio", "name": "randomAutomaton", "value": "randomAutomaton"}]],
                             ]],
+                            ["tr", [
+                                ["td", ["label", {"for": "question-selection-random-files"}, _("Get random files ")]],
+                                ["td", ["input#question-selection-random-files.input-automaton-generate", {"type": "radio", "name": "randomAutomaton", "value": "randomFiles"}]],
+                            ]]
                         ]],
-                        ["span#div-settings-question-automaton-random", [
+                        ["div#div-settings-question-automaton-random", [
                             // To enter information to generate randomly an automaton
                             ["h2", _("Automaton generated randomly")],
-                            ["div.div-settings-question-container-row", [
-                                ["div.div-settings-question-container-column", [
-                                    ["span.span-settings-question", _("Number of states: ")],
-                                    ["span.span-settings-question", _("Alphabet ")],
-                                    ["span.span-settings-question", _("Number of final states: ")],
-                                    ["span.span-settings-question", _("Mode: ")],
-                                    ["span.span-settings-question", _("Number of transitions: ")],
-                                ]],
-                                ["div.div-settings-question-container-column", [
-                                    ["input.input-settings-question", {"type": "text"}],
-                                    ["input.input-settings-question", {"type": "text"}],
-                                    ["input.input-settings-question", {"type": "text"}],
-                                    ["input.input-settings-question", {"type": "text"}],
-                                    ["input.input-settings-question", {"type": "text"}],
-                                ]],
-                            ]],
+                            AudeGUI.QuestionList.tableRandomAutomateGeneration()
                         ]],
 
-                        ["span#div-settings-question-automaton-select", {"style": "display:none"}, [
+                        ["div#div-settings-question-automaton-select", {"style": "display:none"}, [
                             // To select an automaton
                             ["h2", _("Automaton selection")],
                             ["div", _("Select an automaton from the list or from your computer")],
                             ["button#selection-automaton", _("Open automaton")],
-                            ["span#", _("Selected automaton: "), [
+                            ["span#", _("Selected automaton:"), [
                                 ["span#display-name-file", _("none")],
                             ]],
                             ["br"],
                         ]],
 
-                        ["span#div-settings-question-automaton-random-file", {"style": "display:none"}, [
+                        ["div#div-settings-question-automaton-random-file", {"style": "display:none"}, [
                             ["h2", _("Automaton selection")],
                             ["div", _("The automaton is selected randomly from files")],
                             ["br"],
                         ]],
 
-                        ["span#div-settings-question-re-random", {"style": "display:none"}, [
+                        ["div#div-settings-question-re-random", {"style": "display:none"}, [
                             ["h2", _("Regular expression generated randomly")],
                             ["div", _("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
                             ["div", _("Prefearbly select a regular expression from files")],
                         ]],
 
-                        ["span#div-settings-question-re-select", {"style": "display:none"}, [
+                        ["div#div-settings-question-re-select", {"style": "display:none"}, [
                             // To select a regular expression
                             ["h2", _("Regular expression selection")],
                             ["div", _("Select a regular expression from the list or from your computer")],
                             ["button#selection-re", _("Open regular expression")],
-                            ["span#", _("Selected regular expression: "), [
+                            ["span#", _("Selected regular expression:"), [
                                 ["span#display-name-file-re", _("none")],
                             ]],
                             ["br"],
                         ]],
 
-                        ["span#div-settings-question-re-random-file", {"style": "display:none"}, [
+                        ["div#div-settings-question-re-random-file", {"style": "display:none"}, [
                             ["h2", _("Regular expression selection")],
                             ["div", _("The regular expression is selected randomly from files")],
                             ["br"],
                         ]],
 
-                        ["span#div-settings-question-grammar-random", {"style": "display:none"}, [
+                        ["div#div-settings-question-grammar-random", {"style": "display:none"}, [
                             ["h2", _("Grammar generated randomly")],
                             ["div", _("Create a random automaton by using the pararametes of the automaton 1 and converts it to a RE")],
                             ["div", _("Prefearbly select a grammar from files")],
                         ]],
 
-                        ["span#div-settings-question-grammar-select", {"style": "display:none"}, [
+                        ["div#div-settings-question-grammar-select", {"style": "display:none"}, [
                             // To select a grammar
                             ["h2", _("Grammar selection")],
                             ["div", _("Select a grammar from the list or from your computer")],
                             ["button#selection-grammar", _("Open grammar")],
-                            ["span#", _("Selected grammar: "), [
+                            ["span#", _("Selected grammar:"), [
                                 ["span#display-name-file-grammar", _("none")],
                             ]],
                             ["br"],
                         ]],
 
-                        ["span#div-settings-question-grammar-random-file", {"style": "display:none"}, [
+                        ["div#div-settings-question-grammar-random-file", {"style": "display:none"}, [
                             ["h2", _("Grammar selection")],
                             ["div", _("The grammar is selected randomly from files")],
                             ["br"],
@@ -1306,6 +1337,10 @@
 
                 grammarLoaded = localGrammarLoaded;
                 RELoaded = localRELoaded;
+            }
+
+            function hideDivSettingQuestion(setting) {
+                document.getElementById("div-settings-question-" + setting).style.display = "none";
             }
 
             // Display the selected mode between automaton1, automaton2, ER, grammar
@@ -1797,7 +1832,7 @@
             return ["button.questionList-question-select", {"value": v}, text];
         };
 
-        switch (parseInt(chapter), 10) {
+        switch (parseInt(chapter, 10)) {
             case 1:
                 div.appendChild(libD.jso2dom([
                     bQuectionSelect("mcq1", _("Multiple choice questions")), ["br"],
@@ -1841,7 +1876,6 @@
                     bQuectionSelect("leftGrammar2RightGrammar", _("Convert the left linear grammar to the right linear grammar")), ["br"],
                 ]));
                 break;
-
             default:
                 div.appendChild(libD.jso2dom(["span.questionList-question", _("No question")]));
         }
@@ -2148,7 +2182,7 @@
     // Display the question on the div
     function drawQuestion (question, div) {
         div.appendChild(libD.jso2dom([
-            ["div#question-wording", _("Question: ")],
+            ["div#question-wording", _("Question:")],
 
             // To put the automaton for the question
             ["div#question-automata-designer"],
@@ -2434,7 +2468,7 @@
                 }
 
                 div.appendChild(libD.jso2dom(["span#question-solution-input"]));
-                document.getElementById("question-solution-input").innerHTML = "The correct choice: " + response;
+                document.getElementById("question-solution-input").innerHTML = "The correct choice:" + response;
                 // FIXME translate
                 break;
         }

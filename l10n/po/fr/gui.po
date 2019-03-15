@@ -91,8 +91,8 @@ msgstr "resultat.txt"
 msgid  "automaton.txt"
 msgstr "automate.txt"
 
-msgid  "Word: "
-msgstr "Mot\u202F: "
+msgid  "Word:"
+msgstr "Mot\u202F:"
 
 msgid  "Run"
 msgstr "Exécuter"
@@ -100,8 +100,8 @@ msgstr "Exécuter"
 msgid  "Step"
 msgstr "Un pas"
 
-msgid  "Delay between steps (ms): "
-msgstr "Pause entre les étapes (ms)\u202F: "
+msgid  "Delay between steps (ms):"
+msgstr "Pause entre les étapes (ms)\u202F:"
 
 msgid  "Edit this automaton"
 msgstr "Éditer cet automate"
@@ -251,13 +251,13 @@ msgid  "Close"
 msgstr "Fermer"
 
 msgid  "Quiz:"
-msgstr "Quiz\u202F: "
+msgstr "Quiz\u202F:"
 
 msgid  "Quiz"
 msgstr "Quiz"
 
-msgid  "Question {0}: "
-msgstr "Question {0}\u202F: "
+msgid  "Question {0}:"
+msgstr "Question {0}\u202F:"
 
 msgid  "Next question"
 msgstr "Question suivante"
@@ -680,13 +680,13 @@ msgstr "minimisé, écrivez isMinimized(autoAnsw)"
 msgid  "completed, write isCompleted(autoAnsw)"
 msgstr "complété, écrivez isCompleted(autoAnsw)"
 
-msgid  "Initial stack symbol : "
+msgid  "Initial stack symbol :"
 msgstr "Symbole de fond de pile:"
 
-msgid  "Determinized pushdown automaton: "
+msgid  "Determinized pushdown automaton:"
 msgstr "Automate à pile déterminisé"
 
-msgid  "State: "
+msgid  "State:"
 msgstr "Etat :"
 
 msgid  "Stacks"
@@ -701,17 +701,17 @@ msgstr "Valeur"
 msgid  "Stack"
 msgstr "Pile"
 
-msgid  "Write directly the grammar: "
+msgid  "Write directly the grammar:"
 msgstr "Entrer directement la grammaire"
 
-msgid  "Or enter easily the grammar: "
+msgid  "Or enter easily the grammar:"
 msgstr "Ou entrer la grammaire champ par champ"
 
-msgid  "Write the terminal symbols: "
-msgstr "Ecriver les symboles terminaux : "
+msgid  "Write the terminal symbols:"
+msgstr "Ecriver les symboles terminaux :"
 
-msgid  "Write the non terminal symbols: "
-msgstr "Ecriver les symboles non terminaux : "
+msgid  "Write the non terminal symbols:"
+msgstr "Ecriver les symboles non terminaux :"
 
 msgid  "Select the start symbol"
 msgstr "Sélectionner l'axiome"
@@ -722,7 +722,7 @@ msgstr "Symbole non terminal"
 msgid  "Body"
 msgstr "Le corps"
 
-msgid  "Choose the entry of the algorithm: "
+msgid  "Choose the entry of the algorithm:"
 msgstr "Choisissez le type d'entrée de l'algorithme"
 
 msgid  "Choose type"
@@ -731,8 +731,14 @@ msgstr "Choisir le type"
 msgid  "Enter a grammar"
 msgstr "Entrer la grammar"
 
-msgid  "Automaton determinist: 1\nAutomaton non determinist: 2 \nAutomaton non determinist with ε-transitions: 3"
-msgstr "Automate deterministe: 1\Automate non deterministe: 2 \Automate non deterministe avec ε-transitions: 3"
+msgid  "Deterministic automaton"
+msgstr "Automate déterministe"
+
+msgid  "Non deterministic automaton"
+msgstr "Automate non déterministe"
+
+msgid "Non deterministic automaton with ε-transitions"
+msgstr "Automate non déterministe avec ε-transitions"
 
 msgid  "Settings automaton"
 msgstr "Options de l'automate"
@@ -761,40 +767,40 @@ msgstr "Remplisser le tableau correspondant à l'automate"
 msgid  "Create the automaton corresponding to the following automaton "
 msgstr ""
 
-msgid  "Write the accessible states of the following automaton "
+msgid  "Write the reachable states of the following automaton"
 msgstr "Lister les états accessibles de l'automate"
 
-msgid  "Write the co-accessible states of the following automaton "
-msgstr "Lister les états coaccessibles de l'automate"
+msgid  "Write the co-reachable states of the following automaton"
+msgstr "Lister les états co-accessibles de l'automate"
 
-msgid  "Write a word recognized by the following automaton "
+msgid  "Write a word recognized by the following automaton"
 msgstr "Ecriver un mot reconnu par l'automate"
 
-msgid  "Create the determinized automaton of the following automaton "
+msgid  "Create the determinized automaton of the following automaton"
 msgstr "Dessiner l'automate déterminisé de l'automate suivant"
 
-msgid  "Create the determinized and minimize automaton of the following automaton "
+msgid  "Create the determinized and minimize automaton of the following automaton"
 msgstr "Dessiner l'automate déterminisé et minimisé de l'automate suivant"
 
-msgid  "Eleminate the ε-transitions of the following automaton "
+msgid  "Eleminate the ε-transitions of the following automaton"
 msgstr "Eliminer les ε-transitions de l'automate suivant"
 
-msgid  "Eleminate the ε-transitions and determinize the following automaton "
+msgid  "Eleminate the ε-transitions and determinize the following automaton"
 msgstr "Eliminer les ε-transitions et déterminisé de l'automate suivant"
 
-msgid  "Write the regular expression corresponding to the following automaton "
+msgid  "Write the regular expression corresponding to the following automaton"
 msgstr "Ecriver l'expression régulière correspondant à l'automate"
 
-msgid  "Give the automaton corresponding to the following RE "
+msgid  "Give the automaton corresponding to the following RE"
 msgstr "Donner l'automate correspondant à l'expression régulière"
 
-msgid  "Give the automaton corresponding to the following right linear grammar "
+msgid  "Give the automaton corresponding to the following right linear grammar"
 msgstr "Dessiner l'automate correspondant à la grammaire linéaire"
 
-msgid  "Give the linear grammar corresponding to the following automaton "
+msgid  "Give the linear grammar corresponding to the following automaton"
 msgstr "Donner la grammaire linéaire correspondant à l'automate"
 
-msgid  "Give the right linear grammar corresponding to the following left linear grammar "
+msgid  "Give the right linear grammar corresponding to the following left linear grammar"
 msgstr "Donner la grammaire linéaire à droite correspondant à la grammaire linéaire à gauche suivante"
 
 msgid  "Settings"
@@ -854,19 +860,19 @@ msgstr "Sélection aléatoire de fichiers"
 msgid  "Automaton generated randomly"
 msgstr "Automate généré aléatoirement"
 
-msgid  "Number of states: "
+msgid  "Number of states:"
 msgstr "Nombre d'états :"
 
 msgid  "Alphabet "
 msgstr "Alphabet"
 
-msgid  "Number of final states: "
-msgstr "Nombre d'états finaux :"
+msgid  "Number of accepting states:"
+msgstr "Nombre d'états accepteurs :"
 
-msgid  "Mode: "
+msgid  "Mode:"
 msgstr "Mode :"
 
-msgid  "Number of transitions: "
+msgid  "Number of transitions:"
 msgstr "Nombre de transitions :"
 
 msgid  "Automaton selection"
@@ -878,7 +884,7 @@ msgstr "Choisissez  un automate à partir de la liste déjà fournie or depuis v
 msgid  "Open automaton"
 msgstr "Charger un automate"
 
-msgid  "Selected automaton: "
+msgid  "Selected automaton:"
 msgstr "Sélectionner un automate :"
 
 msgid  "none"
@@ -905,7 +911,7 @@ msgstr "Choisissez  une expression régulière à partir de la liste déjà four
 msgid  "Open regular expression"
 msgstr "Charger une expression régulière"
 
-msgid  "Selected regular expression: "
+msgid  "Selected regular expression:"
 msgstr "Choisissez une expression régumière"
 
 msgid  "The regular expression is selected randomly from files"
@@ -926,7 +932,7 @@ msgstr "Choisissez une grammaire à partir de la liste déjà fournie ou depuis 
 msgid  "Open grammar"
 msgstr "Ouvri une grammaire"
 
-msgid  "Selected grammar: "
+msgid  "Selected grammar:"
 msgstr "Grammaire choisie"
 
 msgid  "The grammar is selected randomly from files"
@@ -986,12 +992,6 @@ msgstr "Donner la forme tabulaire de l'automate"
 msgid  "Give the automaton from the table"
 msgstr "Donner l'automate correspondant au tableau"
 
-msgid  "List the accessible states"
-msgstr "Lister les états accessibles"
-
-msgid  "List the co-accessible states"
-msgstr "Lister les états coaccessibles"
-
 msgid  "Give a word recognized by the automata"
 msgstr "Donner un mot reconnu par l'automate"
 
@@ -1031,7 +1031,7 @@ msgstr "Menu"
 msgid  "Restart"
 msgstr "Recommencer"
 
-msgid  "Question: "
+msgid  "Question:"
 msgstr "Question :"
 
 msgid  "Validate"
@@ -1046,13 +1046,13 @@ msgstr "Réponse fausse"
 msgid  "Correct answer"
 msgstr "Réponse correcte"
 
-msgid  "Initial stack symbol : "
+msgid  "Initial stack symbol :"
 msgstr "Symbole de fond de pile:"
 
-msgid  "Determinized pushdown automaton: "
+msgid  "Determinized pushdown automaton:"
 msgstr "Automate à pile déterminisé"
 
-msgid  "State: "
+msgid  "State:"
 msgstr "Etat :"
 
 msgid  "Stacks"
@@ -1076,17 +1076,17 @@ msgstr "Vous n’avez pas sélectionné assez d’automates. Veuillez en sélect
 msgid  "Automaton #{0}"
 msgstr "Automate n°{0}"
 
-msgid  "Write directly the grammar: "
+msgid  "Write directly the grammar:"
 msgstr "Entrer directement la grammaire"
 
-msgid  "Or enter easily the grammar: "
+msgid  "Or enter easily the grammar:"
 msgstr "Ou entrer la grammaire champ par champ"
 
-msgid  "Write the terminal symbols: "
-msgstr "Ecriver les symboles terminaux : "
+msgid  "Write the terminal symbols:"
+msgstr "Ecriver les symboles terminaux :"
 
-msgid  "Write the non terminal symbols: "
-msgstr "Ecriver les symboles non terminaux : "
+msgid  "Write the non terminal symbols:"
+msgstr "Ecriver les symboles non terminaux :"
 
 msgid  "Select the start symbol"
 msgstr "Sélectionner l'axiome"
@@ -1097,7 +1097,7 @@ msgstr "Symbole non terminal"
 msgid  "Body"
 msgstr "Le corps"
 
-msgid  "Choose the entry of the algorithm: "
+msgid  "Choose the entry of the algorithm:"
 msgstr "Choisissez le type d'entrée de l'algorithme"
 
 msgid  "Choose type"
@@ -1190,8 +1190,8 @@ msgstr "Parcours"
 msgid  "Start"
 msgstr "Commencer"
 
-msgid  "Select the start state of the search: "
-msgstr "Choisissez l'état de départ: "
+msgid  "Select the start state of the search:"
+msgstr "Choisissez l'état de départ:"
 
 msgid  "Animate the search"
 msgstr "Animer le parcours"
@@ -1202,11 +1202,11 @@ msgstr "Parcours en largeur"
 msgid  "Depth first search"
 msgstr "Parcours en profondeur"
 
-msgid  "All states accessible: "
-msgstr "Tous les états accessibles: "
+msgid  "All states are reachable:"
+msgstr "Tous les états sont accessibles :"
 
-msgid  "All states co-accessible: "
-msgstr "Tous les états co-accessibles: "
+msgid  "All states are co-reachable:"
+msgstr "Tous les états sont co-accessibles :"
 
 msgid  "Enter couples of states"
 msgstr "Saisissez des couples d'états"
