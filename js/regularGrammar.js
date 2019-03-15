@@ -151,7 +151,7 @@
             for (var r of this.productionRules) {
                 rules += r.toString();
 
-                if (i == this.productionRules.size) {
+                if (i < this.productionRules.size) {
                     rules += ",";
                 }
 
