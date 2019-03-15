@@ -125,7 +125,7 @@
     var underTypeQuestionList = [
         "complement", "complete", "product", "minimize", "equivalenceStates",
         "equivalencyAutomata", "automaton2Table", "table2Automaton",
-        "accessible", "coaccessible", "word", "determinize",
+        "reachable", "coreachable", "word", "determinize",
         "determinize_minimize", "eliminate", "determinize_eliminate",
         "automaton2RE", "RE2automaton", "grammar2Automaton",
         "automaton2Grammar", "leftGrammar2RightGrammar", "mcq1", "mcq2", "mcq3",
@@ -143,13 +143,13 @@
     // Need automaton for the wording
     var underTypeQuestionNeedAutomatonWording = [
         "complement", "complete", "product", "minimize", "equivalenceStates",
-        "equivalencyAutomata", "automaton2Table", "accessible", "coaccessible",
+        "equivalencyAutomata", "automaton2Table", "reachable", "coreachable",
         "word", "determinize", "determinize_minimize", "eliminate",
         "determinize_eliminate", "automaton2RE", "automaton2Grammar"
     ];
 
     // For the creation of the automaton
-    var createAutomatonCoaccessible = null;
+    var createAutomatonCoreachable = null;
 
     // The algorithm for the automatic correction
     var complete                      = null;
@@ -161,8 +161,8 @@
     var complement                    = null;
     var distinguableStates            = null;
     var notDistinguableStates         = null;
-    var coaccessibleStates            = null;
-    var accessibleStates              = null;
+    var coreachableStates            = null;
+    var reachableStates              = null;
     var automaton2HTMLTable           = null;
     var createTable                   = null;
     var HTMLTable2automaton           = null;
@@ -201,7 +201,7 @@
             "automaton2RightLinearGrammar", "linearGrammar2Automaton",
             "leftLinear2RightLinearGrammar", "rightLinear2LeftLinearGrammar"
         ], function () {
-            createAutomatonCoaccessible = audescript.m("createAutomaton").createAutomatonCoaccessible;
+            createAutomatonCoreachable = audescript.m("createAutomaton").createAutomatonCoreachable;
             complete = audescript.m("completion").complete;
             isCompleted = audescript.m("completion").isCompleted;
             automataAreEquivalent = audescript.m("equivalence").automataAreEquivalent;
@@ -211,8 +211,8 @@
             complement = audescript.m("complementation").complement;
             distinguableStates = audescript.m("distinguishability").distinguableStates;
             notDistinguableStates = audescript.m("distinguishability").notDistinguableStates;
-            coaccessibleStates = audescript.m("coaccessibility").coaccessibleStates;
-            accessibleStates = audescript.m("accessibility").accessibleStates;
+            coreachableStates = audescript.m("coaccessibility").coreachableStates;
+            reachableStates = audescript.m("accessibility").reachableStates;
             automaton2HTMLTable = audescript.m("automaton2htmltable").automaton2HTMLTable;
             createTable = audescript.m("htmltable2automaton").createTable;
             HTMLTable2automaton = audescript.m("htmltable2automaton").HTMLTable2automaton;
@@ -381,41 +381,41 @@
                 case "table2Automaton":
                     return _("Create the automaton corresponding to the table ");
 
-                case "accessible":
-                    return _("Write the accessible states of the following automaton ");
+                case "reachable":
+                    return _("Write the reachable states of the following automaton");
 
-                case "coaccessible":
-                    return _("Write the co-accessible states of the following automaton ");
+                case "coreachable":
+                    return _("Write the co-reachable states of the following automaton");
 
                 case "word":
-                    return _("Write a word recognized by the following automaton ");
+                    return _("Write a word recognized by the following automaton");
 
                 case "determinize":
-                    return _("Create the determinized automaton of the following automaton ");
+                    return _("Create the determinized automaton of the following automaton");
 
                 case "determinize_minimize":
-                    return _("Create the determinized and minimize automaton of the following automaton ");
+                    return _("Create the determinized and minimize automaton of the following automaton");
 
                 case "eliminate":
-                    return _("Eleminate the ε-transitions of the following automaton ");
+                    return _("Eleminate the ε-transitions of the following automaton");
 
                 case "determinize_eliminate":
-                    return _("Eleminate the ε-transitions and determinize the following automaton ");
+                    return _("Eleminate the ε-transitions and determinize the following automaton");
 
                 case "automaton2RE":
-                    return _("Write the regular expression corresponding to the following automaton ");
+                    return _("Write the regular expression corresponding to the following automaton");
 
                 case "RE2automaton":
-                    return _("Give the automaton corresponding to the following RE ");
+                    return _("Give the automaton corresponding to the following RE");
 
                 case "grammar2Automaton":
-                    return _("Give the automaton corresponding to the following right linear grammar ");
+                    return _("Give the automaton corresponding to the following right linear grammar");
 
                 case "automaton2Grammar":
-                    return _("Give the linear grammar corresponding to the following automaton ");
+                    return _("Give the linear grammar corresponding to the following automaton");
 
                 case "leftGrammar2RightGrammar":
-                    return _("Give the right linear grammar corresponding to the following left linear grammar ");
+                    return _("Give the right linear grammar corresponding to the following left linear grammar");
 
                 default:
                     return "";
@@ -469,8 +469,8 @@
                     return "automaton";
 
                 case "equivalenceStates":
-                case "accessible":
-                case "coaccessible":
+                case "reachable":
+                case "coreachable":
                 case "word" :
                     return "input";
 
@@ -537,11 +537,11 @@
                 case "table2Automaton":
                     return this.automaton[0];
 
-                case "coaccessible":
-                    return coaccessibleStates(this.automaton[0]);
+                case "coreachable":
+                    return coreachableStates(this.automaton[0]);
 
-                case "accessible":
-                    return accessibleStates(this.automaton[0]);
+                case "reachable":
+                    return reachableStates(this.automaton[0]);
 
                 case "word":
                     return smallerWord(this.automaton[0]);
@@ -635,10 +635,10 @@
                         HTMLTable2automaton(this.userResponse)
                     );
 
-                case "coaccessible":
+                case "coreachable":
                     return identicalSets(response, this.userResponse);
 
-                case "accessible":
+                case "reachable":
                     return identicalSets(response, this.userResponse, 1);
 
                 case "word":
@@ -795,7 +795,7 @@
 
         // Create randomly an automaton and save it in the .automaton[numAuto]
         createAutomaton: function (numAuto) {
-            var A = createAutomatonCoaccessible(
+            var A = createAutomatonCoreachable(
                 this.nbrState[numAuto],
                 this.alphabet[numAuto],
                 this.nbrFinalStates[numAuto],
@@ -1809,8 +1809,8 @@
                     bQuectionSelect("equivalencyAutomata", _("Equivalency between 2 automata")), ["br"],
                     bQuectionSelect("automaton2Table", _("Give the tabular form of the automaton")), ["br"],
                     bQuectionSelect("table2Automaton", _("Give the automaton from the table")), ["br"],
-                    bQuectionSelect("accessible", _("List the accessible states")), ["br"],
-                    bQuectionSelect("coaccessible", _("List the co-accessible states")), ["br"],
+                    bQuectionSelect("reachable", _("List the reachable states")), ["br"],
+                    bQuectionSelect("coreachable", _("List the co-reachable states")), ["br"],
                     bQuectionSelect("word", _("Give a word recognized by the automata")), ["br"],
                 ]));
                 break;

@@ -1,8 +1,8 @@
-# Create  hazardly an automaton
+# Create a random automaton
 
 from mutate import randomNumber
-from accessibility import accessibleStates
-from coaccessibility import coaccessibleStates
+from reachability import reachableStates
+from coreachability import coreachableStates
 
 
 # Take a number of states, an alphabet, a number of final states, the type (1: Determinist
@@ -31,31 +31,31 @@ export function createAutomaton(nbStates,alphabet,nbFinalStates,typeAutomaton,nb
     done
 
     # Set an initial state
-    A.setInitialState(randomNumber(1,nbStates))
+    A.setInitialState(randomNumber(1, nbStates))
 
     # Set final states
-    let rand := randomNumber(1,nbStates)
-    for i from 1 to nbFinalStates do
+    let rand := randomNumber(1, nbStates)
+    for i from 1 to nbAcceptingStates do
         while rand belongs to A.getFinalStates() do
-            rand := randomNumber(1,nbStates)
+            rand := randomNumber(1, nbStates)
         done
          A.setFinalState(rand)
     done
 
     # Create transitions
     if typeAutomaton=1 then
-        A := createTransitionDeterminist(A,alphabet,nbStates,nbTransitions)
+        A := createTransitionDeterminist(A, alphabet, nbStates, nbTransitions)
     else if typeAutomaton=2 then
-        A := createTransitionNonDeterminist(A,alphabet,nbStates,nbTransitions)
+        A := createTransitionNonDeterminist(A, alphabet, nbStates, nbTransitions)
     else if typeAutomaton=3 then
-        A := createTransitionEpsilon(A,alphabet,nbStates,nbTransitions)
+        A := createTransitionEpsilon(A, alphabet, nbStates, nbTransitions)
     end if
 
     return A
 end function
 
 # Create the transistions for a determinist automata
-function createTransitionDeterminist(A,alphabet,nbStates,nbTransitions)
+function createTransitionDeterminist(A, alphabet, nbStates, nbTransitions)
     let transitions := null
     let state1 := null
     let state2 := null

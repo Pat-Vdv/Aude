@@ -697,7 +697,7 @@
             if (this.states.has(state)) {
                 this.currentStates.clear();
                 this.currentStates.add(state);
-                this.currentStatesAddAccessiblesByEpsilon();
+                this.currentStatesAddReachablesByEpsilon();
             }
         },
 
@@ -719,7 +719,7 @@
             if (states.subsetOf(this.states)) {
                 this.currentStates.clear();
                 this.currentStates.unionInPlace(aude.toSet(states));
-                this.currentStatesAddAccessiblesByEpsilon();
+                this.currentStatesAddReachablesByEpsilon();
             }
         },
 
@@ -738,7 +738,7 @@
         addCurrentState: function (state) {
             if (this.states.has(state)) {
                 this.currentStates.add(state);
-                this.currentStatesAddAccessiblesByEpsilon();
+                this.currentStatesAddReachablesByEpsilon();
             }
         },
 
@@ -756,7 +756,7 @@
         */
         removeCurrentState: function (state) {
             this.currentStates.remove(state);
-            this.currentStatesAddAccessiblesByEpsilon();
+            this.currentStatesAddReachablesByEpsilon();
         },
 
         /**
@@ -773,7 +773,7 @@
         */
         addCurrentStates: function (states) {
             this.currentStates.unionInPlace(states);
-            this.currentStatesAddAccessiblesByEpsilon();
+            this.currentStatesAddReachablesByEpsilon();
         },
 
         /**
@@ -790,7 +790,7 @@
         */
         removeCurrentStates: function (states) {
             this.currentStates.minusInPlace(states);
-            this.currentStatesAddAccessiblesByEpsilon();
+            this.currentStatesAddReachablesByEpsilon();
         },
 
         /**
@@ -810,13 +810,13 @@
         },
 
         /**
-         * This methods looks at current states and transitions of the Automaton to add all states accessible with epsilon to the current states.
+         * This methods looks at current states and transitions of the Automaton to add all states reachable with epsilon to the current states.
          * @method
          * @memberof Automaton
          * @param {Function} [transitionFunction] The transition function, as given by the getTransitionFunction() method
          * @param {Set} [visited] States that were already visited by the function.
          */
-        currentStatesAddAccessiblesByEpsilon: function (transitionFunction, visited) {
+        currentStatesAddReachablesByEpsilon: function (transitionFunction, visited) {
             var cs   = aude.toArray(this.currentStates),
                 cont = false, // we continue if we added states
                 th   = this;
@@ -847,7 +847,7 @@
             }
 
             if (cont) {
-                this.currentStatesAddAccessiblesByEpsilon(transitionFunction, visited);
+                this.currentStatesAddReachablesByEpsilon(transitionFunction, visited);
             }
         },
 
@@ -901,7 +901,7 @@
 
 
         /**
-         * This methods looks at current states and transitions of the Automaton to replace current states by all states accessible with the given symbol.
+         * This methods looks at current states and transitions of the Automaton to replace current states by all states reachable with the given symbol.
          * @method
          * @memberof Automaton
          * @throws {Error} Throws an error if epsilon is given as the symbol.
@@ -950,7 +950,7 @@
                 transitionFunction(cs[i], symbol).forEach(addState);
             }
 
-            this.currentStatesAddAccessiblesByEpsilon(transitionFunction);
+            this.currentStatesAddReachablesByEpsilon(transitionFunction);
         },
 
         /**

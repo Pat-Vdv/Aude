@@ -13,14 +13,14 @@ end function
 
 # Determines if the state q should be transformed into a final state
 # by checking if there is an epsilon transition from a final state to q
-function finalAccessibleByEpsilon(q, trans, F, visited)
+function finalReachableByEpsilon(q, trans, F, visited)
     if visited contains q then
         return false
     end if
     visited.add(q)
 
     foreach d in trans(q, epsilon) do
-        if F contains d or (finalAccessibleByEpsilon(d, trans, F, visited)) then
+        if F contains d or (finalReachableByEpsilon(d, trans, F, visited)) then
             return true
         end if
     done
@@ -29,12 +29,12 @@ function finalAccessibleByEpsilon(q, trans, F, visited)
 end function
 
 # Calculation of a new union of final states
-# by adding to F all states in Q accessible by epsilon transition
+# by adding to F all states in Q reachable by epsilon transition
 function el(Q, trans, F)
     let newF := {}
 
     foreach q in Q do
-        if (F contains q) or finalAccessibleByEpsilon(q, trans, F, {}) then
+        if (F contains q) or finalReachableByEpsilon(q, trans, F, {}) then
             newF.add(q)
         end if
     done

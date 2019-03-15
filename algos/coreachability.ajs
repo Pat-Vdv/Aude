@@ -1,6 +1,6 @@
-# Returns a set of all the co-accessible states of the automaton
-export function coaccessibleStates(A)
-    let Coaccessibles := A.getFinalStates().copy()
+# Returns a set of all the co-reachable states of the automaton
+export function coreachableStates(A)
+    let CoreachableStates := A.getFinalStates().copy()
     let toVisit := A.getFinalStates().copy()
     let Visited := new Set()
 
@@ -14,11 +14,11 @@ export function coaccessibleStates(A)
                 coRLocal.add(t.startState)
             end if
         end foreach
-        Coaccessibles := Coaccessibles union coRLocal
+        CoreachableStates := CoreachableStates union coRLocal
         toVisit := toVisit union (coRLocal \ Visited)
     end while
 
-    return Coaccessibles
+    return CoreachableStates
 end function
 
-run(coaccessibleStates, get_automaton(currentAutomaton))
+run(coreachableStates, get_automaton(currentAutomaton))

@@ -202,10 +202,10 @@ msgstr "Muter"
 msgid  "List differentiable states"
 msgstr "Lister les état distingables"
 
-msgid  "List accessible states"
+msgid  "List the reachable states"
 msgstr "Lister les états accessibles"
 
-msgid  "List coaccessible states"
+msgid  "List the co-reachable states"
 msgstr "Lister les états coaccessibles"
 
 msgid  "Test empty language"
@@ -220,7 +220,7 @@ msgstr "Machine de Moore → machine de Mealy"
 msgid  "Mealy machine → Moore machine"
 msgstr "Machine de Mealy → machine de Moore"
 
-msgid  "Complicate the current automaton by choosing one or more of the following options\n1 - Add a not accessible state\n2 - Add a transition between two not coaccessibles\n3 - Add a transition to a not coaccessible state\n4 - Copy transitions"
+msgid  "Complicate the current automaton by choosing one or more of the following options\n1 - Add a non reachable state\n2 - Add a transition between two not co-reachable states\n3 - Add a transition to a non co-reachable state\n4 - Copy transitions"
 msgstr "Compliquer l’automate courant en choisssant une ou plusieurs des options suivantes :\n1 - Ajouter un état non-accessible\n2 - Ajouter une transition entre deux états non co-accessibles\n3 - Ajouter une transition vers un état non co-accessible\n4 - Copier des transitions"
 
 msgid  "Transform the current automaton by choosing one or more of the following options:\n1 - Change a symbol\n2 - Remove a transition\n3 - Add a transition\n4 - Add a state and some transitions\n5 - Inverse a transition\n6 - Rename states\n7 - Make a state non accepting\n8 - Remove an epsilon transition\n9 - Remove a state\n10 - Make a state accepting"

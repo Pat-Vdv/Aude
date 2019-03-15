@@ -225,10 +225,10 @@ msgstr ""
 msgid  "List differentiable states"
 msgstr ""
 
-msgid  "List accessible states"
+msgid  "List the reachable states"
 msgstr ""
 
-msgid  "List coaccessible states"
+msgid  "List the co-reachable states"
 msgstr ""
 
 msgid  "Test empty language"
@@ -246,9 +246,9 @@ msgstr ""
 msgid  ""
 "Complicate the current automaton by choosing one or more of the following "
 "options\n"
-"1 - Add a not accessible state\n"
-"2 - Add a transition between two not coaccessibles\n"
-"3 - Add a transition to a not coaccessible state\n"
+"1 - Add a non reachable state\n"
+"2 - Add a transition between two non reachable states\n"
+"3 - Add a transition to a not co-reachable state\n"
 "4 - Copy transitions"
 msgstr ""
 
@@ -798,40 +798,40 @@ msgstr "Remplisser le tableau correspondant à l'automate"
 msgid  "Create the automaton corresponding to the following automaton "
 msgstr ""
 
-msgid  "Write the accessible states of the following automaton "
-msgstr "Lister les états accessibles de l'automate"
+msgid  "Write the reachable states of the following automaton"
+msgstr ""
 
-msgid  "Write the co-accessible states of the following automaton "
-msgstr "Lister les états coaccessibles de l'automate"
+msgid  "Write the co-reachable states of the following automaton"
+msgstr ""
 
-msgid  "Write a word recognized by the following automaton "
+msgid  "Write a word recognized by the following automaton"
 msgstr "Ecriver un mot reconnu par l'automate"
 
-msgid  "Create the determinized automaton of the following automaton "
+msgid  "Create the determinized automaton of the following automaton"
 msgstr "Dessiner l'automate déterminisé de l'automate suivant"
 
-msgid  "Create the determinized and minimize automaton of the following automaton "
+msgid  "Create the determinized and minimize automaton of the following automaton"
 msgstr "Dessiner l'automate déterminisé et minimisé de l'automate suivant"
 
-msgid  "Eleminate the ε-transitions of the following automaton "
+msgid  "Eleminate the ε-transitions of the following automaton"
 msgstr "Eliminer les ε-transitions de l'automate suivant"
 
-msgid  "Eleminate the ε-transitions and determinize the following automaton "
+msgid  "Eleminate the ε-transitions and determinize the following automaton"
 msgstr "Eliminer les ε-transitions et déterminisé de l'automate suivant"
 
-msgid  "Write the regular expression corresponding to the following automaton "
+msgid  "Write the regular expression corresponding to the following automaton"
 msgstr "Ecriver l'expression régulière correspondant à l'automate"
 
-msgid  "Give the automaton corresponding to the following RE "
+msgid  "Give the automaton corresponding to the following RE"
 msgstr "Donner l'automate correspondant à l'expression régulière"
 
-msgid  "Give the automaton corresponding to the following right linear grammar "
+msgid  "Give the automaton corresponding to the following right linear grammar"
 msgstr "Dessiner l'automate correspondant à la grammaire linéaire"
 
-msgid  "Give the linear grammar corresponding to the following automaton "
+msgid  "Give the linear grammar corresponding to the following automaton"
 msgstr "Donner la grammaire linéaire correspondant à l'automate"
 
-msgid  "Give the right linear grammar corresponding to the following left linear grammar "
+msgid  "Give the right linear grammar corresponding to the following left linear grammar"
 msgstr "Donner la grammaire linéaire à droite correspondant à la grammaire linéaire à gauche suivante"
 
 msgid  "Settings"
@@ -1021,12 +1021,6 @@ msgid  "Give the tabular form of the automaton"
 msgstr ""
 
 msgid  "Give the automaton from the table"
-msgstr ""
-
-msgid  "List the accessible states"
-msgstr ""
-
-msgid  "List the co-accessible states"
 msgstr ""
 
 msgid  "Give a word recognized by the automata"
@@ -1239,10 +1233,10 @@ msgstr ""
 msgid  "Depth first search"
 msgstr ""
 
-msgid  "All states accessible: "
+msgid  "All states reachable:"
 msgstr ""
 
-msgid  "All states co-accessible: "
+msgid  "All states co-reachable :"
 msgstr ""
 
 

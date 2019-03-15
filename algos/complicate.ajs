@@ -1,8 +1,8 @@
 from mutate import addState, addTransitionFromState, randomNumber, addEpsilonTransitionToState, addEpsilonTransitionFromState, getRandomElement, newStateName
-from coaccessibility import coaccessibleStates
+from coaccessibility import coreachableStates
 
-# Adds a not accessible state to the automaton
-export function addNotAccessible(A)
+# Adds a not reachable state to the automaton
+export function addNotReachable(A)
     let stateName := newStateName(A)
     addState(A, stateName)
     var random := randomNumber(1, 4)
@@ -13,32 +13,32 @@ export function addNotAccessible(A)
     done
 end function
 
-# Adds a random transition between two not coaccessible states
-export function transitionNotCoaccessible(A)
-    # extraction of not coaccessible states from the automaton
-    let coaStates := coaccessibleStates(A)
+# Adds a random transition between two not co-reachable states
+export function transitionNotCoreachable(A)
+    # extraction of not co-reachable states from the automaton
+    let coreachStates := coreachableStates(A)
     let states := A.getStates()
-    let notcoaStates := states \ coaStates
+    let notcoreachStates := states \ coreachStates
 
     # we can only add a transition if there is a state.
-    if notcoaStates.size > 0 then
-        let randomNotCoaState1 := getRandomElement(notcoaStates)
-        let randomNotCoaState2 := getRandomElement(notcoaStates)
+    if notcoreachStates.size > 0 then
+        let randomNotCoaState1 := getRandomElement(notcoreachStates)
+        let randomNotCoaState2 := getRandomElement(notcoreachStates)
         let randomSymbol := getRandomElement(A.getAlphabet(), "a")
 
         A.addTransition(randomNotCoaState1, randomSymbol, randomNotCoaState2)
     end if
 end function
 
-# Adds a random transition that goes to a not coaccessible state
-export function addTransitionToANotCoaccessible(A)
-    # extraction of not coaccessible states from the automaton
-    let coaStates := coaccessibleStates(A)
+# Adds a random transition that goes to a not co-reachable state
+export function addTransitionToANotCoreachable(A)
+    # extraction of not co-reachable states from the automaton
+    let coreachStates := coreachableStates(A)
     let states := A.getStates()
-    let notcoaStates := states \ coaStates
+    let notcoreachStates := states \ coreachStates
 
-    if notcoaStates.size > 1 then
-        let randomNotCoaState := getRandomElement(notcoaStates)
+    if notcoreachStates.size > 1 then
+        let randomNotCoaState := getRandomElement(notcoreachStates)
         let randomState       := getRandomElement(states)
         let randomSymbol      := getRandomElement(A.getAlphabet(), "a")
         A.addTransition(randomState, randomSymbol, randomNotCoaState)
@@ -102,7 +102,7 @@ run(
     function (A)
         var input := window.prompt(
             AudeGUI.l10n(
-                "Complicate the current automaton by choosing one or more of the following options\n1 - Add a not accessible state\n2 - Add a transition between two not coaccessibles\n3 - Add a transition to a not coaccessible state\n4 - Copy transitions"
+                "Complicate the current automaton by choosing one or more of the following options\n1 - Add a non reachable state\n2 - Add a transition between two non co-reachable states\n3 - Add a transition to a non co-reachable state\n4 - Copy transitions"
             ),
             "1 3 4"
         )
@@ -126,11 +126,11 @@ run(
         # for each case we execute the associated function
         foreach c in I do
            if c = 1 then
-               addNotAccessible(A)
+               addNotReachable(A)
            else if c = 2 then
-               transitionNotCoaccessible(A)
+               transitionNotCoreachable(A)
            else if c = 3 then
-               addTransitionToANotCoaccessible(A)
+               addTransitionToANotCoreachable(A)
            else if c = 4 then
                copyTransitions(A)
            end if

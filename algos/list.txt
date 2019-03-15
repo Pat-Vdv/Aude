@@ -14,8 +14,8 @@ equivalence.ajs         / Equiv. between 2 automata / automaton
 automaton2json.ajs      / JSON representation / other
 leftLinear2RightLinearGrammar.ajs / Left linear grammar → Right linear grammar / grammar
 linearGrammar2Automaton.ajs / Linear grammar → Automaton / grammar
-accessibility.ajs       / List accessible states / automaton
-coaccessibility.ajs     / List coaccessible states / automaton
+reachability.ajs        / List the reachable states / automaton
+coreachability.ajs     / List the co-reachable states / automaton
 distinguishability.ajs  / List differentiable states / automaton
 mealy2moore.ajs         / Mealy machine → Moore machine / other
 minimization.ajs        / Minimize / automaton

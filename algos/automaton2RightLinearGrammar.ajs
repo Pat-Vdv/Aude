@@ -2,7 +2,7 @@
 # Transform an automaton to a right linear grammar
 # if str is 1 the function returns a string
 # if str is 0 the fonction returns a grammar
-export function automaton2RightLinearGrammar (A,str)
+export function automaton2RightLinearGrammar (A, str)
     let G := new linearGrammar()
 
     let alphabet := A.getAlphabet()
@@ -25,14 +25,14 @@ export function automaton2RightLinearGrammar (A,str)
 
     # For each final states we add a rule s -> epsilon
     foreach s in finalStates do
-         G.addRule(s,epsilon,"")
+         G.addRule(s, epsilon, "")
     done
 
     foreach t in transi do
         if t.symbol = epsilon then
-            G.addRule(t.startState,"",t.endState)
+            G.addRule(t.startState, "", t.endState)
         else
-            G.addRule(t.startState,t.symbol,t.endState)
+            G.addRule(t.startState, t.symbol, t.endState)
         end if
     done
 
@@ -49,6 +49,6 @@ run(
     function()
 
     let A := get_automaton(currentAutomaton)
-        return (automaton2RightLinearGrammar(A,1))
+        return (automaton2RightLinearGrammar(A, 1))
     end function
 )

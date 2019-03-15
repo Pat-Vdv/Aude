@@ -168,10 +168,10 @@ Here's an example showing a way to use this algorithm:
                 ]
                 },0
             )
-    let mooore := mealy2moore(mealyEx)
-    console.log(mooore.states)
+    let moore := mealy2moore(mealyEx)
+    console.log(moore.states)
 
-    foreach x in mooore.transition do
+    foreach x in moore.transition do
         foreach y in x do
             console.log(y)
         done
@@ -205,18 +205,18 @@ There a few functions at the moment in `complicate.ajs` that try to add transiti
 Here's a brief explanation of the idea behind each one of them:
 (Note: A is the Automaton object)
 
- - addNotAccessible(A) : adds a not accessible state to the automaton. Since by definition a not accessible state can never be accessed from the intial state, it cannot change the language recognized by the automaton. The new state's name will be a number which will correspond to the number of states in the automaton, supposing that the other states are named '0' to 'Number_of_states-1'. Then we add a random number of transitions (I chose this random number to be from 1 to 4, this can be changed) from this new state to the other ones.
+ - addNotReachable(A) : adds a non reachable state to the automaton. Since by definition a non reachable state can never be reached from the intial state, it cannot change the language recognized by the automaton. The new state's name will be a number which will correspond to the number of states in the automaton, supposing that the other states are named '0' to 'Number_of_states-1'. Then we add a random number of transitions (I chose this random number to be from 1 to 4, this can be changed) from this new state to the other ones.
 
- - transitionNotCoaccessible(A) : adds a random transition between two not coaccessible states. To implement this function I implemented another function calculating the coaccessible states of the automaton (to be found in `accessibility.ajs`), so that the rest of the states of the automaton would be the not coaccessible ones. This function works if there are at least two not coaccessible states in the automaton. On second thought this part needs to be modified to at least one not coaccessible state, since we can add a transition even in the case of a single not coaccessible state. The language of the automaton will remain the same since both states end up in a not acceppting state.
+ - transitionNotCoreachable(A) : adds a random transition between two not co-reachable states. To implement this function I implemented another function calculating the co-reachable states of the automaton (to be found in `reachability.ajs`), so that the rest of the states of the automaton would be the not co-reachable ones. This function works if there are at least two not co-reachable states in the automaton. On second thought this part needs to be modified to at least one not co-reachable state, since we can add a transition even in the case of a single not co-reachable state. The language of the automaton will remain the same since both states end up in a not acceppting state.
 
- - addTransitionToANotCoaccessible(A) : adds a random transition that goes to a not coaccessible state, this way the words that pass from this transition can never get to an accepting state therefore can never be recognized. This function, which in my opinion includes the previous one, is coded in a similar way, except that one of the states doesn't have to be not coaccessible.
+ - addTransitionToANotCoreachable(A) : adds a random transition that goes to a not co-reachable state, this way the words that pass from this transition can never get to an accepting state therefore can never be recognized. This function, which in my opinion includes the previous one, is coded in a similar way, except that one of the states doesn't have to be not co-reachable.
 
  - copyTransitions(A) : this function starts off from a random state of the automaton and copies a random number of times transitions and states that come after that state for a certain number of times. This doesn't change the language the automaton recognizes as it is just a copy of existing states and transitions, the last copied transitions ties together a copied state with an existing state in the automaton. This is an interesting function of this section, and it could be rethought and complexified more. The results it produces are pretty interesting.
 
 # Identifying the differences between two automata
 
 To look at the differences between two automata we can look at:
- - the difference between the sets of transitions/states/accessible_states/coaccessible_states/etc. (functions: setsDiff, transitionsDiff, statesDiff)
+ - the difference between the sets of transitions/states/reachable_states/coreachable_states/etc. (functions: setsDiff, transitionsDiff, statesDiff)
  - if the automatons have the same states, for two similar states we can look at the differences in their transitions
  - ... ?
 I started doing this in `differences.ajs` but I haven't tested my functions. The problem of finding how two automata are different requires quite a lot of thought as to what kind of differences are we looking for, are the two automata similar in any way, how do we approach searching for these differences, etc. So this is a task that requires quite some work in the future, I've just scratched the surface of the problem.

@@ -1,7 +1,7 @@
-# Returns a set of all the accessibles states of the automaton
-export function accessibleStates(A)
+# Returns a set of all the reachable states of the automaton
+export function reachableStates(A)
     let q0 := A.getInitialState()
-    let Accessibles := {q0}
+    let ReachableStates := {q0}
     let toVisit := new Set()
     toVisit := {q0}
     let Visited := new Set()
@@ -16,11 +16,11 @@ export function accessibleStates(A)
                 RLocal.add(t.endState)
             end if
         end foreach
-        Accessibles := Accessibles union RLocal
+        ReachableStates := ReachableStates union RLocal
         toVisit := toVisit union (RLocal \ Visited)
     end while
 
-    return Accessibles
+    return ReachableStates
 end function
 
-run(accessibleStates, get_automaton(currentAutomaton))
+run(reachableStates, get_automaton(currentAutomaton))
