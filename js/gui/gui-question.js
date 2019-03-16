@@ -1829,7 +1829,7 @@
         div.textContent = "";
 
         let bQuectionSelect = function (value, text) {
-            return ["button.questionList-question-select", {"value": v}, text];
+            return ["button.questionList-question-select", {"value": value}, text];
         };
 
         switch (parseInt(chapter, 10)) {
