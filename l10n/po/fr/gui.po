@@ -978,7 +978,7 @@ msgid  "Do the product of 2 automata"
 msgstr "Faire le produit de 2 automates"
 
 msgid  "Minimize the automaton"
-msgstr "Minimser l'automate"
+msgstr "Minimiser l'automate"
 
 msgid  "List all the equivalent states"
 msgstr "Lister les états équivalents"
@@ -1240,3 +1240,9 @@ msgstr "Aide"
 
 msgid "Other"
 msgstr "Autre"
+
+msgid "Automata"
+msgstr "Automates"
+
+msgid "Unit tests for Aude"
+msgstr "Tests unitaires pour Aude"

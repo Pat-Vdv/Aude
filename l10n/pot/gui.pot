@@ -1278,3 +1278,9 @@ msgstr ""
 
 msgid "Other"
 msgstr ""
+
+msgid "Automata"
+msgstr ""
+
+msgid "Unit tests for Aude"
+msgstr ""
