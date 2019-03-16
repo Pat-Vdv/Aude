@@ -1548,55 +1548,13 @@
 
                 // Display a window which lets the user selects a file,
                 //  type = automaton, er, grammar
-                function chooseFile (type) {
-                    // List of all the automata for each exercice
-                    var listFiles = null;
-
-                    var selectedQuestion = null;
-
-                    if (contentListFilesParsed) {
-                        makeWindow();
-                        return;
-                    } else {
-                        getFile(
-                            "files_question/listFiles.json",
-                            function (content) {
-                                displayWin(content)
-                            },
-                            function (message, status) {
-                                var msg = null;
-
-                                if (message === "status") {
-                                    msg = libD.format(
-                                        _("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"),
-                                        status
-                                    );
-                                }
-
-                                if (message === "send") {
-                                    msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
-                                }
-
-                                AudeGUI.notify(
-                                    _("Unable to get the list of needed files"),
-                                    msg
-                                );
-                            }
-                        );
-                    }
-
-                    function displayWin(content) {
-                        // Transform the JSON file (where there are the folders
-                        // and names of automata) in object
-                        contentListFilesParsed = JSON.parse(content);
-                        makeWindow();
-                    }
-
+                function chooseFile(type) {
                     // Creation of the window to select an automaton
-                    function makeWindow() {
+                    getListFiles(function () {
                         if (winLoadAutomaton && winLoadAutomaton.ws) {
                             winLoadAutomaton.close();
                         } else {
+                            var selectedQuestion = null;
                             winLoadAutomaton = libD.newWin({
                                 title:   "Load file",
                                 height:  "80%",
@@ -1816,7 +1774,7 @@
                                 }
                             }
                         }
-                    }
+                    });
                 }
             }
         }
@@ -1884,11 +1842,11 @@
         var buttonQuestion = document.getElementsByClassName("questionList-question-select");
 
         for (var i = 0, l = buttonQuestion.length; i < l; i++) {
-            buttonQuestion[i].addEventListener("click", async function (e) {
+            buttonQuestion[i].addEventListener("click", function (e) {
                 // We create the question
                 var q = new Question(e.target.value);
 
-                // If no automaton/grammar/re loaded and the automaton/grammar/re is not created hazardly
+                // If no automaton/grammar/re loaded and the automaton/grammar/re is not created randomly
                 if (
                     q.typeQuestion === "mcq" ||
                     (randomly[0] === 2 && q.typeQuestion === "automaton") ||
@@ -1907,12 +1865,14 @@
                         q.typeQuestion === "grammar"
                     )
                 ) {
-                    // Load the file json with all the exercice
-                    await getListFiles();
-                    // Load a random automaton / grammar... from the file
-                    await getRandomFiles(q, e.target.value);
-
-                    q.response = q.getResponse();
+                    getRandomFiles(
+                        q,
+                        e.target.value,
+                        function () {
+                            q.response = q.getResponse();
+                            drawQuestionChapter_next();
+                        }
+                    );
                 } else {
                     // Other question we initialize automaton/grammar... and
                     // correct automaticaly the question
@@ -1929,93 +1889,102 @@
                     q.initializeRegex(RELoaded);
                     q.initializeGrammar(grammarLoaded);
                     q.response = q.getResponse();
+                    drawQuestionChapter_next();
                 }
 
-                questionSelected = e.target.value;
+                function drawQuestionChapter_next() {
+                    questionSelected = e.target.value;
 
-                // Area to display the question
-                var div = document.getElementById("questionList-container");
+                    // Area to display the question
+                    var div = document.getElementById("questionList-container");
 
-                // Area to display the question
-                var divBut = document.getElementById("questionList-container-button-navigation");
+                    // Area to display the question
+                    var divBut = document.getElementById("questionList-container-button-navigation");
 
-                div.textContent = "";
+                    div.textContent = "";
 
-                divBut.appendChild(libD.jso2dom([
-                    ["button#menu-questionList", _("Menu questions")],
-                    ["button#questionList-restart", _("Restart")],
-                    ]
-                ));
+                    divBut.appendChild(libD.jso2dom([
+                        ["button#menu-questionList", _("Menu questions")],
+                        ["button#questionList-restart", _("Restart")],
+                        ]
+                    ));
 
-                // The button permits to return to the menu
-                var but = document.getElementById("menu-questionList");
-                but.onclick = reDrawQuestionList;
+                    // The button permits to return to the menu
+                    var but = document.getElementById("menu-questionList");
+                    but.onclick = reDrawQuestionList;
 
-                // The button permits to regenerate the question
+                    // The button permits to regenerate the question
 
-                var butRestart = document.getElementById("questionList-restart");
-                butRestart.onclick = async function () {
-                    // Recreate the page with a new element (automaton-re-grammar) for the question
-                    // If no automaton loaded and the automaton is not created hazardly
-                    if (
-                        q.typeQuestion === "mcq" || (
-                            randomly[0] === 2 &&
-                            q.typeQuestion === "automaton"
-                        ) || (
-                            randomly[2] === 2 &&
-                            q.typeQuestion === "RE"
-                        ) || (
-                            randomly[3] === 2 &&
-                            q.typeQuestion === "grammar"
-                        ) || (
-                            automataLoaded[0] === null &&
-                            randomly[0] === 0 &&
-                            q.typeQuestion === "automaton"
-                        ) || (
-                            RELoaded === null &&
-                            randomly[2] === 0 &&
-                            q.typeQuestion === "RE"
-                        ) || (
-                            grammarLoaded === null &&
-                            randomly[3] === 0 &&
-                            q.typeQuestion === "grammar"
-                        )
-                    ) {
-                        await getListFiles();
-                        await getRandomFiles(q, q.underTypeQuestion);
-                        q.response = q.getResponse();
-                        div.textContent = "";
-                        drawQuestion(q, div);
-                    } else {
-                        q.settingsCreateAutomaton(
-                            randomly,
-                            nbrState,
-                            alphabet,
-                            nbrFinalStates,
-                            mode,
-                            nbTransitions
-                        );
+                    var butRestart = document.getElementById("questionList-restart");
+                    butRestart.onclick = function () {
+                        // Recreate the page with a new element (automaton-re-grammar) for the question
+                        // If no automaton loaded and the automaton is not created randomly
+                        if (
+                            q.typeQuestion === "mcq" || (
+                                randomly[0] === 2 &&
+                                q.typeQuestion === "automaton"
+                            ) || (
+                                randomly[2] === 2 &&
+                                q.typeQuestion === "RE"
+                            ) || (
+                                randomly[3] === 2 &&
+                                q.typeQuestion === "grammar"
+                            ) || (
+                                automataLoaded[0] === null &&
+                                randomly[0] === 0 &&
+                                q.typeQuestion === "automaton"
+                            ) || (
+                                RELoaded === null &&
+                                randomly[2] === 0 &&
+                                q.typeQuestion === "RE"
+                            ) || (
+                                grammarLoaded === null &&
+                                randomly[3] === 0 &&
+                                q.typeQuestion === "grammar"
+                            )
+                        ) {
+                            getRandomFiles(
+                                q,
+                                q.underTypeQuestion,
+                                function () {
+                                    q.response = q.getResponse();
+                                    div.textContent = "";
+                                    drawQuestion(q, div);
+                                }
+                            );
+                        } else {
+                            q.settingsCreateAutomaton(
+                                randomly,
+                                nbrState,
+                                alphabet,
+                                nbrFinalStates,
+                                mode,
+                                nbTransitions
+                            );
 
-                        // Create a new automaton
-                        q.initializeAutomata(automataLoaded);
+                            // Create a new automaton
+                            q.initializeAutomata(automataLoaded);
 
-                        // Create a new regex if needed
-                        q.initializeRegex(RELoaded);
+                            // Create a new regex if needed
+                            q.initializeRegex(RELoaded);
 
-                        q.initializeGrammar(grammarLoaded);
-                        q.response = q.getResponse();
-                        div.textContent = "";
-                        drawQuestion(q, div);
-                    }
-                };
-                drawQuestion(q, div);
+                            q.initializeGrammar(grammarLoaded);
+                            q.response = q.getResponse();
+                            div.textContent = "";
+                            drawQuestion(q, div);
+                        }
+                    };
+                    drawQuestion(q, div);
+                }
             });
         }
     }
 
     // Get a random files for the given question
-    function getRandomFiles(q, nameQuestion) {
-        return new Promise (function (resolve, reject) {
+    function getRandomFiles(q, nameQuestion, callback) {
+        getListFiles(function () {
+            // Load a random automaton / grammar... from the file
+
             if (!randomQuestionDone[nameQuestion]) {
                 randomQuestionDone[nameQuestion] = [];
             }
@@ -2042,11 +2011,9 @@
 
             randomQuestionDone[nameQuestion].push(files[rand]);
 
-
             getFile("files_question/" + nameQuestion + "/" + files[rand],
-                async function (text) {
+                function (text) {
                     // Get a file randomly
-
                     switch (q.typeQuestion) {
                         case "mcq":
                             // A mcq we load the question
@@ -2080,45 +2047,56 @@
                                 var T = (parseInt(RegExp.$1, 10)%2 + 1) + ".";
                                 var complFile = files[rand].replace(/([\d])\./, T);
 
-                                (await function () {
-                                    // Wait for the second file to be loaded
-                                    return new Promise(
-                                        function (resolve, reject) {
-                                            getFile(
-                                                "files_question/" + nameQuestion + "/" + complFile,
-                                                function (text) {
-                                                    designer.setAutomatonCode(text);
-                                                    q.addAutomaton(designer.getAutomaton(0), 1);
-                                                    resolve();
-                                                }
-                                            );
-                                        }
-                                    );
-                                })();
+                                getFile(
+                                    "files_question/" + nameQuestion + "/" + complFile,
+                                    function (text) {
+                                        designer.setAutomatonCode(text);
+                                        q.addAutomaton(designer.getAutomaton(0), 1);
+                                        callback();
+                                    }
+                                );
                             }
-
-                            break;
+                            return;
                     }
-
-                    resolve();
+                    callback();
                 },
                 function () { throw new error("Error loading file"); }
             );
-        })
+        });
     }
 
-    // Get the list of files and parse it
-    function getListFiles () {
-        return new Promise (function (resolve, reject) {
-            if (contentListFilesParsed) {
-                getFile("files_question/listFiles.json", function (content) {
-                    contentListFilesParsed = JSON.parse(content);
-                    resolve();
-                })
-            } else {
-                resolve();
+    function getListFiles(callback) {
+        if (contentListFilesParsed) {
+            callback();
+            return;
+        }
+
+        getFile(
+            "files_question/listFiles.json",
+            function (content) {
+                contentListFilesParsed = JSON.parse(content);
+                callback();
+            },
+            function (message, status) {
+                var msg = null;
+
+                if (message === "status") {
+                    msg = libD.format(
+                        _("The file was not found or you don't have enough permissions to read it. (HTTP status: {0})"),
+                        status
+                    );
+                }
+
+                if (message === "send") {
+                    msg = _("This can happen with browsers like Google Chrome or Opera when using Aude locally. This browser forbids access to files which are nedded by Aude. You might want to try Aude with another browser when using it offline. See README for more information");
+                }
+
+                AudeGUI.notify(
+                    _("Unable to get the list of needed files"),
+                    msg
+                );
             }
-        });
+        );
     }
 
     // Redraw the menu as it was before selected a question
