@@ -484,11 +484,15 @@
         // Graphviz and passes it as the parameter of the provided callback.
         viz: function viz(code, callback) {
             if (window.Viz) {
-                if (AudeGUI.viz.loadingNotification) {
-                    AudeGUI.viz.loadingNotification.close(true);
-                    AudeGUI.viz.loadingNotification = null;
+                if (!AudeGUI.viz.hasOwnProperty("v")) {
+                    AudeGUI.viz.v = new Viz();
+                    if (AudeGUI.viz.loadingNotification) {
+                        AudeGUI.viz.loadingNotification.close(true);
+                        AudeGUI.viz.loadingNotification = null;
+                    }
                 }
-                callback(window.Viz(code, "svg"));
+
+                AudeGUI.viz.v.renderString(code).then(res => callback(res));
             } else {
                 if (!AudeGUI.viz.loadingNotification) {
                     AudeGUI.viz.loadingNotification = libD.notify({

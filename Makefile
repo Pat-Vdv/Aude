@@ -1,6 +1,6 @@
 DEST_EXAM?=../aude-exam
 
-all: l10n dirlist.txt js/audescript/audescript.js
+all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js
 
 .PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod
 
@@ -71,6 +71,16 @@ prod:
 	make
 	make exam
 	cd .. ; rm aude-exam.zip ; zip aude-exam.zip -r aude-exam
+
+js/lib/viz/viz.js:
+	cd js/lib/viz; \
+	wget https://github.com/mdaines/viz.js/releases/download/v2.1.2/lite.render.js; \
+	wget https://github.com/mdaines/viz.js/releases/download/v2.1.2/viz.js; \
+	if ! sha1sum -c --status SHA1SUMS; then \
+		rm lite.render.js; \
+		rm viz.js; \
+		exit 1; \
+	fi
 
 count-lines:
 	echo "  lines\t size" && cat `find | grep -E '(\.html|\.js|\.ajs|\.css|Makefile|\.ts)$$' | grep -v ./js/lib/ | grep -v ./node_modules/ | grep -v ./doc/` | wc -l -c
