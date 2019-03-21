@@ -1,48 +1,70 @@
 from epsElimination import epsElim
 
-export function determinize(A, complete)
-    A := epsElim(A)
+function eclose(trans, q, res, visited)
+    if not res then
+        res := {}
+    end if
 
-    let DetA     := new Automaton
-    let Alphabet := A.getAlphabet()
+    if not visited then
+        visited := {}
+    end if
+
+    res.add(q)
+
+    let toVisit := res \ visited
+    visited := visited U toVisit
+
+    foreach p in toVisit do
+        res.unionInPlace(trans(p, epsilon))
+        eclose(trans, p, res, visited)
+    done
+
+    return res
+end function
+
+function ECLOSE(trans, Q)
+    let res := {}
+    foreach q in Q do
+        res.unionInPlace(eclose(trans, q))
+    done
+    return res
+end function
+
+function addDetermnizedTransitions(A, trans, newA, q, visited)
+    if not visited then
+        visited := {}
+    else if q belongs to visited then
+        return
+    end if
+
+    visited.add(q)
+
+    if (q inter A.getAcceptingStates() is not empty) then
+        newA.setAcceptingState(q)
+    end if
+
+    foreach a in A.getAlphabet() do
+        let dest := {}
+
+        foreach p in q do
+            dest.unionInPlace(trans(p, a))
+        done
+
+        let qdest := ECLOSE(trans, dest)
+
+        newA.addTransition(q, a, qdest)
+        addDetermnizedTransitions(A, trans, newA, qdest, visited)
+    done
+end function
+
+export function determinize(A)
     let trans    := A.getTransitionFunction()
 
-    function addDeterminizedState(newQ)
-        if not DetA.hasState(newQ) then
-            DetA.addState(newQ)
-
-            foreach symbol in Alphabet do
-                let QDest := {}
-
-                foreach state in newQ do
-                    QDest := QDest union trans(state, symbol)
-                done
-
-                if complete or QDest is not empty then
-                    # if completion is not asked, don't create a sink state
-                    addDeterminizedState(QDest)
-                    DetA.addTransition(newQ, symbol, QDest)
-                end if
-            done
-        end if
-
-        foreach state in newQ do
-            if A.isFinalState(state) then
-                DetA.setFinalState(newQ)
-                break
-            end if
-        done
-    end function
-
-    let QInit := {}
-
-    QInit.add(A.getInitialState())
-
-    addDeterminizedState(QInit)
-
-    DetA.setInitialState(QInit)
-
-    return DetA
+    let newA := new Automaton
+    let qd := eclose(trans, A.getInitialState())
+    newA.setInitialState(qd)
+    addDetermnizedTransitions(A, trans, newA, qd)
+    return newA
 end function
 
 export function isDeterminized(A)
