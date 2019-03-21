@@ -600,6 +600,16 @@
             this.Sigma = new Set(alphabet);
         },
 
+        hasEpsilonTransitions: function () {
+            for (let t of this.trans) {
+                if (t.symbol === pkg.epsilon) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
         /**
          * This method adds a Set of symbols to the automaton.
          * @method
