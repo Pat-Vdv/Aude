@@ -154,7 +154,7 @@
                 if (HTMLElement && res instanceof HTMLElement) {
                     AudeGUI.Results.setDOM(res);
                 } else {
-                    AudeGUI.Results.setText(aude.elementToString(res));
+                    AudeGUI.Results.setText(res);
                 }
 
                 results.style.overflow = "";
