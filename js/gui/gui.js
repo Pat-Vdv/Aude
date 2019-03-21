@@ -159,6 +159,10 @@
             if (translatedNodes[i].alt) {
                 translatedNodes[i].alt = _(translatedNodes[i].alt);
             }
+
+            if (translatedNodes[i].placeholder) {
+                translatedNodes[i].placeholder = _(translatedNodes[i].placeholder);
+            }
         }
     }
 
