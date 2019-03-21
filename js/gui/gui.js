@@ -119,17 +119,17 @@
     function refreshAutomatonCode() {
         try {
             AudeGUI.AutomatonCodeEditor.setText(
-                designer.getAutomatonCode(index, false)
+                AudeGUI.mainDesigner.getAutomatonCode()
             );
         } catch (e) {
             AudeGUI.setCurrentMode("design");
             switchmode.onchange();
             libD.notify({
                 type:    "error",
-                title:   libD.format(_("Unable to access the code of automaton n°{0}"), designer.currentIndex),
+                title:   libD.format(_("Unable to access the code of automaton n°{0}"), AudeGUI.mainDesigner.currentIndex),
                 content: _("You need to fix the automaton in design mode before accessing its code.")
             });
-
+            console.error(e);
             return false;
         }
 

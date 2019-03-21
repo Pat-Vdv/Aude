@@ -938,9 +938,13 @@
     // if the <svg> representation is not desired (e.g. you need a cleaner visual representation of the automaton),
     // set withoutSVG to true
     AudeDesigner.prototype.getAutomatonCode = function (index, withoutSVG) {
+        if (typeof index === "undefined") {
+            index = this.currentIndex;
+        }
+
         var getStringValue = AudeDesigner.getStringValueFunction;
 
-        this.cleanSVG(this.currentIndex);
+        this.cleanSVG(index);
         if (!this.initialStates[index]) {
             return ""; // automata without initial states are not supported
         }
