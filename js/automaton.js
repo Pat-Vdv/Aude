@@ -78,7 +78,9 @@
         this.states = aude.toSet(states);
         this.Sigma = aude.toSet(Sigma);
         this.qInit = qInit;
-        this.trans =  aude.toSet(trans);
+
+        this.setTransitions(trans);
+
         this.finalStates = aude.toSet(finalStates);
 
         if (!this.currentStates) {
@@ -449,6 +451,15 @@
          */
         getTransitions: function () {
             return this.trans;
+        },
+
+        setTransitions: function (trans) {
+            this.trans = new Set();
+            if (trans) {
+                for (let t of trans) {
+                    this.addTransition(t);
+                }
+            }
         },
 
         /**
