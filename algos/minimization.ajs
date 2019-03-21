@@ -2,7 +2,6 @@ from determinization import determinize, isDeterminized
 from completion import complete, isCompleted
 
 export function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndComplete, alphabet)
-
     # before minimizing, automaton must be determinist and complete.
     if not isAlreadyDeterminized and not isDeterminized(A) then
         A := determinize(A)
@@ -18,7 +17,7 @@ export function minimize(A, isAlreadyDeterminized, isAlreadyDeterminizedAndCompl
     # we make a partition of the states
     let partition := {}
 
-    # initial partition: final/non final states are separated
+    # initial partition: final / non final states are split
     foreach q1 in A.getStates() do
         foreach q2 in A.getStates() do
             if A.isAcceptingState(q1) = A.isAcceptingState(q2) then
