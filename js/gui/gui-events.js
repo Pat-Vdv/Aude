@@ -164,6 +164,18 @@ window.AudeGUI.initEvents = function () {
         }
     })();
 
+    function hasParent(dom, parent) {
+        do {
+            if (dom === parent) {
+                return true;
+            }
+
+            dom = dom.parentNode;
+        } while (dom);
+
+        return false;
+    }
+
     if (!AudeGUI.audeExam) {
         document.getElementById("automata-list").onclick = function () {
             AudeGUI.AutomataList.show();
@@ -174,20 +186,51 @@ window.AudeGUI.initEvents = function () {
         };
 
         (function () {
+            let selected = null;
             let listAlgosShown = false;
-            var listAlgos = document.getElementById("container-algos");
-            var arrowPredefAlgos = document.getElementById("arrow-select-algo");
+            const listAlgos = document.getElementById("container-algos");
+            const arrowPredefAlgos = document.getElementById("arrow-select-algo");
+            const listAlgosSearch = document.getElementById("container-algos-search");
+            let algoButtons = null;
+
+            function select(button) {
+                console.log("select", button);
+                if (selected) {
+                    selected.classList.remove("algo-selected");
+                }
+
+                selected = button;
+
+                if (button) {
+                    selected.classList.add("algo-selected");
+                }
+            }
+
+            function hideListAlgosClick(e) {
+                if (e.target.classList.contains("cell-algo")) {
+                    select(e.target);
+                    hideListAlgos();
+                } else if (!hasParent(e.target, listAlgos)) {
+                    hideListAlgos();
+                }
+            }
 
             // Show the list of predefined algo
             document.getElementById("predef-algos").onclick = function (e) {
                 if (listAlgosShown) {
                     hideListAlgos();
                 } else {
-                    window.addEventListener("click", hideListAlgos);
+                    if (!algoButtons) {
+                        algoButtons = [].slice.call(document.getElementById("container-algos-content").getElementsByTagName("button"));
+                    }
+
+                    window.addEventListener("click", hideListAlgosClick);
                     listAlgos.style.display = "";
                     arrowPredefAlgos.textContent = "▴";
                     listAlgosShown = true;
                     AudeGUI.onResize();
+                    listAlgosSearch.focus();
+                    listAlgosSearch.oninput();
                 }
 
                 e.stopPropagation();
@@ -198,9 +241,63 @@ window.AudeGUI.initEvents = function () {
                 arrowPredefAlgos.textContent = "▾";
                 listAlgosShown = false;
                 AudeGUI.onResize();
-                window.removeEventListener("click", hideListAlgos);
+                window.removeEventListener("click", hideListAlgosClick);
             }
+
+            listAlgosSearch.onkeyup = function (e) {
+                if (e.keyCode === 13 && selected) {
+                    selected.click();
+                    hideListAlgos();
+                } else if (e.keyCode === 27) {
+                    listAlgosSearch.value = "";
+                    hideListAlgos();
+                } else if (e.keyCode === 40) { // down
+                    let cur = selected ? algoButtons.indexOf(selected) + 1 : 0;
+                    while (cur < algoButtons.length) {
+                        if (!algoButtons[cur].classList.contains("algo-hidden")) {
+                            select(algoButtons[cur]);
+                            break;
+                        }
+                        cur++;
+                    }
+                } else if (e.keyCode === 38) { // up
+                    let cur = selected ? algoButtons.indexOf(selected) - 1 : 0;
+                    while (cur >= 0) {
+                        if (!algoButtons[cur].classList.contains("algo-hidden")) {
+                            select(algoButtons[cur]);
+                            break;
+                        }
+                        cur--;
+                    }
+                }
+            };
+
+            listAlgosSearch.oninput = function () {
+                var v = listAlgosSearch.value;
+
+                if (selected && v) {
+                    select(null);
+                }
+
+                for (let button of algoButtons) {
+                    if (button.textContent.toLowerCase().startsWith(v.toLowerCase())) {
+                        button.classList.remove("algo-hidden");
+                        if (!selected && v) {
+                            select(button);
+                        }
+                    } else {
+                        button.classList.add("algo-hidden");
+                    }
+                }
+            };
+
+            document.getElementById("container-algos-search-clear").onclick = function () {
+                listAlgosSearch.value = "";
+                listAlgosSearch.focus();
+                listAlgosSearch.oninput();
+            };
         }());
+
 
         // R the selected algo
         document.getElementById("algorun").onclick = AudeGUI.Runtime.launchPredefAlgo;

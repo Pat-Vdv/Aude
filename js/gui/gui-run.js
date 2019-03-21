@@ -82,13 +82,7 @@
                 curAlgo.name = e.target.value;
 
                 //Change the name of the selected algo
-                algoName.innerHTML = _(descr);
-
-                //Hide the list of algos
-                document.getElementById("container-algos").style.display="none";
-
-                document.getElementById("up-select-algo").style.display = "none";
-                document.getElementById("down-select-algo").style.display = "inline";
+                algoName.textContent = _(descr);
             }
 
             switch (type) {

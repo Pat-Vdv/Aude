@@ -983,10 +983,39 @@ input[type=button]:active, button:active {
 }
 
 #container-algos {
+    background-color: #CFC;
+}
+
+#container-algos h1 {
+    font-weight:bold;
+    color:#373;
+    font-size:1rem;
+}
+
+#container-algos h1:only-child {
+    display:none;
+}
+
+#container-algos-search-div p {
+    margin:0;
+    padding:2px;
+    display:flex;
+    flex-direction:row;
+}
+
+#container-algos-search {
+    flex:1;
+}
+
+#container-algos-search-clear {
+    color:red;
+    font-weight:bold;
+}
+
+#container-algos-content {
     display:flex;
     transition-property: display;
     flex-direction: row;
-    background-color:  rgb(102, 199, 255);
 }
 
 #sup-container-algo-automata {
@@ -1022,11 +1051,19 @@ input[type=button]:active, button:active {
     border: none;
     background-color: inherit;
 }
+
 .cell-algo:hover {
-    background-image: linear-gradient(rgb(157, 189, 215), rgb(127, 164, 195));
-    color: white;
-    outline: solid 1px black;
+    background:#7C7;
 }
+
+.algo-selected {
+    background:#3A3;
+}
+
+.algo-hidden {
+    display:none;
+}
+
 /*End to show algorithm*/
 
 /*Question list*/
