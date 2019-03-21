@@ -83,6 +83,7 @@
 
                 //Change the name of the selected algo
                 algoName.textContent = _(descr);
+                AudeGUI.Runtime.launchPredefAlgo();
             }
 
             switch (type) {
