@@ -70,7 +70,13 @@
         <script>
         /*<!--//*/
             window.addEventListener('load', function() {
-                setTimeout(libD.jsLoad, 0, "js/lib/viz.js", null, '', false, false);
+                setTimeout(
+                    function () {
+                        libD.jsLoad("js/lib/viz/viz.js", null, '', false, false);
+                        libD.jsLoad("js/lib/viz/lite.render.js", null, '', false, false);
+                    },
+                    0
+                );
             }, false);
         /* --> //*/
         </script>
