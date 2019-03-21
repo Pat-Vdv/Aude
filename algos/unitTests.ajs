@@ -2,10 +2,7 @@
 
 from minimization     import minimize
 from equivalence      import automataAreEquivalent
-from automaton2json   import object2automaton
-from automaton2json   import object2mealymoore
-from automaton2json   import object2mealy
-from automaton2json   import object2moore
+from automaton2json   import object2automaton, object2mealymoore, object2mealy, object2moore
 from infiniteLanguage import infiniteLanguage
 from epsElimination   import epsElim
 
