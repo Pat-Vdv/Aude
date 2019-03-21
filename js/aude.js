@@ -262,9 +262,9 @@ var aude = {
 
 // required in Aude as well as in Audescript.
 
-Set   = libD.Set;
-Map   = libD.Map;
-Tuple = libD.Tuple;
+window.Set   = libD.Set;
+window.Map   = libD.Map;
+window.Tuple = libD.Tuple;
 
 // icons
 libD.iconPack = "icons/breeze/";
