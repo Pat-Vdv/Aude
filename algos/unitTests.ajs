@@ -1,7 +1,7 @@
 //kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix;
 
 from minimization     import minimize
-from equivalence      import automataAreEquivalent
+from equivalence      import automataAreEquivalent, automataAreEqualWithRename
 from automaton2json   import object2automaton, object2mealymoore, object2mealy, object2moore
 from infiniteLanguage import infiniteLanguage
 from epsElimination   import epsElim
@@ -17,7 +17,7 @@ end function
 function doTests(testCorrect, testFailed, testFailInfo)
     console.log(doTests);
     let tests := {
-        "1": automataAreEquivalent( # test minimization
+        "1": automataAreEqualWithRename( # test minimization
             minimize(
                 object2automaton({
                     "states": ["1", "4", "7"],
@@ -108,7 +108,7 @@ function doTests(testCorrect, testFailed, testFailInfo)
                 return true
             end function
         )(),
-        "3": automataAreEquivalent(
+        "3": automataAreEqualWithRename(
             object2automaton({
                 "states": ["1", "2", "4", "5"],
                 "finalStates": ["3"],
@@ -243,7 +243,7 @@ function doTests(testCorrect, testFailed, testFailInfo)
                     }
                 )
               ) = true,
-        "32": automataAreEquivalent(
+        "32": automataAreEqualWithRename(
                 minimize(
                     object2automaton(
                         {
@@ -261,13 +261,16 @@ function doTests(testCorrect, testFailed, testFailInfo)
                 ),
                 object2automaton(
                     {
-                        "states": ["0"],
+                        "states": ["0", "1"],
                         "finalStates": ["0"],
-                        "transitions": []
+                        "transitions": [
+                            ["0", "a", "1"],
+                            ["1", "a", "1"]
+                        ]
                     }
                 )
              ),
-        "33": automataAreEquivalent(
+        "33": automataAreEqualWithRename(
             epsElim(
                 object2automaton(
                     {
@@ -286,18 +289,18 @@ function doTests(testCorrect, testFailed, testFailInfo)
             object2automaton(
                 {
                     "states": ["0"],
-                    "finalStates": ["0","2","1"],
+                    "finalStates": ["0","1","2"],
                     "transitions": [
                         ["0","a","0"],
+                        ["0","a","1"],
                         ["0","a","2"],
+                        ["0","b","1"],
                         ["0","b","2"],
                         ["0","c","2"],
-                        ["0","a","1"],
-                        ["0","b","1"],
-                        ["2","c","2"],
+                        ["1","b","1"],
                         ["1","b","2"],
                         ["1","c","2"],
-                        ["1","b","1"]
+                        ["2","c","2"]
                     ]
                 }
             )
