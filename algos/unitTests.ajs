@@ -1,5 +1,6 @@
 //kate: tab-width 4; space-indent on; indent-width 4; replace-tabs on; eol unix;
 
+from determinization  import determinize
 from minimization     import minimize
 from equivalence      import automataAreEquivalent, automataAreEqualWithRename
 from automaton2json   import object2automaton, object2mealymoore, object2mealy, object2moore
@@ -355,7 +356,49 @@ function doTests(testCorrect, testFailed, testFailInfo)
             )
         ),
 
-        "35": evalAudeScript("(function() let S := {1}; S.delete(1); return S does not contain 1 end function)()")
+        "35": evalAudeScript("(function() let S := {1}; S.delete(1); return S does not contain 1 end function)()"),
+
+// determinization with epsilon transitions
+        "36": automataAreEqualWithRename(
+            determinize(object2automaton({
+                "states": ["0","1","2","3","4"],
+                "finalStates": ["5"],
+                "transitions": [
+                    ["0","b","0"],
+                    ["0","a","1"],
+                    ["0","\\e","2"],
+                    ["0","b","3"],
+                    ["1","a","1"],
+                    ["1","a","5"],
+                    ["2","\\e","1"],
+                    ["3","b","0"],
+                    ["3","a","4"],
+                    ["4","b","1"],
+                    ["4","\\e","3"],
+                    ["5","\\e","2"],
+                    ["5","a","5"],
+                    ["5","b","5"]
+                ]
+            })),
+            object2automaton({
+                "states": ["{0,1,2}","{0,1,2,3}"],
+                "finalStates": ["{1,2,5}","{1,2,3,4,5}","{0,1,2,3,5}","{0,1,2,5}"],
+                "transitions": [
+                    ["{0,1,2}","b","{0,1,2,3}"],
+                    ["{0,1,2}","a","{1,2,5}"],
+                    ["{0,1,2,3}","b","{0,1,2,3}"],
+                    ["{0,1,2,3}","a","{1,2,3,4,5}"],
+                    ["{0,1,2,3,5}","b","{0,1,2,3,5}"],
+                    ["{0,1,2,3,5}","a","{1,2,3,4,5}"],
+                    ["{0,1,2,5}","b","{0,1,2,3,5}"],
+                    ["{0,1,2,5}","a","{1,2,5}"],
+                    ["{1,2,3,4,5}","b","{0,1,2,5}"],
+                    ["{1,2,3,4,5}","a","{1,2,3,4,5}"],
+                    ["{1,2,5}","a","{1,2,5}"],
+                    ["{1,2,5}","b","{1,2,5}"]
+                ]
+            })
+        )
     }
 
     let tryParse := [
