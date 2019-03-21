@@ -1,5 +1,5 @@
 from mutate import addState, addTransitionFromState, randomNumber, addEpsilonTransitionToState, addEpsilonTransitionFromState, getRandomElement, newStateName
-from coaccessibility import coreachableStates
+from coreachability import coreachableStates
 
 # Adds a not reachable state to the automaton
 export function addNotReachable(A)
