@@ -983,6 +983,7 @@ input[type=button]:active, button:active {
 }
 
 #container-algos {
+    display:flex;
     transition-property: display;
     flex-direction: row;
     background-color:  rgb(102, 199, 255);

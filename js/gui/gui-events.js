@@ -157,6 +157,7 @@ window.AudeGUI.initEvents = function () {
                     }, 0
                 );
             }
+
             window.addEventListener("click", function () {
                 menu.classList.add("disabled");
             });
@@ -172,33 +173,36 @@ window.AudeGUI.initEvents = function () {
             AudeGUI.AutomataList.hide();
         };
 
-        // Show the list of predefined algo
-        document.getElementById("predef-algos").onclick = function () {
+        (function () {
+            let listAlgosShown = false;
             var listAlgos = document.getElementById("container-algos");
+            var arrowPredefAlgos = document.getElementById("arrow-select-algo");
 
-            listAlgos.style.display = (
-                getComputedStyle(listAlgos).display === "none"
-                    ? "flex"
-                    : "none"
-            );
+            // Show the list of predefined algo
+            document.getElementById("predef-algos").onclick = function (e) {
+                if (listAlgosShown) {
+                    hideListAlgos();
+                } else {
+                    window.addEventListener("click", hideListAlgos);
+                    listAlgos.style.display = "";
+                    arrowPredefAlgos.textContent = "▴";
+                    listAlgosShown = true;
+                    AudeGUI.onResize();
+                }
 
-            var up = document.getElementById("up-select-algo");
-            var down = document.getElementById("down-select-algo");
+                e.stopPropagation();
+            };
 
-            up.style.display = (
-                getComputedStyle(up).display === "none"
-                    ? "inline"
-                    : "none"
-            );
+            function hideListAlgos() {
+                listAlgos.style.display = "none";
+                arrowPredefAlgos.textContent = "▾";
+                listAlgosShown = false;
+                AudeGUI.onResize();
+                window.removeEventListener("click", hideListAlgos);
+            }
+        }());
 
-            down.style.display = (
-                getComputedStyle(down).display === "none"
-                    ?  "inline"
-                    : "none"
-            );
-        };
-
-        // Luanch the selected algo
+        // R the selected algo
         document.getElementById("algorun").onclick = AudeGUI.Runtime.launchPredefAlgo;
 
         document.getElementById("algo-exec").onclick = function () {
