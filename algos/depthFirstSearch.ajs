@@ -1,6 +1,9 @@
 # Return an array containing the name of states
 # Take an automaton and the state to begin
 # Can also take the trace of the algorithm
+
+let l10n := AudeGUI.l10n
+
 export function depthFirstSearch (A,start,trace)
 
     if start!= "" and isNaN(start)=false then # Convert the string number to an int
@@ -125,7 +128,6 @@ end function
 # The menu to select start state, and if it's animated
 # fSearch is the function of the search (depthFirstSearch,breadthFirstSearch)
 export function displayMenu(A,fSearch)
-    let l10n := AudeGUI.l10n
     let div := libD.jso2dom([
         ["div#div-menu-search.libD-ws-colors-auto",[
             ["span", l10n("Select the start state of the search: ")],
