@@ -495,6 +495,10 @@
 
         // Create the response with the algorithm and put it in the .response
          getResponse : function () {
+            if (this.response) {
+                return this.response;
+            }
+
             switch (this.underTypeQuestion) {
                 case "complement":
                     return complement(this.automaton[0]);
@@ -2107,6 +2111,8 @@
         chapterSelected.style.backgroundColor = "rgba(239, 100, 100)"; // Draw in red the chapter
     }
 
+    var designerAnswer;
+
     // Get the response of the user for the question
     function getUserResponse(question) {
         switch (question.answerMode()) {
@@ -2248,7 +2254,7 @@
                 ));
 
                 // Contains the automata
-                var designerAnswer = new AudeDesigner(
+                designerAnswer = new AudeDesigner(
                     document.getElementById("question-answers-automaton"),
                     false
                 );
@@ -2353,12 +2359,12 @@
         var dispResp;
         var div = document.createElement("div");
 
-        if (!question.isCorrect()) {
-            dispResp = _("Wrong answer");
-            div.style.color = "red";
-        } else if (!question.isCorrect()) {
+        if (question.isCorrect()) {
             dispResp = _("Correct answer");
             div.style.color = "green";
+        } else {
+            dispResp = _("Wrong answer");
+            div.style.color = "red";
         }
 
         div.innerHTML = dispResp;
