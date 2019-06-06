@@ -334,6 +334,70 @@
             return P;
         },
 
+        get_turing_machine: function(i, statesAsString) {
+            if (isNaN(i)) {
+                return null;
+            }
+
+            var A = AudeGUI.Runtime.get_automaton(i, true);
+
+            var T = new TuringMachine();
+
+            T.setInitialState(A.getInitialState());
+
+            // Adding final and non-final states.
+            A.getStates().forEach(function (st) {
+                T.addState(st, false);
+            });
+            A.getFinalStates().forEach(function (st) {
+                T.addState(st, true);
+            });
+
+            // Parsing and adding transitions.
+            A.getTransitions().forEach(function (tr) {
+                var splitSlash = tr.symbol.split("/");
+
+                if (splitSlash.length != 2) {
+                    throw new Error(
+                        libD.format(
+                            _("get_turing_machine: turing machine not recognized.")
+                        )
+                    );
+                }
+                var startSymb = splitSlash[0].trim();
+                var splitSemicolon = splitSlash[1].split(";");
+
+                if (splitSemicolon.length != 2) {
+                    throw new Error(
+                        libD.format(
+                            _("get_turing_machine: turing machine not recognized.")
+                        )
+                    );
+                }
+
+                var endSymb = splitSemicolon[0].trim();
+                var endMove = splitSemicolon[1].trim();
+
+                if (tr.symbol === pkg.epsilon) {
+                    throw new Error(
+                        libD.format(
+                            _("get_turing_machine: epsilon not allowed in turing machine.")
+                        )
+                    );
+                }
+
+                T.addTransition(
+                    tr.startState,
+                    startSymb,
+                    tr.endState,
+                    endSymb,
+                    endMove
+                );
+            });
+
+            return T;
+        },
+
         get_automata: function (count, callback) {
             if (AudeGUI.AutomataList.length() < count) {
                 AudeGUI.AutomataList.show(count, callback);
