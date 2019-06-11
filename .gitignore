@@ -4,3 +4,4 @@
 /js/audescript/audescript.js.map
 /js/lib/viz/*.js
 /l10n/js
+build/turingMachine.js

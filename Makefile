@@ -2,7 +2,7 @@ DEST_EXAM?=../aude-exam
 
 all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js
 
-.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod
+.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod cleanTS
 
 l10n:
 	cd l10n && make
@@ -84,3 +84,11 @@ js/lib/viz/viz.js:
 
 count-lines:
 	echo "  lines\t size" && cat `find | grep -E '(\.html|\.js|\.ajs|\.css|Makefile|\.ts)$$' | grep -v ./js/lib/ | grep -v ./node_modules/ | grep -v ./doc/` | wc -l -c
+
+compileTS: build/turingMachine.js
+
+cleanTS: 
+	rm build/*.js
+
+build/turingMachine.js: js/turingMachine.ts
+	tsc --outFile build/turingMachine.js --target ES6 js/turingMachine.ts
