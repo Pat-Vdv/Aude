@@ -9,6 +9,7 @@ consistency accross a given codebase.
 Any part of Aude should follow the conventions used everywhere else in Aude.
 
 Rules that must be followed are:
+
  - Common sense wins over silly rules.
  - No clever tricks. Value clarity over consiseness.
  - Avoid spaces at the end of lines. Make your editor automatically remove extra spaces for you!
