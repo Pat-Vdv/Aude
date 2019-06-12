@@ -1,6 +1,6 @@
 # Aude Developer Documentation
 
-This is the index of the (sparce) Aude Documentation aimed at developers and other code readers.
+This is the index of the (sparse) Aude Documentation aimed at developers and other code readers.
 
 This documentation is composed of:
 
