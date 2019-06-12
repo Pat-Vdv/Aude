@@ -35,13 +35,7 @@ language.
 A few rules must be respected when writing code in Aude.
 See [coding-standards.md](coding-standards.md).
 
-# Code Organization
-
-## Entry Point: `index.html`
-
-The entry point if the code of Aude is `index.html`.
-
-### HTML vs XHTML
+## HTML vs XHTML
 
 Aude is written in HTML5 and the code looks like it is written in its XHTML
 variant, but handling Aude in XHTML would actually break it because
@@ -53,6 +47,11 @@ A few things are loaded directly in the HTML code: `gui.css`, a big stylesheet,
 to style the whole user interface, the different javascript files that animate
 this interface and `katex.min.css`, the CSS file for KaTeX.
 
+# Code Organization
+
+## Entry Point: `index.html`
+
+The entry point if the code of Aude is `index.html`.
 
 ## js/lib/source-map.min.js
 
@@ -241,7 +240,7 @@ resized, except if the container is resized because the browser is resized.
 
 ## js/gui/
 
-`gui.js` is a directory that contains everything related to the user interface
+`gui` is a directory that contains everything related to the user interface
 of Aude.
 
 ### js/gui/gui.js
