@@ -1,17 +1,21 @@
+# A Short Introduction for Audescript
+
 Audescript is a custom generalistic programming language.
 The goal of this language is to be close to pseudo code notations used in
 computer science courses.
 
 This language is close to Javascript in its semantics with two main differences:
- - equality is by value and not by reference, so `{1,2,3}` equals `{1,2,3}`,
-   contrary to Javascript.
- - sets are first class citizens and the language provides set operations like
- union, intersection and cross product as operators
+
+- equality is by value and not by reference, so `{1,2,3}` equals `{1,2,3}`,
+  contrary to Javascript.
+- sets are first class citizens and the language provides set operations like
+union, intersection and cross product as operators
 
 Main cosmetic differences are:
- - No braces. Keywords are used to end blocks.
- - `:=` for assignment, `=` for equality test.
- - The ternary operator is `if test then value_if_true else value_is false`
+
+- No braces. Keywords are used to end blocks.
+- `:=` for assignment, `=` for equality test.
+- The ternary operator is `if test then value_if_true else value_is false`
 
 Audescript is not designed to be used as a main programming language. It is
 designed for students to fiddle with finite state machines.
@@ -21,7 +25,7 @@ things are provided when it makes sense. For instance, a `if` block can be ended
 using `end if` or `fi` and a `while` block can be ended using `end while`,
 `end do` or `done`.
 
-# Comments
+## Comments
 
     # This is a comment
 
@@ -30,12 +34,12 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
     /* This is a multiline
        comment */
 
-# Variable and Constant Declaration
+## Variable and Constant Declaration
 
     let variable := 0
     const answerToLife := 42
 
-# Functions and Procedures
+## Functions and Procedures
 
     function f(arg1, arg2)
         # ...
@@ -48,7 +52,7 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
         alert(42)
     end procedure
 
-# `if` Statement
+## `if` Statement
 
     if condition then
         # code
@@ -56,13 +60,13 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
 
     # fi can be used instead of end if
 
-# `unless` Statement
+## `unless` Statement
 
     unless condition then
         # code
     end unless
 
-# `for`..`from`..`to` Loop
+## `for`..`from`..`to` Loop
 
     let res := []
 
@@ -74,7 +78,7 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
 
     return res
 
-# `do` ... `while` Loop
+## `do` ... `while` Loop
 
     let res := []
     let i := 0
@@ -84,7 +88,7 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
         res.push(i)
     while i < 10
 
-# `foreach`..`in` Loop
+## `foreach`..`in` Loop
 
     let res := []
 
@@ -96,7 +100,7 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
 
     return res
 
-# `while` Loop
+## `while` Loop
 
     let i := 0
     let res := []
@@ -110,17 +114,17 @@ using `end if` or `fi` and a `while` block can be ended using `end while`,
 
     return res
 
-# Boolean operators
+## Boolean operators
 
     if (thisIsTrue or not thisIsFalse) and thisOtherStuffIsTrue then
         return "Boolean operators in Audescript work like in Python"
     end if
 
-# Arithmetic Operators and String Concatenation
+## Arithmetic Operators and String Concatenation
 
 This works like in Javascript.
 
-# Set Operations
+## Set Operations
 
     let s := {4,5,6}
 
@@ -145,7 +149,7 @@ This works like in Javascript.
     s := s2 \ {1,2,3}
     # or s := s2 minus {1,2,3}
 
-# Ternary
+## Ternary
 
     # Mostly like OCaml
 
