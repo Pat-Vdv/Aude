@@ -157,3 +157,5 @@ This works like in Javascript.
     )
 
     # NOTE: no end if. Parentheses are not mandatory, but this is highly recommanded.
+
+[Back to the index](index.md)

@@ -10,6 +10,7 @@ This documentation is not, and will never be, complete and up to date.
 So Aude code hitchhiker's best and definitive friends are `grep` and the Web
 Inspector.
 In order to know where something is in Aude:
+
  - in the browser, right-click on it and pick Inspect.
  - in a UNIX command prompt
 
@@ -293,3 +294,9 @@ execution.
 
 This defines the module `AudeGUI.WordExecution`, used to animate the execution
 of a word.
+
+### js/gui/gui-question.js
+
+Handles the experimental question list, organized by chapters.
+
+[Back to the index](index.md)
