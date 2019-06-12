@@ -1,6 +1,6 @@
 DEST_EXAM?=../aude-exam
 
-all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js
+all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js doc/index.html
 
 .PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod
 
@@ -80,6 +80,12 @@ js/lib/viz/viz.js:
 		rm lite.render.js; \
 		rm viz.js; \
 		exit 1; \
+	fi
+
+doc/index.html:
+	if [ ! -f "$@" ]; then wget "http://dynalon.github.io/mdwiki/mdwiki-latest-debug.html" -O "$@"; fi
+	@if ! [ "$$(sha256sum "$@" | cut -d' ' -f1)" = "52cbf4005207c1d962ee20b2e60d45ed0cc4946117cb4cdc758aee1647d1fe89" ]; then \
+		rm "$@"; echo "Checksum mismatch! Please update the Makefile."; exit 1; \
 	fi
 
 count-lines:

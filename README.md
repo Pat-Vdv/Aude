@@ -71,7 +71,9 @@ at some point.
 
 # Code documentation
 
-Code documentation is available in [folder `doc`](doc/code.md).
+Documentation is available in [folder `doc`](doc/index.md).
+`make` downloads mdwiki to doc/index.html, which can be used to read this
+documentation using a browser.
 
 # Running Audescript Programs Outside of the Browser
 
