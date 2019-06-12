@@ -5,7 +5,6 @@ One has to run `make` in the root folder of Aude before running it.
 # Hitchhiker's Survival Guide to Aude Code
 
 This documentation aims at easing the study of the code of Aude.
-Sadly, the reality is harsh.
 This documentation is not, and will never be, complete and up to date.
 So Aude code hitchhiker's best and definitive friends are `grep` and the Web
 Inspector.
@@ -63,7 +62,7 @@ This eases debbugging Audescript code.
 
 ## js/lib/libD/1.1/core.js
 
-This is the entry point of `libD`, a library that does a various things.
+This is the entry point of `libD`, a library that does various things.
 
 Notable parts of `libD` used in Aude are:
 
