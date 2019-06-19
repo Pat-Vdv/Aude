@@ -1,3 +1,5 @@
+# Coding Style
+
 The coding style used in Aude aims at being familiar for most people. It is
 close to the one that is used in a good part of the Java community. It is also
 close to what is used in the Linux Kernel. It is also inspired by the coding
@@ -9,6 +11,7 @@ consistency accross a given codebase.
 Any part of Aude should follow the conventions used everywhere else in Aude.
 
 Rules that must be followed are:
+
  - Common sense wins over silly rules.
  - No clever tricks. Value clarity over consiseness.
  - Avoid spaces at the end of lines. Make your editor automatically remove extra spaces for you!
@@ -356,3 +359,5 @@ Some of these rules are not respected at some places because some features were
 not supported by browsers at the time of writting. This is not the case anymore.
 
 Don't forget to proofread your modification before commiting them. Use and abuse [`git add -p`](http://johnkary.net/blog/git-add-p-the-most-powerful-git-feature-youre-not-using-yet/).
+
+[Back to the index](index.md)

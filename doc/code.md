@@ -5,11 +5,11 @@ One has to run `make` in the root folder of Aude before running it.
 # Hitchhiker's Survival Guide to Aude Code
 
 This documentation aims at easing the study of the code of Aude.
-Sadly, the reality is harsh.
 This documentation is not, and will never be, complete and up to date.
 So Aude code hitchhiker's best and definitive friends are `grep` and the Web
 Inspector.
 In order to know where something is in Aude:
+
  - in the browser, right-click on it and pick Inspect.
  - in a UNIX command prompt
 
@@ -35,13 +35,7 @@ language.
 A few rules must be respected when writing code in Aude.
 See [coding-standards.md](coding-standards.md).
 
-# Code Organization
-
-## Entry Point: `index.html`
-
-The entry point if the code of Aude is `index.html`.
-
-### HTML vs XHTML
+## HTML vs XHTML
 
 Aude is written in HTML5 and the code looks like it is written in its XHTML
 variant, but handling Aude in XHTML would actually break it because
@@ -53,6 +47,11 @@ A few things are loaded directly in the HTML code: `gui.css`, a big stylesheet,
 to style the whole user interface, the different javascript files that animate
 this interface and `katex.min.css`, the CSS file for KaTeX.
 
+# Code Organization
+
+## Entry Point: `index.html`
+
+The entry point if the code of Aude is `index.html`.
 
 ## js/lib/source-map.min.js
 
@@ -62,7 +61,7 @@ This eases debbugging Audescript code.
 
 ## js/lib/libD/1.1/core.js
 
-This is the entry point of `libD`, a library that does a various things.
+This is the entry point of `libD`, a library that does various things.
 
 Notable parts of `libD` used in Aude are:
 
@@ -241,7 +240,7 @@ resized, except if the container is resized because the browser is resized.
 
 ## js/gui/
 
-`gui.js` is a directory that contains everything related to the user interface
+`gui` is a directory that contains everything related to the user interface
 of Aude.
 
 ### js/gui/gui.js
@@ -293,3 +292,9 @@ execution.
 
 This defines the module `AudeGUI.WordExecution`, used to animate the execution
 of a word.
+
+### js/gui/gui-question.js
+
+Handles the experimental question list, organized by chapters.
+
+[Back to the index](index.md)

@@ -221,3 +221,4 @@ To look at the differences between two automata we can look at:
  - ... ?
 I started doing this in `differences.ajs` but I haven't tested my functions. The problem of finding how two automata are different requires quite a lot of thought as to what kind of differences are we looking for, are the two automata similar in any way, how do we approach searching for these differences, etc. So this is a task that requires quite some work in the future, I've just scratched the surface of the problem.
 
+[Back to the index](index.md)
