@@ -1092,6 +1092,14 @@ input[type=button]:active, button:active {
     background-color: rgba(239, 240, 241, 0.93) ;
 }
 
+.questionList-selection-chapter-cell-button:hover, .load-mode:hover {
+    background-color: rgba(150, 150, 150);
+}
+
+.questionList-selected {
+    background-color: rgba(239, 100, 100) !important;
+}
+
 #questionList-selection-question {
     margin: 100px;
     box-shadow: 6px 6px 5px grey;
@@ -1130,17 +1138,21 @@ input[type=button]:active, button:active {
     padding-right: 1ex;
 }
 
-#question-wording {
+#question-wording-text {
     padding: 10px;
 }
 
-#question-wordindg-information {
+#question-wording-details {
     text-align: center;
     padding: 20px;
 }
 
+#answer-user-input {
+    text-align: center;
+}
+
 /*If there are 2 automata to draw*/
-#question-automata-designer {
+#question-automaton-designer {
     position: relative;
     width: 100%;
     height: 250px;
@@ -1152,13 +1164,13 @@ input[type=button]:active, button:active {
     position: relative;
     box-sizing: border-box;
     width: 50%;
-    height: inherit;
+    height: 15em;
 }
 #question-automata-designer-left {
     position: relative;
     box-sizing: border-box;
     width: 50%;
-    height: inherit;
+    height: 15em;
 }
 
 #question-answers-automaton  {
@@ -1402,4 +1414,39 @@ fieldset {
 .symbol-animation-search:hover {
     border: 1px solid grey;
     background-image: linear-gradient(to bottom right, rgb(150, 150, 150), rgb(100, 100, 100));
+}
+
+/* Grammar Designer Style */
+#grammar-designer-terminal-div, #grammar-designer-nonterminal-div {
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    width: 50%;
+    border: 2px solid grey;
+    padding: 1em;
+}
+
+#grammar-designer-select-start[disabled] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: none;
+    border: none;
+}
+
+#grammar-designer-rules-div {
+    width: 100%;
+    padding: 1em;
+}
+
+#grammar-designer-rules-list {
+    list-style-type: none;
+}
+
+.grammar-designer-rule-item {
+    margin: 0.5em;
+}
+
+.grammar-designer-section-title {
+    font-weight: bold;
 }

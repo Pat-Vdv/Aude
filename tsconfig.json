@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "removeComments": true,
+    "outDir": "build/",
+    "rootDir": "js/",
+    "target": "es2016",
+    "typeRoots": ["js/typings"],
+    "pretty": true,
+    "listEmittedFiles": true,
+    "incremental": true,
+    "tsBuildInfoFile": "build/buildInfoFile.json"
+  },
+
+  "files": [
+    "js/turingMachine.ts",
+    "js/gui/gui-question.ts",
+    "js/gui/grammar-designer.ts",
+    "js/questions.ts",
+    "js/question-generation.ts"
+  ]
+}
