@@ -1,10 +1,10 @@
 html, body {
-   padding: 0;
-   margin: 0;
-   width: 100%;
-   height: 100%;
-   position: relative;
-   font-family: "Latin Modern Sans", "Liberation Sans", "Deja Vu Sans", Calibri, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-family: "Latin Modern Sans", "Liberation Sans", "Deja Vu Sans", Calibri, Arial, sans-serif;
 }
 
 body {
@@ -18,60 +18,59 @@ body {
 }
 
 #left-pane {
-   position: absolute;
-   top: 0;
-   bottom: 0;
-   left: 0;
-   right: 0;
-   overflow: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
 }
 
 #splitter {
-   position: absolute;
-   left: 75%;
-   top: 0;
-   bottom: 0;
-   width: 4px;
-   background: silver
+    position: absolute;
+    left: 75%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: silver
 }
 
 #toolbar {
-   z-index: 100;
-   min-height: 1.4rem;
-   line-height: 1.4rem;
-   vertical-align: middle;
-   background: #BEE7FF;
-   padding: 0;
-   font-size: 0;
-   flex-direction: row;
-   display: flex;
+    z-index: 100;
+    min-height: 1.4rem;
+    line-height: 1.4rem;
+    vertical-align: middle;
+    background: #BEE7FF;
+    padding: 0;
+    font-size: 0;
+    flex-direction: row;
+    display: flex;
 }
 
 #toolbar .left {
     flex: 1;
 }
 
-
 #toolbar .sep {
-   padding-left: 0.2rem;
-   padding-right: 0.2rem;
-   border-left: 1px solid #5AC;
-   display: inline-block;
-   vertical-align: middle;
-   height: 1.2rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+    border-left: 1px solid #5AC;
+    display: inline-block;
+    vertical-align: middle;
+    height: 1.2rem;
 }
 
 #toolbar button, #toolbar select {
-   color: black;
-   min-height: 28px;
-   border: 0;
-   min-width: 22px;
-   vertical-align: middle;
-   display: inline-block;
-   background: transparent;
-   margin: 0;
-   padding: 0 3px;
-   transition: 250ms;
+    color: black;
+    min-height: 28px;
+    border: 0;
+    min-width: 22px;
+    vertical-align: middle;
+    display: inline-block;
+    background: transparent;
+    margin: 0;
+    padding: 0 3px;
+    transition: 250ms;
 }
 
 #toolbar .symb {
@@ -83,17 +82,15 @@ body {
 }
 
 #toolbar button:hover:not(.greyed), #toolbar select:hover:not(.greyed) {
-   background: rgba(0, 0, 0, 0.1)
+    background: rgba(0, 0, 0, 0.1)
 }
 
 .greyed {
     opacity: 0.5;
 }
 
-
-
 #toolbar button:last-child, #toolbar select:last-child, .algomode #saveas, .codemode #redraw, .launch-disabled #algorun, .algomode #n-automaton {
-   margin-right: 1ex;
+    margin-right: 1ex;
 }
 
 #predef-algos {
@@ -110,180 +107,180 @@ body {
 }
 
 #toolbar select {
-   -webkit-appearance: none;
-   -moz-appearance: none;
-   appearance: none;
-   padding-right: 2ex;
-   height: 28px;
-   vertical-align: middle;
-   background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='8pt'>▾</text></svg>") no-repeat right center;
-/*   background-origin: content-box;*/
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 2ex;
+    height: 28px;
+    vertical-align: middle;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='8pt'>▾</text></svg>") no-repeat right center;
+    /*   background-origin: content-box;*/
 }
 
 #toolbar select:hover:not(.greyed) {
-   background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='8pt'>▾</text></svg>") no-repeat right center, rgba(0, 0, 0, 0.1);
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='10pt' width='10pt'><text x='0' y='10' fill='black' font-size='8pt'>▾</text></svg>") no-repeat right center, rgba(0, 0, 0, 0.1);
 }
 
 #toolbar span {
-   vertical-align: middle;
+    vertical-align: middle;
 }
 
 button * {
-   vertical-align: middle
+    vertical-align: middle
 }
 
 #toolbar button, #toolbar select {
-   font-size: 0.8rem;
+    font-size: 0.8rem;
 }
 
 #toolbar .text {
-   font-size: 0.6rem;
-   color: #05A
+    font-size: 0.6rem;
+    color: #05A
 }
 
 .launch-disabled #algo-exec {
-   display: none !important
+    display: none !important
 }
 
 #toolbar button {
-  transition: 300ms;
+    transition: 300ms;
 }
 
 #results {
-   top: 0;
-   right: 0;
-   bottom: 0;
-   position: absolute;
-   overflow: auto;
-   display: flex;
-   flex-direction: column;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 #results-content {
-   flex: 1;
-   position: relative;
+    flex: 1;
+    position: relative;
 }
 
 #results pre, .libD_notify-area pre {
-   white-space: pre-wrap;
+    white-space: pre-wrap;
 }
 
 #splitter {
-   cursor: ew-resize;
+    cursor: ew-resize;
 }
 
 .disabled, .codemode .codemode-disabled {
-   display: none !important;
+    display: none !important;
 }
 
 #codeedit, #automatoncode {
-   top: 0;
-   left: 0;
-   right: 0;
-   bottom: 0;
-   position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
 }
 
 #codeedit {
-   font-size: 11pt;
-   line-height: 16pt;
-   font-family: "Monaco", "Menlo", "Consolas", "Monospace", "Droid Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Ubuntu Mono", monospace;
-   height: 100%;
+    font-size: 11pt;
+    line-height: 16pt;
+    font-family: "Monaco", "Menlo", "Consolas", "Monospace", "Droid Sans Mono", "DejaVu Sans Mono", "Liberation Mono", "Ubuntu Mono", monospace;
+    height: 100%;
 }
 
 .designmode .algomode-specific {
-   display: none !important;
+    display: none !important;
 }
 
 .algomode .designmode-specific {
-   display: none !important;
+    display: none !important;
 }
 
 #svg-container, #toolbar, #results svg {
-   -moz-user-select: none;
-   -webkit-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #svg-container, #automatoncode, #automatoncodeedit {
-   border: 0;
-   resize: none;
-   position: absolute;
-   top: 0;
-   left: 0;
-   width: 100%;
-   height: 100%;
+    border: 0;
+    resize: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 #automatoncodeedit {
     background: transparent;
     padding: 0.5ex;
-    font-size: large ;
+    font-size: large;
     font-family: "Monospace", "DejaVu Sans Mono", "Liberation Mono", "Ubuntu Mono", monospace;
 }
 
 #word {
-   position: absolute;
-   left: 1em;
-   top: 1em;
-   right: 1em;
-   color: #666;
-   font-size: 2em;
-   font-weight: bold;
-   text-shadow: 0 0 2px gray;
+    position: absolute;
+    left: 1em;
+    top: 1em;
+    right: 1em;
+    color: #666;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 0 0 2px gray;
 }
 
 #word span {
-   transition: 400ms ease-out;
-   display: inline-block;
-   opacity: 1;
-   transform: scale(1);
+    transition: 400ms ease-out;
+    display: inline-block;
+    opacity: 1;
+    transform: scale(1);
 }
 
 #word .eaten {
-   opacity: 0;
-   transform: scale(3) translate(-8px, -8px);
+    opacity: 0;
+    transform: scale(3) translate(-8px, -8px);
 }
 
 #results-tb button {
-   background: #556068;
-   border-radius: 2px;
-   border: 1px solid #AAA;
-   margin-top: 0.8ex;
-   color: #F1F1F1;
-   vertical-align: middle;
-   font-size: small
+    background: #556068;
+    border-radius: 2px;
+    border: 1px solid #AAA;
+    margin-top: 0.8ex;
+    color: #F1F1F1;
+    vertical-align: middle;
+    font-size: small
 }
 
 #results-tb {
-   text-align: center;
-   font-size: 0
+    text-align: center;
+    font-size: 0
 }
 
 #results-tb:hover {
-   opacity: 1;
+    opacity: 1;
 }
 
 select {
-   display: inline-block;
+    display: inline-block;
 }
 
 .libD_notify-area {
-   max-width: 80%;
-   max-height: 80%
+    max-width: 80%;
+    max-height: 80%
 }
 
 #div-quiz {
-   position: relative;
-   z-index: 100;
-   max-height: 100%;
-   overflow: auto;
+    position: relative;
+    z-index: 100;
+    max-height: 100%;
+    overflow: auto;
 }
 
 #div-quiz, #quiz-content {
-   display: flex;
-   flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 #quiz-automata-designer {
@@ -297,180 +294,180 @@ select {
 }
 
 #quiz-title, #quiz-author {
-
-   text-align: center;
-   font-family: sans-serif;
-   font-weight: normal
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: normal
 }
 
 #quiz-title {
-   font-size: 1.5em;
-   color: #038;
-   margin-bottom: 0.5rem;
-   padding-bottom: 0
+    font-size: 1.5em;
+    color: #038;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0
 }
 
 #quiz-author {
-   color: #444;
-   font-size: small;
-   margin-top: 0;
-   padding-top: 0;
-   font-style: italic
+    color: #444;
+    font-size: small;
+    margin-top: 0;
+    padding-top: 0;
+    font-style: italic
 }
 
 #close-quiz, #close-quiz-editor, #close-question-settings {
-   position: absolute;
-   top: 0;
-   font-size: small;
-   right: 0;
-   color: #C63;
-   text-decoration: none;
-   padding-right: 1ex
+    position: absolute;
+    top: 0;
+    font-size: small;
+    right: 0;
+    color: #C63;
+    text-decoration: none;
+    padding-right: 1ex
 }
 
 #div-quiz.started #quiz-descr {
-   display: none
+    display: none
 }
 
 #quiz-descr, #quiz-content {
-   text-align: justify;
-   margin: 1em 1ex;
-   color: #222;
+    text-align: justify;
+    margin: 1em 1ex;
+    color: #222;
 }
 
 .button-container {
-   text-align: center;
-   margin-top: 1ex
+    text-align: center;
+    margin-top: 1ex
 }
 
 #div-quiz button {
-   background: #F1F1F1;
-   border-radius: 4px;
-   border: 1px solid silver;
-   padding: 2px;
-   margin: 0 0.5ex;
-   box-shadow: 0 0 1px silver;
-   transition: 500ms
+    background: #F1F1F1;
+    border-radius: 4px;
+    border: 1px solid silver;
+    padding: 2px;
+    margin: 0 0.5ex;
+    box-shadow: 0 0 1px silver;
+    transition: 500ms
 }
 
 #div-quiz button:hover {
-   box-shadow: 0 0 1px gold;
-   background: #FAFAF1;
+    box-shadow: 0 0 1px gold;
+    background: #FAFAF1;
 }
 
-#quiz-answers>ul, #question-answers-checkbox>ul {
-   list-style: none;
-   margin-left: 0;
-   padding-left: 1em;
-   color: black
+#quiz-answers>ul, #question-answers-checkbox-list {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 1em;
+    color: black
 }
 
 #quiz-answers input {
-   margin-right: 1em
+    margin-right: 1em
 }
 
 .quiz-answer-id {
-   color: green;
-   display: inline-block;
-   min-width: 3ex
+    color: green;
+    display: inline-block;
+    min-width: 3ex
 }
 
 .quiz-question-id {
-   color: gray
+    color: gray
 }
 
-#quiz-answers label, #question-answers-checkbox label  {
-   display: block;
-   margin: 0.5ex 0;
-   border-radius: 3px;
-   transition: 500ms;
+#quiz-answers label, #question-answers-checkbox-list label {
+    display: block;
+    margin: 0.5ex 0;
+    border-radius: 3px;
+    transition: 500ms;
 }
 
-#quiz-answers label:hover, #question-answers-checkbox label:hover {
-   background: #FFFFCC;
-   box-shadow: 0 0 5px #FFFFCC
+#quiz-answers label:hover, #question-answers-checkbox-list label:hover {
+    background: #FFFFCC;
+    box-shadow: 0 0 5px #FFFFCC
 }
 
 #automata-container {
-   position: absolute;
-   top: 0;
-   left: 0;
-   right: 0;
-   bottom: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 table {
-   border-collapse: collapse;
-   margin: auto;
+    border-collapse: collapse;
+    margin: auto;
 }
 
 #correction-table {
-   box-shadow: 2px 2px 2px silver;
+    box-shadow: 2px 2px 2px silver;
 }
 
 td, th {
-   border: 1px solid gray;
-   padding: 0.5ex;
+    border: 1px solid gray;
+    padding: 0.5ex;
 }
 
 #correction-table td {
-   vertical-align: top;
-   text-align: left
+    vertical-align: top;
+    text-align: left
 }
 
 #correction-table .possibilities li, .qcmt li {
-   list-style: none;
+    list-style: none;
 }
 
 .qinst .possibilities, .qcmt ul {
-   margin: 0;
-   padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .qinst .possibilities li {
-   margin-left: 1ex
+    margin-left: 1ex
 }
 
 #correction-table th {
-   background: #F5F5F5;
-   text-align: center;
-   font-size: x-small;
+    background: #F5F5F5;
+    text-align: center;
+    font-size: x-small;
 }
 
 .qstate {
-   text-align: center !important
+    text-align: center !important
 }
 
 .qid {
-   color: #07C;
-   float: left;
-   font-size: bold
+    color: #07C;
+    float: left;
+    font-size: bold
 }
 
 #svg-container {
-   z-index: 100;
+    z-index: 100;
 }
 
 #welcome {
-   z-index: 0;
-   line-height: 1.7em;
-   background: white;
-   position: absolute;
-   font-size: large;
-   color: black;
-   top: 0;
-   left: 0;
-   bottom: 0;
-   right: 0;
-   overflow: auto;
-   padding: 1em;
+    z-index: 0;
+    line-height: 1.7em;
+    background: white;
+    position: absolute;
+    font-size: large;
+    color: black;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+    padding: 1em;
 }
-#welcome>: last-child {
-   padding-bottom: 6em;
+
+#welcome>last-child {
+    padding-bottom: 6em;
 }
 
 #welcome p, #welcome ul {
-   max-width: 110ex;
+    max-width: 110ex;
 }
 
 #welcome li {
@@ -486,195 +483,193 @@ td, th {
     color: #A50
 }
 
-
 #welcome h2 {
-   color: black;
-   font-size: 36pt;
-   color: #05A;
-   margin-top: 0;
-   padding-top: 1rem;
-   padding-bottom: 1rem;
-   text-align: center;
-   font-weight: normal
+    color: black;
+    font-size: 36pt;
+    color: #05A;
+    margin-top: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    text-align: center;
+    font-weight: normal
 }
 
 #welcome h3 {
-   font-weight: normal;
-   font-size: 22pt;
-   color: #3A3
+    font-weight: normal;
+    font-size: 22pt;
+    color: #3A3
 }
 
 #word-layer1, #word-layer2 {
-   position: absolute;
-   top: 0;
-   left: 0;
-   right: 0;
-   display: inline-block;
-   z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: inline-block;
+    z-index: 10;
 }
 
 #word-layer2 {
-   opacity: 0.4;
-   z-index: 0;
+    opacity: 0.4;
+    z-index: 0;
 }
 
 #automata-list-chooser {
-   position: absolute;
-   top: 0;
-   right: 0;
-   bottom: 0;
-   z-index: 1000;
-   background: #EFFAFF;
-   max-width: 40ex;
-   box-shadow: -1px 0 1px #DDD;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: #EFFAFF;
+    max-width: 40ex;
+    box-shadow: -1px 0 1px #DDD;
 }
 
 #automata-list-chooser-close {
-   position: absolute;
-   top: 0;
-   right: 1ex;
-   font-size: small;
-   text-decoration: none;
-   color: red
+    position: absolute;
+    top: 0;
+    right: 1ex;
+    font-size: small;
+    text-decoration: none;
+    color: red
 }
 
 #automata-list-chooser svg {
-   max-width: 2rem;
-   max-height: 2rem;
+    max-width: 2rem;
+    max-height: 2rem;
 }
 
 #automata-list-chooser-content {
-   list-style: none;
-   padding: 0;
-   margin: 1ex 1px;
-   border: 1px solid #DDD;
-   background: white;
+    list-style: none;
+    padding: 0;
+    margin: 1ex 1px;
+    border: 1px solid #DDD;
+    background: white;
 }
 
 #automata-list-chooser-content li {
-   padding: 0.3ex;
-   margin: 0;
+    padding: 0.3ex;
+    margin: 0;
 }
+
 #automata-list-chooser-content li span, #automata-list-chooser-content li svg {
-   display: inline-block;
-   vertical-align: middle;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 #automata-list-chooser-content li:hover {
-   background: #DEF
+    background: #DEF
 }
 
 #automata-list-chooser-content a {
-   text-decoration: none;
-   display: block;
-   color: gray
+    text-decoration: none;
+    display: block;
+    color: gray
 }
 
 #automata-list-chooser p {
-   text-align: justify;
-   text-indent: 2ex;
-   font-size: small;
-   color: gray;
-   font-style: italic;
-   margin: 1.5rem 1ex 0 0;
+    text-align: justify;
+    text-indent: 2ex;
+    font-size: small;
+    color: gray;
+    font-style: italic;
+    margin: 1.5rem 1ex 0 0;
 }
 
 .automaton-number {
-   color: #0A5;
-   font-weight: bold;
-   text-align: right;
-   padding: 0 0.5ex;
-   float: right;
-   min-width: 3ex;
-   right: 0
+    color: #0A5;
+    font-weight: bold;
+    text-align: right;
+    padding: 0 0.5ex;
+    float: right;
+    min-width: 3ex;
+    right: 0
 }
 
 #pane-distantfile a {
-   text-decoration: none;
-   color: gray
+    text-decoration: none;
+    color: gray
 }
 
 #loaddistantfile p {
-   margin-bottom: 0;
-   padding-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
-
 #pane-distantfile, #pane-localfile {
-   padding: 1ex
+    padding: 1ex
 }
 
 #pane-localfile {
-   float: right
+    float: right
 }
 
 #pane-localfile button {
-   margin-left: 1em
+    margin-left: 1em
 }
 
 #loaddistantfile .title {
-   color: #444;
-   font-size: 1.2em;
-   margin-top: 3px;
-   padding-top: 0;
-   font-weight: bold
+    color: #444;
+    font-size: 1.2em;
+    margin-top: 3px;
+    padding-top: 0;
+    font-weight: bold
 }
 
 #pane-distantfile {
-   float: left
+    float: left
 }
 
 p img {
-  vertical-align: middle
+    vertical-align: middle
 }
 
 .automata-designer-resize-handle-rect {
-   stroke: #A40;
-   stroke-dasharray: 5, 5;
-   fill: none
+    stroke: #A40;
+    stroke-dasharray: 5, 5;
+    fill: none
 }
 
 .automata-designer-resize-handle {
-   stroke: #A40;
-   fill: #F50
+    stroke: #A40;
+    fill: #F50
 }
 
 .automata-designer-overlay {
-   border-radius: 4px;
-   position: absolute;
-   background: #333;
-   box-shadow: 0 0 3px black;
-   margin: 0;
-   list-style: none;
-   padding: 0;
-   transition-duration: 200ms;
-   transition-property: opacity, color;
-   overflow: hidden;
-   opacity: 0.5
+    border-radius: 4px;
+    position: absolute;
+    background: #333;
+    box-shadow: 0 0 3px black;
+    margin: 0;
+    list-style: none;
+    padding: 0;
+    transition-duration: 200ms;
+    transition-property: opacity, color;
+    overflow: hidden;
+    opacity: 0.5
 }
 
 .automata-designer-overlay:hover {
-   opacity: 1
+    opacity: 1
 }
 
 .automata-designer-overlay li {
-   transition: 200ms;
-   color: white;
+    transition: 200ms;
+    color: white;
 }
 
 .automata-designer-overlay li:hover {
-   background: white;
-   color: black;
+    background: white;
+    color: black;
 }
 
 .automata-designer-overlay a {
-   text-decoration: none;
-   padding: 0.5ex;
-   font-size: small;
-   color: inherit;
-   display: block;
+    text-decoration: none;
+    padding: 0.5ex;
+    font-size: small;
+    color: inherit;
+    display: block;
 }
-
 
 #new-state-btn-wrap {
     background-color: rgba(255, 255, 255, 0.8);
@@ -693,79 +688,78 @@ p img {
 }
 
 #new-state-btn {
-   position: absolute;
-   bottom: 5px;
-   left: 5px;
-   border: 1px solid #BB8;
-   color: #883;
-   font-size: small;
-   background: #FFC;
-   border-radius: 10000px;
-   opacity: 0.7;
-   padding: 1ex;
-   min-height: 13ex;
-   display: inline-block;
-   vertical-align: middle;
-   line-height: 13ex;
-   text-align: center;
-   min-width: 13ex;
-   transition: 200ms;
-   cursor: pointer;
-   z-index: 1000;
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    border: 1px solid #BB8;
+    color: #883;
+    font-size: small;
+    background: #FFC;
+    border-radius: 10000px;
+    opacity: 0.7;
+    padding: 1ex;
+    min-height: 13ex;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 13ex;
+    text-align: center;
+    min-width: 13ex;
+    transition: 200ms;
+    cursor: pointer;
+    z-index: 1000;
 }
 
 #new-state-btn-wrap:not(.welcome-hidden) #new-state-btn, #new-state-btn:hover {
-   opacity: 1
+    opacity: 1
 }
 
 #new-state-btn.mouse-down {
-   opacity: 1;
-   background: orange
+    opacity: 1;
+    background: orange
 }
 
 .prompt-container {
-   display: flex;
-   align-items: center;
-   padding: 2px
+    display: flex;
+    align-items: center;
+    padding: 2px
 }
 
 .prompt-input {
-   flex: 1;
-   width: 100%;
-   border-right: none;
-   margin-right: 0 !important;
+    flex: 1;
+    width: 100%;
+    border-right: none;
+    margin-right: 0 !important;
 }
 
 .prompt-btn {
-   margin-left: 0 !important;
+    margin-left: 0 !important;
 }
 
 input[type=text], input[type=password] {
-   border-radius: none;
-   box-sizing: border-box;
-   min-height: 1.5rem;
-   outline: none;
-   margin: 1px;
-   border: 1px solid silver;
+    border-radius: none;
+    box-sizing: border-box;
+    min-height: 1.5rem;
+    outline: none;
+    margin: 1px;
+    border: 1px solid silver;
 }
 
 input[type=text]:focus, input[type=password]:focus {
-   border: 1px solid #5CF;
-   box-shadow: 0 0 1px #5CF
+    border: 1px solid #5CF;
+    box-shadow: 0 0 1px #5CF
 }
 
 input[type=button], button, select {
-   margin: 1px;
-   border-radius: 0;
-   min-height: 1.5rem;
-   border: 1px solid silver;
-   background: white;
-   color: black;
+    /*margin: 1px;*/
+    border-radius: 0;
+    min-height: 1.5rem;
+    border: 1px solid silver;
+    background: white;
+    color: black;
 }
 
-
 input[type=button]:active, button:active {
-   background: #D5D5D5
+    background: #D5D5D5
 }
 
 .libD_notify-descr svg {
@@ -829,12 +823,12 @@ input[type=button]:active, button:active {
     clear: both;
 }
 
-#quiz-editor p > input[type="text"]:first-child:last-child {
+#quiz-editor p>input[type="text"]:first-child:last-child {
     width: 100%;
     box-sizing: border-box;
 }
 
-#quiz-editor .big-center > button {
+#quiz-editor .big-center>button {
     padding: 1ex;
 }
 
@@ -902,7 +896,7 @@ input[type=button]:active, button:active {
     position: relative;
 }
 
-#quiz-editor-automatonR-panes > div {
+#quiz-editor-automatonR-panes>div {
     box-sizing: border-box;
     padding: 0.5ex;
     width: 50%;
@@ -944,7 +938,7 @@ input[type=button]:active, button:active {
     flex: 1;
 }
 
-#quiz-editor-regexR-pane-content > div {
+#quiz-editor-regexR-pane-content>div {
     box-sizing: border-box;
     width: 50%;
     height: 100%;
@@ -952,7 +946,7 @@ input[type=button]:active, button:active {
     flex-direction: column;
 }
 
-#quiz-editor-regexR-pane-content > div > div {
+#quiz-editor-regexR-pane-content>div>div {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -976,6 +970,7 @@ input[type=button]:active, button:active {
 }
 
 /*To show algorithm*/
+
 #up-select-algo, #down-select-algo {
     vertical-align: bottom;
     margin-left: 2px;
@@ -987,33 +982,33 @@ input[type=button]:active, button:active {
 }
 
 #container-algos h1 {
-    font-weight:bold;
-    color:#373;
-    font-size:1rem;
+    font-weight: bold;
+    color: #373;
+    font-size: 1rem;
 }
 
 #container-algos h1:only-child {
-    display:none;
+    display: none;
 }
 
 #container-algos-search-div p {
-    margin:0;
-    padding:2px;
-    display:flex;
-    flex-direction:row;
+    margin: 0;
+    padding: 2px;
+    display: flex;
+    flex-direction: row;
 }
 
 #container-algos-search {
-    flex:1;
+    flex: 1;
 }
 
 #container-algos-search-clear {
-    color:red;
-    font-weight:bold;
+    color: red;
+    font-weight: bold;
 }
 
 #container-algos-content {
-    display:flex;
+    display: flex;
     transition-property: display;
     flex-direction: row;
 }
@@ -1022,6 +1017,7 @@ input[type=button]:active, button:active {
     min-width: 50%;
     text-align: left;
 }
+
 #container-algo-automata {
     display: flex;
     flex-direction: row;
@@ -1053,47 +1049,46 @@ input[type=button]:active, button:active {
 }
 
 .cell-algo:hover {
-    background:#7C7;
+    background: #7C7;
 }
 
 .algo-selected {
-    background:#3A3;
+    background: #3A3;
 }
 
 .algo-hidden {
-    display:none;
+    display: none;
 }
 
 /*End to show algorithm*/
 
 /*Question list*/
-#questionList-selection-option {
-    border: 2px solid #aaa;
-    margin: 10px;
-    border: 2px solid #bbb;
-    padding: 0px;
-    display: inline-block;
+#questionList-container {
+    margin: 0;
+    padding: 0;
+    text-align: center;
 }
 
 #questionList-selection-chapter {
-    border: 2px solid #aaa;
-    margin: 10px;
-    border: 2px solid #bbb;
+    margin: 0;
     padding: 0px;
     display: flex;
     flex-direction: row;
+    width: 100%;
 }
+
 .questionList-selection-chapter-cell-button {
-    font-size: 25px;
-    padding: 0px;
+    font-size: 1.15em;
+    padding: 0.5rem;
     margin: 0px;
-    border-left: 2px solid #bbb;
     text-decoration: none;
-    background-color: rgba(239, 240, 241, 0.93) ;
+    transition: 300ms background-color;
+    background-color: rgba(239, 240, 241, 0.93);
+    float: left;
 }
 
 .questionList-selection-chapter-cell-button:hover, .load-mode:hover {
-    background-color: rgba(150, 150, 150);
+    background-color: lightgray;
 }
 
 .questionList-selected {
@@ -1101,41 +1096,54 @@ input[type=button]:active, button:active {
 }
 
 #questionList-selection-question {
-    margin: 100px;
+    margin: 1.5rem;
     box-shadow: 6px 6px 5px grey;
     border: 3px solid #aaa;
+    background-color: rgba(239, 240, 241, 0.93);
+    text-align: center;
 }
 
 .questionList-question-select {
-    margin: 10px;
-    background-color: rgba(239, 240, 241, 0.93) ;
-    border: none;
+    transition: 300ms background-color;
+    padding: 1rem;
+    background: none;
+    border: none; 
     text-decoration: none;
     cursor: pointer;
-}
-.questionList-question-select:hover {
-    background-color: rgba(150, 150, 150 )  ;
-}
-/*The container for the buttons (top right)*/
-#questionList-container-button-navigation {
-    display: flex;
-    flex-direction: row-reverse;
-}
-#close-questionList, #questionList-restart, #menu-questionList  {
-   font-size: small;
-   color: #C63;
-   text-decoration: none;
-   padding-right: 1ex
+    width: 100%;
 }
 
-#generate-automaton-specification-questionList {
-    position: absolute;
-    top: 0%;
-    left: 0%;
+.questionList-question-select:hover {
+    background-color: lightgray;
+}
+
+/* The top button bar */
+#questionList-container-button-navigation {
+    display: inline-block;
+    width: 99.5%;
+    margin: 2px 0.25% 5px 0.25%;
+}
+
+#close-questionList, #questionList-btnbar-chapterMenu {
     font-size: small;
     color: #C63;
     text-decoration: none;
-    padding-right: 1ex;
+    float: right;
+}
+
+#questionList-btnbar-chapterMenu {
+    margin-right: 0.5rem;
+}
+
+#question-answer-button-container {
+    padding: 0.25rem;
+}
+
+#generate-automaton-specification-questionList {
+    font-size: small;
+    color: #C63;
+    text-decoration: none;
+    float: left;
 }
 
 #question-wording-text {
@@ -1145,35 +1153,52 @@ input[type=button]:active, button:active {
 #question-wording-details {
     text-align: center;
     padding: 20px;
+    width: 100%;
 }
 
-#answer-user-input {
-    text-align: center;
-}
-
-/*If there are 2 automata to draw*/
 #question-automaton-designer {
     position: relative;
     width: 100%;
-    height: 250px;
+    height: 25em;
     display: flex;
     flex-direction: row;
 }
 
-#question-automata-designer-right {
-    position: relative;
-    box-sizing: border-box;
-    width: 50%;
-    height: 15em;
-}
-#question-automata-designer-left {
-    position: relative;
-    box-sizing: border-box;
-    width: 50%;
-    height: 15em;
+.question-automaton-designer {
+    width: 100%;
+    height: 20em;
+    display: block;
 }
 
-#question-answers-automaton  {
+.question-other-info {
+    width: 100%;
+    display: block;
+}
+
+#question-automata-designer-right, #question-automata-designer-left {
+    position: relative;
+    display: flex;
+    box-sizing: border-box;
+    width: 50%;
+    height: 20em;
+    float: left;
+}
+
+#question-wording-details-left, #question-wording-details-right {
+    position: relative;
+    display: flex;
+    box-sizing: border-box;
+    width: 50%;
+    height: 20em;
+    float: left;
+}
+
+#question-wording-alphabet {
+    width: 100%;
+    text-align: center;
+}
+
+#question-answers-automaton {
     position: relative;
     padding: 10px;
     height: 500px;
@@ -1209,17 +1234,19 @@ fieldset {
     width: 30%;
     height: 30%;
     border: 2px solid #00802b;
-    box-shadow: 3px 3px 2px #404040 ;
+    box-shadow: 3px 3px 2px #404040;
 }
+
 #question-solution-table {
     margin: 20px;
     padding: 20px;
 }
+
 #question-solution-input {
     margin: 20px;
     padding: 5px;
     border: 2px solid #00802b;
-    box-shadow: 3px 3px 2px #404040 ;
+    box-shadow: 3px 3px 2px #404040;
 }
 
 #div-settings-question {
@@ -1238,12 +1265,12 @@ fieldset {
     justify-content: space-around;
 }
 
-
 .span-settings-question {
     margin: 10px;
 }
 
 /*Load file for the question*/
+
 #selection-automaton, #selection-re, #selection-grammar {
     margin: 10px;
 }
@@ -1267,7 +1294,6 @@ fieldset {
     margin-left: 10px;
 }
 
-
 .load-button {
     margin: 5px;
     background-color: inherit;
@@ -1277,7 +1303,7 @@ fieldset {
 }
 
 .load-button:hover {
-    background-color: rgba(180, 180, 180 )  ;
+    background-color: rgba(180, 180, 180);
 }
 
 #load-automaton-main-container {
@@ -1299,12 +1325,14 @@ fieldset {
     box-shadow: 2px 2px 1px #595959;
     background-color: #a6a6a6;
 }
+
 /*End load an automaton for the question*/
 
 /*For the algorithm table to automaton*/
+
 #div-container-table {
     background-color: grey;
-    border: 5px solid #aaa ;
+    border: 5px solid #aaa;
     padding: 10px;
 }
 
@@ -1324,15 +1352,17 @@ fieldset {
     display: flex;
     flex-direction: row;
 }
+
 .div-container-input-states {
     display: flex;
     flex-direction: row-reverse;
 }
 
-.div-container-input-symbols{
+.div-container-input-symbols {
     display: flex;
     flex-direction: column;
 }
+
 .div-container-input-transition {
     display: flex;
     flex-direction: column;
@@ -1344,14 +1374,15 @@ fieldset {
     margin: 0px !important;
     padding: 0px;
 }
+
 /*End algorithm table to automaton*/
 
 /*For the help window*/
+
 #help-main, #help-command {
     background-color: #eee;
     display: inline-block;
     padding: 5px;
-
 }
 
 #help-index {
@@ -1374,22 +1405,25 @@ fieldset {
     margin: 0px;
     border-left: 2px solid #bbb;
     text-decoration: none;
-    background-color: rgba(239, 240, 241, 0.93) ;
+    background-color: rgba(239, 240, 241, 0.93);
 }
 
 .help-index-button {
     margin: 1px;
-    background-color: rgba(239, 240, 241, 0.93) ;
+    background-color: rgba(239, 240, 241, 0.93);
     border: none;
     text-decoration: none;
     cursor: pointer;
 }
+
 .help-index-button:hover {
-    background-color: rgba(150, 150, 150 )  ;
+    background-color: rgba(150, 150, 150);
 }
+
 /*End help window*/
 
 /*Inputs grammar*/
+
 #input-block-grammar {
     padding: 5px;
 }
@@ -1397,7 +1431,6 @@ fieldset {
 #div-enter-easy-grammar {
     padding-top: 10px;
 }
-
 
 /*End inputs grammar*/
 
@@ -1417,6 +1450,7 @@ fieldset {
 }
 
 /* Grammar Designer Style */
+
 #grammar-designer-terminal-div, #grammar-designer-nonterminal-div {
     position: relative;
     box-sizing: border-box;
@@ -1449,4 +1483,14 @@ fieldset {
 
 .grammar-designer-section-title {
     font-weight: bold;
+}
+
+/* Workaround to allow KaTeX math blocks to autowrap. */
+.katex > .katex-html {
+	white-space: normal;
+}
+
+.katex .base {
+	margin-top: 2px;
+	margin-bottom: 2px;
 }

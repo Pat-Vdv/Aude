@@ -1,1 +1,3 @@
-declare var renderMathInElement: (a: any, b: any) => void;
+interface Window {
+  renderMathInElement: (a: any, b: any) => void
+}

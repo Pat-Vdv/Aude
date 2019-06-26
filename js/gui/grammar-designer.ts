@@ -63,7 +63,7 @@ class GrammarDesigner {
         this.terminalSymbolsDiv = refs.terminalSymbolsDiv;
         this.inputTerminal = refs.terminalInput;
         this.terminalEditSpan = refs.terminalEditSpan;
-        
+
         this.inputTerminal.onkeyup = (e) => {
             if (e.keyCode === 13) {
                 refs.terminalAddButton.click();
@@ -285,40 +285,22 @@ class GrammarDesigner {
 
             this.updateDisplay();
             // Re-focus the lefthand symbol <select>, so another rule can be added easily.
-            this.selectNonTerminalNewRule.focus(); 
+            this.selectNonTerminalNewRule.focus();
         };
 
 
         this.updateDisplay();
     }
 
-    /**
-     * Formats a set into LaTeX syntax.
-     * @param s - The iterable object (set, array, etc...) to format.
-     */
-    private set2Latex(s: libD.Set): string {
-        let latex = "$\\{";
+    private rule2Latex(rule: Rule, isStartSymbol: boolean = false): string {
+        let latex = "$";
 
-        let size = s.size;
-        if (size === 0) {
-            return "$$\\emptyset$$";
+        if (isStartSymbol) {
+            latex += "\\mathbf{" + rule.getNonTerminalSymbol() + "}";
+        } else {
+            latex += rule.getNonTerminalSymbol();
         }
-
-        let i = 0;
-        for (let elem of s) {
-            latex += elem;
-
-            if (i != size - 1) {
-                latex += ", ";
-            }
-            i++;
-        }
-
-        return latex + "\\}$";
-    }
-
-    private rule2Latex(rule: Rule): string {
-        let latex = "$" + rule.getNonTerminalSymbol() + " \\rightarrow ";
+        latex += " \\rightarrow ";
 
         let nonTermBody = rule.getNonTerminalSymbolBody();
         if (rule.getNonTerminalSymbolBody() === undefined) {
@@ -340,12 +322,23 @@ class GrammarDesigner {
      */
     updateDisplay(): void {
         // Update symbols.
-        window.AudeGUI.Quiz.textFormat(this.set2Latex(this.currentGrammar.getTerminalSymbols()), this.terminalSymbolsDiv, true);
-        window.AudeGUI.Quiz.textFormat(this.set2Latex(this.currentGrammar.getNonTerminalSymbols()), this.nonTerminalSymbolsDiv, true);
+        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getTerminalSymbols()), this.terminalSymbolsDiv, true);
+        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getNonTerminalSymbols()), this.nonTerminalSymbolsDiv, true);
 
         this.rulesList.innerHTML = "";
         let ruleNumber = 0;
-        for (let rule of this.currentGrammar.getProductionRules() as Iterable<Rule>) {
+        let rules = Array.from(this.currentGrammar.getProductionRules()) as Array<Rule>;
+        rules.sort((a, b) => {
+            if (a.getNonTerminalSymbol() === this.currentGrammar.getStartSymbol()) {
+                return -1;
+            } else if (b.getNonTerminalSymbol() === this.currentGrammar.getStartSymbol()) {
+                return 1;
+            } else {
+                return a.toString().localeCompare(b.toString());
+            }
+        });
+
+        for (let rule of rules) {
             let refs = {
                 ruleContent: <HTMLElement>null
             };
@@ -356,7 +349,10 @@ class GrammarDesigner {
                 refs
             );
 
-            window.AudeGUI.Quiz.textFormat(this.rule2Latex(rule), refs.ruleContent);
+            window.AudeGUI.Quiz.textFormat(
+                this.rule2Latex(rule, rule.getNonTerminalSymbol() === this.currentGrammar.getStartSymbol()),
+                refs.ruleContent
+            );
 
             // If designer is editable, we create the delete button for each rule.
             if (this.editable) {

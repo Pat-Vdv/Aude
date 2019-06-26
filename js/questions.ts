@@ -7,13 +7,13 @@ enum QuestionSubType {
     Minimize,
     EquivalentStates,
     EquivalentAutomata,
-    Automaton2Table,
-    Table2Automaton,
     Reachable,
     Coreachable,
     Word,
     WordNonDet,
     WordEpsilon,
+    WordGrammar,
+    WordRegexp,
     Determinize,
     Determinize_Minimize,
     EliminateEpsilon,
@@ -33,34 +33,17 @@ enum QuestionSubType {
     RecognizeLanguageAutomaton,
     RecognizeLanguageRE,
     // Subtypes to handle quiz questions.
-    QuizStateList,
-    QuizAutomaton,
+    CustomAutomatonEquiv,
+    CustomTextInput
 }
 
 /** Enumeration of all categories of questions. 
 *  Each category should correspond to a subclass of Question.
 */
 enum QuestionCategory {
-    AutomatonTransformation,
-    GrammarTransformation,
-    Automaton_Table_Conversion, // TODO Implement subclass
-    MCQ,
-    Automaton_Regexp_Conversion,
-    Automaton_Grammar_Conversion,
-    RecognizedWord,
-    NaturalLanguage_Automaton,
-    AutomatonStatesList
-}
-
-/**
-* Formats a regular expression to a LaTeX string.
-*/
-function regexp2Latex(regexp: string): string {
-    let latex = "$$";
-
-    latex += regexp.replace(/\*/g, "^*");
-
-    return latex + "$$";
+    TextInput,
+    AutomatonEquivQuestion,
+    MCQ
 }
 
 /**
@@ -69,101 +52,6 @@ function regexp2Latex(regexp: string): string {
  */
 abstract class Question {
     _ = window.AudeGUI.l10n;
-
-    // For the creation of the automaton
-    static createAutomatonCoreachable:
-        (nbStates: number,
-            alphabet: Iterable<any>,
-            nbAcceptingStates: number,
-            typeAutomaton: number,
-            nbTransitions: number | string) => Automaton = null;
-
-    static createAutomaton:
-        (nbStates: number,
-            alphabet: Iterable<any>,
-            nbAcceptingStates: number,
-            typeAutomaton: number,
-            nbTransitions: number | string) => Automaton = null;
-
-    // Function references for operations on automata, needed for automatic correction.
-    static complete: (a: Automaton) => Automaton = null;
-    static isCompleted: (a: Automaton) => boolean = null;
-    static automataAreEquivalent: (a1: Automaton, a2: Automaton) => boolean = null;
-    static product: (a1: Automaton, a2: Automaton) => Automaton = null;
-    static minimize: (a: Automaton) => Automaton = null;
-    static isMinimized: (a: Automaton) => boolean = null;
-    static complement: (a: Automaton) => Automaton = null;
-    static distinguableStates = null;
-    static notDistinguableStates: (a: Automaton) => libD.Set;
-    static coreachableStates: (a: Automaton) => libD.Set = null;
-    static reachableStates: (a: Automaton) => libD.Set = null;
-    static automaton2HTMLTable = null;
-    static createTable = null;
-    static HTMLTable2automaton = null;
-    static smallerWord = null;
-
-    /*Chapter 2*/
-    static determinize: (a: Automaton) => Automaton = null;
-    static isDeterminized: (a: Automaton) => boolean = null;
-
-    /*Chapter 3*/
-    static epsElim: (a: Automaton) => Automaton = null;
-    static hasEpsilonTransitions: (a: Automaton) => boolean = null;
-
-    /*Chapter 4*/
-    static regexToAutomaton = null;
-    static automatonToRegex = null;
-
-    /*Chapter 5*/
-    static leftLinear2RightLinearGrammar = null;
-    static rightLinear2LeftLinearGrammar = null;
-    static linearGrammar2Automaton: (g: linearGrammar | string) => Automaton = null;
-    static automaton2RightLinearGrammar = null;
-    static isLeftLinear = null;
-
-    /**
-     * Loads automata-related algorithms (minimization, completion, etc...) from audescript.
-     */
-    static loadPrograms(): void {
-        window.AudeGUI.Runtime.loadIncludes([
-            "completion", "equivalence", "product", "minimization",
-            "complementation", "distinguishability", "coreachability",
-            "reachability", "automaton2htmltable", "htmltable2automaton",
-            "createAutomaton", "smallerWord", "determinization",
-            "epsElimination", "regex2automaton", "automaton2regex",
-            "automaton2RightLinearGrammar", "linearGrammar2Automaton",
-            "leftLinear2RightLinearGrammar", "rightLinear2LeftLinearGrammar"
-        ], () => {
-            Question.createAutomatonCoreachable = audescript.m("createAutomaton").createAutomatonCoreachable;
-            Question.createAutomaton = audescript.m("createAutomaton").createAutomaton;
-            Question.complete = audescript.m("completion").complete;
-            Question.isCompleted = audescript.m("completion").isCompleted;
-            Question.automataAreEquivalent = audescript.m("equivalence").automataAreEquivalent;
-            Question.product = audescript.m("product").product;
-            Question.minimize = audescript.m("minimization").minimize;
-            Question.isMinimized = audescript.m("minimization").isMinimized;
-            Question.complement = audescript.m("complementation").complement;
-            Question.distinguableStates = audescript.m("distinguishability").distinguableStates;
-            Question.notDistinguableStates = audescript.m("distinguishability").notDistinguableStates;
-            Question.coreachableStates = audescript.m("coreachability").coreachableStates;
-            Question.reachableStates = audescript.m("reachability").reachableStates;
-            Question.automaton2HTMLTable = audescript.m("automaton2htmltable").automaton2HTMLTable;
-            Question.createTable = audescript.m("htmltable2automaton").createTable;
-            Question.HTMLTable2automaton = audescript.m("htmltable2automaton").HTMLTable2automaton;
-            Question.determinize = audescript.m("determinization").determinize;
-            Question.isDeterminized = audescript.m("determinization").isDeterminized;
-            Question.smallerWord = audescript.m("smallerWord").smallerWord;
-            Question.epsElim = audescript.m("epsElimination").epsElim;
-            Question.hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions
-            Question.regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
-            Question.automatonToRegex = audescript.m("automaton2regex").automatonToRegex;
-            Question.leftLinear2RightLinearGrammar = audescript.m("leftLinear2RightLinearGrammar").leftLinear2RightLinearGrammar;
-            Question.rightLinear2LeftLinearGrammar = audescript.m("rightLinear2LeftLinearGrammar").rightLinear2LeftLinearGrammar;
-            Question.linearGrammar2Automaton = audescript.m("linearGrammar2Automaton").linearGrammar2Automaton;
-            Question.automaton2RightLinearGrammar = audescript.m("automaton2RightLinearGrammar").automaton2RightLinearGrammar;
-            Question.isLeftLinear = audescript.m("leftLinear2RightLinearGrammar").isLeftLinear;
-        });
-    }
 
     static deduceQuestionCategory(qst: QuestionSubType): QuestionCategory {
         if (QuestionSubType[qst].startsWith("MCQ")) {
@@ -181,49 +69,74 @@ abstract class Question {
             case QuestionSubType.Determinize_Minimize:
             case QuestionSubType.EliminateEpsilon:
             case QuestionSubType.Determinize_EliminateEpsilon:
-                return QuestionCategory.AutomatonTransformation;
+            case QuestionSubType.Automaton2Regexp:
+            case QuestionSubType.Regexp2Automaton:
+            case QuestionSubType.Automaton2Grammar:
+            case QuestionSubType.Grammar2Automaton:
+            case QuestionSubType.LeftGrammar2RightGrammar:
+            case QuestionSubType.RecognizeLanguageAutomaton:
+            case QuestionSubType.RecognizeLanguageRE:
+                return QuestionCategory.AutomatonEquivQuestion;
 
             case QuestionSubType.EquivalentStates:
             case QuestionSubType.Reachable:
             case QuestionSubType.Coreachable:
-                return QuestionCategory.AutomatonStatesList;
-
-            case QuestionSubType.Automaton2Table:
-            case QuestionSubType.Table2Automaton:
-                return QuestionCategory.Automaton_Table_Conversion;
-
             case QuestionSubType.Word:
             case QuestionSubType.WordNonDet:
             case QuestionSubType.WordEpsilon:
-                return QuestionCategory.RecognizedWord;
-
-            case QuestionSubType.Automaton2Regexp:
-            case QuestionSubType.Regexp2Automaton:
-                return QuestionCategory.Automaton_Regexp_Conversion;
-
-            case QuestionSubType.Automaton2Grammar:
-            case QuestionSubType.Grammar2Automaton:
-                return QuestionCategory.Automaton_Grammar_Conversion;
-
-            case QuestionSubType.LeftGrammar2RightGrammar:
-                return QuestionCategory.GrammarTransformation;
-
-            case QuestionSubType.RecognizeLanguageAutomaton:
-            case QuestionSubType.RecognizeLanguageRE:
-                return QuestionCategory.NaturalLanguage_Automaton;
+            case QuestionSubType.WordGrammar:
+            case QuestionSubType.WordRegexp:
+                return QuestionCategory.TextInput;
         }
     }
 
-    subtype: QuestionSubType; // Precise subtype of the question.
-    wordingText: string; // The general textual description of the question.
+    createNewStateButton(divDesigner: HTMLElement) {
+        divDesigner.appendChild(libD.jso2dom(["a#new-state-btn"]));
 
-    constructor(subtype: QuestionSubType, wordingText?: string) {
+        (<HTMLElement>divDesigner.lastChild).onmousedown = function (e) {
+            (<HTMLElement>e.target).classList.add("mouse-down");
+        };
+
+        (<HTMLElement>divDesigner.lastChild).onmouseup = function (e) {
+            (<HTMLElement>e.target).classList.remove("mouse-down");
+        };
+
+        (<HTMLElement>divDesigner.lastChild).onclick = AudeDesigner.initiateNewState;
+        divDesigner.parentNode.lastChild.lastChild.textContent = this._("New state");
+    }
+
+    createRedrawButton(divDesigner: HTMLElement, designer: AudeDesigner) {
+        let redrawButton = libD.jso2dom(["button", this._("Redraw")]) as HTMLButtonElement;
+        redrawButton.onclick = (e) => {
+            window.AudeGUI.viz(
+                designer.getDot(),
+                function (res) {
+                    designer.setSVG(res, designer.currentIndex);
+                }
+            );
+            designer.autoCenterZoom();
+        };
+        divDesigner.parentElement.appendChild(redrawButton);
+    }
+
+    /** The broad question category for this object (text input, mcq, automaton, ...). */
+    category: QuestionCategory;
+    /** Precise subtype of the question. */
+    subtype: QuestionSubType;
+    /** The general textual description of the question. */
+    wordingText: string;
+    isWordingHtml: boolean = false;
+
+    constructor(subtype: QuestionSubType, wordingText?: string, isWordingHtml?) {
         this.subtype = subtype;
         if (wordingText) {
             this.wordingText = wordingText;
+            this.isWordingHtml = isWordingHtml;
         } else {
             this.wordingText = this.createWording();
         }
+
+        AutomatonPrograms.loadPrograms();
     }
 
     /*
@@ -250,7 +163,7 @@ abstract class Question {
         ], refs));
 
         // We display the wording text.
-        window.AudeGUI.Quiz.textFormat(this.wordingText, refs.divWordingText);
+        FormatUtils.textFormat(this.wordingText, refs.divWordingText, this.isWordingHtml);
 
         // We display the additionnal info.
         this.displayWordingDetails(refs.divWordingDetails);
@@ -273,12 +186,13 @@ abstract class Question {
      * Checks whether the user's answer is correct. 
      * The user's answer must be read from somewhere beforehand, using, for example, ```parseUsersAnswerFromHTML``` to get it from an HTML element.
      * @see Question#parseUsersAnswerFromHTML
-     * @returns An object containing a boolean ```correct``` that is true if the answer was right,
-     * and a string ```details``` detailing the mistake if ```correct``` is false.
+     * @returns An promise for an object containing a boolean ```correct``` 
+     * that is true if the answer was right, and a string ```details``` 
+     * detailing the mistake if ```correct``` is false.
      */
     abstract checkUsersAnswer(): { correct: boolean, details: string };
 
-    /**
+    /**audescript.m("regex2automaton").regexToAutomaton
      * Displays this question's wording details and additional information (automata, grammars, regexps, etc...)
      * in an HTML element.
      * @param wordingDetailsDiv - The HTML element to insert the wording details into (its content will be cleared !).
@@ -297,15 +211,9 @@ abstract class Question {
      */
     abstract displayCorrectAnswer(correctAnswerDiv: HTMLElement): void;
 
-    /**
-     * Initializes this question's wording completely at random (with some constraints set by the subtype).
-     */
-    abstract generateRandomly();
+    abstract toJSON(): any;
 
-    /**
-     * Initializes this question's wording from a random file.
-     */
-    abstract generateFromFile();
+    abstract fromJSON(qObj: any): boolean;
 
     /**
      * Generates wording for this question automatically, based on its subtype.
@@ -317,7 +225,7 @@ abstract class Question {
 
         switch (this.subtype) {
             case QuestionSubType.Complement:
-                return this._("Create the complementary automaton of the following automaton");
+                return this._("Give an automaton that recognizes the complement of the language recognized by the following :");
 
             case QuestionSubType.Complete:
                 return this._("Give a complete automaton that recognizes the same language as the following :");
@@ -332,409 +240,54 @@ abstract class Question {
                 return this._("Give the equivalent states of the following automaton :");
 
             case QuestionSubType.EquivalentAutomata:
-                return this._("Are the following automatons equivalent ?");
-
-            case QuestionSubType.Automaton2Table:
-                return this._("Fill the table corresponding to the automaton ");
-
-            case QuestionSubType.Table2Automaton:
-                return this._("Create the automaton corresponding to the table ");
+                return this._("Are the following automata equivalent ?");
 
             case QuestionSubType.Reachable:
-                return this._("Give the reachable states of the following automaton");
+                return this._("List all the reachable states of the following automaton :");
 
             case QuestionSubType.Coreachable:
-                return this._("Give the co-reachable states of the following automaton");
+                return this._("List all the co-reachable states of the following automaton :");
 
             case QuestionSubType.Word:
-                return this._("Give a word recognized by the following automaton");
+            case QuestionSubType.WordNonDet:
+            case QuestionSubType.WordEpsilon:
+                return this._("Give any word that is recognized by the following automaton :");
+
+            case QuestionSubType.WordGrammar:
+                return this._("Give any word that the following linear grammar recognizes.");
+
+            case QuestionSubType.WordRegexp:
+                return this._("Give any word that the following regular expression recognizes.");
 
             case QuestionSubType.Determinize:
-                return this._("Create the determinized automaton of the following automaton");
+                return this._("Give a deterministic automaton that recognizes the same language as the following :");
 
             case QuestionSubType.Determinize_Minimize:
-                return this._("Create the determinized and minimize automaton of the following automaton");
+                return this._("Give a minimal and deterministic automaton that recognizes the same language as the following :");
 
             case QuestionSubType.EliminateEpsilon:
-                return this._("Eliminate the ε-transitions of the following automaton");
+                return this._("Give an automaton without ε-transitions that is equivalent to the following :");
 
             case QuestionSubType.Determinize_EliminateEpsilon:
-                return this._("Eliminate the ε-transitions and determinize the following automaton");
+                return this._("Give a deterministic automaton without ε-transitions that is equivalent to the following :");
 
             case QuestionSubType.Automaton2Regexp:
-                return this._("Write the regular expression corresponding to the following automaton");
+                return this._("Give a regular expression that recognizes the same language as the following automaton :");
 
             case QuestionSubType.Regexp2Automaton:
-                return this._("Give the automaton corresponding to the following RE");
+                return this._("Give an automaton that recognizes the same language as the following regular expression :");
 
             case QuestionSubType.Grammar2Automaton:
-                return this._("Give the automaton corresponding to the following right linear grammar");
+                return this._("Give an automaton that recognizes the same language as the following right linear grammar :");
 
             case QuestionSubType.Automaton2Grammar:
-                return this._("Give the linear grammar corresponding to the following automaton");
+                return this._("Give a linear grammar that recognizes the same language as the following automaton : ");
 
             case QuestionSubType.LeftGrammar2RightGrammar:
-                return this._("Give the right linear grammar corresponding to the following left linear grammar");
+                return this._("Convert the following left linear grammar to an equivalent right liear grammar.");
 
             default:
                 return "";
-        }
-    }
-}
-
-/**
-* A class to represent a question whose wording details and answer are automata.
-* (Minimization, product, ...)
-*/
-class AutomatonTransformQuestion extends Question {
-    /** Automata array storing all the automata needed for the wording details. */
-    wordingAutomata: Array<Automaton> = new Array();
-    /** The number of automata needed in the wording */
-    automataInWording: number;
-    /** Automata designer in which the user inputs his answer */
-    answerDesigner: AudeDesigner = undefined;
-    /** The user's answer if it has been parsed. */
-    usersAnswer: Automaton = undefined;
-
-    constructor(subtype: QuestionSubType) {
-        super(subtype);
-
-        if (subtype === QuestionSubType.Product) {
-            this.automataInWording = 2;
-        } else {
-            this.automataInWording = 1;
-        }
-    }
-
-    parseUsersAnswer(): boolean {
-        if (this.answerDesigner === undefined) {
-            return true;
-        }
-        this.usersAnswer = this.answerDesigner.getAutomaton(0);
-        return false;
-    }
-
-    checkUsersAnswer(): { correct: boolean; details: string; } {
-        if (!this.usersAnswer) {
-            return { correct: false, details: this._("Answer wasn't given !") };
-        }
-
-        let correct: boolean = false;
-        let details: string = "";
-
-        switch (this.subtype) {
-            case QuestionSubType.Complement:
-                correct = Question.automataAreEquivalent(
-                    this.usersAnswer,
-                    Question.complement(this.wordingAutomata[0])
-                );
-
-                if (!correct) {
-                    details = this._("Your answer isn't the complement of the given automaton !");
-                }
-                break;
-
-            case QuestionSubType.Complete:
-                correct = Question.automataAreEquivalent(this.usersAnswer, this.wordingAutomata[0]);
-                if (!correct) {
-                    details = this._("Your answer isn't equivalent to the given automaton !");
-                    break;
-                }
-
-                correct = Question.isCompleted(this.usersAnswer);
-                if (!correct) {
-                    details = this._("Your answer isn't complete !");
-                }
-                break;
-
-            case QuestionSubType.Product:
-                correct = Question.automataAreEquivalent(
-                    this.usersAnswer,
-                    Question.product(this.wordingAutomata[0], this.wordingAutomata[1])
-                );
-                if (!correct) {
-                    details = "Your answer isn't the product of the two given automata !";
-                }
-                break;
-
-            case QuestionSubType.Minimize:
-                correct = Question.automataAreEquivalent(this.usersAnswer, this.wordingAutomata[0]);
-                if (!correct) {
-                    details = this._("Your answer isn't equivalent to the given automaton !");
-                    break;
-                }
-
-                correct = Question.isMinimized(this.usersAnswer);
-                if (!correct) {
-                    details = this._("Your answer isn't minimal !");
-                }
-                break;
-
-            case QuestionSubType.Determinize:
-            case QuestionSubType.Determinize_Minimize:
-            case QuestionSubType.Determinize_EliminateEpsilon:
-                correct = Question.automataAreEquivalent(this.usersAnswer, this.wordingAutomata[0]);
-                if (!correct) {
-                    details = this._("Your answer isn't equivalent to the given automaton !");
-                    break;
-                }
-
-                correct = Question.isDeterminized(this.usersAnswer);
-                if (!correct) {
-                    details = this._("Your answer isn't deterministic !");
-                    break;
-                }
-
-                if (this.subtype === QuestionSubType.Determinize_Minimize) {
-                    correct = Question.isMinimized(this.usersAnswer);
-                    if (!correct) {
-                        details = this._("Your answer isn't minimal !");
-                    }
-                } else if (this.subtype === QuestionSubType.Determinize_EliminateEpsilon) {
-                    correct = Question.hasEpsilonTransitions(this.usersAnswer);
-                    if (!correct) {
-                        details = this._("Your answer still contains epsilon transitions !");
-                    }
-                }
-                break;
-
-            case QuestionSubType.EliminateEpsilon:
-                correct = Question.automataAreEquivalent(this.usersAnswer, this.wordingAutomata[0]);
-                if (!correct) {
-                    details = this._("Your answer isn't equivalent to the given automaton !");
-                    break;
-                }
-
-                correct = Question.hasEpsilonTransitions(this.usersAnswer);
-                if (!correct) {
-                    details = this._("Your answer still contains epsilon transitions !");
-                }
-                break;
-
-            default:
-                correct = false;
-                details = "This is an error. It shouldn't happen."
-                break;
-        }
-        return { correct: correct, details: details };
-    }
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        wordingDetailsDiv.innerHTML = "";
-        if (this.automataInWording != this.wordingAutomata.length) {
-            this.generateRandomly();
-        }
-
-        // If wording only has a single automaton, show it in the middle.
-        if (this.automataInWording === 1) {
-            let refs = { divDesigner: <HTMLElement>null };
-            wordingDetailsDiv.appendChild(
-                libD.jso2dom(["div#question-automaton-designer", { "#": "divDesigner" }],
-                    refs));
-
-            let designer = new AudeDesigner(refs.divDesigner, true);
-            designer.setAutomatonCode(automaton_code(this.wordingAutomata[0]));
-            designer.autoCenterZoom();
-        } else if (this.automataInWording === 2) {
-            // Otherwise, if wording has 2 automata, show them side by side.
-            let refs = { divDesignerLeft: <HTMLElement>null, divDesignerRight: <HTMLElement>null };
-            wordingDetailsDiv.appendChild(
-                libD.jso2dom([
-                    ["div#question-automaton-designer", [
-                        ["div#question-automata-designer-left", { "#": "divDesignerLeft" }],
-                        ["div#question-automata-designer-right", { "#": "divDesignerRight" }]
-                    ]
-                    ]
-                ], refs)
-            );
-
-            let designerLeft = new AudeDesigner(refs.divDesignerLeft, true);
-            designerLeft.setAutomatonCode(automaton_code(this.wordingAutomata[0]));
-            designerLeft.autoCenterZoom();
-
-            let designerRight = new AudeDesigner(refs.divDesignerRight, true);
-            designerRight.setAutomatonCode(automaton_code(this.wordingAutomata[1]));
-            designerRight.autoCenterZoom();
-        }
-    }
-
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        // We clear the given <div>
-        answerInputDiv.innerHTML = "";
-
-        let refs = { automatonAnswerDiv: <HTMLElement>null };
-        answerInputDiv.appendChild(libD.jso2dom([
-            "div#question-answers-automaton",
-            { "#": "automatonAnswerDiv" },
-            this._("You can draw your automaton below.")],
-            refs));
-
-        this.answerDesigner = new AudeDesigner(refs.automatonAnswerDiv, false);
-    }
-
-    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
-    }
-
-    generateRandomly() {
-        let ag = new AutomatonGenerator();
-        for (let i = 0; i < this.automataInWording; i++) {
-            console.time("timer" + String(i + 1));
-            this.wordingAutomata[i] = ag.generateAutomaton();
-            console.timeEnd("timer" + String(i + 1));
-        }
-    }
-
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-}
-
-/** 
-* A class to handle MCQ-type questions.
-*/
-class MCQQuestion extends Question {
-    /** Every choice's text. */
-    wordingChoices = new Array<string>();
-    /** HTML DOM Elements for every choice's checkbox/ radio button. */
-    choicesCheckboxes = new Array<HTMLInputElement>();
-
-    /** Indices of the correct choices from wordingChoices. */
-    correctChoices = new Array<number>();
-    /** Indices of the user's choices from wordingChoices. */
-    usersChoices = new Array<number>();
-    /** Automaton for the wording, if needed. */
-    wordingAutomaton: Automaton = undefined;
-
-    /** 
-     * Whether only a single choice should be availible to the user.
-     * If true, radio buttons are displayed instead of checkboxes.
-     */
-    singleChoice: boolean;
-
-    /**
-     * Creates a new MCQ Question object.
-     * @param subtype - The subtype of this question (usually MCQ here).
-     * @param wordingChoices - For every choice, its wording and whether it is correct.
-     * @param singleChoice - If true, only a single choice will be availible to the user.
-     */
-    constructor(subtype: QuestionSubType,
-        wordingChoices: Iterable<{ text: string, correct?: boolean }> = [],
-        singleChoice: boolean = false,
-        wordingAutomaton?: Automaton) {
-        super(subtype);
-
-        for (let choice of wordingChoices) {
-            this.addWordingChoice(choice.text, choice.correct);
-        }
-        this.singleChoice = singleChoice;
-        this.wordingAutomaton = wordingAutomaton;
-    }
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        if (this.wordingAutomaton !== undefined) {
-            let designerDiv = libD.jso2dom(["div#question-automaton-designer"]);
-            let wordingDesigner = new AudeDesigner(designerDiv, true);
-            wordingDesigner.setAutomatonCode(automaton_code(this.wordingAutomaton));
-            wordingDesigner.autoCenterZoom();
-            wordingDetailsDiv.appendChild(designerDiv);
-        }
-    }
-
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        // We create an unordered list to put the checkboxes into.
-        let refs = { checkBoxList: <HTMLUListElement>null };
-        answerInputDiv.appendChild(
-            libD.jso2dom(
-                ["div#question-answers-checkbox",
-                    ["ul", { "#": "checkBoxList" }]
-                ],
-                refs
-            )
-        );
-
-        // We create every checkbox/radio button
-        // and place them into choicesCheckboxes (to fetch their state later).
-        for (let i = 0; i < this.wordingChoices.length; i++) {
-            let choice = this.wordingChoices[i];
-
-            let ref_cb = {
-                choiceCheckbox: <HTMLInputElement>null
-            };
-
-            refs.checkBoxList.appendChild(
-                libD.jso2dom(["li", ["label", [
-                    ["input", {
-                        "#": "choiceCheckbox",
-                        "type": (this.singleChoice ? "radio" : "checkbox"),
-                        "name": "mcq-question",
-                        "value": String(i)
-                    }],
-                    ["span", this._("#") + (i + 1) + " - " + this.wordingChoices[i]]
-                ]
-                ]], ref_cb)
-            );
-
-            this.choicesCheckboxes.push(ref_cb.choiceCheckbox);
-        }
-    }
-
-    parseUsersAnswer(): boolean {
-        this.usersChoices = [];
-        for (let check of this.choicesCheckboxes) {
-            if (check.checked) {
-                let choiceNumber = parseInt(check.value);
-                if (isNaN(choiceNumber)) {
-                    return true;
-                }
-                this.usersChoices.push(choiceNumber);
-            }
-        }
-        return false;
-    }
-
-    checkUsersAnswer(): { correct: boolean, details: string } {
-        let correct: boolean = true;
-        let details: string = "";
-
-        // Check if user's choices are a subset of the right choices.
-        for (let uChoice of this.usersChoices) {
-            if (!this.correctChoices.includes(uChoice)) {
-                correct = false;
-                details = this._("Answer #" + (uChoice + 1) + " isn't correct !");
-                break;
-            }
-        }
-
-        // Check if the right choices are a subset of the user's choices.
-        for (let cChoice of this.correctChoices) {
-            if (!this.usersChoices.includes(cChoice)) {
-                correct = false;
-                details = this._("You haven't checked answer #" + (cChoice + 1) + ", although it is correct.");
-                break;
-            }
-        }
-
-        return { correct: correct, details: details };
-    }
-
-
-    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
-    }
-
-    generateRandomly() {
-        throw new Error("Method not implemented.");
-    }
-
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-
-    addWordingChoice(choice: string, correct: boolean = false): void {
-        this.wordingChoices.push(choice);
-        if (correct) {
-            this.correctChoices.push(this.wordingChoices.length - 1);
         }
     }
 }
@@ -752,337 +305,182 @@ enum AutomatonDataType {
 }
 
 /**
-* Class to handle questions that ask a word recognized by a given 
-* automaton, regular expression or grammar.
-*/
-class RecognizedWordQuestion extends Question {
-    /** The automaton corresponding to the answer.
-     *  Used for correcting the question. 
-     */
-    correctAnswerAutomaton: Automaton = null;
+ * Class that handles questions that take an automaton,
+ * regular expression or linear grammar for an answer.
+ */
+class AutomatonEquivQuestion extends Question {
+    static readonly AnswerAutomatonConstraints = {
+        Minimal: (a: Automaton) => {
+            if (!AutomatonPrograms.isMinimized(a)) {
+                return { correct: false, details: window.AudeGUI.l10n("The given automaton isn't minimal !") };
+            }
+            return { correct: true, details: "" };
+        },
 
-    wordingGrammar: linearGrammar = null;
-    wordingRegexp: string = null;
-    /**
-     * Whether this question shows an automaton, regexp or grammar as wording.
-     * By default, it's an automaton.
-     */
-    wordingType = AutomatonDataType.Automaton;
+        Complete: (a: Automaton) => {
+            if (!AutomatonPrograms.isCompleted(a)) {
+                return { correct: false, details: window.AudeGUI.l10n("The given automaton isn't complete !") };
+            }
+            return { correct: true, details: "" };
+        },
 
-    usersInputField: HTMLInputElement = undefined;
-    usersAnswer: string;
+        Deterministic: (a: Automaton) => {
+            if (!AutomatonPrograms.isDeterminized(a)) {
+                return { correct: false, details: window.AudeGUI.l10n("The given automaton isn't deterministic !") };
+            }
+            return { correct: true, details: "" };
+        },
+
+        NoEpsilon: (a: Automaton) => {
+            if (AutomatonPrograms.hasEpsilonTransitions(a)) {
+                return { correct: false, details: window.AudeGUI.l10n("The given automaton still has ε-transitions !") };
+            }
+            return { correct: true, details: "" };
+        }
+    }
+
+    /** The objects for this question's wording. */
+    wordingDetails: Array<Automaton | string | linearGrammar> = [];
+
+    usersAnswerType: AutomatonDataType = AutomatonDataType.Automaton;
+    usersAnswerAutomaton: Automaton = undefined;
+    usersAnswerRaw: Automaton | string | linearGrammar;
+
+    /** Correct answer against which the user's answer will be checked. */
+    correctAnswerAutomaton: Automaton;
+
+    // Constraint functions to add additional constraints to user's answer
+    // (minimal, complete, grammar is left linear, ...)
+    automatonAnswerConstraints: Array<(a: Automaton) => { correct: boolean, details: string }> = [];
+    regexpAnswerConstraints: Array<(re: string) => { correct: boolean, details: string }> = [];
+    grammarAnswerConstraints: Array<(g: linearGrammar) => { correct: boolean, details: string }> = [];
+
+    answerInput: AudeDesigner | HTMLInputElement | GrammarDesigner = undefined;
+
+    constructor(qSubtype: QuestionSubType) {
+        super(qSubtype);
+
+        /** We set constraints for the answer if the subtype needs it. */
+        switch (this.subtype) {
+            case QuestionSubType.Minimize:
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Minimal);
+                break;
+
+            case QuestionSubType.Complete:
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Complete);
+                break;
+
+            case QuestionSubType.Determinize:
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Deterministic);
+                break;
+
+            case QuestionSubType.Determinize_Minimize:
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Deterministic);
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Minimal);
+                break;
+
+            case QuestionSubType.EliminateEpsilon:
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.NoEpsilon);
+                break;
+
+            case QuestionSubType.Determinize_EliminateEpsilon:
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Deterministic);
+                this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.NoEpsilon);
+                break;
+        }
+    }
 
     displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        wordingDetailsDiv.innerHTML = "";
-        switch (this.wordingType) {
-            case AutomatonDataType.Automaton:
-                // Display the automaton.
-                let designerDiv = libD.jso2dom(["div#question-automaton-designer"]);
-                let wordingDesigner = new AudeDesigner(designerDiv, true);
-                wordingDesigner.setAutomatonCode(automaton_code(this.correctAnswerAutomaton));
-                wordingDesigner.autoCenterZoom();
-                wordingDetailsDiv.appendChild(designerDiv);
-                break;
-
-            case AutomatonDataType.LinearGrammar:
-                // Display the grammar.
-                let grammarDesigner = new GrammarDesigner(wordingDetailsDiv, false);
-                grammarDesigner.setGrammar(this.wordingGrammar);
-                break;
-
-            case AutomatonDataType.Regexp:
-                // Display the regexp.
-                window.AudeGUI.Quiz.textFormat(regexp2Latex(this.wordingRegexp), wordingDetailsDiv, true);
-                break;
+        // We cannot handle more than two objects in the wording (yet.)
+        if (this.wordingDetails.length === 0 || this.wordingDetails.length > 2) {
+            return;
         }
-    }
 
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        let refs = { wordInput: <HTMLInputElement>null };
-        answerInputDiv.appendChild(libD.jso2dom(["div",
-            [["p", this._("Your answer :")],
-            ["input#question-answers-input", { "#": "wordInput", "type": "text" }]]
-        ], refs));
+        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
+            if (wd instanceof Automaton) {
+                let refs = {
+                    divDesigner: <HTMLElement>null,
+                    divInfo: <HTMLElement>null
+                };
 
-        this.usersInputField = refs.wordInput;
-    }
-
-    parseUsersAnswer(): boolean {
-        if (this.usersInputField === undefined) {
-            return true;
-        }
-        this.usersAnswer = this.usersInputField.value;
-    }
-
-    checkUsersAnswer(): { correct: boolean; details: string; } {
-        if (this.wordingType === AutomatonDataType.LinearGrammar) {
-            this.correctAnswerAutomaton = Question.linearGrammar2Automaton(this.wordingGrammar);
-        }
-        if (this.wordingType === AutomatonDataType.Regexp) {
-            this.correctAnswerAutomaton = Question.regexToAutomaton(this.wordingRegexp);
-        }
-        let correct = true;
-        let details = "";
-        correct = this.correctAnswerAutomaton.acceptedWord(this.usersAnswer.trim());
-        console.log(this.usersAnswer);
-        console.log(this.correctAnswerAutomaton);
-        console.log(this.wordingGrammar);
-        if (!correct) {
-            details = this._("This word isn't recognized by the automaton !");
-        }
-        return { correct: correct, details: details };
-    }
-
-    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
-    }
-
-    generateRandomly() {
-        throw new Error("Method not implemented.");
-    }
-
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-}
-
-/**
-* Class that handles questions that involve creating an
-* automaton, regular expression, or grammar that recognizes
-* a language that is described in natural language.
-* Example : Words that have an even number of 'a's.
-*/
-class NaturalLanguage2AutomatonQuestion extends Question {
-    answerMode: AutomatonDataType = AutomatonDataType.Automaton;
-
-    inputAutomatonDesigner: AudeDesigner = undefined;
-    inputGrammarDesigner: GrammarDesigner = undefined;
-    inputRegexpField: HTMLInputElement = undefined;
-
-    usersAnswerAutomaton: Automaton;
-    usersAnswerGrammar: linearGrammar;
-    usersAnswerRegexp: string;
-
-    correctAnswerAutomaton: Automaton = undefined;
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        /*if (this.answerMode === AutomatonDataType.LinearGrammar) {
-            wordingDetailsDiv.innerHTML = NaturalLanguage2AutomatonQuestion.grammarInputHelp;
-        }*/
-    }
-
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        switch (this.answerMode) {
-            case AutomatonDataType.Automaton:
-                // Display an automaton designer.
-                let refsAuto = { designerDiv: <HTMLElement>null }
-                answerInputDiv.appendChild(libD.jso2dom(
-                    ["div#question-automaton-designer", { "#": "designerDiv" }],
-                    refsAuto
-                ));
-                this.inputAutomatonDesigner = new AudeDesigner(refsAuto.designerDiv, false);
-                break;
-
-            case AutomatonDataType.LinearGrammar:
-                this.inputGrammarDesigner = new GrammarDesigner(answerInputDiv, true);
-                let g = new linearGrammar(["a", "b"], ["S", "T"], "S");
-                g.addRule("S", "a", "T", "right");
-                g.addRule("T", "b");
-                g.addRule("T", "a", "T", "right");
-                this.inputGrammarDesigner.setGrammar(g);
-                break;
-
-            case AutomatonDataType.Regexp:
-                // Display a text input (could be improved later).
-                let refs = { textInput: <HTMLInputElement>null };
-                answerInputDiv.appendChild(
+                element.appendChild(
                     libD.jso2dom(
-                        ["input#question-answers-input", { "#": "textInput", "type": "text" }],
+                        [
+                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
+                            ["br"],
+                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
+                        ],
                         refs
                     )
                 );
-                this.inputRegexpField = refs.textInput;
-                break;
-        }
-    }
 
-    parseUsersAnswer(): boolean {
-        switch (this.answerMode) {
-            case AutomatonDataType.Automaton:
-                if (this.inputAutomatonDesigner === undefined) {
-                    return true;
-                }
-                this.usersAnswerAutomaton = this.inputAutomatonDesigner.getAutomaton(0);
-                return false;
+                let designer = new AudeDesigner(refs.divDesigner, true);
+                designer.setAutomatonCode(automaton_code(wd));
+                designer.autoCenterZoom();
 
-            case AutomatonDataType.LinearGrammar:
-                if (this.inputGrammarDesigner === undefined) {
-                    return true;
-                }
-                this.usersAnswerGrammar = this.inputGrammarDesigner.getGrammar();
-                return false;
-
-            case AutomatonDataType.Regexp:
-                if (this.inputRegexpField === undefined) {
-                    return true;
-                }
-                this.usersAnswerRegexp = this.inputRegexpField.value;
-                return false;
-        }
-        return true;
-    }
-
-    checkUsersAnswer(): { correct: boolean; details: string; } {
-        if (this.answerMode === AutomatonDataType.Regexp) {
-            this.usersAnswerAutomaton = Question.regexToAutomaton(this.usersAnswerRegexp);
-        } else if (this.answerMode === AutomatonDataType.LinearGrammar) {
-            this.usersAnswerAutomaton = Question.linearGrammar2Automaton(this.usersAnswerGrammar);
-        }
-
-        if (this.correctAnswerAutomaton === undefined) {
-            return { correct: false, details: this._("This question wasn't initialized correctly.") };
-        }
-
-        let correct = true;
-        let details = "";
-        correct = Question.automataAreEquivalent(this.usersAnswerAutomaton, this.correctAnswerAutomaton);
-        if (!correct) {
-            details = this._("Your answer doesn't recognize the right language !");
-        }
-        return { correct: correct, details: details };
-    }
-
-    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
-    }
-
-    generateRandomly() {
-        throw new Error("Method not implemented.");
-    }
-
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-}
-
-/**
-* Class that handles question that involves transforming grammars.
-* Example : leftLinear -> rightLinear
-*/
-class GrammarTransformationQuestion extends Question {
-    wordingGrammar: linearGrammar;
-
-    answerGrammarDesigner: GrammarDesigner;
-    usersAnswer: linearGrammar;
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        wordingDetailsDiv.innerHTML = "";
-        let wordingDesigner = new GrammarDesigner(wordingDetailsDiv, false);
-        wordingDesigner.setGrammar(this.wordingGrammar);
-    }
-
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        answerInputDiv.innerHTML = "";
-        this.answerGrammarDesigner = new GrammarDesigner(answerInputDiv, true);
-    }
-
-    parseUsersAnswer(): boolean {
-        if (this.answerGrammarDesigner === undefined) {
-            return true;
-        }
-        this.usersAnswer = this.answerGrammarDesigner.getGrammar();
-        return false;
-    }
-
-    checkUsersAnswer(): { correct: boolean; details: string; } {
-        let correct = true;
-        let details = "";
-
-        switch (this.subtype) {
-            case QuestionSubType.LeftGrammar2RightGrammar:
-                for (let rule of this.usersAnswer.getProductionRules()) {
-                    if (rule.getSide() !== "right") {
-                        correct = false;
-                        break;
-                    }
-                }
-                if (!correct) {
-                    details = this._("Your answer isn't right-linear.");
-                }
-
-                correct = Question.automataAreEquivalent(
-                    Question.linearGrammar2Automaton(this.usersAnswer),
-                    Question.linearGrammar2Automaton(this.wordingGrammar)
+                window.AudeGUI.Quiz.textFormat(
+                    FormatUtils.set2Latex(wd.getAlphabet()),
+                    refs.divInfo
                 );
-
-                if (!correct) {
-                    details = this._("Your answer doesn't recognize the right language.");
-                }
-                break;
+            } else if (typeof wd === "string") {
+                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
+            } else if (wd instanceof linearGrammar) {
+                let wdGramDesigner = new GrammarDesigner(element, false);
+                wdGramDesigner.setGrammar(wd);
+            } else {
+                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
+            }
         }
 
-        return { correct: correct, details: details };
-    }
-
-    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
-    }
-
-    generateRandomly() {
-        throw new Error("Method not implemented.");
-    }
-
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-
-
-}
-
-/**
-* Class that handles questions involving conversions 
-* between automata and regular expressions.
-* Examples : Automaton -> Regexp, Regexp -> Automaton
-*/
-class AutomatonRegexpConversionQuestion extends Question {
-    wordingDetails: Automaton | string;
-    usersAnswer: Automaton | string;
-
-    answerInput: AudeDesigner | HTMLInputElement;
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        if (this.wordingDetails instanceof Automaton) {
-            let refs = { designerDiv: <HTMLElement>null };
+        if (this.wordingDetails.length === 2) {
+            let refs = {
+                wdLeft: <HTMLElement>undefined,
+                wdRight: <HTMLElement>undefined
+            };
             wordingDetailsDiv.appendChild(libD.jso2dom(
-                ["div#question-automaton-designer", { "#": "designerDiv" }],
+                ["div#question-automaton-designer",
+                    [
+                        ["div#question-wording-details-left", { "#": "wdLeft" }],
+                        ["div#question-wording-details-right", { "#": "wdRight" }]
+                    ]
+                ],
                 refs
             ));
-            let wordingDesigner = new AudeDesigner(refs.designerDiv, false);
-            wordingDesigner.setAutomatonCode(automaton_code(this.wordingDetails));
-        } else {
-            window.AudeGUI.Quiz.textFormat(regexp2Latex(this.wordingDetails), wordingDetailsDiv);
+
+            for (let i = 0; i < 2; i++) {
+                let wd = this.wordingDetails[i];
+                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
+
+                showDetailObject(wd, element);
+            }
+        } else if (this.wordingDetails.length === 1) {
+            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
         }
     }
 
     displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        // Wording is automaton => answer will be a regexp.
-        if (this.wordingDetails instanceof Automaton) {
-            let refs = { regexpField: <HTMLInputElement>null };
-            answerInputDiv.appendChild(libD.jso2dom(["input",
-                {
-                    "#": "regexpField",
-                    "placeholder": this._("Input your grammar here")
-                }],
-                refs));
+        switch (this.usersAnswerType) {
+            case AutomatonDataType.Automaton: {
+                let designerDiv = libD.jso2dom(["div#question-answers-automaton"]);
+                answerInputDiv.appendChild(designerDiv);
+                this.answerInput = new AudeDesigner(designerDiv, false);
+                this.createNewStateButton(designerDiv);
+                this.createRedrawButton(designerDiv, this.answerInput);
+                break;
+            }
 
-            this.answerInput = refs.regexpField;
-        } else { // Wording is regexp => answer will be an automaton.
-            let refs = { designerDiv: <HTMLElement>null };
-            answerInputDiv.appendChild(libD.jso2dom(
-                ["div#question-automaton-designer", { "#": "designerDiv" }],
-                refs
-            ));
-            this.answerInput = new AudeDesigner(refs.designerDiv, false);
+            case AutomatonDataType.Regexp: {
+                this.answerInput = <HTMLInputElement>libD.jso2dom(
+                    ["input#question-answers-input", { "placeholder": this._("Give your regular expression here.") }]
+                );
+                answerInputDiv.appendChild(this.answerInput);
+                break;
+            }
+
+            case AutomatonDataType.LinearGrammar: {
+                this.answerInput = new GrammarDesigner(answerInputDiv, true);
+                break;
+            }
         }
     }
 
@@ -1092,329 +490,782 @@ class AutomatonRegexpConversionQuestion extends Question {
         }
 
         if (this.answerInput instanceof AudeDesigner) {
-            this.usersAnswer = this.answerInput.getAutomaton(0);
-        } else {
-            this.usersAnswer = this.answerInput.value;
+            this.usersAnswerRaw = this.answerInput.getAutomaton(0);
+            this.usersAnswerAutomaton = this.usersAnswerRaw;
+        } else if (this.answerInput instanceof HTMLInputElement) {
+            this.usersAnswerRaw = this.answerInput.value;
+            this.usersAnswerAutomaton = AutomatonPrograms.regexToAutomaton(this.usersAnswerRaw);
+        } else if (this.answerInput instanceof GrammarDesigner) {
+            this.usersAnswerRaw = this.answerInput.getGrammar();
+            this.usersAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(this.usersAnswerRaw);
         }
     }
 
     checkUsersAnswer(): { correct: boolean; details: string; } {
-        let correct = true;
-        let details = "";
-        if (this.usersAnswer instanceof Automaton) {
-            correct = Question.automataAreEquivalent(
-                Question.regexToAutomaton(this.wordingDetails),
-                this.usersAnswer
-            );
-        } else {
-            if (this.wordingDetails instanceof Automaton) {
-                correct = Question.automataAreEquivalent(
-                    this.wordingDetails,
-                    Question.regexToAutomaton(this.usersAnswer)
-                );
-            } else {
-                // ERROR ! Shoudln't happen.
-                console.error("Automaton to regexp question hasn't been initialized properly.");
+        if (!this.usersAnswerAutomaton) {
+            return {
+                correct: false,
+                details: this._("No answer was given !")
             }
         }
 
-        if (!correct) {
-            details = this._("Your answer doesn't recognize the right language.");
+        if (this.correctAnswerAutomaton === undefined) {
+            return {
+                correct: false,
+                details: this._("This question wasn't created properly !")
+            }
         }
-        return { correct: correct, details: details };
+
+        if (!AutomatonPrograms.automataAreEquivalent(this.usersAnswerAutomaton, this.correctAnswerAutomaton)) {
+            return {
+                correct: false,
+                details: this._("Your answer doesn't recognize the right language !")
+            };
+        }
+
+        if (this.usersAnswerRaw instanceof Automaton) {
+            for (let checkFun of this.automatonAnswerConstraints) {
+                let checkResult = checkFun(this.usersAnswerRaw);
+                if (!checkResult.correct) {
+                    return checkResult;
+                }
+            }
+        } else if (typeof this.usersAnswerRaw === "string") {
+            for (let checkFun of this.regexpAnswerConstraints) {
+                let checkResult = checkFun(this.usersAnswerRaw);
+                if (!checkResult.correct) {
+                    return checkResult;
+                }
+            }
+        } else if (this.usersAnswerRaw instanceof linearGrammar) {
+            for (let checkFun of this.grammarAnswerConstraints) {
+                let checkResult = checkFun(this.usersAnswerRaw);
+                if (!checkResult.correct) {
+                    return checkResult;
+                }
+            }
+        }
+
+        return { correct: true, details: "" };
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
         throw new Error("Method not implemented.");
     }
 
-    generateRandomly() {
-        throw new Error("Method not implemented.");
-    }
+    toJSON(): any {
+        let obj: any = {};
 
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-
-
-}
-
-/**
-* Class that handles questions involving conversions
-* between automata and linear grammars.
-* Examples : Automaton -> Grammar, Grammar -> Automaton
-*/
-class AutomatonGrammarConversionQuestion extends Question {
-    wordingDetails: Automaton | linearGrammar;
-    usersAnswer: Automaton | linearGrammar;
-    userAnswerInput: AudeDesigner | GrammarDesigner;
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        let designerDiv: HTMLElement;
-        if (this.wordingDetails instanceof Automaton) {
-            designerDiv = libD.jso2dom(["div#question-automaton-designer"]);
-            let wordingDesigner = new AudeDesigner(designerDiv, true);
-            wordingDesigner.setAutomatonCode(automaton_code(this.wordingDetails));
-        } else if (this.wordingDetails instanceof linearGrammar) {
-            designerDiv = libD.jso2dom(["div"]);
-            let wordingGrammarDesigner = new GrammarDesigner(designerDiv, false);
-            wordingGrammarDesigner.setGrammar(this.wordingDetails);
-        }
-        wordingDetailsDiv.appendChild(designerDiv);
-    }
-
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        // Automaton in wording => Grammar as answer. 
-        if (this.wordingDetails instanceof Automaton) {
-            this.userAnswerInput = new GrammarDesigner(answerInputDiv, true);
-        } else if (this.wordingDetails instanceof linearGrammar) {
-            // Grammar as wording => Automaton as answer
-            let designerDiv = libD.jso2dom(["div#question-automaton-designer"]);
-            this.userAnswerInput = new AudeDesigner(designerDiv, false);
-            answerInputDiv.appendChild(designerDiv);
-        }
-    }
-
-    parseUsersAnswer(): boolean {
-        if (!this.userAnswerInput) {
-            return true;
+        // We set the question type.
+        switch (this.usersAnswerType) {
+            case AutomatonDataType.Automaton:
+                obj.type = "automatonEquiv";
+                break;
+            case AutomatonDataType.Regexp:
+                obj.type = "regexEquiv";
+                break;
+            case AutomatonDataType.LinearGrammar:
+                obj.type = "grammarEquiv";
+                break;
         }
 
-        if (this.userAnswerInput instanceof AudeDesigner) {
-            this.usersAnswer = this.userAnswerInput.getAutomaton(0);
-        } else if (this.userAnswerInput instanceof GrammarDesigner) {
-            this.usersAnswer = this.userAnswerInput.getGrammar();
-        } else {
-            return true;
-        }
-        return false;
-    }
+        obj.instruction = this.wordingText;
 
-    checkUsersAnswer(): { correct: boolean; details: string; } {
-        let correct = true;
-        let details = "";
+        // New format, with array for wording details.
+        if (obj.wordingDetails) {
 
-        if (this.usersAnswer instanceof Automaton) {
-            correct = Question.automataAreEquivalent(
-                this.usersAnswer as Automaton,
-                Question.linearGrammar2Automaton(this.wordingDetails as linearGrammar)
-            );
-
-            if (!correct) {
-                details = "Your automaton doesn't recognize the same language as the grammar.";
-            }
-        } else if (this.usersAnswer instanceof linearGrammar) {
-            correct = Question.automataAreEquivalent(
-                Question.linearGrammar2Automaton(this.usersAnswer as linearGrammar),
-                this.wordingDetails as Automaton
-            );
-
-            if (!correct) {
-                details = "Your grammar doesn't recognize the same language as the automaton.";
-            }
         }
 
-        return { correct: correct, details: details };
+        return obj;
     }
 
-
-    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
-    }
-
-    generateRandomly() {
-        throw new Error("Method not implemented.");
-    }
-
-    generateFromFile() {
-        throw new Error("Method not implemented.");
-    }
-}
-
-/**
-* Class that handles questions that
-* take a list of states that fullfill a certain
-* condition as an answer.
-* Examples : list reachable/coreachable states
-*/
-class AutomatonStatelistQuestion extends Question {
-    wordingAutomaton: Automaton;
-
-    stateListInput: HTMLInputElement;
-
-    usersAnswer: Array<any>;
-
-    /** 
-     * Method used to validate the conditions on the state list
-     * Could be a compiled audescript function
-     */
-    validator: (wordingAutomaton: Automaton, stateList: Array<any>) => { correct: boolean, details: string };
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        let designerDiv = libD.jso2dom(["div#question-automaton-designer"]);
-        let wordingAutomatonDesigner = new AudeDesigner(designerDiv, true);
-        wordingAutomatonDesigner.setAutomatonCode(automaton_code(this.wordingAutomaton));
-        wordingAutomatonDesigner.autoCenterZoom();
-        wordingDetailsDiv.appendChild(designerDiv);
-    }
-
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        this.stateListInput = <HTMLInputElement>libD.jso2dom(
-            ["input#question-answers-input", { "placeholder": this._("Comma-separated list of states") }]
-        );
-
-        answerInputDiv.appendChild(this.stateListInput);
-    }
-
-    parseUsersAnswer(): boolean {
-        if (this.stateListInput === undefined) {
-            return true;
-        }
-
-        this.usersAnswer = this.stateListInput.value.split(",");
-        for (let i = 0; i < this.usersAnswer.length; i++) {
-            this.usersAnswer[i] = this.usersAnswer[i].trim();
-        }
-
-        return false;
-    }
-
-    checkUsersAnswer(): { correct: boolean; details: string; } {
-        let correct = true;
-        let details = "";
-
-        switch (this.subtype) {
-            case QuestionSubType.Reachable:
-            case QuestionSubType.Coreachable:
-                let statesRaw = (this.subtype === QuestionSubType.Reachable ?
-                    Question.reachableStates(this.wordingAutomaton) :
-                    Question.coreachableStates(this.wordingAutomaton));
-                // We have to cast the states to string to avoid comparison errors (0 !== "0").
-                let correctStates = new libD.Set();
-                for (let state of (this.subtype === QuestionSubType.Reachable ? 
-                                    Question.reachableStates(this.wordingAutomaton) :
-                                    Question.coreachableStates(this.wordingAutomaton))) {
-                    correctStates.add(String(state));
-                }
-
-                let diff = correctStates.symDiff(this.usersAnswer);
-                if (diff.size !== 0) {
-                    correct = false;
-
-                    for (let err of diff) {
-                        // If the state isn't in the correct answer : it was checked when it shouldn't have.
-                        if (!correctStates.has(err)) {
-                            if (this.subtype === QuestionSubType.Reachable) {
-                                details = libD.format(this._("State {0} isn't reachable."), err);
-                            } else {
-                                details = libD.format(this._("State {0} isn't coreachable."), err);
-                            }
-                        }
-
-                        // If the state isn't in user's answer : it wasn't checked when it should have.
-                        if (!this.usersAnswer.includes(err)) {
-                            if (this.subtype === QuestionSubType.Reachable) {
-                                details = libD.format(this._("State {0} is reachable."), err);
-                            } else {
-                                details = libD.format(this._("State {0} is coreachable."), err);
-                            }
-                        }
-                    }
-                }
+    fromJSON(qObj: any): boolean {
+        // Load type.
+        switch (qObj.type) {
+            case "automatonEquiv":
+                this.usersAnswerType = AutomatonDataType.Automaton;
                 break;
 
-            case QuestionSubType.EquivalentStates:
-                let stateCouples = [];
-                
-                for (let couple of this.usersAnswer as Iterable<string>) {
-                    if (couple.length === 0) {
-                        continue;
-                    }
+            case "regexEquiv":
+                this.usersAnswerType = AutomatonDataType.Regexp;
+                break;
 
-                    let coupleRegexp = /^[(]([^;]+)[;]([^;]+)[)]$/g;
-                    let match = coupleRegexp.exec(couple.trim());
-                    if (!match || match.length === 0) {
-                        correct = false;
-                        details = libD.format(this._("Formatting error : {0} isn't a valid couple."), couple);
+            case "grammarEquiv":
+                this.usersAnswerType = AutomatonDataType.LinearGrammar;
+                break;
+        }
+
+        // Load instructions.
+        if (qObj.instruction) {
+            this.wordingText = qObj.instruction;
+            this.isWordingHtml = false;
+        } else if (qObj.instructionHTML) {
+            this.wordingText = qObj.instructionHTML;
+            this.isWordingHtml = true;
+        }
+
+        if (qObj.automatonQuestion) {
+            this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
+        }
+
+        if (qObj.automatonAnswer) {
+            this.correctAnswerAutomaton = window.svg2automaton(qObj.automatonAnswer);
+        } else if (qObj.regex) {
+            this.correctAnswerAutomaton = AutomatonPrograms.regexToAutomaton(qObj.regex);
+        } else if (qObj.grammar) {
+            this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(<linearGrammar> qObj.grammar);
+        }
+
+        // TODO : Load audescript code.
+        
+        return true;
+    }
+}
+
+/** 
+* A class to handle MCQ-type questions.
+*/
+class MCQQuestion extends Question {
+    /**
+     * Array of objects each representing a choice.
+     * Choices can contain text (plain or HTML) with LaTeX,
+     * and a single figure (automaton, regexp or grammar).
+     */
+    wordingChoices: Array<{
+        id: string,
+        text?: string,
+        html?: string,
+        automaton?: Automaton,
+        regex?: string,
+        grammar?: linearGrammar
+    }> = [];
+
+    /** Array of the IDs of the correct choices. */
+    correctChoices: Array<string> = [];
+    /** Array of the figures (automaton, regexp, grammar) to be displayed in the instructions. */
+    wordingDetails: Array<Automaton | string | linearGrammar> = [];
+    /** If true, only one answer will be selectable (radio buttons will be shown) */
+    singleChoice: boolean = false;
+
+    /** Array of the IDs of the choices the user has selected. */
+    usersChoices: Array<string> = undefined;
+    /** 
+     * Array of the DOM Checkboxes/Radio buttons for the questions.
+     * The ID corresponding to a checkbox will be in their ```value``` attribute. 
+     */
+    choicesCheckboxes: Array<HTMLInputElement> = [];
+
+    /**
+     * Sets the choices presented for this question.
+     * @param wordingChoices - An array of all the choices for this question.
+     * @param singleChoice - If true, only one answer will be selectable. Ensure only one is correct.
+     */
+    setWordingChoices(wordingChoices: Array<{
+        id?: string,
+        text?: string,
+        html?: string,
+        automaton?: Automaton,
+        regex?: string,
+        grammar?: linearGrammar,
+        correct?: boolean
+    }>,
+        singleChoice: boolean = this.singleChoice) {
+        for (let wc of wordingChoices) {
+            let id = (wc.id === undefined ? String(this.wordingChoices.length) : wc.id);
+            this.wordingChoices.push({
+                id: id,
+                text: wc.text,
+                html: wc.html,
+                automaton: wc.automaton,
+                regex: wc.regex,
+                grammar: wc.grammar
+            });
+
+            if (wc.correct) {
+                this.correctChoices.push(id);
+            }
+        }
+
+        this.singleChoice = singleChoice;
+    }
+
+    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
+        if (this.wordingDetails.length === 0) {
+            return;
+        }
+
+        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
+            if (wd instanceof Automaton) {
+                let refs = {
+                    divDesigner: <HTMLElement>null,
+                    divInfo: <HTMLElement>null
+                };
+
+                element.appendChild(
+                    libD.jso2dom(
+                        [
+                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
+                            ["br"],
+                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
+                        ],
+                        refs
+                    )
+                );
+
+                let designer = new AudeDesigner(refs.divDesigner, true);
+                designer.setAutomatonCode(automaton_code(wd));
+                designer.autoCenterZoom();
+
+                window.AudeGUI.Quiz.textFormat(
+                    FormatUtils.set2Latex(wd.getAlphabet()),
+                    refs.divInfo
+                );
+            } else if (typeof wd === "string") {
+                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
+            } else if (wd instanceof linearGrammar) {
+                let wdGramDesigner = new GrammarDesigner(element, false);
+                wdGramDesigner.setGrammar(wd);
+            } else {
+                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
+            }
+        }
+
+        if (this.wordingDetails.length === 2) {
+            let refs = {
+                wdLeft: <HTMLElement>undefined,
+                wdRight: <HTMLElement>undefined
+            };
+            wordingDetailsDiv.appendChild(libD.jso2dom(
+                ["div#question-automaton-designer",
+                    [
+                        ["div#question-wording-details-left", { "#": "wdLeft" }],
+                        ["div#question-wording-details-right", { "#": "wdRight" }]
+                    ]
+                ],
+                refs
+            ));
+
+            for (let i = 0; i < 2; i++) {
+                let wd = this.wordingDetails[i];
+                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
+
+                showDetailObject(wd, element);
+            }
+        } else if (this.wordingDetails.length === 1) {
+            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
+        }
+    }
+
+    displayAnswerInputs(answerInputDiv: HTMLElement): void {
+        let choiceList = libD.jso2dom(["ul#question-answers-checkbox-list"]);
+
+        for (let choice of this.wordingChoices) {
+            let refs = { choiceLabel: <HTMLElement>undefined };
+            choiceList.appendChild(libD.jso2dom(
+                ["li",
+                    ["label", { "#": "choiceLabel" }]
+                ],
+                refs
+            ));
+
+            let choiceInput = <HTMLInputElement>libD.jso2dom(
+                [
+                    "input",
+                    {
+                        "type": (this.singleChoice ? "radio" : "checkbox"),
+                        "name": "audeQuizRadio",
+                        "value": choice.id
+                    }
+                ]
+            );
+            refs.choiceLabel.appendChild(choiceInput);
+            this.choicesCheckboxes.push(choiceInput);
+
+            refs.choiceLabel.appendChild(libD.jso2dom([
+                "span.quiz-answer-id", choice.id + ". "
+            ]));
+
+            let contentRefs = {
+                textSpan: <HTMLElement>undefined,
+                figureDiv: <HTMLElement>undefined
+            }
+            refs.choiceLabel.appendChild(libD.jso2dom(
+                [
+                    "span", [
+                        ["span", { "#": "textSpan" }],
+                        ["div", { "#": "figureDiv" }]
+                    ]
+                ],
+                contentRefs
+            ));
+
+            if (choice.html !== undefined) {
+                FormatUtils.textFormat(choice.html, contentRefs.textSpan, true);
+            } else {
+                FormatUtils.textFormat(choice.text, contentRefs.textSpan, false);
+            }
+
+            if (choice.automaton !== undefined) {
+                contentRefs.figureDiv.id = "question-automaton-designer";
+                let choiceAutoDesigner = new AudeDesigner(contentRefs.figureDiv);
+                choiceAutoDesigner.setAutomatonCode(automaton_code(choice.automaton));
+                choiceAutoDesigner.autoCenterZoom();
+            } else if (choice.regex !== undefined) {
+                FormatUtils.textFormat(
+                    FormatUtils.regexp2Latex(choice.regex),
+                    contentRefs.figureDiv,
+                    false
+                );
+            } else if (choice.grammar !== undefined) {
+                let choiceGramDesigner = new GrammarDesigner(contentRefs.figureDiv, false);
+                choiceGramDesigner.setGrammar(choice.grammar);
+            }
+        }
+        answerInputDiv.appendChild(choiceList);
+    }
+
+    parseUsersAnswer(): boolean {
+        if (this.choicesCheckboxes === undefined ||
+            this.choicesCheckboxes.length === 0) {
+            return true;
+        }
+
+        this.usersChoices = [];
+
+        for (let cb of this.choicesCheckboxes) {
+            if (cb.checked) {
+                this.usersChoices.push(cb.value);
+            }
+        }
+        return false;
+    }
+
+    checkUsersAnswer(): { correct: boolean; details: string; } {
+        let symDiff = (new libD.Set(this.usersChoices)).symDiff(this.correctChoices);
+
+        for (let e of symDiff) {
+            if (!this.usersChoices.includes(e)) {
+                return {
+                    correct: false,
+                    details: libD.format(
+                        this._("You haven't selected correct answer {0}."),
+                        e
+                    )
+                };
+            } else if (!this.correctChoices.includes(e)) {
+                return {
+                    correct: false,
+                    details: libD.format(
+                        this._("Answer {0} isn't correct."),
+                        e
+                    )
+                };
+            }
+        }
+        return { correct: true, details: "" };
+    }
+
+    displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
+        throw new Error("Method not implemented.");
+    }
+
+    toJSON(): any {
+
+    }
+
+    fromJSON(qObj: any): boolean {
+        // Load instructions.
+        if (qObj.instruction) {
+            this.wordingText = qObj.instruction;
+            this.isWordingHtml = false;
+        } else if (qObj.instructionHTML) {
+            this.wordingText = qObj.instructionHTML;
+            this.isWordingHtml = true;
+        }
+
+        if (qObj.automatonQuestion) {
+            this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
+        }
+
+        if (qObj.answers) {
+            this.correctChoices = qObj.answers.slice();
+        }
+
+        if (qObj.possibilities) {
+            let i = 1;
+            for (let pObj of qObj.possibilities) {
+                let newPoss: any = {
+                    id : pObj.id || String(i),
+                }
+
+                if (pObj.text) {
+                    newPoss.text = pObj.text;
+                }
+
+                if (pObj.html) {
+                    newPoss.html = pObj.html;
+                }
+
+                if (pObj.automaton) {
+                    newPoss.automaton = window.svg2automaton(pObj.automaton);
+                }
+
+                if (pObj.regex) {
+                    newPoss.regex = pObj.regex;
+                }
+
+                if (pObj.grammar) {
+                    newPoss.grammar = pObj.grammar;
+                }
+
+                this.wordingChoices.push(newPoss);
+                i++;
+            }
+        }
+
+        return true;
+    }
+}
+
+/**
+ * Class that handles any question that takes text (from an input field) for
+ * an answer.
+ */
+class TextInputQuestion extends Question {
+    /** Figures to be displayed in the wording. */
+    wordingDetails: Array<Automaton | string | linearGrammar> = [];
+
+    /** Array of correct answers, if the default answer checking is used. */
+    correctAnswers: Array<string> = [];
+    /** 
+     * Function used to validate the user's answer.
+     * By default, only checks if the user's answer is in ```correctAnswers```,
+     * but can be overridden to create more complex questions.
+     */
+
+    usersAnswer: string;
+    answerValidator: (q: TextInputQuestion, usersAnswer: string) => { correct: boolean, details: string } =
+        (q, usersAnswer) => {
+            if (!q.correctAnswers.includes(usersAnswer)) {
+                return { correct: false, details: this._("Your answer isn't correct !") };
+            }
+            return { correct: true, details: "" };
+        };
+
+    /** Validator functions used for built-in question subtypes (list all reachable states, ...) */
+    static readonly defaultValidators = {
+        ReachableStates: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
+            let usersStateList = usersAnswer.split(",");
+            let A = (q.wordingDetails[0] as Automaton);
+
+            // We cast every state to string to allow comparison.
+            let reachableStates = new libD.Set();
+            for (let rs of AutomatonPrograms.reachableStates(A)) {
+                reachableStates.add(String(rs));
+            }
+
+            let allStates = new libD.Set();
+            for (let s of A.getStates()) {
+                allStates.add(String(s));
+            }
+
+            let symDiff = reachableStates.symDiff(usersStateList);
+
+            console.log(usersStateList);
+            console.log(reachableStates);
+            console.log(symDiff);
+
+            for (let diff of symDiff) {
+                if (!allStates.has(diff)) {
+                    return {
+                        correct: false,
+                        details: libD.format(window.AudeGUI.l10n("The automaton doesn't have state {0}"), diff)
+                    };
+                }
+
+                if (!usersStateList.includes(diff)) {
+                    return {
+                        correct: false,
+                        details: libD.format(window.AudeGUI.l10n("State {0} is reachable."), diff)
+                    }
+                }
+
+                if (!reachableStates.has(diff)) {
+                    return {
+                        correct: false,
+                        details: libD.format(window.AudeGUI.l10n("State {0} isn't reachable."), diff)
+                    }
+                }
+            }
+            return { correct: true, details: "" };
+        },
+        CoreachableStates: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
+            let usersStateList = usersAnswer.split(",");
+            let A = (q.wordingDetails[0] as Automaton);
+
+            // We cast every state to string to allow comparison.
+            let coreachableStates = new libD.Set();
+            for (let rs of AutomatonPrograms.coreachableStates(A)) {
+                coreachableStates.add(String(rs));
+            }
+
+            let allStates = new libD.Set();
+            for (let s of A.getStates()) {
+                allStates.add(String(s));
+            }
+
+            let symDiff = coreachableStates.symDiff(usersStateList);
+
+            for (let diff of symDiff) {
+                if (!allStates.has(diff)) {
+                    return {
+                        correct: false,
+                        details: libD.format(window.AudeGUI.l10n("The automaton doesn't have state {0}"), diff)
+                    };
+                }
+
+                if (!usersStateList.includes(diff)) {
+                    return {
+                        correct: false,
+                        details: libD.format(window.AudeGUI.l10n("State {0} is coreachable."), diff)
+                    }
+                }
+
+                if (!coreachableStates.has(diff)) {
+                    return {
+                        correct: false,
+                        details: libD.format(window.AudeGUI.l10n("State {0} isn't coreachable."), diff)
+                    }
+                }
+            }
+            return { correct: true, details: "" };
+        },
+        EquivalentStateCouples: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
+            let couples = usersAnswer.split(",");
+            let stateCouples = [];
+
+            for (let couple of couples as Iterable<string>) {
+                if (couple.length === 0) {
+                    continue;
+                }
+
+                let coupleRegexp = /^[(]([^;]+)[;]([^;]+)[)]$/g;
+                let match = coupleRegexp.exec(couple.trim());
+                if (!match || match.length === 0) {
+                    return {
+                        correct: false,
+                        details: libD.format(
+                            window.AudeGUI.l10n("Formatting error : {0} isn't a valid couple."), couple
+                        )
+                    };
+                }
+
+                stateCouples.push([match[1].trim(), match[2].trim()]);
+            }
+
+            let equivalentStates = [];
+            for (let couple of AutomatonPrograms.notDistinguableStates(q.wordingDetails[0] as Automaton) as Iterable<libD.Tuple>) {
+                let coupleArray = couple.asCouple();
+                // For comparison with user input, we have to cast the states to strings.
+                equivalentStates.push([String(coupleArray[0]), String(coupleArray[1])]);
+            }
+
+            function areCouplesEqual(c1: Array<any>, c2: Array<any>) {
+                return ((c1[0] === c2[0] && c1[1] === c2[1]) || (c1[0] === c2[1] && c1[1] === c2[0]));
+            }
+
+            for (let answerCouple of stateCouples) {
+                let foundInEquiv = false;
+                for (let equivCouple of equivalentStates) {
+                    if (areCouplesEqual(answerCouple, equivCouple)) {
+                        foundInEquiv = true;
                         break;
                     }
-
-                    stateCouples.push([match[1].trim(), match[2].trim()]);
                 }
 
-                if (!correct) {
-                    break;
-                }
-
-                let equivalentStates = [];
-                for (let couple of Question.notDistinguableStates(this.wordingAutomaton) as Iterable<libD.Tuple>) {
-                    let coupleArray = couple.asCouple();
-                    // For comparison with user input, we have to cast the states to strings.
-                    equivalentStates.push([String(coupleArray[0]), String(coupleArray[1])]);
-                }
-
-                function areCouplesEqual(c1: Array<any>, c2: Array<any>) {
-                    return ((c1[0] === c2[0] && c1[1] === c2[1]) || (c1[0] === c2[1] && c1[1] === c2[0]));
-                }
-
-                for (let answerCouple of stateCouples) {
-                    let foundInEquiv = false;
-                    for (let equivCouple of equivalentStates) {
-                        if (areCouplesEqual(answerCouple, equivCouple)) {
-                            foundInEquiv = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundInEquiv) {
-                        correct = false;
-                        details = libD.format(
-                            this._("States {0} and {1} aren't equivalent."),
+                if (!foundInEquiv) {
+                    return {
+                        correct: false,
+                        details: libD.format(
+                            window.AudeGUI.l10n("States {0} and {1} aren't equivalent."),
                             answerCouple[0],
                             answerCouple[1]
-                        );
+                        )
+                    }
+                }
+            }
+
+            for (let equivCouple of equivalentStates) {
+                let foundInAnswer = false;
+                for (let answerCouple of stateCouples) {
+                    if (areCouplesEqual(equivCouple, answerCouple)) {
+                        foundInAnswer = true;
+                        break;
                     }
                 }
 
-                if (!correct) {
-                    break;
-                }
-
-                for (let equivCouple of equivalentStates) {
-                    let foundInAnswer = false;
-                    for (let answerCouple of stateCouples) {
-                        if (areCouplesEqual(equivCouple, answerCouple)) {
-                            foundInAnswer = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundInAnswer) {
-                        correct = false;
-                        details = libD.format(
-                            this._("States {0} and {1} are equivalent, but you didn't list them as such."),
+                if (!foundInAnswer) {
+                    return {
+                        correct: false,
+                        details: libD.format(
+                            window.AudeGUI.l10n("States {0} and {1} are equivalent, but you didn't list them as such."),
                             equivCouple[0],
                             equivCouple[1]
                         )
                     }
                 }
-                break;
+            }
 
-            case QuestionSubType.QuizStateList:
-                return this.validator(this.wordingAutomaton, this.usersAnswer);
+            return { correct: true, details: "" };
+        },
+        RecognizedWordAutomaton: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
+            let A = (q.wordingDetails[0] as Automaton);
+            if (!A.acceptedWord(usersAnswer)) {
+                return {
+                    correct: false,
+                    details: libD.format(
+                        window.AudeGUI.l10n("Word '{0}' isn't recognized by the automaton."),
+                        usersAnswer
+                    )
+                };
+            }
+            return { correct: true, details: "" };
+        },
+        RecognizedWordRegexp: (q: TextInputQuestion, usersAnswer: string) => {
+            let A = AutomatonPrograms.regexToAutomaton(q.wordingDetails[0] as string);
+            if (!A.acceptedWord(usersAnswer)) {
+                return {
+                    correct: false,
+                    details: libD.format(
+                        window.AudeGUI.l10n("Word '{0}' isn't recognized by the regular expression."),
+                        usersAnswer
+                    )
+                };
+            }
+            return { correct: true, details: "" };
+        },
+        RecognizedWordGrammar: (q: TextInputQuestion, usersAnswer: string) => {
+            let A = AutomatonPrograms.linearGrammar2Automaton(q.wordingDetails[0] as linearGrammar);
+            if (!A.acceptedWord(usersAnswer)) {
+                return {
+                    correct: false,
+                    details: libD.format(
+                        window.AudeGUI.l10n("Word '{0}' isn't recognized by the linear grammar."),
+                        usersAnswer
+                    )
+                };
+            }
+            return { correct: true, details: "" };
         }
-        return { correct: correct, details: details };
+    }
+
+    inputPlaceholder: string = this._("Input your answer here");
+    inputField: HTMLInputElement;
+
+
+    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
+        if (this.wordingDetails.length === 0) {
+            return;
+        }
+
+        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
+            if (wd instanceof Automaton) {
+                let refs = {
+                    divDesigner: <HTMLElement>null,
+                    divInfo: <HTMLElement>null
+                };
+
+                element.appendChild(
+                    libD.jso2dom(
+                        [
+                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
+                            ["br"],
+                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
+                        ],
+                        refs
+                    )
+                );
+
+                let designer = new AudeDesigner(refs.divDesigner, true);
+                designer.setAutomatonCode(automaton_code(wd));
+                designer.autoCenterZoom();
+
+                window.AudeGUI.Quiz.textFormat(
+                    FormatUtils.set2Latex(wd.getAlphabet()),
+                    refs.divInfo
+                );
+            } else if (typeof wd === "string") {
+                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
+            } else if (wd instanceof linearGrammar) {
+                let wdGramDesigner = new GrammarDesigner(element, false);
+                wdGramDesigner.setGrammar(wd);
+            } else {
+                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
+            }
+        }
+
+        if (this.wordingDetails.length === 2) {
+            let refs = {
+                wdLeft: <HTMLElement>undefined,
+                wdRight: <HTMLElement>undefined
+            };
+            wordingDetailsDiv.appendChild(libD.jso2dom(
+                ["div#question-automaton-designer",
+                    [
+                        ["div#question-wording-details-left", { "#": "wdLeft" }],
+                        ["div#question-wording-details-right", { "#": "wdRight" }]
+                    ]
+                ],
+                refs
+            ));
+
+            for (let i = 0; i < 2; i++) {
+                let wd = this.wordingDetails[i];
+                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
+
+                showDetailObject(wd, element);
+            }
+        } else if (this.wordingDetails.length === 1) {
+            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
+        }
+    }
+
+    displayAnswerInputs(answerInputDiv: HTMLElement): void {
+        this.inputField = <HTMLInputElement>libD.jso2dom(
+            [
+                "input#question-answers-input",
+                {
+                    "placeholder": this.inputPlaceholder,
+                    "type": "text"
+                }
+            ]
+        );
+        answerInputDiv.appendChild(this.inputField);
+    }
+
+    parseUsersAnswer(): boolean {
+        if (this.inputField === undefined) {
+            return true;
+        }
+        this.usersAnswer = this.inputField.value;
+    }
+
+    checkUsersAnswer(): { correct: boolean; details: string; } {
+        if (this.usersAnswer === undefined) {
+            return { correct: false, details: this._("No answer was given.") }
+        }
+        return this.answerValidator(this, this.usersAnswer);
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
         throw new Error("Method not implemented.");
     }
 
-    generateRandomly() {
-        throw new Error("Method not implemented.");
+    toJSON(): any {
+
     }
 
-    generateFromFile() {
-        throw new Error("Method not implemented.");
+    fromJSON(qObj: any): boolean {
+        return true;
     }
 }
