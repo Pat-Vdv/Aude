@@ -49,6 +49,7 @@ enum QuestionCategory {
 /**
  * @abstract
  * Abstract Question type from which all question variants must inherit.
+ * Specifies the basic methods a question needs to have.
  */
 abstract class Question {
     _ = window.AudeGUI.l10n;
@@ -129,6 +130,7 @@ abstract class Question {
 
     constructor(subtype: QuestionSubType, wordingText?: string, isWordingHtml?) {
         this.subtype = subtype;
+        this.category = Question.deduceQuestionCategory(this.subtype);
         if (wordingText) {
             this.wordingText = wordingText;
             this.isWordingHtml = isWordingHtml;
@@ -211,8 +213,15 @@ abstract class Question {
      */
     abstract displayCorrectAnswer(correctAnswerDiv: HTMLElement): void;
 
+    /**
+     * Converts the question to a object for JSON conversion.
+     */
     abstract toJSON(): any;
 
+    /**
+     * Initializes this question from a JSON object.
+     * @param qObj - The object to extract the question info from. 
+     */
     abstract fromJSON(qObj: any): boolean;
 
     /**
@@ -461,11 +470,22 @@ class AutomatonEquivQuestion extends Question {
     displayAnswerInputs(answerInputDiv: HTMLElement): void {
         switch (this.usersAnswerType) {
             case AutomatonDataType.Automaton: {
+                // If it exists, we retrieve the old designer's SVG.
+                let oldSvg = undefined;
+                if (this.answerInput !== undefined && this.answerInput instanceof AudeDesigner) {
+                    oldSvg = this.answerInput.getSVG(0);
+                }
+
                 let designerDiv = libD.jso2dom(["div#question-answers-automaton"]);
                 answerInputDiv.appendChild(designerDiv);
                 this.answerInput = new AudeDesigner(designerDiv, false);
                 this.createNewStateButton(designerDiv);
                 this.createRedrawButton(designerDiv, this.answerInput);
+
+                // We set the old designer's SVG, if it has been set.
+                if (oldSvg !== undefined) {
+                    this.answerInput.setSVG(oldSvg);
+                }
                 break;
             }
 
@@ -474,11 +494,18 @@ class AutomatonEquivQuestion extends Question {
                     ["input#question-answers-input", { "placeholder": this._("Give your regular expression here.") }]
                 );
                 answerInputDiv.appendChild(this.answerInput);
+
+                if (this.usersAnswerRaw !== undefined && typeof this.usersAnswerRaw === "string") {
+                    this.answerInput.value = this.usersAnswerRaw;
+                }
                 break;
             }
 
             case AutomatonDataType.LinearGrammar: {
                 this.answerInput = new GrammarDesigner(answerInputDiv, true);
+                if (this.usersAnswerRaw !== undefined && this.usersAnswerRaw instanceof linearGrammar) {
+                    this.answerInput.setGrammar(this.usersAnswerRaw);
+                }
                 break;
             }
         }
@@ -604,20 +631,81 @@ class AutomatonEquivQuestion extends Question {
             this.isWordingHtml = true;
         }
 
+        // "Legacy" support for automaton wording detail.
         if (qObj.automatonQuestion) {
             this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
         }
 
+        // Load wording details.
+        // Takes {aType, content} object for detail and returns converted object of it.
+        function getDetailFromObj(obj: any) {
+            let newDetail: (Automaton | string | linearGrammar);
+
+            if (!obj.aType) {
+                return undefined;
+            }
+
+            let detType = AutomatonDataType[obj.aType as string];
+            if (detType === undefined) {
+                return undefined;
+            }
+            switch (detType) {
+                case AutomatonDataType.Automaton:
+                    if (typeof obj.content === "string") {
+                        newDetail = window.svg2automaton(obj.content);
+                    } else {
+                        newDetail = window.automatonFromObj(obj.content);
+                    }
+                    break;
+
+                case AutomatonDataType.Regexp:
+                    newDetail = obj.content as string;
+                    break;
+
+                case AutomatonDataType.LinearGrammar:
+                    newDetail = string2LinearGrammar(obj.content);
+                    break;
+            }
+
+            return newDetail;
+        }
+        if (qObj.wordingDetails) {
+            // There are two details.
+            if (qObj.wordingDetails instanceof Array) {
+                for (let det of qObj.wordingDetails) {
+                    let newDetail = getDetailFromObj(det);
+                    if (newDetail === undefined) {
+                        return false;
+                    }
+
+                    if (this.wordingDetails.length < 2) {
+                        this.wordingDetails.push(newDetail);
+                    }
+                }
+            } else {
+                let newDetail = getDetailFromObj(qObj.wordingDetails);
+                if (newDetail === undefined) {
+                    return false;
+                }
+
+                this.wordingDetails.push(newDetail);
+            }
+        }
+
         if (qObj.automatonAnswer) {
-            this.correctAnswerAutomaton = window.svg2automaton(qObj.automatonAnswer);
+            if (typeof qObj.automatonAnswer === "string") {
+                this.correctAnswerAutomaton = window.svg2automaton(qObj.automatonAnswer);
+            } else {
+                this.correctAnswerAutomaton = window.automatonFromObj(qObj.automatonAnswer);
+            }
         } else if (qObj.regex) {
             this.correctAnswerAutomaton = AutomatonPrograms.regexToAutomaton(qObj.regex);
         } else if (qObj.grammar) {
-            this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(<linearGrammar> qObj.grammar);
+            this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(<linearGrammar>qObj.grammar);
         }
 
         // TODO : Load audescript code.
-        
+
         return true;
     }
 }
@@ -820,6 +908,12 @@ class MCQQuestion extends Question {
                 let choiceGramDesigner = new GrammarDesigner(contentRefs.figureDiv, false);
                 choiceGramDesigner.setGrammar(choice.grammar);
             }
+
+            if (this.usersChoices !== undefined) {
+                if (this.usersChoices.includes(choice.id)) {
+                    choiceInput.checked = true;
+                }
+            }
         }
         answerInputDiv.appendChild(choiceList);
     }
@@ -895,7 +989,7 @@ class MCQQuestion extends Question {
             let i = 1;
             for (let pObj of qObj.possibilities) {
                 let newPoss: any = {
-                    id : pObj.id || String(i),
+                    id: pObj.id || String(i),
                 }
 
                 if (pObj.text) {
@@ -944,9 +1038,9 @@ class TextInputQuestion extends Question {
      */
 
     usersAnswer: string;
-    answerValidator: (q: TextInputQuestion, usersAnswer: string) => { correct: boolean, details: string } =
-        (q, usersAnswer) => {
-            if (!q.correctAnswers.includes(usersAnswer)) {
+    answerValidator: (q: TextInputQuestion) => { correct: boolean, details: string } =
+        (q) => {
+            if (!q.correctAnswers.includes(q.usersAnswer)) {
                 return { correct: false, details: this._("Your answer isn't correct !") };
             }
             return { correct: true, details: "" };
@@ -954,8 +1048,8 @@ class TextInputQuestion extends Question {
 
     /** Validator functions used for built-in question subtypes (list all reachable states, ...) */
     static readonly defaultValidators = {
-        ReachableStates: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
-            let usersStateList = usersAnswer.split(",");
+        ReachableStates: (q: TextInputQuestion): { correct: boolean, details: string } => {
+            let usersStateList = q.usersAnswer.split(",");
             let A = (q.wordingDetails[0] as Automaton);
 
             // We cast every state to string to allow comparison.
@@ -999,8 +1093,8 @@ class TextInputQuestion extends Question {
             }
             return { correct: true, details: "" };
         },
-        CoreachableStates: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
-            let usersStateList = usersAnswer.split(",");
+        CoreachableStates: (q: TextInputQuestion): { correct: boolean, details: string } => {
+            let usersStateList = q.usersAnswer.split(",");
             let A = (q.wordingDetails[0] as Automaton);
 
             // We cast every state to string to allow comparison.
@@ -1040,8 +1134,8 @@ class TextInputQuestion extends Question {
             }
             return { correct: true, details: "" };
         },
-        EquivalentStateCouples: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
-            let couples = usersAnswer.split(",");
+        EquivalentStateCouples: (q: TextInputQuestion): { correct: boolean, details: string } => {
+            let couples = q.usersAnswer.split(",");
             let stateCouples = [];
 
             for (let couple of couples as Iterable<string>) {
@@ -1118,40 +1212,40 @@ class TextInputQuestion extends Question {
 
             return { correct: true, details: "" };
         },
-        RecognizedWordAutomaton: (q: TextInputQuestion, usersAnswer: string): { correct: boolean, details: string } => {
+        RecognizedWordAutomaton: (q: TextInputQuestion): { correct: boolean, details: string } => {
             let A = (q.wordingDetails[0] as Automaton);
-            if (!A.acceptedWord(usersAnswer)) {
+            if (!A.acceptedWord(q.usersAnswer)) {
                 return {
                     correct: false,
                     details: libD.format(
                         window.AudeGUI.l10n("Word '{0}' isn't recognized by the automaton."),
-                        usersAnswer
+                        q.usersAnswer
                     )
                 };
             }
             return { correct: true, details: "" };
         },
-        RecognizedWordRegexp: (q: TextInputQuestion, usersAnswer: string) => {
+        RecognizedWordRegexp: (q: TextInputQuestion) => {
             let A = AutomatonPrograms.regexToAutomaton(q.wordingDetails[0] as string);
-            if (!A.acceptedWord(usersAnswer)) {
+            if (!A.acceptedWord(q.usersAnswer)) {
                 return {
                     correct: false,
                     details: libD.format(
                         window.AudeGUI.l10n("Word '{0}' isn't recognized by the regular expression."),
-                        usersAnswer
+                        q.usersAnswer
                     )
                 };
             }
             return { correct: true, details: "" };
         },
-        RecognizedWordGrammar: (q: TextInputQuestion, usersAnswer: string) => {
+        RecognizedWordGrammar: (q: TextInputQuestion) => {
             let A = AutomatonPrograms.linearGrammar2Automaton(q.wordingDetails[0] as linearGrammar);
-            if (!A.acceptedWord(usersAnswer)) {
+            if (!A.acceptedWord(q.usersAnswer)) {
                 return {
                     correct: false,
                     details: libD.format(
                         window.AudeGUI.l10n("Word '{0}' isn't recognized by the linear grammar."),
-                        usersAnswer
+                        q.usersAnswer
                     )
                 };
             }
@@ -1241,6 +1335,10 @@ class TextInputQuestion extends Question {
             ]
         );
         answerInputDiv.appendChild(this.inputField);
+
+        if (this.usersAnswer !== undefined) {
+            this.inputField.value = this.usersAnswer;
+        }
     }
 
     parseUsersAnswer(): boolean {
@@ -1254,7 +1352,7 @@ class TextInputQuestion extends Question {
         if (this.usersAnswer === undefined) {
             return { correct: false, details: this._("No answer was given.") }
         }
-        return this.answerValidator(this, this.usersAnswer);
+        return this.answerValidator(this);
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {

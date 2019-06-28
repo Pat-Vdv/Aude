@@ -159,11 +159,16 @@
                 switch (questionObj.type) {
                     case "automatonEquiv":
                     case "regexEquiv":
+                    case "grammarEquiv":
                         newQuestion = new AutomatonEquivQuestion(QuestionSubType.CustomAutomatonEquiv);
                         break;
 
                     case "mcq":
                         newQuestion = new MCQQuestion(QuestionSubType.MCQ);
+                        break;
+                    
+                    case "textInput":
+                        newQuestion = new TextInputQuestion(QuestionSubType.CustomTextInput);
                         break;
 
                     default:
@@ -434,6 +439,7 @@
 
         return A;
     }
+    pkg.automatonFromObj = automatonFromObj;
 
     /**
      * Opens a quiz from the file input.

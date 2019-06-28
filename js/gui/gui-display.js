@@ -293,7 +293,7 @@
         div.className = "libD-ws-colors-auto auto-size";
 
         div.appendChild(libD.jso2dom([
-            AudeGUI.QuestionList.tableRandomAutomateGeneration(),
+            AutomatonPrograms.tableRandomAutomateGeneration(),
             ["div", {"style": "text-align:right"}, ["button#validate-automaton", _("Validate")]]
         ]));
 

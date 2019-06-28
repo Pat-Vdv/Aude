@@ -102,6 +102,46 @@ class AutomatonGenerator {
         normalize: <(a: Automaton, start?: any) => Automaton>undefined
     };
 
+    private static shuffleStateNames(a: Automaton) {
+        let oldAutomaton = a.copy();
+        a.setAlphabet(oldAutomaton.getAlphabet());
+
+        let states = Array.from(oldAutomaton.getStates());
+        let shuffledStates = shuffleArray(states);
+
+        let translationMap = new Map();
+        for (let i = 0; i < states.length; i++) {
+            translationMap.set(states[i], shuffledStates[i]);
+        }
+
+        // We remove all final states.
+        for (let fs of oldAutomaton.getFinalStates()) {
+            a.setNonFinalState(fs);
+        }
+
+        // We set final states again (but translated).
+        for (let fs of oldAutomaton.getFinalStates()) {
+            a.setFinalState(translationMap.get(fs));
+        }
+
+        // We remove all transitions.
+        for (let trans of oldAutomaton.getTransitions()) {
+            a.removeTransition(trans);
+        }
+
+        // We add all transitions but with the start and end states translated.
+        for (let trans of oldAutomaton.getTransitions() as Iterable<Transition>) {
+            a.addTransition(
+                translationMap.get(trans.startState),
+                trans.symbol,
+                translationMap.get(trans.endState)
+            );
+        }
+
+        a.setInitialState(translationMap.get(a.getInitialState()));
+        return true
+    }
+
     constructor(alphabet: Iterable<any> = AutomatonGenerator.DEFAULT_GENERATOR.alphabet,
         stateCount: number = AutomatonGenerator.DEFAULT_GENERATOR.stateCount,
         finalStateCount: number = AutomatonGenerator.DEFAULT_GENERATOR.finalStateCount,
@@ -239,7 +279,89 @@ class AutomatonGenerator {
      * ensuring the recognized language doesn't change.
      */
     private static nonDestructiveAutomatonMutations = [
+        // Shuffles state names
+        AutomatonGenerator.shuffleStateNames,
+        // Add transition from reachable to non-coreachable state.
+        (a: Automaton) => {
+            let startState: any;
+            let reachableStates = Array.from(AutomatonPrograms.reachableStates(a));
+            shuffleArrayInPlace(reachableStates);
 
+            let alphabet = Array.from(a.getAlphabet());
+            shuffleArrayInPlace(alphabet);
+
+            let nonCoreachableStates = Array.from(
+                a.getStates().minus(AutomatonPrograms.coreachableStates(a))
+            );
+            shuffleArrayInPlace(nonCoreachableStates);
+
+            startStateSelection:
+            for (let rs of reachableStates) {
+                let symbol: any;
+                symbolSelection:
+                for (let symb of alphabet) {
+                    if (a.getSuccessors(rs, symb).size === 0) {
+                        symbol = symb;
+                        break symbolSelection;
+                    }
+                }
+
+                if (symbol === undefined) {
+                    continue startStateSelection;
+                }
+
+                for (let crs of nonCoreachableStates) {
+                    a.addTransition(rs, symbol, crs);
+                    return true;
+                }
+            }
+            return false;
+        },
+        // If a state has at least two transitions with the same destination, duplicate the destination.
+        (a: Automaton) => {
+            let states = Array.from(a.getStates());
+            shuffleArrayInPlace(states);
+
+            for (let t1 of a.getTransitions() as Iterable<Transition>) {
+                for (let t2 of a.getTransitions().minus([t1]) as Iterable<Transition>) {
+                    if (
+                        t1.startState === t2.startState &&
+                        t1.endState === t2.endState &&
+                        t1.symbol !== t2.symbol
+                    ) {
+                        let oldState = t1.endState;
+                        let newState: any;
+                        for (newState = 0; a.hasState(newState); newState++) { }
+
+                        // We add the new state, and set it final if need be.
+                        a.addState(newState);
+                        if (a.isAcceptingState(oldState)) {
+                            a.setFinalState(newState);
+                        }
+
+                        // We add the transitions from the duplicated state.
+                        for (let tr of a.getTransitions() as Iterable<Transition>) {
+                            if (tr.startState === oldState) {
+                                a.addTransition(newState, tr.symbol, tr.endState);
+                            }
+                        }
+
+                        a.addTransition(t1.startState, t1.symbol, newState);
+                        a.removeTransition(t1);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    ]
+    /**
+     * Array of the number of times each of the non-destructive mutatios will be applied.
+     * In case of the generation of a pair of automata, the passes will be randomly 
+     * applied to one automaton or the other until none are left.
+     */
+    private static nonDestructiveMutationPasses = [
+        1, 4, 3
     ]
 
     /**
@@ -364,36 +486,70 @@ class AutomatonGenerator {
      * Generates a pair of automata, following
      * the constraints set in the object's properties.
      */
-    generateAutomataPair(): Array<Automaton> {
-        let oldStateCount = this.stateCount;
-        let oldTransCount = this.transitionCount;
+    generateAutomataPair(lowNumberOfChanges: boolean = false): Array<Automaton> {
+        let automata = [];
+        if (this.areEquivalent) {
+            this.allowNonMinimal();
+            let A = this.generateAutomaton();
+            automata = [A, A.copy()];
 
-        this.stateCount = Math.ceil(this.stateCount / 2);
-        this.transitionCount = Math.ceil(this.transitionCount / 2);
-        let A = this.generateAutomaton();
-        let automata = [A, A.copy()];
+            for (let i = 0; i < AutomatonGenerator.nonDestructiveAutomatonMutations.length; i++) {
+                let operation = AutomatonGenerator.nonDestructiveAutomatonMutations[i];
 
-        for (let i = 0; i < Math.floor(this.stateCount / 2); i++) {
-            let chosenOperation =
-                AutomatonGenerator.semiDestructiveAutomatonMutations[
-                randomInteger(0, AutomatonGenerator.semiDestructiveAutomatonMutations.length)
-                ];
+                for (let j = 0; j < AutomatonGenerator.nonDestructiveMutationPasses[i]; j++) {
+                    if (Math.random() < 0.5) {
+                        operation(automata[0]);
+                    } else {
+                        operation(automata[1]);
+                    }
+                }
+            }
+        } else if (this.languageInterNonEmpty) {
+            let oldStateCount = this.stateCount;
+            let oldTransCount = this.transitionCount;
 
-            let changesMade = false;
-            if (Math.random() < 0.5) {
-                changesMade = chosenOperation(automata[0]);
-            } else {
-                changesMade = chosenOperation(automata[1]);
+            if (lowNumberOfChanges) {
+                this.stateCount = Math.ceil(this.stateCount / 2);
+                this.transitionCount = Math.ceil(this.transitionCount / 2);
+            }
+            let A = this.generateAutomaton();
+            automata = [A, A.copy()];
+
+            for (let i = 0; i < Math.floor(this.stateCount / 2); i++) {
+                let chosenOperation =
+                    AutomatonGenerator.semiDestructiveAutomatonMutations[
+                    randomInteger(0, AutomatonGenerator.semiDestructiveAutomatonMutations.length)
+                    ];
+
+                let changesMade = false;
+                if (Math.random() < 0.5) {
+                    changesMade = chosenOperation(automata[0]);
+                } else {
+                    changesMade = chosenOperation(automata[1]);
+                }
+
+                if (!changesMade) {
+                    i--;
+                    continue;
+                }
             }
 
-            if (!changesMade) {
-                i--;
-                continue;
+            // We shuffle the state names of the automata,
+            // to make them look less alike.
+            for (let auto of automata) {
+                AutomatonGenerator.shuffleStateNames(auto);
+            }
+
+            this.stateCount = oldStateCount;
+            this.transitionCount = oldTransCount;
+        } else {
+            if (!this.languageInterNonEmpty && Math.random() < 0.5) {
+                this.forbidEmptyLanguageInter();
+                return this.generateAutomataPair();
+            } else {
+                return [this.generateAutomaton(), this.generateAutomaton()];
             }
         }
-
-        this.stateCount = oldStateCount;
-        this.transitionCount = oldTransCount;
         return automata;
     }
 
@@ -445,10 +601,14 @@ class QuestionGenerator {
                 q = new AutomatonEquivQuestion(qSubtype);
                 let qae = <AutomatonEquivQuestion>q;
 
+                let numberToGenerate = 1;
+                let typeToGenerate = AutomatonDataType.Automaton;
+
                 // According to the subtype, we set different constraints on generation.
                 switch (qSubtype) {
                     case QuestionSubType.Product:
                         this.automatonGenerator.forbidEmptyLanguageInter();
+                        numberToGenerate = 2;
                         break;
 
                     case QuestionSubType.Minimize:
@@ -469,19 +629,14 @@ class QuestionGenerator {
                         this.automatonGenerator.allowNonDeterministic();
                         this.automatonGenerator.allowEpsilonTransitions();
                         break;
-                }
 
-
-                switch (qSubtype) {
                     case QuestionSubType.Regexp2Automaton:
-                        qae.correctAnswerAutomaton = this.automatonGenerator.generateAutomaton();
-                        qae.wordingDetails[0] = AutomatonPrograms.automatonToRegex(qae.correctAnswerAutomaton);
+                        typeToGenerate = AutomatonDataType.Regexp;
                         break;
 
                     case QuestionSubType.Automaton2Regexp:
-                        qae.usersAnswerType = AutomatonDataType.Regexp;
-                        qae.correctAnswerAutomaton = this.automatonGenerator.generateAutomaton();
-                        qae.wordingDetails[0] = qae.correctAnswerAutomaton.copy();
+                        this.automatonGenerator.allowNonDeterministic();
+                        this.automatonGenerator.allowEpsilonTransitions();
                         break;
 
                     case QuestionSubType.LeftGrammar2RightGrammar:
@@ -490,33 +645,35 @@ class QuestionGenerator {
                             AutomatonPrograms.automaton2RightLinearGrammar(qae.correctAnswerAutomaton)
                         );
                         qae.usersAnswerType = AutomatonDataType.LinearGrammar;
+                        numberToGenerate = 0;
                         break;
 
                     case QuestionSubType.Grammar2Automaton:
-                        qae.correctAnswerAutomaton = this.automatonGenerator.generateAutomaton();
-                        qae.wordingDetails[0] = AutomatonPrograms.automaton2RightLinearGrammar(qae.correctAnswerAutomaton);
-                        break;
-
-                    case QuestionSubType.Automaton2Grammar:
-                        qae.usersAnswerType = AutomatonDataType.LinearGrammar;
-                        qae.correctAnswerAutomaton = this.automatonGenerator.generateAutomaton();
-                        qae.wordingDetails[0] = qae.correctAnswerAutomaton.copy();
-                        break;
-
-                    case QuestionSubType.Product:
-                        qae.wordingDetails = this.automatonGenerator.generateAutomataPair();
-                        qae.correctAnswerAutomaton =
-                            AutomatonPrograms.product(qae.wordingDetails[0] as Automaton, qae.wordingDetails[1] as Automaton);
-                        break;
-
-                    case QuestionSubType.Complement:
-                        qae.wordingDetails[0] = this.automatonGenerator.generateAutomaton();
-                        qae.correctAnswerAutomaton = AutomatonPrograms.complement(qae.wordingDetails[0] as Automaton);
+                        typeToGenerate = AutomatonDataType.LinearGrammar;
                         break;
 
                     default:
-                        qae.wordingDetails[0] = this.automatonGenerator.generateAutomaton();
-                        qae.correctAnswerAutomaton = (qae.wordingDetails[0] as Automaton).copy();
+                        break;
+                }
+
+                if (numberToGenerate === 1) {
+                    qae.correctAnswerAutomaton = this.automatonGenerator.generateAutomaton();
+                    if (typeToGenerate === AutomatonDataType.Automaton) {
+                        qae.wordingDetails[0] = qae.correctAnswerAutomaton.copy();
+                    } else if (typeToGenerate === AutomatonDataType.Regexp) {
+                        qae.wordingDetails[0] = AutomatonPrograms.automatonToRegex(qae.correctAnswerAutomaton);
+                    } else if (typeToGenerate === AutomatonDataType.LinearGrammar) {
+                        qae.wordingDetails[0] = AutomatonPrograms.automaton2RightLinearGrammar(qae.correctAnswerAutomaton);
+                    }
+                } else if (numberToGenerate === 2) {
+                    qae.wordingDetails = this.automatonGenerator.generateAutomataPair(true);
+                    if (qSubtype === QuestionSubType.Product) {
+                        qae.correctAnswerAutomaton =
+                            AutomatonPrograms.product(
+                                qae.wordingDetails[0] as Automaton,
+                                qae.wordingDetails[1] as Automaton
+                            );
+                    }
                 }
                 break;
             }
@@ -584,20 +741,21 @@ class QuestionGenerator {
                         } else {
                             this.automatonGenerator.allowNonEquivalent();
                         }
+
                         mcq.wordingDetails = this.automatonGenerator.generateAutomataPair();
                         mcq.setWordingChoices([
-                            { id: "a", text: this._("Yes") },
-                            { id: "b", text: this._("No") }
+                            { id: "a", text: this._("Yes"), correct: areEquivalent },
+                            { id: "b", text: this._("No"), correct: !areEquivalent }
                         ], true);
                         break;
 
                     default:
                         mcq.setWordingChoices(
                             [
-                                { id: "a", text: "OwO" },
-                                { id: "b", text: "What's" },
-                                { id: "c", text: "This" },
-                                { id: "d", text: "Bruuuuuuuh", correct: true }
+                                { id: "a", text: "1" },
+                                { id: "b", text: "2" },
+                                { id: "c", text: "4" },
+                                { id: "d", text: "8", correct: true }
                             ],
                             true
                         )

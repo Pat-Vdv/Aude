@@ -1,3 +1,5 @@
+
+var _ = window.AudeGUI.l10n;
 /**
  * This class holds all the Audescript programs 
  * that may be used throughout Aude. 
@@ -9,14 +11,14 @@ class AutomatonPrograms {
 
   // For the creation of the automaton
   static createAutomatonCoreachable:
-  (nbStates: number,
+    (nbStates: number,
       alphabet: Iterable<any>,
       nbAcceptingStates: number,
       typeAutomaton: number,
       nbTransitions: number | string) => Automaton = null;
 
-static createAutomaton:
-  (nbStates: number,
+  static createAutomaton:
+    (nbStates: number,
       alphabet: Iterable<any>,
       nbAcceptingStates: number,
       typeAutomaton: number,
@@ -55,6 +57,54 @@ static createAutomaton:
   static linearGrammar2Automaton: (g: linearGrammar | string) => Automaton = null;
   static automaton2RightLinearGrammar = null;
   static isLeftLinear = null;
+
+  static tableRandomAutomateGeneration() {
+    return ["table", [
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-nbstates" }, _("Number of states:")]],
+        ["td", ["input.input-settings-question#create-automaton-nbstates", {
+          "type": "number",
+          "min": "1"
+        }]]
+      ]],
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-alphabet" }, _("Alphabet")]],
+        ["td", ["input.input-settings-question#create-automaton-alphabet", {
+          "type": "text"
+        }]]
+      ]],
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-nbaccepting" }, _("Number of accepting states:")]],
+        ["td", ["input.input-settings-question#create-automaton-nbaccepting", {
+          "type": "number",
+          "min": "0"
+        }]]
+      ]],
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-mode" }, _("Mode:")]],
+        ["td", ["select.input-settings-question#create-automaton-mode", [
+          ["option", { "value": 1 }, _("Deterministic automaton")],
+          ["option", { "value": 2 }, _("Non deterministic automaton")],
+          ["option", { "value": 3 }, _("Non deterministic automaton with ε-transitions")],
+        ]]]
+      ]],
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-nbtrans" }, _("Number of transitions:")]],
+        ["td", ["input.input-settings-question#create-automaton-nbtrans", {
+          "type": "number",
+          "min": "0"
+        }]]
+      ]],
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-allstatesreachable" }, _("All states are reachable:")]],
+        ["td", ["input.input-settings-question#create-automaton-allstatesreachable", { "type": "checkbox" }]]
+      ]],
+      ["tr", [
+        ["td", ["label.span-settings-question", { "for": "create-automaton-allstatescoreachable" }, _("All states are co-reachable:")]],
+        ["td", ["input.input-settings-question#create-automaton-allstatescoreachable", { "type": "checkbox" }]]
+      ]],
+    ]];
+  }
 
   /**
    * Loads automata-related algorithms (minimization, completion, etc...) from audescript.

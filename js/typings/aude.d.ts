@@ -26,6 +26,7 @@ interface Window {
   };
 
   svg2automaton(svg: string): Automaton;
+  automatonFromObj(obj: any): Automaton;
 }
 
 declare var audescript: {
