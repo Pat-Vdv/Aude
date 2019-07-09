@@ -5,6 +5,7 @@ interface Window {
   AudeGUI: {
     automatonFileInput: any,
     mainDesigner: AudeDesigner,
+    notifier: any,
     Results: AudeDesigner,
     l10n: (txt: string) => string,
     audeExam: boolean,
@@ -12,9 +13,10 @@ interface Window {
         loadIncludes: (includes: Array<any>, callback: Function) => void;
     },
     Quiz: any,
-    QuestionList: any
+    QuestionList: any,
+    QuizEditor: any
 
-    removeCurrentAutomaton();
+    removeCurrentAutomaton(): void;
 
     getCurrentMode(): string;
     setCurrentMode(mode: string): void;
@@ -31,7 +33,7 @@ interface Window {
 
 declare var audescript: {
     m: (moduleName: string, newModule?: boolean) => any;
-    toJS: (str, moduleName?, fname?) => any;
+    toJS: (str: string, moduleName?: any, fname?: any) => any;
 };
 
 declare function automaton2svg(A: Automaton, callback: (result: string) => void): void;

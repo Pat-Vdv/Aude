@@ -9,7 +9,9 @@
     "listEmittedFiles": true,
     "incremental": true,
     "tsBuildInfoFile": "build/buildInfoFile.json",
-    "newLine": "lf"
+    "newLine": "lf",
+    "alwaysStrict": true,
+    "noEmitOnError": true
   },
 
   "include": [
@@ -21,5 +23,5 @@
     "./js/audescript/**.ts"
   ],
 
-  "files": [ "./js/typings/linearGrammar.d.ts", "./js/typings/automaton.d.ts", "./js/typings/katex.d.ts"]
+  "files": [ "./js/typings/linearGrammar.d.ts", "./js/typings/automaton.d.ts", "./js/typings/katex.d.ts", "./js/typings/fileSaver.d.ts"]
 }

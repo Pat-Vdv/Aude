@@ -110,7 +110,7 @@ class GrammarDesigner {
             ["div#grammar-designer-nonterminal-div", [
                 ["div.grammar-designer-section-title", this._("Non terminal symbols")],
                 ["span", { "#": "nonTerminalEditSpan" }, [
-                    ["input#grammar-designer-nonterminal-input", { "#": "nonTerminalInput", "maxlength": "1" }],
+                    ["input#grammar-designer-nonterminal-input", { "#": "nonTerminalInput", "maxlength": "1", "placeholder": this._("Enter symbol here") }],
                     ["button#grammar-designer-add-nonterminal-button", { "#": "nonTerminalAddButton" }, this._("Add")],
                     ["button#grammar-designer-remove-nonterminal-button", { "#": "nonTerminalRemoveButton" }, this._("Remove")],
                 ]],

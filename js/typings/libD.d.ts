@@ -50,10 +50,13 @@ declare namespace libD {
   export interface WSwin {
     show(focus?: boolean): void;
     close (closeStage?: number): void;
+    minimize(): void;
 
     ws: any;
   }
   export function newWin(o: any): WSwin;
 
   export function jso2dom(o: any, refs?: any, parent?: Node, childrenListing?: any): HTMLElement;
+
+  export function getIcon(icon: string, iconSize?: string, iconPack?: string, iconExtension?: string): string;
 }

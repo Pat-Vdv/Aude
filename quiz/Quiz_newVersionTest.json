@@ -1,0 +1,50 @@
+{
+   "title": "Test des nouveaux quizs améliorés",
+   "author": "Fabien Portas",
+   "date": "8 juillet 2019",
+   "description": "Ce quiz sert à tester la nouvelle version améliorée du moteur de quiz.",
+   "questions": [{
+         "type": "mcq",
+         "instructionHTML": "Que vaut $\\emptyset^*$ ?",
+         "possibilities": [{
+               "id": "a",
+               "html": "$\\left\\lbrace\\epsilon\\right\\rbrace$"
+            },
+            {
+               "id": "b",
+               "html": "$\\emptyset$"
+            },
+            {
+               "id": "c",
+               "html": "$\\Sigma^*$"
+            },
+            {
+               "id": "d",
+               "html": "Aucune de ces réponses"
+            }
+         ],
+         "answers": ["a"],
+         "singleChoice": true
+      },
+      {
+         "type": "mcq",
+         "instructionsHTML": "Soit $\\Sigma = \\left\\lbracea, b, c\\right\\rbrace. <br>Lesquelles des figures suivantes décrivent le langage des mots contenant un nombre pair de $a$",
+         "possibilities": [{
+            "id": "a",
+            "automaton": {
+               "states": ["0", "1"],
+               "finalStates": ["0"],
+               "transitions": [
+                  ["0", "a", "1"],
+                  ["1", "a", "0"],
+                  ["1", "b", "1"],
+                  ["1", "c", "1"]
+               ]
+            }
+         }, {
+            "id": "b",
+            "html": "$L = \\left\\lbrace ((b + c)^* a (b + c)^*)^{2k}, k \\in \\mathbb{R} \\right\\rbrace$"
+         }]
+      }
+   ]
+}

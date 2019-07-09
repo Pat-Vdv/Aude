@@ -1,6 +1,6 @@
 # Quiz & Questions
 
-Aude includes an extensive framework to help create and design quizzes, and their questions.
+Aude includes an extensive framework to help create and design questions, and assemble them to create quizzes or exercises.
 
 ## Question Structure
 Every category of question is represented by a class that inherits ```Question```, which defines the basic functionality of a question.
@@ -34,7 +34,7 @@ These functions can be defined in Audescript.
 
 ### **Multiple Choice Questions**
 
-    Internally, these are represented by the ```MCQQuestion``` class.
+Internally, these are represented by the ```MCQQuestion``` class.
 
 #### Wording
 
@@ -89,6 +89,12 @@ A question's representation varies depending on its category, but the following 
 
 * ```automatonAnswer: Automaton``` : The reference correct answer automaton. See [JSON Data Structures](#json-data-structures) for details.
 
+* ```automatonAnswerConstraintsAS: Array<(a: Automaton) => {correct: boolean, details: string}>``` : Audescript code for additional constraints set on the automaton answer. Has no effect if the answer isn't an automaton.
+
+* ```regexpAnswerConstraintsAS: Array<(re: string) => {correct: boolean, details: string}>``` : Audescript code for additional constraints set on the regular expression answer. Has no effect if the answer isn't a regular expression.
+
+* ```grammarAnswerConstraintsAS: Array<(g: linearGrammar) => {correct: boolean, details: string}>``` : Audescript code for additional constraints set on the grammar answer. Has no effect if the answer isn't a linear grammar.
+
 #### Multiple Choice Questions Specific
 * ```wordingDetails: Array | any``` : Gives up to two wording "details", that is, objects that are displayed alongside the question. <br>
     These are objects of the form ```{aType: string, content: any}```, where ```aType``` specifies the type of that object (can be ```"Automaton"```, ```"Regexp"``` or ```"LinearGrammar"```), and ```content``` actually contains the data for that object. The data is different according to the type, see [JSON Data Structures](#json-data-structures) for details on each type.
@@ -105,8 +111,28 @@ A possibility is identified by its ```id``` field.
 * ```wordingDetails: Array | any``` : Gives up to two wording "details", that is, objects that are displayed alongside the question. <br>
     These are objects of the form ```{aType: string, content: any}```, where ```aType``` specifies the type of that object (can be ```"Automaton"```, ```"Regexp"``` or ```"LinearGrammar"```), and ```content``` actually contains the data for that object. The data is different according to the type, see [JSON Data Structures](#json-data-structures) for details on each type.
 * ```correctAnswers: Array<string>```: Array of correct text answers (if validators not given).
-* ```validatorAudescript: (q: TextInputQuestion) => { correct: boolean, details: string }```: Audescript for the validator function
-### JSON Data Structures
+* ```validatorAudescript: string```: Audescript code for the validator function. <br>
+The given code will be the body (and only the body) of the function which must return an object of type :
+```ts
+{correct: boolean, details: string}
+```
+Inside of it, the ```TextInputQuestion``` object shall be available under the name ```q```, along with its most important member : ```q.usersAnswer```, the string for the user's answer.
+
+**Example :**
+```js
+let r := new Object();
+if (q.usersAnswer.startsWith("abcd")) then
+    r.correct := true;
+fi
+
+if not r.correct then
+    r.details = "Your answer doesn't start with abcd !";
+fi
+
+return r;
+```
+
+### JSON Data Structures {#json-data-structures}
 #### Automata
 Two possibilities here, either the *raw* SVG string, or a more user-friendly object of the form :
 ```ts

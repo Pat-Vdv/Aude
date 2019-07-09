@@ -127,6 +127,10 @@ abstract class Question {
     /** The general textual description of the question. */
     wordingText: string;
     isWordingHtml: boolean = false;
+    /** The objects for this question's wording. */
+    wordingDetails: Array<Automaton | string | linearGrammar> = [];
+    /** Point count for this question, for use in quizzes, mostly. */
+    point: number = 0;
 
     constructor(subtype: QuestionSubType, wordingText?: string, isWordingHtml?) {
         this.subtype = subtype;
@@ -141,6 +145,29 @@ abstract class Question {
         AutomatonPrograms.loadPrograms();
     }
 
+    /**
+     * Displays formatted wording text and details in the given element.
+     * @param questionDisplayDiv 
+     */
+    displayQuestionWording(questionDisplayDiv: HTMLElement): void {
+        let refs = {
+            divWordingText: <HTMLElement>undefined,
+            divWordingDetails: <HTMLElement>undefined,
+        }
+
+        questionDisplayDiv.appendChild(libD.jso2dom([
+            ["div#question-wording-text", { "#": "divWordingText" }, this._("Question :")],
+
+            ["div#question-wording-details", { "#": "divWordingDetails" }]
+        ], refs));
+
+        // We display the wording text.
+        FormatUtils.textFormat(this.wordingText, refs.divWordingText, this.isWordingHtml);
+
+        // We display the additionnal info.
+        this.displayWordingDetails(refs.divWordingDetails);
+    }
+
     /*
      * Displays the full question wording : textual wording, additional info and inputs.
     */
@@ -149,29 +176,23 @@ abstract class Question {
         // Clearing the given div.
         questionDisplayDiv.innerHTML = "";
 
+        console.log(questionDisplayDiv);
+
         // Populating the div.
+        this.displayQuestionWording(questionDisplayDiv);
+
         let refs = {
-            divWordingText: HTMLElement = null,
-            divWordingDetails: HTMLElement = null,
             divUserInput: HTMLElement = null
         };
 
-        questionDisplayDiv.appendChild(libD.jso2dom([
-            ["div#question-wording-text", { "#": "divWordingText" }, this._("Question :")],
-
-            ["div#question-wording-details", { "#": "divWordingDetails" }],
-
-            ["div#answer-user-input", { "#": "divUserInput" }]
-        ], refs));
-
-        // We display the wording text.
-        FormatUtils.textFormat(this.wordingText, refs.divWordingText, this.isWordingHtml);
-
-        // We display the additionnal info.
-        this.displayWordingDetails(refs.divWordingDetails);
+        let divUserInput = libD.jso2dom(
+            ["div#answer-user-input", { "#": "divUserInput" }],
+            refs
+        );
 
         // We show the answer input UI.
         this.displayAnswerInputs(refs.divUserInput);
+        questionDisplayDiv.appendChild(divUserInput);
     }
 
     /**
@@ -194,12 +215,82 @@ abstract class Question {
      */
     abstract checkUsersAnswer(): { correct: boolean, details: string };
 
-    /**audescript.m("regex2automaton").regexToAutomaton
+    /**
      * Displays this question's wording details and additional information (automata, grammars, regexps, etc...)
      * in an HTML element.
      * @param wordingDetailsDiv - The HTML element to insert the wording details into (its content will be cleared !).
      */
-    abstract displayWordingDetails(wordingDetailsDiv: HTMLElement): void;
+    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
+        // We cannot handle more than two objects in the wording (yet.)
+        if (this.wordingDetails.length === 0 || this.wordingDetails.length > 2) {
+            return;
+        }
+
+
+
+        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
+            if (wd instanceof Automaton) {
+                let refs = {
+                    divDesigner: <HTMLElement>null,
+                    divInfo: <HTMLElement>null
+                };
+
+                element.appendChild(
+                    libD.jso2dom(
+                        [
+                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
+                            ["br"],
+                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
+                        ],
+                        refs
+                    )
+                );
+
+                let designer = new AudeDesigner(refs.divDesigner, true);
+                designer.setAutomatonCode(automaton_code(wd));
+                designer.autoCenterZoom();
+
+                window.AudeGUI.Quiz.textFormat(
+                    FormatUtils.set2Latex(wd.getAlphabet()),
+                    refs.divInfo
+                );
+            } else if (typeof wd === "string") {
+                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
+            } else if (wd instanceof linearGrammar) {
+                let wdGramDesigner = new GrammarDesigner(element, false);
+                wdGramDesigner.setGrammar(wd);
+            } else if (wd === undefined) {
+                return;
+            } else {
+                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
+            }
+        }
+
+        if (this.wordingDetails.length === 2) {
+            let refs = {
+                wdLeft: <HTMLElement>undefined,
+                wdRight: <HTMLElement>undefined
+            };
+            wordingDetailsDiv.appendChild(libD.jso2dom(
+                ["div#question-automaton-designer",
+                    [
+                        ["div#question-wording-details-left", { "#": "wdLeft" }],
+                        ["div#question-wording-details-right", { "#": "wdRight" }]
+                    ]
+                ],
+                refs
+            ));
+
+            for (let i = 0; i < 2; i++) {
+                let wd = this.wordingDetails[i];
+                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
+
+                showDetailObject(wd, element);
+            }
+        } else if (this.wordingDetails.length === 1) {
+            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
+        }
+    }
 
     /**
      * Displays this question's input interface (checkboxes, radio, ...) for the answer in an HTML element.
@@ -213,16 +304,148 @@ abstract class Question {
      */
     abstract displayCorrectAnswer(correctAnswerDiv: HTMLElement): void;
 
+    abstract specificToJSON(obj: any): void;
+
     /**
      * Converts the question to a object for JSON conversion.
      */
-    abstract toJSON(): any;
+    toJSON(): any {
+        let obj: any = {};
+
+        // Serializing common elements.
+
+        // "type" field
+        switch (this.category) {
+            case QuestionCategory.MCQ:
+                obj.type = "mcq";
+                break;
+
+            case QuestionCategory.TextInput:
+                obj.type = "textInput";
+                break;
+
+            case QuestionCategory.AutomatonEquivQuestion:
+                obj.type = "automatonEquiv";
+                break;
+        }
+
+        // "instruction" and "isInstructionHTML" fields
+        obj.instruction = this.wordingText;
+        obj.isInstructionHTML = this.isWordingHtml;
+
+        // "wordingDetails" field
+        obj.wordingDetails = [];
+        for (let detail of this.wordingDetails) {
+            // Skip empty details.
+            if (detail === undefined || detail === null) {
+                continue;
+            }
+
+            let detailObj = { aType: <string>undefined, content: <any>undefined };
+
+            if (detail instanceof Automaton) {
+                detailObj.aType = AutomatonDataType[AutomatonDataType.Automaton];
+                detailObj.content = automaton2svg(detail, (svg) => { detailObj.content = svg; });
+            } else if (typeof detail === "string") {
+                detailObj.aType = AutomatonDataType[AutomatonDataType.Regexp];
+                detailObj.content = detail;
+            } else if (detail instanceof linearGrammar) {
+                detailObj.aType = AutomatonDataType[AutomatonDataType.LinearGrammar];
+                detailObj.content = detail.toString();
+            }
+
+            obj.wordingDetails.push(detailObj);
+        }
+
+        // Serializing specific elements.
+        this.specificToJSON(obj);
+
+        return obj;
+    }
+
+    abstract specificFromJSON(obj: any): void;
 
     /**
      * Initializes this question from a JSON object.
      * @param qObj - The object to extract the question info from. 
      */
-    abstract fromJSON(qObj: any): boolean;
+    fromJSON(qObj: any): boolean {
+        // Deserialize common elements.
+        if (!qObj.type) {
+            throw new Error(this._("Malformed question has no type."));
+        }
+
+        // "instruction", "isInstructionHTML" and "instructionHTML" (legacy)
+        if (qObj.instruction) {
+            this.wordingText = qObj.instruction;
+            if (qObj.isInstructionHTML) {
+                this.isWordingHtml = qObj.isInstructionHTML;
+            }
+        } else if (qObj.instructionHTML) {
+            this.wordingText = qObj.instructionHTML;
+            this.isWordingHtml = true;
+        }
+
+        // "wordingDetails"
+
+        let getDetailFromObj = (detailObj: any): (Automaton | string | linearGrammar) => {
+            if (!detailObj.aType) {
+                throw new Error(this._("Malformed question. Wording detail has no type !"))
+            }
+
+            if (!detailObj.content) {
+                throw new Error(this._("Malformed question. Wording detail has no content !"))
+            }
+
+            let type = AutomatonDataType[detailObj.aType as string];
+            if (type === undefined) {
+                throw new Error(this._("Malformed question. Unknown wording detail type !"))
+            }
+
+            switch (type) {
+                case AutomatonDataType.Automaton: {
+                    if (typeof detailObj.content === "string") {
+                        return svg2automaton(detailObj.content);
+                    } else {
+                        return automatonFromObj(detailObj.content);
+                    }
+                    break;
+                }
+
+                case AutomatonDataType.Regexp: {
+                    if (typeof detailObj.content === "string") {
+                        return detailObj.content;
+                    }
+                    break;
+                }
+
+                case AutomatonDataType.LinearGrammar: {
+                    if (typeof detailObj.content === "string") {
+                       return string2LinearGrammar(detailObj.content);
+                    }
+                    break;
+                }
+            }
+        };
+
+        if (qObj.wordingDetails instanceof Array) {
+            for (let detailObj of qObj.wordingDetails) {
+                this.wordingDetails.push(getDetailFromObj(detailObj));
+            }
+        } else {
+            this.wordingDetails.push(getDetailFromObj(qObj.wordingDetails));
+        }
+
+        // "Legacy" support for automaton wording detail.
+        if (qObj.automatonQuestion) {
+            this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
+        }
+
+        // Deserialize specific elements. 
+        this.specificFromJSON(qObj);
+
+        return true;
+    }
 
     /**
      * Generates wording for this question automatically, based on its subtype.
@@ -348,26 +571,28 @@ class AutomatonEquivQuestion extends Question {
         }
     }
 
-    /** The objects for this question's wording. */
-    wordingDetails: Array<Automaton | string | linearGrammar> = [];
-
     usersAnswerType: AutomatonDataType = AutomatonDataType.Automaton;
     usersAnswerAutomaton: Automaton = undefined;
-    usersAnswerRaw: Automaton | string | linearGrammar;
+    /** The "raw" version of the user's input, that is, it is not converted to an automaton. */
+    usersAnswerRaw: Automaton | string | linearGrammar = undefined;
 
     /** Correct answer against which the user's answer will be checked. */
     correctAnswerAutomaton: Automaton;
 
     // Constraint functions to add additional constraints to user's answer
     // (minimal, complete, grammar is left linear, ...)
-    automatonAnswerConstraints: Array<(a: Automaton) => { correct: boolean, details: string }> = [];
-    regexpAnswerConstraints: Array<(re: string) => { correct: boolean, details: string }> = [];
-    grammarAnswerConstraints: Array<(g: linearGrammar) => { correct: boolean, details: string }> = [];
+    automatonAnswerConstraintsAudescript: Array<string> = [];
+    automatonAnswerConstraints: Array<(a: Automaton, q: AutomatonEquivQuestion) => { correct: boolean, details: string }> = [];
+    regexpAnswerConstraintsAudescript: Array<string> = [];
+    regexpAnswerConstraints: Array<(re: string, q: AutomatonEquivQuestion) => { correct: boolean, details: string }> = [];
+    grammarAnswerConstraintsAudescript: Array<string> = [];
+    grammarAnswerConstraints: Array<(g: linearGrammar, q: AutomatonEquivQuestion) => { correct: boolean, details: string }> = [];
 
     answerInput: AudeDesigner | HTMLInputElement | GrammarDesigner = undefined;
 
-    constructor(qSubtype: QuestionSubType) {
-        super(qSubtype);
+    constructor(qSubtype?: QuestionSubType) {
+        super((qSubtype === undefined) ? QuestionSubType.CustomAutomatonEquiv : qSubtype);
+        this.category = QuestionCategory.AutomatonEquivQuestion;
 
         /** We set constraints for the answer if the subtype needs it. */
         switch (this.subtype) {
@@ -396,74 +621,6 @@ class AutomatonEquivQuestion extends Question {
                 this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.Deterministic);
                 this.automatonAnswerConstraints.push(AutomatonEquivQuestion.AnswerAutomatonConstraints.NoEpsilon);
                 break;
-        }
-    }
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        // We cannot handle more than two objects in the wording (yet.)
-        if (this.wordingDetails.length === 0 || this.wordingDetails.length > 2) {
-            return;
-        }
-
-        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
-            if (wd instanceof Automaton) {
-                let refs = {
-                    divDesigner: <HTMLElement>null,
-                    divInfo: <HTMLElement>null
-                };
-
-                element.appendChild(
-                    libD.jso2dom(
-                        [
-                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
-                            ["br"],
-                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
-                        ],
-                        refs
-                    )
-                );
-
-                let designer = new AudeDesigner(refs.divDesigner, true);
-                designer.setAutomatonCode(automaton_code(wd));
-                designer.autoCenterZoom();
-
-                window.AudeGUI.Quiz.textFormat(
-                    FormatUtils.set2Latex(wd.getAlphabet()),
-                    refs.divInfo
-                );
-            } else if (typeof wd === "string") {
-                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
-            } else if (wd instanceof linearGrammar) {
-                let wdGramDesigner = new GrammarDesigner(element, false);
-                wdGramDesigner.setGrammar(wd);
-            } else {
-                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
-            }
-        }
-
-        if (this.wordingDetails.length === 2) {
-            let refs = {
-                wdLeft: <HTMLElement>undefined,
-                wdRight: <HTMLElement>undefined
-            };
-            wordingDetailsDiv.appendChild(libD.jso2dom(
-                ["div#question-automaton-designer",
-                    [
-                        ["div#question-wording-details-left", { "#": "wdLeft" }],
-                        ["div#question-wording-details-right", { "#": "wdRight" }]
-                    ]
-                ],
-                refs
-            ));
-
-            for (let i = 0; i < 2; i++) {
-                let wd = this.wordingDetails[i];
-                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
-
-                showDetailObject(wd, element);
-            }
-        } else if (this.wordingDetails.length === 1) {
-            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
         }
     }
 
@@ -536,37 +693,33 @@ class AutomatonEquivQuestion extends Question {
             }
         }
 
-        if (this.correctAnswerAutomaton === undefined) {
-            return {
-                correct: false,
-                details: this._("This question wasn't created properly !")
+        if (this.correctAnswerAutomaton !== undefined) {
+            if (!AutomatonPrograms.automataAreEquivalent(this.usersAnswerAutomaton, this.correctAnswerAutomaton)) {
+                return {
+                    correct: false,
+                    details: this._("Your answer doesn't recognize the right language !")
+                };
             }
         }
 
-        if (!AutomatonPrograms.automataAreEquivalent(this.usersAnswerAutomaton, this.correctAnswerAutomaton)) {
-            return {
-                correct: false,
-                details: this._("Your answer doesn't recognize the right language !")
-            };
-        }
 
         if (this.usersAnswerRaw instanceof Automaton) {
             for (let checkFun of this.automatonAnswerConstraints) {
-                let checkResult = checkFun(this.usersAnswerRaw);
+                let checkResult = checkFun(this.usersAnswerRaw, this);
                 if (!checkResult.correct) {
                     return checkResult;
                 }
             }
         } else if (typeof this.usersAnswerRaw === "string") {
             for (let checkFun of this.regexpAnswerConstraints) {
-                let checkResult = checkFun(this.usersAnswerRaw);
+                let checkResult = checkFun(this.usersAnswerRaw, this);
                 if (!checkResult.correct) {
                     return checkResult;
                 }
             }
         } else if (this.usersAnswerRaw instanceof linearGrammar) {
             for (let checkFun of this.grammarAnswerConstraints) {
-                let checkResult = checkFun(this.usersAnswerRaw);
+                let checkResult = checkFun(this.usersAnswerRaw, this);
                 if (!checkResult.correct) {
                     return checkResult;
                 }
@@ -580,8 +733,7 @@ class AutomatonEquivQuestion extends Question {
         throw new Error("Method not implemented.");
     }
 
-    toJSON(): any {
-        let obj: any = {};
+    specificToJSON(obj: any): void {
 
         // We set the question type.
         switch (this.usersAnswerType) {
@@ -602,12 +754,12 @@ class AutomatonEquivQuestion extends Question {
         if (obj.wordingDetails) {
 
         }
-
-        return obj;
     }
 
-    fromJSON(qObj: any): boolean {
-        // Load type.
+    specificFromJSON(qObj: any): boolean {
+        // usersAnswerType
+
+        // LEGACY Set user's answer type according to type.
         switch (qObj.type) {
             case "automatonEquiv":
                 this.usersAnswerType = AutomatonDataType.Automaton;
@@ -621,77 +773,7 @@ class AutomatonEquivQuestion extends Question {
                 this.usersAnswerType = AutomatonDataType.LinearGrammar;
                 break;
         }
-
-        // Load instructions.
-        if (qObj.instruction) {
-            this.wordingText = qObj.instruction;
-            this.isWordingHtml = false;
-        } else if (qObj.instructionHTML) {
-            this.wordingText = qObj.instructionHTML;
-            this.isWordingHtml = true;
-        }
-
-        // "Legacy" support for automaton wording detail.
-        if (qObj.automatonQuestion) {
-            this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
-        }
-
-        // Load wording details.
-        // Takes {aType, content} object for detail and returns converted object of it.
-        function getDetailFromObj(obj: any) {
-            let newDetail: (Automaton | string | linearGrammar);
-
-            if (!obj.aType) {
-                return undefined;
-            }
-
-            let detType = AutomatonDataType[obj.aType as string];
-            if (detType === undefined) {
-                return undefined;
-            }
-            switch (detType) {
-                case AutomatonDataType.Automaton:
-                    if (typeof obj.content === "string") {
-                        newDetail = window.svg2automaton(obj.content);
-                    } else {
-                        newDetail = window.automatonFromObj(obj.content);
-                    }
-                    break;
-
-                case AutomatonDataType.Regexp:
-                    newDetail = obj.content as string;
-                    break;
-
-                case AutomatonDataType.LinearGrammar:
-                    newDetail = string2LinearGrammar(obj.content);
-                    break;
-            }
-
-            return newDetail;
-        }
-        if (qObj.wordingDetails) {
-            // There are two details.
-            if (qObj.wordingDetails instanceof Array) {
-                for (let det of qObj.wordingDetails) {
-                    let newDetail = getDetailFromObj(det);
-                    if (newDetail === undefined) {
-                        return false;
-                    }
-
-                    if (this.wordingDetails.length < 2) {
-                        this.wordingDetails.push(newDetail);
-                    }
-                }
-            } else {
-                let newDetail = getDetailFromObj(qObj.wordingDetails);
-                if (newDetail === undefined) {
-                    return false;
-                }
-
-                this.wordingDetails.push(newDetail);
-            }
-        }
-
+       
         if (qObj.automatonAnswer) {
             if (typeof qObj.automatonAnswer === "string") {
                 this.correctAnswerAutomaton = window.svg2automaton(qObj.automatonAnswer);
@@ -704,7 +786,40 @@ class AutomatonEquivQuestion extends Question {
             this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(<linearGrammar>qObj.grammar);
         }
 
-        // TODO : Load audescript code.
+        // Load audescript code.
+        if (qObj.automatonAnswerConstraintsAS && qObj.automatonAnswerConstraintsAS instanceof Array) {
+            console.log("blip");
+            for (let cnstr of qObj.automatonAnswerConstraintsAS) {
+                this.automatonAnswerConstraints.push(
+                    eval(
+                        "(a) => { " + audescript.toJS(cnstr).code + "}"
+                    )
+                );
+                this.automatonAnswerConstraintsAudescript.push(cnstr);
+            }
+        }
+
+        if (qObj.regexpAnswerConstraintsAS && qObj.regexpAnswerConstraintsAS instanceof Array) {
+            for (let cnstr of qObj.regexpAnswerConstraintsAS) {
+                this.regexpAnswerConstraints.push(
+                    eval(
+                        "(re) => {" + audescript.toJS(cnstr).code + "}"
+                    )
+                );
+                this.regexpAnswerConstraintsAudescript.push(cnstr);
+            }
+        }
+
+        if (qObj.grammarAnswerConstraintsAS && qObj.grammarAnswerConstraintsAS instanceof Array) {
+            for (let cnstr of qObj.grammarAnswerConstraintsAS) {
+                this.grammarAnswerConstraints.push(
+                    eval(
+                        "(g) => {" + audescript.toJS(cnstr).code + "}"
+                    )
+                );
+                this.grammarAnswerConstraintsAudescript.push(cnstr);
+            }
+        }
 
         return true;
     }
@@ -730,8 +845,6 @@ class MCQQuestion extends Question {
 
     /** Array of the IDs of the correct choices. */
     correctChoices: Array<string> = [];
-    /** Array of the figures (automaton, regexp, grammar) to be displayed in the instructions. */
-    wordingDetails: Array<Automaton | string | linearGrammar> = [];
     /** If true, only one answer will be selectable (radio buttons will be shown) */
     singleChoice: boolean = false;
 
@@ -742,6 +855,11 @@ class MCQQuestion extends Question {
      * The ID corresponding to a checkbox will be in their ```value``` attribute. 
      */
     choicesCheckboxes: Array<HTMLInputElement> = [];
+
+    constructor(qSubtype?: QuestionSubType) {
+        super((qSubtype === undefined) ? QuestionSubType.MCQ : qSubtype);
+        this.category = QuestionCategory.MCQ;
+    }
 
     /**
      * Sets the choices presented for this question.
@@ -758,89 +876,36 @@ class MCQQuestion extends Question {
         correct?: boolean
     }>,
         singleChoice: boolean = this.singleChoice) {
+        this.wordingChoices = [];
+        this.correctChoices = [];
         for (let wc of wordingChoices) {
-            let id = (wc.id === undefined ? String(this.wordingChoices.length) : wc.id);
-            this.wordingChoices.push({
-                id: id,
-                text: wc.text,
-                html: wc.html,
-                automaton: wc.automaton,
-                regex: wc.regex,
-                grammar: wc.grammar
-            });
-
-            if (wc.correct) {
-                this.correctChoices.push(id);
-            }
+            this.addWordingChoice(wc);
         }
 
         this.singleChoice = singleChoice;
     }
 
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        if (this.wordingDetails.length === 0) {
-            return;
-        }
+    addWordingChoice(wordingChoice: {
+        id?: string,
+        text?: string,
+        html?: string,
+        automaton?: Automaton,
+        regex?: string,
+        grammar?: linearGrammar,
+        correct?: boolean
+    }) {
+        let id = (wordingChoice.id === undefined ? String(this.wordingChoices.length) : wordingChoice.id);
+        this.wordingChoices.push({
+            id: id,
+            text: wordingChoice.text,
+            html: wordingChoice.html,
+            automaton: wordingChoice.automaton,
+            regex: wordingChoice.regex,
+            grammar: wordingChoice.grammar
+        });
 
-        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
-            if (wd instanceof Automaton) {
-                let refs = {
-                    divDesigner: <HTMLElement>null,
-                    divInfo: <HTMLElement>null
-                };
-
-                element.appendChild(
-                    libD.jso2dom(
-                        [
-                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
-                            ["br"],
-                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
-                        ],
-                        refs
-                    )
-                );
-
-                let designer = new AudeDesigner(refs.divDesigner, true);
-                designer.setAutomatonCode(automaton_code(wd));
-                designer.autoCenterZoom();
-
-                window.AudeGUI.Quiz.textFormat(
-                    FormatUtils.set2Latex(wd.getAlphabet()),
-                    refs.divInfo
-                );
-            } else if (typeof wd === "string") {
-                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
-            } else if (wd instanceof linearGrammar) {
-                let wdGramDesigner = new GrammarDesigner(element, false);
-                wdGramDesigner.setGrammar(wd);
-            } else {
-                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
-            }
-        }
-
-        if (this.wordingDetails.length === 2) {
-            let refs = {
-                wdLeft: <HTMLElement>undefined,
-                wdRight: <HTMLElement>undefined
-            };
-            wordingDetailsDiv.appendChild(libD.jso2dom(
-                ["div#question-automaton-designer",
-                    [
-                        ["div#question-wording-details-left", { "#": "wdLeft" }],
-                        ["div#question-wording-details-right", { "#": "wdRight" }]
-                    ]
-                ],
-                refs
-            ));
-
-            for (let i = 0; i < 2; i++) {
-                let wd = this.wordingDetails[i];
-                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
-
-                showDetailObject(wd, element);
-            }
-        } else if (this.wordingDetails.length === 1) {
-            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
+        if (wordingChoice.correct) {
+            this.correctChoices.push(id);
         }
     }
 
@@ -963,11 +1028,11 @@ class MCQQuestion extends Question {
         throw new Error("Method not implemented.");
     }
 
-    toJSON(): any {
+    specificToJSON(obj: any): void {
 
     }
 
-    fromJSON(qObj: any): boolean {
+    specificFromJSON(qObj: any): boolean {
         // Load instructions.
         if (qObj.instruction) {
             this.wordingText = qObj.instruction;
@@ -979,6 +1044,10 @@ class MCQQuestion extends Question {
 
         if (qObj.automatonQuestion) {
             this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
+        }
+
+        if (qObj.singleChoice) {
+            this.singleChoice = qObj.singleChoice;
         }
 
         if (qObj.answers) {
@@ -1001,7 +1070,11 @@ class MCQQuestion extends Question {
                 }
 
                 if (pObj.automaton) {
-                    newPoss.automaton = window.svg2automaton(pObj.automaton);
+                    if (typeof pObj.automaton === "string") {
+                        newPoss.automaton = window.svg2automaton(pObj.automaton);
+                    } else {
+                        newPoss.automaton = window.automatonFromObj(pObj.automaton);
+                    }
                 }
 
                 if (pObj.regex) {
@@ -1026,9 +1099,6 @@ class MCQQuestion extends Question {
  * an answer.
  */
 class TextInputQuestion extends Question {
-    /** Figures to be displayed in the wording. */
-    wordingDetails: Array<Automaton | string | linearGrammar> = [];
-
     /** Array of correct answers, if the default answer checking is used. */
     correctAnswers: Array<string> = [];
     /** 
@@ -1038,6 +1108,18 @@ class TextInputQuestion extends Question {
      */
 
     usersAnswer: string;
+
+    /**
+     * The AudeScript code for the current validator.
+     * Used for custom questions.
+     */
+    answerValidatorAS: string;
+    /**
+     * The current answer validator.
+     * By default, it just checks whether the answer 
+     * is in the correctAnswers array.
+     * @see TextInputQuestion#correctAnswers
+     */
     answerValidator: (q: TextInputQuestion) => { correct: boolean, details: string } =
         (q) => {
             if (!q.correctAnswers.includes(q.usersAnswer)) {
@@ -1256,72 +1338,9 @@ class TextInputQuestion extends Question {
     inputPlaceholder: string = this._("Input your answer here");
     inputField: HTMLInputElement;
 
-
-    displayWordingDetails(wordingDetailsDiv: HTMLElement): void {
-        if (this.wordingDetails.length === 0) {
-            return;
-        }
-
-        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
-            if (wd instanceof Automaton) {
-                let refs = {
-                    divDesigner: <HTMLElement>null,
-                    divInfo: <HTMLElement>null
-                };
-
-                element.appendChild(
-                    libD.jso2dom(
-                        [
-                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
-                            ["br"],
-                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
-                        ],
-                        refs
-                    )
-                );
-
-                let designer = new AudeDesigner(refs.divDesigner, true);
-                designer.setAutomatonCode(automaton_code(wd));
-                designer.autoCenterZoom();
-
-                window.AudeGUI.Quiz.textFormat(
-                    FormatUtils.set2Latex(wd.getAlphabet()),
-                    refs.divInfo
-                );
-            } else if (typeof wd === "string") {
-                FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
-            } else if (wd instanceof linearGrammar) {
-                let wdGramDesigner = new GrammarDesigner(element, false);
-                wdGramDesigner.setGrammar(wd);
-            } else {
-                window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
-            }
-        }
-
-        if (this.wordingDetails.length === 2) {
-            let refs = {
-                wdLeft: <HTMLElement>undefined,
-                wdRight: <HTMLElement>undefined
-            };
-            wordingDetailsDiv.appendChild(libD.jso2dom(
-                ["div#question-automaton-designer",
-                    [
-                        ["div#question-wording-details-left", { "#": "wdLeft" }],
-                        ["div#question-wording-details-right", { "#": "wdRight" }]
-                    ]
-                ],
-                refs
-            ));
-
-            for (let i = 0; i < 2; i++) {
-                let wd = this.wordingDetails[i];
-                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
-
-                showDetailObject(wd, element);
-            }
-        } else if (this.wordingDetails.length === 1) {
-            showDetailObject(this.wordingDetails[0], wordingDetailsDiv, true);
-        }
+    constructor(qSubtype?: QuestionSubType) {
+        super((qSubtype === undefined) ? QuestionSubType.CustomTextInput : qSubtype);
+        this.category = QuestionCategory.TextInput;
     }
 
     displayAnswerInputs(answerInputDiv: HTMLElement): void {
@@ -1352,18 +1371,102 @@ class TextInputQuestion extends Question {
         if (this.usersAnswer === undefined) {
             return { correct: false, details: this._("No answer was given.") }
         }
-        return this.answerValidator(this);
+        let validatorReturn = this.answerValidator(this);
+        // We check the integrity of the validator's return value.
+        if (!validatorReturn || validatorReturn.correct === undefined) {
+            window.AudeGUI.notify(
+                this._("Quiz Format Error"),
+                this._("This question's validator didn't return a correct value !"),
+                "error",
+                4000
+            );
+            return { correct: false, details: this._("This question's validator doesn't give a correct value !") }
+        }
+        return validatorReturn;
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
         throw new Error("Method not implemented.");
     }
 
-    toJSON(): any {
+    specificToJSON(obj: any): void {
 
     }
 
-    fromJSON(qObj: any): boolean {
+    specificFromJSON(qObj: any): boolean {
+        // Load instructions.
+        if (qObj.instruction) {
+            this.wordingText = qObj.instruction;
+            this.isWordingHtml = false;
+        } else if (qObj.instructionHTML) {
+            this.wordingText = qObj.instructionHTML;
+            this.isWordingHtml = true;
+        }
+
+        // Load wording details.
+        // Takes {aType, content} object for detail and returns converted object of it.
+        function getDetailFromObj(obj: any) {
+            let newDetail: (Automaton | string | linearGrammar);
+
+            if (!obj.aType) {
+                return undefined;
+            }
+
+            let detType = AutomatonDataType[obj.aType as string];
+            if (detType === undefined) {
+                return undefined;
+            }
+            switch (detType) {
+                case AutomatonDataType.Automaton:
+                    if (typeof obj.content === "string") {
+                        newDetail = window.svg2automaton(obj.content);
+                    } else {
+                        newDetail = window.automatonFromObj(obj.content);
+                    }
+                    break;
+
+                case AutomatonDataType.Regexp:
+                    newDetail = obj.content as string;
+                    break;
+
+                case AutomatonDataType.LinearGrammar:
+                    newDetail = string2LinearGrammar(obj.content);
+                    break;
+            }
+
+            return newDetail;
+        }
+
+        if (qObj.wordingDetails) {
+            // There are two details.
+            if (qObj.wordingDetails instanceof Array) {
+                for (let det of qObj.wordingDetails) {
+                    let newDetail = getDetailFromObj(det);
+                    if (newDetail === undefined) {
+                        return false;
+                    }
+
+                    if (this.wordingDetails.length < 2) {
+                        this.wordingDetails.push(newDetail);
+                    }
+                }
+            } else {
+                let newDetail = getDetailFromObj(qObj.wordingDetails);
+                if (newDetail === undefined) {
+                    return false;
+                }
+
+                this.wordingDetails.push(newDetail);
+            }
+        }
+
+        if (qObj.audescriptValidator) {
+            this.answerValidator = eval("(q) => { " + audescript.toJS(qObj.audescriptValidator).code + " } ");
+            this.answerValidatorAS = qObj.audescriptValidator;
+        } else if (qObj.correctAnswers && qObj.correctAnswers instanceof Array) {
+            this.correctAnswers = qObj.correctAnswers.slice();
+        }
+
         return true;
     }
 }

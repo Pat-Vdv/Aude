@@ -1,230 +1,246 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1" />
-        <title>Aude</title>
-<!--         <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" /> -->
-        <link rel="stylesheet" href="style/gui.css" />
-        <link rel="stylesheet" href="js/lib/katex/katex.min.css" />
 
-        <script>
-            var libD = {path: 'js/lib/libD/1.1/'};
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1" />
+    <title>Aude</title>
+    <!--         <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css" /> -->
+    <link rel="stylesheet" href="style/bootstrap.min.css">
+    <link rel="stylesheet" href="style/gui.css" />
+    <link rel="stylesheet" href="js/lib/katex/katex.min.css" />
 
-            window.require = function (m) {
-                if (m === "audescript-runtime") {
-                    return audescript;
-                }
+    <script>
+        var libD = { path: 'js/lib/libD/1.1/' };
 
-                if (m === "source-map") {
-                    return sourceMap;
-                }
-
-                throw new Error("this require is dummy and is only for requiring audescript");
+        window.require = function (m) {
+            if (m === "audescript-runtime") {
+                return audescript;
             }
 
-            if (!SVGElement.prototype.getElementsByClassName) {
-                SVGElement.prototype.getElementsByClassName = function(className) {
-                    return this.querySelectorAll('.' + className);
-                };
+            if (m === "source-map") {
+                return sourceMap;
             }
-        </script>
 
-        <script src="js/lib/source-map.min.js"></script>
-        <script src="js/lib/libD/1.1/core.js"></script>
-        <script src="js/lib/libD/1.1/set.js"></script>
-        <script src="js/lib/hammer.min.js"></script>
-        <script src="js/mousewheel.js"></script>
-        <script src="js/getFile.js"></script>
-        <script src="js/audescript/audescript.js"></script>
-        <script src="js/aude.js"></script>
-        <script src="js/audescript/runtime.js"></script>
-        <script src="js/automaton.js"></script>
-        <script src="js/mealy.js"></script>
-        <script src="js/moore.js"></script>
-        <script src="js/pushdownAutomaton.js"></script>
-        <script src="build/turingMachine.js"></script>
-        <script src="js/regularGrammar.js"></script>
-        <script src="js/automaton2dot.js"></script>
-        <script src="js/lib/requestAnimationFrame.js"></script>
-        <script src="js/lib/katex/katex.min.js"></script>
-        <script src="js/lib/katex/contrib/auto-render.min.js"></script>
-        <script src="js/designer.js"></script>
-        <script src="build/gui/formatUtils.js"></script>
-        <script src="build/gui/grammar-designer.js"></script>
-        <script src="js/gui/gui.js"></script>
-        <script src="js/gui/gui-algo-list.js"></script>
-        <script src="js/gui/gui-automata-list.js"></script>
-        <script src="js/gui/gui-display.js"></script>
-        <script src="js/gui/gui-editors.js"></script>
-        <script src="js/gui/gui-events.js"></script>
-        <script src="js/gui/gui-help.js"></script>
-        <script src="build/automatonPrograms.js"></script>
-        <script src="build/questions.js"></script>
-        <script src="build/question-generation.js"></script>
-        <script src="build/gui/gui-question.js"></script>
-        <script src="js/gui/gui-quiz-editor.js"></script>
-        <script src="build/gui/gui-quiz.js"></script>
-        <script src="js/gui/gui-results.js"></script>
-        <script src="js/gui/gui-run.js"></script>
-        <script src="js/gui/gui-word-execution.js"></script>
-        <script src="js/touch2click.js"></script>
-        <script src="js/lib/fileSaver.js"></script>
-        <script src="js/lib/ace-builds/src-noconflict/ace.js"></script>
-        <script src="js/lib/pathseg.js"></script>
+            throw new Error("this require is dummy and is only for requiring audescript");
+        }
 
-        <script>
+        if (!SVGElement.prototype.getElementsByClassName) {
+            SVGElement.prototype.getElementsByClassName = function (className) {
+                return this.querySelectorAll('.' + className);
+            };
+        }
+    </script>
+
+    <script src="js/lib/source-map.min.js"></script>
+    <script src="js/lib/libD/1.1/core.js"></script>
+    <script src="js/lib/libD/1.1/set.js"></script>
+    <script src="js/lib/hammer.min.js"></script>
+    <script src="build/mousewheel.js"></script>
+    <script src="js/getFile.js"></script>
+    <script src="js/audescript/audescript.js"></script>
+    <script src="js/aude.js"></script>
+    <script src="js/audescript/runtime.js"></script>
+    <script src="js/automaton.js"></script>
+    <script src="js/mealy.js"></script>
+    <script src="js/moore.js"></script>
+    <script src="js/pushdownAutomaton.js"></script>
+    <script src="build/turingMachine.js"></script>
+    <script src="js/regularGrammar.js"></script>
+    <script src="js/automaton2dot.js"></script>
+    <script src="js/lib/requestAnimationFrame.js"></script>
+    <script src="js/lib/katex/katex.min.js"></script>
+    <script src="js/lib/katex/contrib/auto-render.min.js"></script>
+    <script src="js/designer.js"></script>
+    <script src="build/gui/formatUtils.js"></script>
+    <script src="build/gui/grammar-designer.js"></script>
+    <script src="js/gui/gui.js"></script>
+    <script src="js/gui/gui-algo-list.js"></script>
+    <script src="js/gui/gui-automata-list.js"></script>
+    <script src="js/gui/gui-display.js"></script>
+    <script src="js/gui/gui-editors.js"></script>
+    <script src="js/gui/gui-events.js"></script>
+    <script src="js/gui/gui-help.js"></script>
+    <script src="build/automatonPrograms.js"></script>
+    <script src="build/questions.js"></script>
+    <script src="build/question-generation.js"></script>
+    <script src="build/gui/gui-question.js"></script>
+    <script src="build/gui/question-editor.js"></script>
+    <script src="build/gui/gui-quiz-editor.js"></script>
+    <script src="build/gui/gui-quiz.js"></script>
+    <script src="js/gui/gui-results.js"></script>
+    <script src="js/gui/gui-run.js"></script>
+    <script src="js/gui/gui-word-execution.js"></script>
+    <script src="js/touch2click.js"></script>
+    <script src="js/lib/fileSaver.js"></script>
+    <script src="js/lib/ace-builds/src-noconflict/ace.js"></script>
+    <script src="js/lib/pathseg.js"></script>
+
+    <script>
         /*<!--//*/
-            window.addEventListener('load', function() {
-                setTimeout(
-                    function () {
-                        libD.jsLoad("js/lib/viz/viz.js", null, '', false, false);
-                        libD.jsLoad("js/lib/viz/lite.render.js", null, '', false, false);
-                    },
-                    0
-                );
-            }, false);
+        window.addEventListener('load', function () {
+            setTimeout(
+                function () {
+                    libD.jsLoad("js/lib/viz/viz.js", null, '', false, false);
+                    libD.jsLoad("js/lib/viz/lite.render.js", null, '', false, false);
+                },
+                0
+            );
+        }, false);
         /* --> //*/
-        </script>
-    </head>
-    <body>
-        <div id="toolbar" class="designmode">
-            <span class="left">
+    </script>
+</head>
+
+<body>
+    <div id="toolbar" class="designmode">
+        <span class="left">
+            <span>
+                <span class="text" data-translated-content="true">Mode:</span>
+                <select id="switchmode">
+                    <option value="design" data-translated-content="true">Design</option>
+                    <option value="program" data-translated-content="true">Program</option>
+                    <option value="automatoncode" data-translated-content="true">Code</option>
+                </select>
+            </span>
+            <span class="sep"></span>
+            <label for="n_automaton">
+                <span data-translated-content="true" class="text">Automaton</span>
+                <span class="text algomode-specific">&nbsp;</span>
+            </label>
+            <span>
+                <select id="n-automaton"></select>
+                <button class="designmode-specific" id="automaton_plus" title="Create a new automaton"
+                    data-translated-title="true"> <span class="symb">+</span> </button>
+                <button class="designmode-specific" id="automaton_minus" title="Remove current automaton"
+                    data-translated-title="true"> <span class="symb">-</span> </button>
+            </span>
+            <span class="designmode-specific">
+                <span class="sep"></span>
+                <button id="redraw" data-translated-content="true">Redraw</button>
+            </span>
+            <span class="designmode-specific">
+                <button class="designmode-specific" id="zoom_best" title="Zoom and center automatically"
+                    data-translated-title="true"><span class="symb">⇱</span></button>
+            </span>
+            <span class="designmode-specific">
+                <span class="sep"></span>
+                <button id="undo" data-translated-title="true" title="Undo"> <span class="symb">⟲</span> </button>
+                <button id="redo" data-translated-title="true" title="Redo"> <span class="symb">⟳</span> </button>
+            </span>
+            <span>
+                <span class="sep"></span>
                 <span>
-                    <span class="text" data-translated-content="true">Mode:</span>
-                    <select id="switchmode">
-                        <option value="design" data-translated-content="true">Design</option>
-                        <option value="program" data-translated-content="true">Program</option>
-                        <option value="automatoncode" data-translated-content="true">Code</option>
-                    </select>
+                    <button id="predef-algos" class="designmode-specific">
+                        <span id="predef-algos-name" data-translated-content="true">Select an algo</span>
+                        <span id="arrow-select-algo">▾</span>
+                    </button>
+                    <button id="algorun" class="designmode-specific" title="Run"
+                        data-translated-title="true"><span>⚙</span></button>
+                    <button id="algo-exec" data-translated-content="true">Execute Program</button>
+                </span>
+            </span>
+            <span class="designmode-specific">
+                <span class="sep"></span>
+                <button id="execute" data-translated-content="true">Run a word</button>
+            </span>
+        </span>
+        <span class="right">
+            <span>
+                <span>
+                    <button id="help" data-translated-content="true">Help</button>
                 </span>
                 <span class="sep"></span>
-                <label for="n_automaton">
-                    <span data-translated-content="true" class="text">Automaton</span>
-                    <span class="text algomode-specific">&nbsp;</span>
-                </label>
-                <span>
-                    <select id="n-automaton"></select>
-                    <button class="designmode-specific" id="automaton_plus" title="Create a new automaton" data-translated-title="true"> <span class="symb">+</span> </button>
-                    <button class="designmode-specific" id="automaton_minus" title="Remove current automaton" data-translated-title="true"> <span class="symb">-</span> </button>
-                </span>
-                <span class="designmode-specific">
-                    <span class="sep"></span>
-                    <button id="redraw" data-translated-content="true">Redraw</button>
-                </span>
-                <span class="designmode-specific">
-                    <button class="designmode-specific" id="zoom_best" title="Zoom and center automatically" data-translated-title="true"><span class="symb">⇱</span></button>
-                </span>
-                <span class="designmode-specific">
-                    <span class="sep"></span>
-                    <button id="undo" data-translated-title="true" title="Undo"> <span class="symb">⟲</span> </button>
-                    <button id="redo" data-translated-title="true" title="Redo"> <span class="symb">⟳</span> </button>
-                </span>
-                <span>
-                    <span class="sep"></span>
-                    <span>
-                        <button id="predef-algos" class="designmode-specific">
-                            <span id="predef-algos-name" data-translated-content="true">Select an algo</span>
-                            <span id="arrow-select-algo">▾</span>
-                         </button>
-                        <button id="algorun" class="designmode-specific" title="Run" data-translated-title="true"><span>⚙</span></button>
-                        <button id="algo-exec" data-translated-content="true">Execute Program</button>
-                    </span>
-                </span>
-                <span class="designmode-specific">
-                    <span class="sep"></span>
-                    <button id="execute" data-translated-content="true">Run a word</button>
-                </span>
             </span>
-            <span class="right">
-                <span>
-                    <span>
-                        <button id="help" data-translated-content="true">Help</button>
-                    </span>
-                    <span class="sep"></span>
-                </span>
-                <span>
-                    <button id="hamburger" data-translated-title="true" title="Menu"><span class="symb">☰</span></button>
-                </span>
+            <span>
+                <button id="hamburger" data-translated-title="true" title="Menu"><span class="symb">☰</span></button>
             </span>
+        </span>
+    </div>
+    <section id="container-algos" style="display:none">
+        <div id="container-algos-search-div">
+            <p><input type="text" id="container-algos-search" data-translated-title="true"
+                    placeholder="Search…" /><button id="container-algos-search-clear">×</button></p>
         </div>
-        <section id="container-algos" style="display:none">
-            <div id="container-algos-search-div">
-                <p><input type="text" id="container-algos-search" data-translated-title="true" placeholder="Search…" /><button id="container-algos-search-clear">×</button></p>
-            </div>
-            <div id="container-algos-content">
-                <div id="container-algo-gammar-re">
-                    <div id="container-algo-re">
-                        <h1 data-translated-content="true">Regular expression</h1>
-                    </div>
-                    <div id="container-algo-gammar">
-                        <h1 data-translated-content="true">Grammar</h1>
-                    </div>
+        <div id="container-algos-content">
+            <div id="container-algo-gammar-re">
+                <div id="container-algo-re">
+                    <h1 data-translated-content="true">Regular expression</h1>
                 </div>
-                <div id="sup-container-algo-automata">
-                    <h1 data-translated-content="true">Automata</h1>
-                    <div id="container-algo-automata">
-                        <div id="container-algo-automata-left"></div>
-                        <div id="container-algo-automata-right"></div>
-                    </div>
-                </div>
-                <div id="container-algo-other">
-                    <h1 data-translated-content="true">Other</h1>
+                <div id="container-algo-gammar">
+                    <h1 data-translated-content="true">Grammar</h1>
                 </div>
             </div>
-        </section>
-
-        <div id="menu" class="disabled">
-            <input type="file" id="fileautomaton" style="display:none" />
-            <input type="file" id="fileprogram" style="display:none" />
-            <input type="file" id="filequiz" style="display:none" />
-            <span>
-                <button id="open"><img src="icons/breeze/16x16/actions/document-open.svg" alt="" /><span data-translated-content="true">Open</span></button>
-                <button id="save"><img src="icons/breeze/16x16/actions/document-save.svg" alt="" /><span data-translated-content="true">Save</span></button>
-                <button id="saveas"><img src="icons/breeze/16x16/actions/document-save-as.svg" alt="" /><span data-translated-content="true">Save As</span></button>
-            </span>
-
-            <button id="automata-list" class="designmode-specific" title="Choose and order the parameter automata" data-translated-title="true"><img alt="#" src="icons/breeze/16x16/actions/format-list-ordered.svg" /><span data-translated-content="true">Order the parameter automata</span></button>
-
-            <span>
-                <button id="quiz" data-translated-content="true" >Load a Quiz</button>
-                <button id="quizEditor" data-translated-content="true" >Edit or Create  a Quiz</button>
-            </span>
-
-            <span>
-                <button id="exercice"><span data-translated-content="true">Training exercises</span> <span style="color:red"> (experimental) </span></button>
-            </span>
-
+            <div id="sup-container-algo-automata">
+                <h1 data-translated-content="true">Automata</h1>
+                <div id="container-algo-automata">
+                    <div id="container-algo-automata-left"></div>
+                    <div id="container-algo-automata-right"></div>
+                </div>
+            </div>
+            <div id="container-algo-other">
+                <h1 data-translated-content="true">Other</h1>
+            </div>
         </div>
-        <div id="content">
-            <div id="automataedit" class="pane">
-                <div id="left-pane">
-                    <div id="automata-container">
+    </section>
+
+    <div id="menu" class="disabled">
+        <input type="file" id="fileautomaton" style="display:none" />
+        <input type="file" id="fileprogram" style="display:none" />
+        <input type="file" id="filequiz" style="display:none" />
+        <span>
+            <button id="open"><img src="icons/breeze/16x16/actions/document-open.svg" alt="" /><span
+                    data-translated-content="true">Open</span></button>
+            <button id="save"><img src="icons/breeze/16x16/actions/document-save.svg" alt="" /><span
+                    data-translated-content="true">Save</span></button>
+            <button id="saveas"><img src="icons/breeze/16x16/actions/document-save-as.svg" alt="" /><span
+                    data-translated-content="true">Save As</span></button>
+        </span>
+
+        <button id="automata-list" class="designmode-specific" title="Choose and order the parameter automata"
+            data-translated-title="true"><img alt="#" src="icons/breeze/16x16/actions/format-list-ordered.svg" /><span
+                data-translated-content="true">Order the parameter automata</span></button>
+
+        <span>
+            <button id="quiz" data-translated-content="true">Load a Quiz</button>
+            <button id="quizEditor" data-translated-content="true">Edit or Create a Quiz</button>
+        </span>
+
+        <span>
+            <button id="exercice"><span data-translated-content="true">Training exercises</span> <span
+                    style="color:red"> (experimental) </span></button>
+        </span>
+
+    </div>
+    <div id="content">
+        <div id="automataedit" class="pane">
+            <div id="left-pane">
+                <div id="automata-container">
                     <div id="svg-container" class="pane"></div>
                     <div id="automatoncode" class="pane disabled">
                         <textarea id="automatoncodeedit"></textarea>
                     </div>
-                    </div>
-                    <div id="word"></div>
-                    <div id="div-quiz"></div>
                 </div>
-                <div id="splitter" class="disabled"></div>
-                <div id="results" class="disabled">
-                    <div id="results-tb">
-                        <button id="export-result"><span data-translated-content="true">Export result</span></button>
-                    </div>
-                    <div id="results-content"></div>
-                    <div id="results-console"></div>
-                </div>
-                <div id="automata-list-chooser" class="disabled">
-                    <p id="automata-list-chooser-intro"></p>
-                    <a href="#" data-translated-content="true" id="automata-list-chooser-close">Close</a>
-                    <ul id="automata-list-chooser-content"></ul>
-                    <button id="automata-list-chooser-btn" data-translated-content="true">Continue execution</button>
-                    <p></p>
-                </div>
+                <div id="word"></div>
+                <div id="div-quiz"></div>
             </div>
-            <div id="codeedit" class="pane disabled"></div>
+            <div id="splitter" class="disabled"></div>
+            <div id="results" class="disabled">
+                <div id="results-tb">
+                    <button id="export-result"><span data-translated-content="true">Export result</span></button>
+                </div>
+                <div id="results-content"></div>
+                <div id="results-console"></div>
+            </div>
+            <div id="automata-list-chooser" class="disabled">
+                <p id="automata-list-chooser-intro"></p>
+                <a href="#" data-translated-content="true" id="automata-list-chooser-close">Close</a>
+                <ul id="automata-list-chooser-content"></ul>
+                <button id="automata-list-chooser-btn" data-translated-content="true">Continue execution</button>
+                <p></p>
+            </div>
         </div>
-    </body>
+        <div id="codeedit" class="pane disabled"></div>
+    </div>
+</body>
+
 </html>

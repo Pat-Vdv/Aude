@@ -832,7 +832,7 @@ input[type=button]:active, button:active {
     padding: 1ex;
 }
 
-#quiz-editor-mcq-pane {
+#quiz-editor-QuestionEdit-pane {
     text-align: left;
 }
 
@@ -853,6 +853,13 @@ input[type=button]:active, button:active {
     margin-top: 0;
     padding-top: 0;
     position: relative;
+}
+
+#quiz-editor-NewQuestion-pane.quiz-editor-pane {
+    display: flex;
+    text-align: center;
+    align-content: center;
+    flex-direction: column;
 }
 
 .quiz-editor-pane {
@@ -1493,4 +1500,49 @@ fieldset {
 .katex .base {
 	margin-top: 2px;
 	margin-bottom: 2px;
+}
+
+/* Question editor components */
+#question-editor-wording-text {
+    display: flex;
+    width: 50%;
+    box-sizing: border-box;
+    float: left;
+}
+
+#question-editor-wording-text-preview {
+    width: 50%;
+    height: 5em;
+    border: 1px solid lightgray;
+    box-sizing: border-box;
+    float: left;
+}
+
+#question-editor-wording-figure1-content, #question-editor-wording-figure2-content {
+  width: 100%;
+  height: fit-content;
+}
+
+.question-editor-wording-figure-automaton {
+    position: relative;
+    flex: 1;
+    height: 15em;
+    width:100%;
+    display: inline-block;
+    border: 1px solid black;
+}
+
+.question-editor-mcq-automaton-preview {
+    position: relative;
+    height: 10em;
+    width: 100%;
+    display: inline-block;
+}
+
+.question-editor-hidden {
+    display: none;
+}
+
+#question-editor-textinput-validation-audescript {
+    resize: none;
 }
