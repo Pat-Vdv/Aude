@@ -343,7 +343,7 @@ class Quiz {
 
                     if (possibilities[j].automaton) {
                         automaton2svg(
-                            automatonFromObj(possibilities[j].automaton),
+                            possibilities[j].automaton,
                             function (res) {
                                 refs[i + "content"].innerHTML = res;
                             }
@@ -700,7 +700,7 @@ function showCorrection(quiz) {
 
                 if (possibilities[j].automaton) {
                     automaton2svg(
-                        automatonFromObj(possibilities[j].automaton),
+                        possibilities[j].automaton,
                         function (res) {
                             refs[i + "content"].innerHTML = res;
                         }

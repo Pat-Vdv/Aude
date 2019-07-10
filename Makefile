@@ -1,8 +1,8 @@
 DEST_EXAM?=../aude-exam
 
-all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js doc/index.html
+all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js doc/index.html buildTS
 
-.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod cleanTS
+.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod buildTS
 
 l10n:
 	cd l10n && make
@@ -55,7 +55,7 @@ zip: /tmp/aude.zip
 	rm -rf aude;
 
 clean:
-	rm -rf dirlist.txt
+	rm -rf dirlist.txt build/
 
 ${DEST_EXAM}:
 exam:
@@ -91,10 +91,5 @@ doc/index.html:
 count-lines:
 	echo "  lines\t size" && cat `find | grep -E '(\.html|\.js|\.ajs|\.css|Makefile|\.ts)$$' | grep -v ./js/lib/ | grep -v ./node_modules/ | grep -v ./doc/` | wc -l -c
 
-compileTS: build/turingMachine.js
-
-cleanTS: 
-	rm build/*.js
-
-build/turingMachine.js: js/turingMachine.ts
-	tsc --outFile build/turingMachine.js --target ES6 js/turingMachine.ts
+buildTS:
+	tsc -p tsconfig.json

@@ -1,6 +1,3 @@
-/// <reference path="./typings/libD.d.ts"/>
-/// <reference path="./typings/aude.d.ts"/>
-
 // "Enum" for tape movement symbols.
 enum TapeMovement {
     Left = "<",

@@ -226,8 +226,6 @@ abstract class Question {
             return;
         }
 
-
-
         let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
             if (wd instanceof Automaton) {
                 let refs = {
@@ -421,20 +419,24 @@ abstract class Question {
 
                 case AutomatonDataType.LinearGrammar: {
                     if (typeof detailObj.content === "string") {
-                       return string2LinearGrammar(detailObj.content);
+                        return string2LinearGrammar(detailObj.content);
                     }
                     break;
                 }
             }
         };
 
-        if (qObj.wordingDetails instanceof Array) {
-            for (let detailObj of qObj.wordingDetails) {
-                this.wordingDetails.push(getDetailFromObj(detailObj));
+        if (qObj.wordingDetails) {
+            if (qObj.wordingDetails instanceof Array) {
+                for (let detailObj of qObj.wordingDetails) {
+                    this.wordingDetails.push(getDetailFromObj(detailObj));
+                }
+            } else {
+                this.wordingDetails.push(getDetailFromObj(qObj.wordingDetails));
             }
-        } else {
-            this.wordingDetails.push(getDetailFromObj(qObj.wordingDetails));
         }
+
+
 
         // "Legacy" support for automaton wording detail.
         if (qObj.automatonQuestion) {
@@ -527,8 +529,6 @@ abstract class Question {
 /**
 * Enumeration of possible types of input/output formats for a "regular language specification".
 * That is, a structure that describes a regular language.
-* Used as a parameter for some question categories that allow
-* for multiple wording/answer types.
 */
 enum AutomatonDataType {
     Regexp,
@@ -577,7 +577,9 @@ class AutomatonEquivQuestion extends Question {
     usersAnswerRaw: Automaton | string | linearGrammar = undefined;
 
     /** Correct answer against which the user's answer will be checked. */
-    correctAnswerAutomaton: Automaton;
+    correctAnswerAutomaton: Automaton = undefined;
+    correctAnswerRegexp: string = undefined;
+    correctAnswerGrammar: linearGrammar = undefined;
 
     // Constraint functions to add additional constraints to user's answer
     // (minimal, complete, grammar is left linear, ...)
@@ -702,26 +704,39 @@ class AutomatonEquivQuestion extends Question {
             }
         }
 
+        switch (this.usersAnswerType) {
+            case AutomatonDataType.Automaton: {
+                if (this.usersAnswerRaw instanceof Automaton) {
+                    for (let checkFun of this.automatonAnswerConstraints) {
+                        let checkResult = checkFun(this.usersAnswerRaw, this);
+                        if (!checkResult.correct) {
+                            return checkResult;
+                        }
+                    }
+                }
+                break;
+            }
 
-        if (this.usersAnswerRaw instanceof Automaton) {
-            for (let checkFun of this.automatonAnswerConstraints) {
-                let checkResult = checkFun(this.usersAnswerRaw, this);
-                if (!checkResult.correct) {
-                    return checkResult;
+            case AutomatonDataType.Regexp: {
+                if (typeof this.usersAnswerRaw === "string") {
+                    for (let checkFun of this.regexpAnswerConstraints) {
+                        let checkResult = checkFun(this.usersAnswerRaw, this);
+                        if (!checkResult.correct) {
+                            return checkResult;
+                        }
+                    }
                 }
+                break;
             }
-        } else if (typeof this.usersAnswerRaw === "string") {
-            for (let checkFun of this.regexpAnswerConstraints) {
-                let checkResult = checkFun(this.usersAnswerRaw, this);
-                if (!checkResult.correct) {
-                    return checkResult;
-                }
-            }
-        } else if (this.usersAnswerRaw instanceof linearGrammar) {
-            for (let checkFun of this.grammarAnswerConstraints) {
-                let checkResult = checkFun(this.usersAnswerRaw, this);
-                if (!checkResult.correct) {
-                    return checkResult;
+
+            case AutomatonDataType.LinearGrammar: {
+                if (this.usersAnswerRaw instanceof linearGrammar) {
+                    for (let checkFun of this.grammarAnswerConstraints) {
+                        let checkResult = checkFun(this.usersAnswerRaw, this);
+                        if (!checkResult.correct) {
+                            return checkResult;
+                        }
+                    }
                 }
             }
         }
@@ -734,87 +749,99 @@ class AutomatonEquivQuestion extends Question {
     }
 
     specificToJSON(obj: any): void {
+        obj.usersAnswerType = AutomatonDataType[this.usersAnswerType];
 
-        // We set the question type.
-        switch (this.usersAnswerType) {
-            case AutomatonDataType.Automaton:
-                obj.type = "automatonEquiv";
-                break;
-            case AutomatonDataType.Regexp:
-                obj.type = "regexEquiv";
-                break;
-            case AutomatonDataType.LinearGrammar:
-                obj.type = "grammarEquiv";
-                break;
+        if (this.correctAnswerGrammar !== undefined) {
+            obj.correctAnswerGrammar = this.correctAnswerGrammar.toString();
+        } else if (this.correctAnswerRegexp !== undefined) {
+            obj.correctAnswerRegexp = this.correctAnswerRegexp;
+        } else if (this.correctAnswerAutomaton !== undefined) {
+            automaton2svg(this.correctAnswerAutomaton, (svg) => { obj.automatonAnswer = svg; });
         }
 
-        obj.instruction = this.wordingText;
+        if (this.automatonAnswerConstraintsAudescript.length !== 0) {
+            obj.automatonAnswerConstraintsAudescript = this.automatonAnswerConstraintsAudescript.slice();
+        }
 
-        // New format, with array for wording details.
-        if (obj.wordingDetails) {
+        if (this.regexpAnswerConstraintsAudescript.length !== 0) {
+            obj.regexpAnswerConstraintsAudescript = this.regexpAnswerConstraintsAudescript.slice();
+        }
 
+        if (this.grammarAnswerConstraintsAudescript.length !== 0) {
+            obj.grammarAnswerConstraintsAudescript = this.grammarAnswerConstraintsAudescript.slice();
         }
     }
 
     specificFromJSON(qObj: any): boolean {
         // usersAnswerType
+        if (qObj.usersAnswerType) {
+            this.usersAnswerType = AutomatonDataType[qObj.usersAnswerType as string];
+        } else {
+            // LEGACY Set user's answer type according to type.
+            switch (qObj.type) {
+                case "automatonEquiv":
+                    this.usersAnswerType = AutomatonDataType.Automaton;
+                    break;
 
-        // LEGACY Set user's answer type according to type.
-        switch (qObj.type) {
-            case "automatonEquiv":
-                this.usersAnswerType = AutomatonDataType.Automaton;
-                break;
+                case "regexEquiv":
+                    this.usersAnswerType = AutomatonDataType.Regexp;
+                    break;
 
-            case "regexEquiv":
-                this.usersAnswerType = AutomatonDataType.Regexp;
-                break;
-
-            case "grammarEquiv":
-                this.usersAnswerType = AutomatonDataType.LinearGrammar;
-                break;
+                case "grammarEquiv":
+                    this.usersAnswerType = AutomatonDataType.LinearGrammar;
+                    break;
+            }
         }
-       
+
+        // LEGACY Automaton answer
         if (qObj.automatonAnswer) {
             if (typeof qObj.automatonAnswer === "string") {
                 this.correctAnswerAutomaton = window.svg2automaton(qObj.automatonAnswer);
             } else {
                 this.correctAnswerAutomaton = window.automatonFromObj(qObj.automatonAnswer);
             }
-        } else if (qObj.regex) {
-            this.correctAnswerAutomaton = AutomatonPrograms.regexToAutomaton(qObj.regex);
-        } else if (qObj.grammar) {
-            this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(<linearGrammar>qObj.grammar);
+        } else if (qObj.correctAnswerAutomaton) {
+            if (typeof qObj.correctAnswerAutomaton === "string") {
+                this.correctAnswerAutomaton = window.svg2automaton(qObj.correctAnswerAutomaton);
+            } else {
+                this.correctAnswerAutomaton = window.automatonFromObj(qObj.correctAnswerAutomaton);
+            }
+        } else if (qObj.correctAnswerRegexp) {
+            this.correctAnswerAutomaton = AutomatonPrograms.regexToAutomaton(qObj.correctAnswerRegexp);
+            this.correctAnswerRegexp = qObj.correctAnswerRegexp;
+        } else if (qObj.correctAnswerGrammar) {
+            this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(string2LinearGrammar(qObj.correctAnswerGrammar));
+            this.correctAnswerGrammar = string2LinearGrammar(qObj.correctAnswerGrammar);
         }
 
         // Load audescript code.
-        if (qObj.automatonAnswerConstraintsAS && qObj.automatonAnswerConstraintsAS instanceof Array) {
-            console.log("blip");
-            for (let cnstr of qObj.automatonAnswerConstraintsAS) {
+        if (qObj.automatonAnswerConstraintsAudescript && qObj.automatonAnswerConstraintsAudescript instanceof Array) {
+            for (let cnstr of qObj.automatonAnswerConstraintsAudescript) {
                 this.automatonAnswerConstraints.push(
                     eval(
-                        "(a) => { " + audescript.toJS(cnstr).code + "}"
+                        "(a, q) => { " + audescript.toJS(cnstr).code + "}"
                     )
                 );
                 this.automatonAnswerConstraintsAudescript.push(cnstr);
             }
         }
 
-        if (qObj.regexpAnswerConstraintsAS && qObj.regexpAnswerConstraintsAS instanceof Array) {
-            for (let cnstr of qObj.regexpAnswerConstraintsAS) {
+        if (qObj.regexpAnswerConstraintsAudescript && qObj.regexpAnswerConstraintsAudescript instanceof Array) {
+            for (let cnstr of qObj.regexpAnswerConstraintsAudescript) {
                 this.regexpAnswerConstraints.push(
                     eval(
-                        "(re) => {" + audescript.toJS(cnstr).code + "}"
+                        "(re, q) => {" + audescript.toJS(cnstr).code + "}"
                     )
                 );
                 this.regexpAnswerConstraintsAudescript.push(cnstr);
             }
         }
 
-        if (qObj.grammarAnswerConstraintsAS && qObj.grammarAnswerConstraintsAS instanceof Array) {
-            for (let cnstr of qObj.grammarAnswerConstraintsAS) {
+        if (qObj.grammarAnswerConstraintsAudescript && qObj.grammarAnswerConstraintsAudescript instanceof Array) {
+            for (let cnstr of qObj.grammarAnswerConstraintsAudescript) {
                 this.grammarAnswerConstraints.push(
                     eval(
-                        "(g) => {" + audescript.toJS(cnstr).code + "}"
+                        "(g, q) => {" + audescript.toJS(cnstr).code + "}"
                     )
                 );
                 this.grammarAnswerConstraintsAudescript.push(cnstr);
@@ -1029,23 +1056,33 @@ class MCQQuestion extends Question {
     }
 
     specificToJSON(obj: any): void {
+        obj.possibilities = [];
+        for (let choice of this.wordingChoices) {
+            let objChoice: any = {};
+            objChoice.id = choice.id;
+            objChoice.text = choice.text;
+            objChoice.html = choice.html;
 
+            if (choice.automaton) {
+                automaton2svg(choice.automaton, (svg) => objChoice.automaton = svg);
+            }
+
+            if (choice.regex) {
+                objChoice.regex = choice.regex;
+            }
+
+            if (choice.grammar) {
+                objChoice.grammar = choice.grammar.toString();
+            }
+
+            obj.possibilities.push(objChoice);
+        }
+
+        obj.answers = this.correctChoices.slice();
+        obj.singleChoice = this.singleChoice;
     }
 
     specificFromJSON(qObj: any): boolean {
-        // Load instructions.
-        if (qObj.instruction) {
-            this.wordingText = qObj.instruction;
-            this.isWordingHtml = false;
-        } else if (qObj.instructionHTML) {
-            this.wordingText = qObj.instructionHTML;
-            this.isWordingHtml = true;
-        }
-
-        if (qObj.automatonQuestion) {
-            this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
-        }
-
         if (qObj.singleChoice) {
             this.singleChoice = qObj.singleChoice;
         }
@@ -1055,10 +1092,10 @@ class MCQQuestion extends Question {
         }
 
         if (qObj.possibilities) {
-            let i = 1;
+            let i = 0;
             for (let pObj of qObj.possibilities) {
                 let newPoss: any = {
-                    id: pObj.id || String(i),
+                    id: pObj.id || String.fromCharCode("a".charCodeAt(0) + i)
                 }
 
                 if (pObj.text) {
@@ -1082,7 +1119,7 @@ class MCQQuestion extends Question {
                 }
 
                 if (pObj.grammar) {
-                    newPoss.grammar = pObj.grammar;
+                    newPoss.grammar = string2LinearGrammar(pObj.grammar);
                 }
 
                 this.wordingChoices.push(newPoss);
@@ -1371,6 +1408,7 @@ class TextInputQuestion extends Question {
         if (this.usersAnswer === undefined) {
             return { correct: false, details: this._("No answer was given.") }
         }
+
         let validatorReturn = this.answerValidator(this);
         // We check the integrity of the validator's return value.
         if (!validatorReturn || validatorReturn.correct === undefined) {
@@ -1390,81 +1428,23 @@ class TextInputQuestion extends Question {
     }
 
     specificToJSON(obj: any): void {
-
+        obj.correctAnswers = this.correctAnswers.slice();
+        if (this.answerValidatorAS) {
+            obj.answerValidatorAS = this.answerValidatorAS;
+        }
+        obj.inputPlaceholder = this.inputPlaceholder;
     }
 
     specificFromJSON(qObj: any): boolean {
-        // Load instructions.
-        if (qObj.instruction) {
-            this.wordingText = qObj.instruction;
-            this.isWordingHtml = false;
-        } else if (qObj.instructionHTML) {
-            this.wordingText = qObj.instructionHTML;
-            this.isWordingHtml = true;
-        }
-
-        // Load wording details.
-        // Takes {aType, content} object for detail and returns converted object of it.
-        function getDetailFromObj(obj: any) {
-            let newDetail: (Automaton | string | linearGrammar);
-
-            if (!obj.aType) {
-                return undefined;
-            }
-
-            let detType = AutomatonDataType[obj.aType as string];
-            if (detType === undefined) {
-                return undefined;
-            }
-            switch (detType) {
-                case AutomatonDataType.Automaton:
-                    if (typeof obj.content === "string") {
-                        newDetail = window.svg2automaton(obj.content);
-                    } else {
-                        newDetail = window.automatonFromObj(obj.content);
-                    }
-                    break;
-
-                case AutomatonDataType.Regexp:
-                    newDetail = obj.content as string;
-                    break;
-
-                case AutomatonDataType.LinearGrammar:
-                    newDetail = string2LinearGrammar(obj.content);
-                    break;
-            }
-
-            return newDetail;
-        }
-
-        if (qObj.wordingDetails) {
-            // There are two details.
-            if (qObj.wordingDetails instanceof Array) {
-                for (let det of qObj.wordingDetails) {
-                    let newDetail = getDetailFromObj(det);
-                    if (newDetail === undefined) {
-                        return false;
-                    }
-
-                    if (this.wordingDetails.length < 2) {
-                        this.wordingDetails.push(newDetail);
-                    }
-                }
-            } else {
-                let newDetail = getDetailFromObj(qObj.wordingDetails);
-                if (newDetail === undefined) {
-                    return false;
-                }
-
-                this.wordingDetails.push(newDetail);
-            }
-        }
-
-        if (qObj.audescriptValidator) {
-            this.answerValidator = eval("(q) => { " + audescript.toJS(qObj.audescriptValidator).code + " } ");
-            this.answerValidatorAS = qObj.audescriptValidator;
+        if (qObj.answerValidatorAS) {
+            this.answerValidator = eval("(q) => { " + audescript.toJS(qObj.answerValidatorAS).code + " } ");
+            this.answerValidatorAS = qObj.answerValidatorAS;
         } else if (qObj.correctAnswers && qObj.correctAnswers instanceof Array) {
             this.correctAnswers = qObj.correctAnswers.slice();
+        }
+
+        if (qObj.inputPlaceholder) {
+            this.inputPlaceholder = qObj.inputPlaceholder;
         }
 
         return true;

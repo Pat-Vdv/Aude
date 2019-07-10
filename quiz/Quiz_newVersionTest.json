@@ -1,9 +1,10 @@
 {
-   "title": "Test des nouveaux quizs améliorés",
+   "title": "Test des nouveaux quiz améliorés",
    "author": "Fabien Portas",
    "date": "8 juillet 2019",
    "description": "Ce quiz sert à tester la nouvelle version améliorée du moteur de quiz.",
-   "questions": [{
+   "questions": [
+      {
          "type": "mcq",
          "instructionHTML": "Que vaut $\\emptyset^*$ ?",
          "possibilities": [{
@@ -28,7 +29,7 @@
       },
       {
          "type": "mcq",
-         "instructionsHTML": "Soit $\\Sigma = \\left\\lbracea, b, c\\right\\rbrace. <br>Lesquelles des figures suivantes décrivent le langage des mots contenant un nombre pair de $a$",
+         "instructionHTML": "Soit $\\Sigma = \\left\\lbrace a, b, c \\right\\rbrace$ . <br>Lesquelles des figures suivantes décrivent <b>entièrement</b> le langage des mots contenant un nombre pair de $a$",
          "possibilities": [{
             "id": "a",
             "automaton": {
@@ -45,6 +46,12 @@
             "id": "b",
             "html": "$L = \\left\\lbrace ((b + c)^* a (b + c)^*)^{2k}, k \\in \\mathbb{R} \\right\\rbrace$"
          }]
+      },
+      {  
+         "instructionHTML": "Donnez une expression régulière reconnaissant au moins le mot \"aude\"",
+         "type": "automatonEquiv",
+         "usersAnswerType": "Regexp",
+         "regexpAnswerConstraintsAudescript": ["let r := new Object(); let A := AutomatonPrograms.regexToAutomaton(re); if not A.acceptedWord(\"aude\") then r.correct := false; r.details := \"Ne reconnait pas le mot !\" return r; fi; r.correct := true; r.details := \"\"; return r; "]
       }
    ]
 }

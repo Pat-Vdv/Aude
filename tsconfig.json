@@ -16,12 +16,12 @@
 
   "include": [
     "./js/**.ts",
+    "./js/typings/**.d.ts",
     "./js/gui/**.ts"
   ],
 
+  // Don't build Audescript module with tsconfig yet, as it causes errors
   "exclude": [
     "./js/audescript/**.ts"
-  ],
-
-  "files": [ "./js/typings/linearGrammar.d.ts", "./js/typings/automaton.d.ts", "./js/typings/katex.d.ts", "./js/typings/fileSaver.d.ts"]
+  ]
 }
