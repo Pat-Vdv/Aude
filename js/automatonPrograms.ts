@@ -1,7 +1,7 @@
 
 var _ = window.AudeGUI.l10n;
 /**
- * This class holds all the Audescript programs 
+ * This "static" class holds all the Audescript programs 
  * that may be used throughout Aude. 
  * In order to use the programs, they must be loaded first
  * by calling AutomatonPrograms.loadPrograms.
@@ -116,44 +116,52 @@ class AutomatonPrograms {
             return;
         }
 
-        window.AudeGUI.Runtime.loadIncludes([
-            "completion", "equivalence", "product", "minimization",
-            "complementation", "distinguishability", "coreachability",
-            "reachability", "automaton2htmltable", "htmltable2automaton",
-            "createAutomaton", "smallerWord", "determinization",
-            "epsElimination", "regex2automaton", "automaton2regex",
-            "automaton2RightLinearGrammar", "linearGrammar2Automaton",
-            "leftLinear2RightLinearGrammar", "rightLinear2LeftLinearGrammar"
-        ], () => {
-            AutomatonPrograms.createAutomatonCoreachable = audescript.m("createAutomaton").createAutomatonCoreachable;
-            AutomatonPrograms.createAutomaton = audescript.m("createAutomaton").createAutomaton;
-            AutomatonPrograms.complete = audescript.m("completion").complete;
-            AutomatonPrograms.isCompleted = audescript.m("completion").isCompleted;
-            AutomatonPrograms.automataAreEquivalent = audescript.m("equivalence").automataAreEquivalent;
-            AutomatonPrograms.product = audescript.m("product").product;
-            AutomatonPrograms.minimize = audescript.m("minimization").minimize;
-            AutomatonPrograms.isMinimized = audescript.m("minimization").isMinimized;
-            AutomatonPrograms.complement = audescript.m("complementation").complement;
-            AutomatonPrograms.distinguableStates = audescript.m("distinguishability").distinguableStates;
-            AutomatonPrograms.notDistinguableStates = audescript.m("distinguishability").notDistinguableStates;
-            AutomatonPrograms.coreachableStates = audescript.m("coreachability").coreachableStates;
-            AutomatonPrograms.reachableStates = audescript.m("reachability").reachableStates;
-            AutomatonPrograms.automaton2HTMLTable = audescript.m("automaton2htmltable").automaton2HTMLTable;
-            AutomatonPrograms.createTable = audescript.m("htmltable2automaton").createTable;
-            AutomatonPrograms.HTMLTable2automaton = audescript.m("htmltable2automaton").HTMLTable2automaton;
-            AutomatonPrograms.determinize = audescript.m("determinization").determinize;
-            AutomatonPrograms.isDeterminized = audescript.m("determinization").isDeterminized;
-            AutomatonPrograms.smallerWord = audescript.m("smallerWord").smallerWord;
-            AutomatonPrograms.epsElim = audescript.m("epsElimination").epsElim;
-            AutomatonPrograms.hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions
-            AutomatonPrograms.regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
-            AutomatonPrograms.automatonToRegex = audescript.m("automaton2regex").automatonToRegex;
-            AutomatonPrograms.leftLinear2RightLinearGrammar = audescript.m("leftLinear2RightLinearGrammar").leftLinear2RightLinearGrammar;
-            AutomatonPrograms.rightLinear2LeftLinearGrammar = audescript.m("rightLinear2LeftLinearGrammar").rightLinear2LeftLinearGrammar;
-            AutomatonPrograms.linearGrammar2Automaton = audescript.m("linearGrammar2Automaton").linearGrammar2Automaton;
-            AutomatonPrograms.automaton2RightLinearGrammar = audescript.m("automaton2RightLinearGrammar").automaton2RightLinearGrammar;
-            AutomatonPrograms.isLeftLinear = audescript.m("leftLinear2RightLinearGrammar").isLeftLinear;
-            AutomatonPrograms.areProgramsLoaded = true;
-        });
+        try {
+            window.AudeGUI.Runtime.loadIncludes([
+                "completion", "equivalence", "product", "minimization",
+                "complementation", "distinguishability", "coreachability",
+                "reachability", "automaton2htmltable", "htmltable2automaton",
+                "createAutomaton", "smallerWord", "determinization",
+                "epsElimination", "regex2automaton", "automaton2regex",
+                "automaton2RightLinearGrammar", "linearGrammar2Automaton",
+                "leftLinear2RightLinearGrammar", "rightLinear2LeftLinearGrammar"
+            ], () => {
+                try {
+                    AutomatonPrograms.createAutomatonCoreachable = audescript.m("createAutomaton").createAutomatonCoreachable;
+                AutomatonPrograms.createAutomaton = audescript.m("createAutomaton").createAutomaton;
+                AutomatonPrograms.complete = audescript.m("completion").complete;
+                AutomatonPrograms.isCompleted = audescript.m("completion").isCompleted;
+                AutomatonPrograms.automataAreEquivalent = audescript.m("equivalence").automataAreEquivalent;
+                AutomatonPrograms.product = audescript.m("product").product;
+                AutomatonPrograms.minimize = audescript.m("minimization").minimize;
+                AutomatonPrograms.isMinimized = audescript.m("minimization").isMinimized;
+                AutomatonPrograms.complement = audescript.m("complementation").complement;
+                AutomatonPrograms.distinguableStates = audescript.m("distinguishability").distinguableStates;
+                AutomatonPrograms.notDistinguableStates = audescript.m("distinguishability").notDistinguableStates;
+                AutomatonPrograms.coreachableStates = audescript.m("coreachability").coreachableStates;
+                AutomatonPrograms.reachableStates = audescript.m("reachability").reachableStates;
+                AutomatonPrograms.automaton2HTMLTable = audescript.m("automaton2htmltable").automaton2HTMLTable;
+                AutomatonPrograms.createTable = audescript.m("htmltable2automaton").createTable;
+                AutomatonPrograms.HTMLTable2automaton = audescript.m("htmltable2automaton").HTMLTable2automaton;
+                AutomatonPrograms.determinize = audescript.m("determinization").determinize;
+                AutomatonPrograms.isDeterminized = audescript.m("determinization").isDeterminized;
+                AutomatonPrograms.smallerWord = audescript.m("smallerWord").smallerWord;
+                AutomatonPrograms.epsElim = audescript.m("epsElimination").epsElim;
+                AutomatonPrograms.hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions
+                AutomatonPrograms.regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
+                AutomatonPrograms.automatonToRegex = audescript.m("automaton2regex").automatonToRegex;
+                AutomatonPrograms.leftLinear2RightLinearGrammar = audescript.m("leftLinear2RightLinearGrammar").leftLinear2RightLinearGrammar;
+                AutomatonPrograms.rightLinear2LeftLinearGrammar = audescript.m("rightLinear2LeftLinearGrammar").rightLinear2LeftLinearGrammar;
+                AutomatonPrograms.linearGrammar2Automaton = audescript.m("linearGrammar2Automaton").linearGrammar2Automaton;
+                AutomatonPrograms.automaton2RightLinearGrammar = audescript.m("automaton2RightLinearGrammar").automaton2RightLinearGrammar;
+                AutomatonPrograms.isLeftLinear = audescript.m("leftLinear2RightLinearGrammar").isLeftLinear;
+                AutomatonPrograms.areProgramsLoaded = true;
+                } catch (e) {
+                    AudeGUI.notify(AudeGUI.l10n("Error loading programs"), AudeGUI.l10n("The default audescript files couldn't be loaded. Your browser prevents getting local files. Many features will not work properly !"), "error");
+                }
+            });
+        } catch (e) {
+            AudeGUI.notify(AudeGUI.l10n("Error loading programs"), AudeGUI.l10n("The default audescript files couldn't be loaded. Your browser prevents getting local files. Many features will not work properly !"), "error");
+        }
     }
 }

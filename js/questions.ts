@@ -748,6 +748,18 @@ class AutomatonEquivQuestion extends Question {
         throw new Error("Method not implemented.");
     }
 
+    setReferenceAnswer(answer: Automaton | string | linearGrammar) {
+        if (answer instanceof Automaton) {
+            this.correctAnswerAutomaton = answer.copy();
+        } else if (answer instanceof linearGrammar) {
+            this.correctAnswerGrammar = answer;
+            this.correctAnswerAutomaton = AutomatonPrograms.linearGrammar2Automaton(this.correctAnswerGrammar);
+        } else if (typeof answer === "string") {
+            this.correctAnswerRegexp = answer;
+            this.correctAnswerAutomaton = AutomatonPrograms.regexToAutomaton(this.correctAnswerRegexp);
+        }
+    }
+
     specificToJSON(obj: any): void {
         obj.usersAnswerType = AutomatonDataType[this.usersAnswerType];
 

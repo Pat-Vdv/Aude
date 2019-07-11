@@ -132,6 +132,47 @@ class QuestionEditor {
             ]]
         ]]
     ]]
+
+    private static readonly AUTOEQUIV_CONSTRAINT_HELP = ["small.text-muted", [
+        ["ul", [
+            ["li", AudeGUI.l10n("Every constraint must return an object of the form {correct: boolean, details: string}")],
+            ["li", AudeGUI.l10n("The user's answer is available through the variable called a, re or g if it's an automaton, a regular expression or a grammar")]
+        ]]
+    ]];
+
+    private static readonly AUTOEQUIV_CONTENT = [
+        ["h4", AudeGUI.l10n("Automaton Equivalency Answers")],
+        ["h5", AudeGUI.l10n("User's answer type")],
+        ["select.form-control", { "#": "usersAnswerTypeSelect" }, [
+            ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
+            ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
+            ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Linear Grammar")]
+        ]],
+
+        ["h5", AudeGUI.l10n("Reference")],
+        ["div.form-group", [
+            ["small.form-text text-muted", AudeGUI.l10n("If set, the user's answer will be correct only if it is equivalent to this automaton, regular expression or grammar.")],
+            ["select.form-control", { "#": "referenceTypeSelect" }, [
+                ["option", { "value": "None", "selected": "true" }, AudeGUI.l10n("None")],
+                ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
+                ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
+                ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Linear Grammar")]
+            ]]
+        ]],
+
+        ["div#question-editor-autoequiv-ref-content", { "#": "referenceEditContent" }, [
+
+        ]],
+
+        ["h5", AudeGUI.l10n("Constraints")],
+        QuestionEditor.AUTOEQUIV_CONSTRAINT_HELP,
+        ["ul", { "#": "constraintList" }, [
+
+        ]],
+        ["button.btn btn-primary btn-block", { "#": "addConstraintButton" }, AudeGUI.l10n("Add new constraint")]
+    ];
+    private autoEquivReferenceInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
+
     /** The HTMLElement containing this question editor. */
     container: HTMLElement;
 
@@ -180,6 +221,16 @@ class QuestionEditor {
     }> = [];
     private mcqChoiceDetailInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
 
+    // Fields for AutomatonEquiv Questions
+    private autoEquivRefs = {
+        usersAnswerTypeSelect: <HTMLSelectElement>undefined,
+        referenceTypeSelect: <HTMLSelectElement>undefined,
+        referenceEditContent: <HTMLElement>undefined,
+        constraintList: <HTMLUListElement>undefined,
+        addConstraintButton: <HTMLButtonElement>undefined
+    }
+    private autoEquivContraintTextAreas: HTMLTextAreaElement[] = [];
+
     constructor(container: HTMLElement, questionCategory: QuestionCategory) {
         this.container = container;
 
@@ -219,12 +270,12 @@ class QuestionEditor {
             }
         }
 
-        console.log(this.wordingDetailInputs);
-
         if (this.currentQuestion.category === QuestionCategory.TextInput) {
             this.parseTextInputSpecificComponents();
         } else if (this.currentQuestion.category === QuestionCategory.MCQ) {
             this.parseMCQSpecificComponents();
+        } else if (this.currentQuestion.category === QuestionCategory.AutomatonEquivQuestion) {
+            this.parseAutoEquivSpecificComponents();
         }
         return this.currentQuestion;
     }
@@ -461,6 +512,127 @@ class QuestionEditor {
         mcq.setWordingChoices(this.mcqChoices);
     }
 
+    private initAutoEquivSpecificComponents(specificComponentsDiv: HTMLElement) {
+        let aeq = <AutomatonEquivQuestion>this.currentQuestion;
+        specificComponentsDiv.appendChild(libD.jso2dom(QuestionEditor.AUTOEQUIV_CONTENT, this.autoEquivRefs));
+
+        this.autoEquivRefs.usersAnswerTypeSelect.onchange = (e) => {
+            aeq.usersAnswerType = AutomatonDataType[this.autoEquivRefs.usersAnswerTypeSelect.value];
+        };
+
+        this.autoEquivRefs.referenceTypeSelect.onchange = (e) => {
+            this.autoEquivRefs.referenceEditContent.innerHTML = "";
+            this.autoEquivRefs.referenceEditContent.classList.remove("question-editor-hidden");
+
+            switch (this.autoEquivRefs.referenceTypeSelect.value) {
+                case "None":
+                    this.autoEquivRefs.referenceEditContent.classList.add("question-editor-hidden");
+                    this.autoEquivReferenceInput = undefined;
+                    break;
+
+                case "Automaton":
+                    let designerDiv = libD.jso2dom(["div.question-editor-wording-figure-automaton"]);
+                    this.autoEquivReferenceInput = new AudeDesigner(designerDiv, false);
+                    this.autoEquivRefs.referenceEditContent.appendChild(designerDiv);
+                    break;
+
+                case "Regexp":
+                    this.autoEquivReferenceInput = <HTMLInputElement>libD.jso2dom(["input.form-control", { "type": "text", "placeholder": this._("Input your regular expression here.") }]);
+                    this.autoEquivRefs.referenceEditContent.appendChild(this.autoEquivReferenceInput);
+                    break;
+
+                case "LinearGrammar":
+                    this.autoEquivReferenceInput = new GrammarDesigner(this.autoEquivRefs.referenceEditContent, true);
+                    break;
+            }
+        }
+
+        this.autoEquivRefs.addConstraintButton.onclick = (e) => {
+            let constraintTextArea = <HTMLTextAreaElement>libD.jso2dom(["textarea.form-control", { "rows": "8", "placeholder": this._("Give your Audescript constraint here."), "spellcheck": "false"}]);
+            this.autoEquivRefs.constraintList.appendChild(constraintTextArea);
+            this.autoEquivContraintTextAreas.push(constraintTextArea);
+
+            constraintTextArea.onkeydown = (e) => {
+                if (e.code === "Tab") {
+                    let oldSelectStart = constraintTextArea.selectionStart;
+                    constraintTextArea.value = constraintTextArea.value.substring(0, constraintTextArea.selectionStart) + "\t" + constraintTextArea.value.substring(constraintTextArea.selectionStart);
+                    constraintTextArea.selectionStart = constraintTextArea.selectionEnd = oldSelectStart  + 1;
+                    e.preventDefault();
+                }
+            };
+        };
+    }
+
+    private parseAutoEquivSpecificComponents() {
+        let aeq = <AutomatonEquivQuestion>this.currentQuestion;
+
+        aeq.automatonAnswerConstraints = [];
+        aeq.automatonAnswerConstraintsAudescript = [];
+        aeq.regexpAnswerConstraints = [];
+        aeq.regexpAnswerConstraintsAudescript = [];
+        aeq.grammarAnswerConstraints = [];
+        aeq.grammarAnswerConstraintsAudescript = [];
+
+        if (this.autoEquivReferenceInput instanceof AudeDesigner) {
+            aeq.setReferenceAnswer(this.autoEquivReferenceInput.getAutomaton(0));
+        } else if (this.autoEquivReferenceInput instanceof HTMLInputElement) {
+            aeq.setReferenceAnswer(this.autoEquivReferenceInput.value);
+        } else if (this.autoEquivReferenceInput instanceof GrammarDesigner) {
+            aeq.setReferenceAnswer(this.autoEquivReferenceInput.getGrammar());
+        }
+
+        let usersAnswerType = AutomatonDataType[this.autoEquivRefs.usersAnswerTypeSelect.value];
+        for (let cta of this.autoEquivContraintTextAreas) {
+            // Skip empty text areas.
+            if (cta.value.trim().length === 0) {
+                continue;
+            }
+
+            switch (usersAnswerType) {
+                case AutomatonDataType.Automaton:
+                    try {
+                        aeq.automatonAnswerConstraints.push(
+                            eval(
+                                "(a, q) => { " + audescript.toJS(cta.value).code + "}"
+                            )
+                        );
+                        aeq.automatonAnswerConstraintsAudescript.push(cta.value);
+                    } catch (e) {
+                        AudeGUI.notify("Audescript error", e.message, "error");
+                    }
+                    break;
+
+                case AutomatonDataType.Regexp:
+                    try {
+                        aeq.regexpAnswerConstraints.push(
+                            eval(
+                                "(re, q) => { " + audescript.toJS(cta.value).code + "}"
+                            )
+                        );
+                        aeq.regexpAnswerConstraintsAudescript.push(cta.value);
+                    } catch (e) {
+                        AudeGUI.notify("Audescript error", e.message, "error");
+                    }
+
+                    break;
+
+                case AutomatonDataType.LinearGrammar:
+                    try {
+                        aeq.grammarAnswerConstraints.push(
+                            eval(
+                                "(g, q) => { " + audescript.toJS(cta.value).code + "}"
+                            )
+                        );
+                        aeq.grammarAnswerConstraintsAudescript.push(cta.value);
+                    } catch (e) {
+                        AudeGUI.notify("Audescript error", e.message, "error");
+                    }
+
+                    break;
+            }
+        }
+    }
+
     /**
      * Draws all the editing component for the current question according
      * to its category.
@@ -483,6 +655,7 @@ class QuestionEditor {
 
         switch (this.currentQuestion.category) {
             case QuestionCategory.AutomatonEquivQuestion:
+                this.initAutoEquivSpecificComponents(refs.specificInputs);
                 break;
             case QuestionCategory.MCQ:
                 this.initMCQSpecificComponents(refs.specificInputs);
@@ -490,6 +663,10 @@ class QuestionEditor {
             case QuestionCategory.TextInput:
                 this.initTextInputSpecificComponents(refs.specificInputs);
                 break;
+        }
+
+        for (let constraintInput of this.autoEquivRefs.constraintList.children) {
+
         }
     }
 
@@ -529,7 +706,7 @@ class QuestionEditor {
                     ["td", { "#": "wordingTD" }],
                     ["td", { "#": "detailsTD" }],
                     ["td", [
-                        ["input", { "#": "wordingCorrect", "name": "mcqChoiceCorrect", "value": choice.id ,"type": correctCheckType }]
+                        ["input", { "#": "wordingCorrect", "name": "mcqChoiceCorrect", "value": choice.id, "type": correctCheckType }]
                     ]],
                     ["td", [
                         ["button.btn btn-outline-danger question-editor-choice-delete", { "#": "deleteChoiceButton", "value": choice.id }, [
@@ -542,11 +719,11 @@ class QuestionEditor {
                 newChoiceRefs.wordingCorrect.checked = choice.correct;
 
                 if (choice.automaton !== undefined) {
-                        let designerDiv = libD.jso2dom(["div#quiz-automata-designer"]);
-                        let designer = new AudeDesigner(designerDiv, true);
-                        designer.setAutomatonCode(automaton_code(choice.automaton));
-                        designer.autoCenterZoom();
-                        newChoiceRefs.detailsTD.appendChild(designerDiv);
+                    let designerDiv = libD.jso2dom(["div#quiz-automata-designer"]);
+                    let designer = new AudeDesigner(designerDiv, true);
+                    designer.setAutomatonCode(automaton_code(choice.automaton));
+                    designer.autoCenterZoom();
+                    newChoiceRefs.detailsTD.appendChild(designerDiv);
                 } else if (choice.regex !== undefined) {
                     FormatUtils.textFormat(
                         FormatUtils.regexp2Latex(choice.regex),
@@ -567,7 +744,7 @@ class QuestionEditor {
                         }
                     }
 
-                    if( index_for_removal === -1) {
+                    if (index_for_removal === -1) {
                         return;
                     }
                     this.mcqChoices.splice(index_for_removal, 1);

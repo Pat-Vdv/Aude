@@ -88,19 +88,6 @@ class AutomatonGenerator {
     private areEquivalent: boolean;
 
     private static areProgramsLoaded = false;
-    private static programs = {
-        isMinimal: <(a: Automaton) => boolean>undefined,
-        minimize: <(a: Automaton,
-            isAlreadyDeterminized?: boolean,
-            isAlreadyDeterminizedAndComplete?: boolean,
-            alphabet?: libD.Set) => Automaton>undefined,
-        reachableStates: <(a: Automaton) => libD.Set>undefined,
-        coreachableStates: <(a: Automaton) => libD.Set>undefined,
-        automaton2Regex: <(a: Automaton) => string>undefined,
-        automaton2RightLinearGrammar: <(a: Automaton) => linearGrammar>undefined,
-        rightLinear2LeftLinearGrammar: <(g: linearGrammar) => linearGrammar>undefined,
-        normalize: <(a: Automaton, start?: any) => Automaton>undefined
-    };
 
     private static shuffleStateNames(a: Automaton) {
         let oldAutomaton = a.copy();
@@ -163,31 +150,7 @@ class AutomatonGenerator {
         this.areEquivalent = AutomatonGenerator.DEFAULT_GENERATOR.areEquivalent;
 
         // If needed, we load the programs from AudeScript.
-        if (!AutomatonGenerator.areProgramsLoaded) {
-            AutomatonGenerator.loadPrograms();
-        }
-    }
-
-    /**
-     * Loads some required algorithms from AudeScript.
-     * Sets the flag AutomatonGenerator.areProgramsLoaded.
-     */
-    private static loadPrograms() {
-        window.AudeGUI.Runtime.loadIncludes([
-            "minimization", "reachability", "automaton2regex",
-            "automaton2RightLinearGrammar", "rightLinear2LeftLinearGrammar", "normalization",
-            "coreachability"
-        ], () => {
-            AutomatonGenerator.programs.minimize = audescript.m("minimization").minimize;
-            AutomatonGenerator.programs.isMinimal = audescript.m("minimization").isMinimized;
-            AutomatonGenerator.programs.reachableStates = audescript.m("reachability").reachableStates;
-            AutomatonGenerator.programs.automaton2Regex = audescript.m("automaton2regex").automatonToRegex;
-            AutomatonGenerator.programs.automaton2RightLinearGrammar = audescript.m("automaton2RightLinearGrammar").automaton2RightLinearGrammar;
-            AutomatonGenerator.programs.rightLinear2LeftLinearGrammar = audescript.m("rightLinear2LeftLinearGrammar").rightLinear2LeftLinearGrammar;
-            AutomatonGenerator.programs.normalize = audescript.m("normalization").normalize;
-            AutomatonGenerator.programs.coreachableStates = audescript.m("coreachability").coreachableStates;
-        });
-        AutomatonGenerator.areProgramsLoaded = true;
+        AutomatonPrograms.loadPrograms();
     }
 
     /**
@@ -233,7 +196,7 @@ class AutomatonGenerator {
                 newState++;
             }
 
-            let reachableStates = Array.from(AutomatonGenerator.programs.reachableStates(a));
+            let reachableStates = Array.from(AutomatonPrograms.reachableStates(a));
             let alphabet = Array.from(a.getAlphabet());
 
             // We shuffle the arrays to iterate through them at random.
@@ -259,7 +222,7 @@ class AutomatonGenerator {
             }
 
             // We look for a coreachable state to link our new state to.
-            let coreachableStates = Array.from(AutomatonGenerator.programs.coreachableStates(a));
+            let coreachableStates = Array.from(AutomatonPrograms.coreachableStates(a));
             if (coreachableStates.length === 0) {
                 return false;
             }
@@ -439,7 +402,7 @@ class AutomatonGenerator {
         }
 
         let numFinalStates = 0;
-        let reachableStates = Array.from(AutomatonGenerator.programs.reachableStates(A));
+        let reachableStates = Array.from(AutomatonPrograms.reachableStates(A));
         if (!this.noEmptyLanguage || reachableStates.includes(currentState)) {
             A.setFinalState(currentState);
             numFinalStates++;
@@ -467,9 +430,9 @@ class AutomatonGenerator {
      * Generates a linear grammar.
      */
     generateGrammar(leftOrRightLinear: "left" | "right" = "right"): linearGrammar {
-        let G = AutomatonGenerator.programs.automaton2RightLinearGrammar(this.generateAutomaton());
+        let G = AutomatonPrograms.automaton2RightLinearGrammar(this.generateAutomaton());
         return (leftOrRightLinear === "left" ?
-            AutomatonGenerator.programs.rightLinear2LeftLinearGrammar(G) :
+            AutomatonPrograms.rightLinear2LeftLinearGrammar(G) :
             G);
     }
 
@@ -479,7 +442,7 @@ class AutomatonGenerator {
      * automaton and thus, might have problems.
      */
     generateRegexp(): string {
-        return AutomatonGenerator.programs.automaton2Regex(this.generateAutomaton());
+        return AutomatonPrograms.automatonToRegex(this.generateAutomaton());
     }
 
     /**
