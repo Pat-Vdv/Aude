@@ -518,7 +518,7 @@ abstract class Question {
                 return this._("Give a linear grammar that recognizes the same language as the following automaton : ");
 
             case QuestionSubType.LeftGrammar2RightGrammar:
-                return this._("Convert the following left linear grammar to an equivalent right liear grammar.");
+                return this._("Convert the following left linear grammar to an equivalent right linear grammar.");
 
             default:
                 return "";
@@ -1169,13 +1169,14 @@ class TextInputQuestion extends Question {
      * is in the correctAnswers array.
      * @see TextInputQuestion#correctAnswers
      */
-    answerValidator: (q: TextInputQuestion) => { correct: boolean, details: string } =
-        (q) => {
-            if (!q.correctAnswers.includes(q.usersAnswer)) {
-                return { correct: false, details: this._("Your answer isn't correct !") };
-            }
-            return { correct: true, details: "" };
-        };
+    answerValidator: (q: TextInputQuestion) => { correct: boolean, details: string } = TextInputQuestion.wordlistValidator;
+        
+    static readonly wordlistValidator = (q) => {
+        if (!q.correctAnswers.includes(q.usersAnswer)) {
+            return { correct: false, details: AudeGUI.l10n("Your answer isn't correct !") };
+        }
+        return { correct: true, details: "" };
+    };
 
     /** Validator functions used for built-in question subtypes (list all reachable states, ...) */
     static readonly defaultValidators = {
@@ -1419,6 +1420,11 @@ class TextInputQuestion extends Question {
     checkUsersAnswer(): { correct: boolean; details: string; } {
         if (this.usersAnswer === undefined) {
             return { correct: false, details: this._("No answer was given.") }
+        }
+
+        if (!this.answerValidator || !this.answerValidatorAS) {
+            this.answerValidator = TextInputQuestion.wordlistValidator;
+            this.answerValidatorAS = undefined;
         }
 
         let validatorReturn = this.answerValidator(this);

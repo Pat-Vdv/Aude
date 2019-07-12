@@ -19,17 +19,10 @@
 (function (pkg) {
     "use strict";
 
-    var AudeGUI = pkg.AudeGUI;
-    var _ = AudeGUI.l10n;
+    let AudeGUI = pkg.AudeGUI;
+    let _ = AudeGUI.l10n;
 
-    var quizEditorContent = null;
-    var designerAns = null;
-    var designerQue = null;
-    var mcqR = null;
-    var mcqNumberOfChoices = 0;
-    var automatonR = null;
-    var regexR = null;
-    var quiz = null;
+    let quizEditorContent = null;
 
     enum QuizEditorState {
         Overview,
@@ -105,7 +98,7 @@
          * Open an old quiz.
          * @param. code: old "quiz object"
          */
-        static open(code) {
+        static open(code: string) {
             try {
                 if (QuizEditor.currentQuizEditor === undefined) {
                     QuizEditor.currentQuizEditor = new QuizEditor();
@@ -130,14 +123,13 @@
          * Save the current quiz in a file in the local storage of the user computer.
          */
         static save() {
-            cleanDesigners();
-            var jsonQuiz = JSON.stringify(quiz);
-            var blob = new Blob([jsonQuiz], { type: "application/json" });
-            var date = quiz.date;
-            var author = quiz.author;
+            let jsonQuiz = JSON.stringify(QuizEditor.currentQuizEditor.currentQuiz.toJSON());
+            let blob = new Blob([jsonQuiz], { type: "application/json" });
+            let date = QuizEditor.currentQuizEditor.currentQuiz.date;
+            let author = QuizEditor.currentQuizEditor.currentQuiz.author;
             date = date.replace(" ", "");
             author = author.replace(" ", "-");
-            var fileName = "Quiz_" + date + "_" + quiz.author + ".json";
+            let fileName = "Quiz_" + date + "_" + QuizEditor.currentQuizEditor.currentQuiz.author + ".json";
 
             saveAs(blob, fileName);
         }
@@ -161,17 +153,15 @@
         static openQuiz() {
             let file = <HTMLInputElement>document.getElementById("quiz-editor-file"); // input file
             file.onchange = function () {
-                var freader = new FileReader()
+                let freader = new FileReader()
                 freader.onload = function () {
-                    QuizEditor.open(freader.result); // freader.result contains stringify(quiz object)
+                    QuizEditor.open(<string>freader.result); // freader.result contains stringify(quiz object)
                 };
                 freader.readAsText(file.files[0], "utf-8");
             }
         }
 
         static currentQuizEditor: QuizEditor = undefined;
-        static currentQuiz: Quiz = undefined;
-        static currentQuestion: Question = undefined;
 
         win: libD.WSwin;
 
@@ -255,7 +245,7 @@
                 }
 
                 if (confirm) {
-                    showSavePane();
+                    this.showSavePane();
                 }
             };
 
@@ -275,11 +265,11 @@
          * The pane isn't actually displayed until the editor is in NewQuestion state.
          */
         drawNewQuestionPane() {
-            var refs = {
+            let refs = {
                 content: <HTMLElement>null,
                 currentA: <HTMLButtonElement>null
             };
-            var newQuestionPane = libD.jso2dom(["div#quiz-editor-NewQuestion-pane.quiz-editor-pane d-flex flex-column align-items-center", [
+            let newQuestionPane = libD.jso2dom(["div#quiz-editor-NewQuestion-pane.quiz-editor-pane d-flex flex-column align-items-center", [
                 ["h1", _("New Question")],
                 ["div.list-group", { "#": "content", "style": "width: 90%; text-align:center;" }]
             ]], refs);
@@ -310,13 +300,11 @@
         showOverview(mode: string) {
             switch (mode) {
                 case "":
-                    this.refreshQuestionPreview(quiz.questions.length - 1);
+                    this.refreshQuestionPreview(QuizEditor.currentQuizEditor.currentQuiz.questions.length - 1);
                     break;
 
                 case "shift":
-                    if (this.currentQuiz.questions) {
-                        this.refreshQuestionPreview();
-                    }
+                    this.refreshQuestionPreview();
                     break;
 
                 case "show":
@@ -380,10 +368,10 @@
                 ]],
                 ["td", [
                     ["div", { "style": "text-align: center" }, [
-                        ["button#quiz-editor-modifQuestion" + index, { "#": "modifButton", "title": _("edit") }, [
+                        ["button#quiz-editor-modifQuestion" + index, { "#": "modifButton", "title": _("edit"), "value": index }, [
                             ["img", { "src": libD.getIcon("actions/document-edit"), "alt": "Edit" }]
                         ]],
-                        ["button#quiz-editor-removeQuestion" + index, { "#": "removeButton", "title": _("remove") }, [
+                        ["button#quiz-editor-removeQuestion" + index, { "#": "removeButton", "title": _("remove"), "value": index }, [
                             ["img", { "src": libD.getIcon("actions/list-remove"), "alt": "Remove" }]
                         ]]
                     ]]
@@ -400,32 +388,37 @@
             ]], refs));
 
             refs.removeButton.onclick = (e) => {
+                let btn = <HTMLButtonElement>e.currentTarget;
                 this.emptyPreviewTable();
-                this.removeQuestion(index);
+                this.removeQuestion(parseInt(btn.value));
                 this.showOverview("shift");
             };
+
+            refs.modifButton.onclick = (e) => {
+                let btn = <HTMLButtonElement>e.currentTarget;
+                this.editOrCreateQuestion(parseInt(btn.value));
+            }
 
             refs.addPoint.onclick = () => {
                 this.addPoint(index);
             };
 
-            refs.removeButton.onclick = () => {
+            refs.removePoint.onclick = () => {
                 this.removePoint(index);
             };
-
-            refs.modifButton.onclick = () => {
-                alert("OwO");
-            }
 
             q.displayQuestionWording(refs.quesDiv);
         }
 
         emptyPreviewTable() {
-
+            let overviewTableBody = document.getElementById("quiz-editor-overview-table-body");
+            overviewTableBody.innerHTML = "";
         }
 
-        removeQuestion(index) {
-
+        removeQuestion(index: number) {
+            if (0 <= index && index < this.currentQuiz.questions.length) {
+                this.currentQuiz.questions.splice(index, 1);
+            }
         }
 
         addPoint(index) {
@@ -437,10 +430,27 @@
         }
 
         /**
-         * Shows the question editor for the given question category.
+         * Shows the question editor for creation in the given question category.
          * @param qCat 
          */
         showPaneForCategory(qCat: QuestionCategory) {
+            this.editOrCreateQuestion(this.currentQuiz.questions.length, qCat);
+        }
+
+        /**
+         * Creates or modifies the question at the given index.
+         * If the index is greater or equal to the question list length, it will be 
+         * created at the end of the question list, otherwise it will be edited.
+         * @param index 
+         * @param qCat 
+         */
+        editOrCreateQuestion(index: number, qCat?: QuestionCategory) {
+            let create = index >= this.currentQuiz.questions.length;
+            // Cannot create if the question category isn't set.
+            if (create && qCat === undefined) {
+                return;
+            }
+
             let qEditPane = document.getElementById("quiz-editor-QuestionEdit-pane");
             if (qEditPane) {
                 qEditPane.parentElement.removeChild(qEditPane);
@@ -455,13 +465,15 @@
                 ["p.big-center", ["button", { "#": "validationButton" }, _("Validate")]]
             ]], refs);
 
-            let questionEditor = new QuestionEditor(refs.editorDiv, qCat);
+            let questionEditor = new QuestionEditor(refs.editorDiv, (create ? qCat : this.currentQuiz.questions[index].category));
+            if (!create) {
+                questionEditor.setCurrentQuestion(this.currentQuiz.questions[index]);
+            }
 
             this.content.appendChild(qEditPane);
 
             refs.validationButton.onclick = (e) => {
-                this.currentQuiz.questions.push(questionEditor.getCurrentQuestion());
-                console.log(questionEditor.getCurrentQuestion());
+                this.currentQuiz.questions[(create ? this.currentQuiz.questions.length : index)] = questionEditor.getCurrentQuestion();
                 this.showOverview("shift");
                 this.setCurrentState(QuizEditorState.Overview);
             };
@@ -493,12 +505,63 @@
 
             this.currentState = newState;
         }
+
+        showSavePane() {
+            let refs: any = {};
+            let savePane = libD.jso2dom(["div#quiz-editor-Save-pane.quiz-editor-pane", [
+                ["div", { "style": "position: relative" }, [
+                    ["div", ["p", ["label", [
+                        ["#", _("Quiz title:") + " "],
+                        ["input#quiz-editor-titleInput", {
+                            "#": "quizTitleInput",
+                            "type": "text",
+                            "placeholder": _("Title…")
+                        }
+                        ]
+                    ]]]],
+                    ["div", ["p", ["label", [
+                        ["#", _("Your name:") + " "],
+                        ["input#quiz-editor-authorInput", {
+                            "#": "authorInput",
+                            "type": "text",
+                            "placeholder": _("Enter your name…")
+                        }
+                        ]
+                    ]]]],
+                    ["div", ["p", ["label", [
+                        ["#", _("Description:") + " "],
+                        ["textarea#quiz-editor-descriptionTextarea", {
+                            "#": "descriptionTextarea",
+                            "rows": "4",
+                            "cols": "40",
+                            "spellcheck": "false",
+                            "placeholder": _("Description…")
+                        }
+                        ]
+                    ]]]]
+                ]],
+                ["button#quizEditor_saveValidation", { "#": "validationButton" }, _("Validate")]
+            ]], refs);
+
+            refs.validationButton.onclick = function () {
+                saveQuiz();
+                AudeGUI.QuizEditor.save();
+                AudeGUI.QuizEditor.close();
+            }
+
+            refs.quizTitleInput.value = QuizEditor.currentQuizEditor.currentQuiz.title || "";
+            refs.authorInput.value = QuizEditor.currentQuizEditor.currentQuiz.author || "";
+            refs.descriptionTextarea.value = QuizEditor.currentQuizEditor.currentQuiz.description || "";
+
+            this.content.appendChild(savePane);
+            this.setCurrentState(QuizEditorState.Save)
+        }
     }
 
     AudeGUI.QuizEditor = QuizEditor;
 
     function saveQuiz() {
-        var tableMonth = [
+        let tableMonth = [
             _("January"),
             _("February"),
             _("March"),
@@ -513,577 +576,45 @@
             _("December")
         ];
 
-        var quizTitleInput = <HTMLInputElement>document.getElementById("quiz-editor-titleInput");
-        var authorInput = <HTMLInputElement>document.getElementById("quiz-editor-authorInput");
-        var descriptionTextarea = <HTMLInputElement>document.getElementById("quiz-editor-descriptionTextarea");
+        let quizTitleInput = <HTMLInputElement>document.getElementById("quiz-editor-titleInput");
+        let authorInput = <HTMLInputElement>document.getElementById("quiz-editor-authorInput");
+        let descriptionTextarea = <HTMLInputElement>document.getElementById("quiz-editor-descriptionTextarea");
 
-        var date = new Date();
-        quiz.title = quizTitleInput.value;
-        quiz.author = authorInput.value;
-        quiz.date = "" + (date.getDate() + " " + tableMonth[date.getMonth()] + " " + date.getFullYear());
-        quiz.description = descriptionTextarea.value;
-    }
-
-    function showSavePane() {
-        var refs: any = {};
-        var savePane = libD.jso2dom(["div#quiz-editor-save", [
-            ["div", { "style": "position: relative" }, [
-                ["div", ["p", ["label", [
-                    ["#", _("Quiz title:") + " "],
-                    ["input#quiz-editor-titleInput", {
-                        "#": "quizTitleInput",
-                        "type": "text",
-                        "placeholder": _("Title…")
-                    }
-                    ]
-                ]]]],
-                ["div", ["p", ["label", [
-                    ["#", _("Your name:") + " "],
-                    ["input#quiz-editor-authorInput", {
-                        "#": "authorInput",
-                        "type": "text",
-                        "placeholder": _("Enter your name…")
-                    }
-                    ]
-                ]]]],
-                ["div", ["p", ["label", [
-                    ["#", _("Description:") + " "],
-                    ["textarea#quiz-editor-descriptionTextarea", {
-                        "#": "descriptionTextarea",
-                        "rows": "4",
-                        "cols": "40",
-                        "spellcheck": "false",
-                        "placeholder": _("Description…")
-                    }
-                    ]
-                ]]]]
-            ]],
-            ["button#quizEditor_saveValidation", { "#": "validationButton" }, _("Validate")]
-        ]], refs);
-
-        refs.validationButton.onclick = function () {
-            saveQuiz();
-            AudeGUI.QuizEditor.save();
-            AudeGUI.QuizEditor.close();
-        }
-
-        refs.quizTitleInput.value = quiz.title || "";
-        refs.authorInput.value = quiz.author || "";
-        refs.descriptionTextarea.value = quiz.description || "";
-
-        quizEditorContent.appendChild(savePane);
-        //setCurrentState("save")
+        let date = new Date();
+        QuizEditor.currentQuizEditor.currentQuiz.title = quizTitleInput.value;
+        QuizEditor.currentQuizEditor.currentQuiz.author = authorInput.value;
+        QuizEditor.currentQuizEditor.currentQuiz.date = "" + (date.getDate() + " " + tableMonth[date.getMonth()] + " " + date.getFullYear());
+        QuizEditor.currentQuizEditor.currentQuiz.description = descriptionTextarea.value;
     }
 
     /*
      * Remove a question from the quiz object and the overview table
      */
     function removeQuestion(index) {
-        quiz.questions.splice(index, 1);
+        QuizEditor.currentQuizEditor.currentQuiz.questions.splice(index, 1);
     }
 
-    function addPoint(index, point?) {
-        if (quiz.questions[index].point < 100) {
-            quiz.questions[index].point++;
+    function addPoint(index: number) {
+        if (QuizEditor.currentQuizEditor.currentQuiz.questions[index].point < 100) {
+            QuizEditor.currentQuizEditor.currentQuiz.questions[index].point++;
         }
-        document.getElementById("quiz-editor-divPoint" + index).textContent = "" + quiz.questions[index].point;
+        document.getElementById("quiz-editor-divPoint" + index).textContent = "" + QuizEditor.currentQuizEditor.currentQuiz.questions[index].point;
     }
 
-    function removePoint(index, point?) {
-        if (quiz.questions[index].point > 0) {
-            quiz.questions[index].point--;
+    function removePoint(index: number) {
+        if (QuizEditor.currentQuizEditor.currentQuiz.questions[index].point > 0) {
+            QuizEditor.currentQuizEditor.currentQuiz.questions[index].point--;
         }
-        document.getElementById("quiz-editor-divPoint" + index).textContent = "" + quiz.questions[index].point;
-    }
-
-    // --- FOR MULTIPLES CHOICE QUESTIONS
-
-    function showMcqPane(mode, index?) {
-        var mcqPane = document.getElementById("quiz-editor-QuestionEdit-pane");
-        if (mcqPane) {
-            mcqPane.parentNode.removeChild(mcqPane);
-        }
-
-        mcqR = {};
-        mcqNumberOfChoices = 2;
-
-        var refs: any = {};
-
-        mcqPane = libD.jso2dom(["div#quiz-editor-mcq-pane.quiz-editor-pane", [
-            ["h1", _("Multiple Choice Question")],
-            ["p", ["input#quiz-editor-questionArea", {
-                "type": "text",
-                "placeholder": _("Write your question…"),
-                "#": "questionArea"
-            }]],
-            ["p", _("Write the different possible answers and check the correct ones.")],
-            ["div#quiz-editor-choiceArea", { "#": "choiceArea" }],
-            ["p", ["button", { "#": "addButton", "title": _("Add") }, [
-                ["img", { "src": libD.getIcon("actions/list-add") }],
-                ["#", _("Add an answer")]
-            ]]],
-            ["p.big-center", ["button", { "#": "validationButton" }, _("Validate")]]
-        ]], refs);
-
-        let choice_list = [];
-
-        for (var i = 0; i < mcqNumberOfChoices; i++) {
-            var q = libD.jso2dom([
-                ["div#quiz-editor-choice" + i, [
-                    ["input", { "type": "checkbox" }],
-                    ["input", { "type": "text", "name": "questionArea", "placeholder": libD.format(_("Choice {0}…"), i + 1) }],
-                    ["button", { "#": "removeButton", "title": _("remove") }, [
-                        ["img", { "src": libD.getIcon("actions/list-remove"), "alt": _("Remove") }]
-                    ]]
-                ]]
-            ], refs);
-
-            refs.choiceArea.appendChild(q);
-            refs.removeButton.onclick = removeChoice.bind(null, q);
-        }
-
-        refs.addButton.onclick = addChoice;
-        refs.validationButton.onclick = function () {
-            //mcqValidation(mode, index);
-            //showQuizOverview((mode == "") ? "" : "shift");
-        }
-
-        quizEditorContent.appendChild(mcqPane);
-
-        setTimeout(
-            function () {
-                refs.questionArea.focus();
-            },
-            0
-        );
-
-        //setCurrentState("mcq");
-    }
-
-    /*
-     * Push the current question in the quiz object.
-     */
-    function mcqValidation(mode, index) {
-        mcqR = {
-            type: "mcq",
-            instruction: (<HTMLInputElement>document.getElementById("quiz-editor-questionArea")).value,
-            answers: [],
-            possibilities: [],
-            point: 0,
-            overviewAutomatonQue: null,
-            overviewAutomatonAns: null
-        };
-
-        var choiceArray = document.getElementById("quiz-editor-choiceArea").childNodes;
-        for (var i = 0, a_acsiiCode = 97; i < choiceArray.length; i++) {
-            var choice = choiceArray[i].childNodes;
-            var value = (<HTMLInputElement>choice[1]).value.trim();
-
-            if (!value) {
-                continue; // if the answer is empty, skip it
-            }
-
-            // push the id of the correct possibility in mcqR
-            if ((<HTMLInputElement>choice[0]).checked) {
-                mcqR.answers.push(String.fromCharCode(a_acsiiCode));
-            }
-
-            // push the id and text of the possibility in mcqR
-            var possibility = {
-                id: String.fromCharCode(a_acsiiCode),
-                text: value
-            };
-
-            mcqR.possibilities.push(possibility);
-            a_acsiiCode++;
-        }
-
-        if (mode === "") {
-            quiz.questions.push(mcqR);
-        } else {
-            emptyPreviewTable();
-            quiz.questions[index] = mcqR;
-        }
-
-        designerQue = null;
-        designerAns = null;
-    }
-
-    /*
-     * Edit a m.c.question indexed by index
-     */
-    function modifyMcQuestion(index) {
-        var q = quiz.questions[index];
-        var possibilities = q.possibilities;
-        var answers = q.answers;
-
-        showMcqPane("shift", index);
-        (<HTMLInputElement>document.getElementById("quiz-editor-questionArea")).value = q.instruction;
-        for (var i = 0, choiceDiv; i < possibilities.length; i++) {
-            if (i > 1) {
-                addChoice();
-            }
-            choiceDiv = document.getElementById("quiz-editor-choice" + i).childNodes;
-            choiceDiv[1].value = possibilities[i].text;
-        }
-
-        for (var i = 0, choiceDiv, id; i < answers.length; i++) {
-            id = answers[i].charCodeAt(0) - "a".charCodeAt(0);
-            choiceDiv = document.getElementById("quiz-editor-choice" + id).childNodes;
-            choiceDiv[0].checked = "checked";
-        }
-    }
-
-    /*
-     * Add a possibility to the question
-     */
-    function addChoice() {
-        var choiceArea = document.getElementById("quiz-editor-choiceArea");
-        var refs: any = {};
-        var q = libD.jso2dom(["div#quiz-editor-choice" + (mcqNumberOfChoices), [
-            ["input", { "type": "checkbox" }],
-            ["input", { "#": "addedInput", "type": "text", "placeholder": libD.format(_("Choice {0}…"), mcqNumberOfChoices + 1) }],
-            ["button", { "#": "removeButton", "title": _("remove") }, [
-                ["img", { "src": libD.getIcon("actions/list-remove"), "alt": _("Remove") }]
-            ]]
-        ]
-        ], refs);
-
-        choiceArea.appendChild(q);
-        refs.removeButton.onclick = removeChoice.bind(null, q);
-
-        setTimeout(
-            function () {
-                refs.addedInput.focus();
-            },
-            0
-        );
-
-        mcqNumberOfChoices++;
-    }
-
-    /*
-     * Remove a possibility from the questions
-     */
-    function removeChoice(elementToRemove) {
-        var parent = document.getElementById("quiz-editor-choiceArea");
-        parent.removeChild(elementToRemove);
-
-        var children = parent.childNodes as NodeListOf<HTMLInputElement>;
-        for (var i = 0; i < children.length; i++) {
-            children[i].id = "quiz-editor-choice" + i;
-            (<HTMLInputElement>children[i].childNodes[1]).placeholder = libD.format(_("Choice {0}…"), (i + 1));
-        }
-        mcqNumberOfChoices--;
-    }
-
-    function showAutomatonRPane(mode, index?) {
-        automatonR = {};
-        designerAns = null;
-        designerQue = null;
-        var refs: any = {};
-        var automatonRPane = document.getElementById("quiz-editor-automatonR-pane");
-
-        if (automatonRPane) {
-            automatonRPane.parentNode.removeChild(automatonRPane);
-        }
-
-        automatonRPane = libD.jso2dom(["div#quiz-editor-automatonR-pane.quiz-editor-pane", [
-            ["h1", _("Find an automaton")],
-            ["div#quiz-editor-automatonR-panes", [
-                ["div.quiz-editor-disp-flex", [
-                    ["h2", _("Question")],
-                    ["div.quiz-editor-flex quiz-editor-disp-flex", [
-                        ["textarea#quiz-editor-automatonRTextarea", {
-                            "rows": 10,
-                            "spellcheck": "false",
-                            "placeholder": _("Type the question here…")
-                        }],
-                        ["p", ["label", [
-                            ["input#quiz-editor-drawAutomaton", {
-                                "#": "drawAutomaton",
-                                "type": "checkbox"
-                            }],
-                            ["#", " " + _("Draw an automaton")]
-                        ]]],
-                        ["div.quiz-editor-flex", { "#": "automatonQueDiv" }, [
-                            ["div.automaton-draw-area"]
-                        ]]
-                    ]]
-                ]],
-                ["div.quiz-editor-disp-flex", [
-                    ["h2", _("Answer")],
-                    ["div.quiz-editor-flex", { "#": "automatonAnsDiv" }, [
-                        ["div.automaton-draw-area"]
-                    ]]
-                ]]
-            ]],
-            ["div", { "style": "display:flex;" }, [
-                ["textarea#quiz-editor-audescriptCode", {
-                    "#": "audescriptCode",
-                    "rows": 4,
-                    "style": "flex:1",
-                    "spellcheck": "false",
-                    "placeholder": _("Write your audescript code here…")
-                }],
-                ["div.help", [
-                    ["p", _("If you want the automaton answer to be:") + " "],
-                    ["ul", [
-                        ["li", _("determinized, write isDeterminized(autoAnsw)")],
-                        ["li", _("minimized, write isMinimized(autoAnsw)")],
-                        ["li", _("completed, write isCompleted(autoAnsw)")]
-                    ]]
-                ]]
-            ]],
-            ["button", { "#": "validationButton" }, _("Validate")]
-        ]], refs);
-
-        quizEditorContent.appendChild(automatonRPane);
-
-        designerAns = new AudeDesigner(refs.automatonAnsDiv);
-
-        setTimeout(function () {
-            designerAns.redraw();
-        }, 0);
-
-        refs.drawAutomaton.checked = false;
-        (refs.drawAutomaton.onchange = function () {
-            if (refs.drawAutomaton.checked) {
-                refs.automatonQueDiv.style.display = "";
-
-                if (!designerQue) {
-                    designerQue = new AudeDesigner(refs.automatonQueDiv);
-                }
-
-                setTimeout(function () {
-                    designerQue.redraw();
-                }, 0);
-            } else {
-                refs.automatonQueDiv.style.display = "none";
-            }
-        })();
-
-        refs.validationButton.onclick = function () {
-            if (refs.audescriptCode.value) {
-                // TODO : Fix Audescript evaluation here.
-                //AudeGUI.Quiz._ajsEval(script, autoAnsw, A);
-            }
-
-            automatonRValidation(mode, index);
-            //showQuizOverview((mode == "") ? "" : "shift");
-        };
-
-        //setCurrentState("automatonR");
-    }
-
-    /*
-     * Push the current question in the quiz object.
-     */
-    function automatonRValidation(mode, index) {
-        automatonR = {
-            type: "automatonEquiv",
-            instructionHTML: (<HTMLInputElement>document.getElementById("quiz-editor-automatonRTextarea")).value,
-            automatonQuestion: null,
-            automatonAnswer: designerAns.getAutomatonCode(designerAns.currentIndex, false),
-            audescriptCode: (<HTMLInputElement>document.getElementById("quiz-editor-audescriptCode")).value,
-            point: 0,
-            overviewAutomatonQue: null,
-            overviewAutomatonAns: null
-        }
-
-        if (designerQue) {
-            automatonR.automatonQuestion =
-                designerQue.getAutomatonCode(designerQue.currentIndex, false)
-        }
-
-        if (mode === "") {
-            quiz.questions.push(automatonR);
-        } else {
-            emptyPreviewTable();
-            quiz.questions[index] = automatonR;
-        }
-
-        designerQue = null;
-        designerAns = null;
-    }
-
-    function modifyAutomatonR(index) {
-        var q = quiz.questions[index];
-
-        showAutomatonRPane("shift", index);
-        AudeGUI.Quiz.textFormat(q.instructionHTML, document.getElementById("quiz-editor-automatonRTextarea"), true);
-
-        if (q.automatonQuestion) {
-            document.getElementById("quiz-editor-drawAutomaton").click();
-            designerQue.setAutomatonCode(
-                q.automatonQuestion,
-                designerQue.currentIndex
-            );
-            designerQue.autoCenterZoom();
-        }
-
-        if (q.audescriptCode) {
-            document.getElementById("quiz-editor-audescriptCodeButton").click();
-            (<HTMLInputElement>document.getElementById("quiz-editor-audescriptCode")).value = q.audescriptCode;
-        }
-
-        designerAns.setAutomatonCode(
-            q.automatonAnswer,
-            designerAns.currentIndex
-        );
-        designerAns.autoCenterZoom();
-    }
-
-    // --- FOR REGULAR EXPRESSIONS RESEARCHER
-
-    function showRegexRPane(mode, index?) {
-        regexR = {};
-        var refs: any = {};
-
-        var regexRPane = document.getElementById("quiz-editor-regexR-pane");
-
-        if (regexRPane) {
-            regexRPane.parentNode.removeChild(regexRPane);
-        }
-
-        regexRPane = libD.jso2dom(["div#quiz-editor-regexR-pane.quiz-editor-pane", [
-            ["h1", _("Find a regular expression")],
-            ["section#quiz-editor-regexR-pane-content", [
-                ["div", [
-                    ["h1", _("Question")],
-                    ["div", [
-                        ["textarea#quiz-editor-regexRTextarea", {
-                            "rows": 10,
-                            "spellcheck": "false",
-                            "placeholder": _("Write your question…")
-                        }],
-                        ["p",
-                            ["button#quiz-editor-drawAutomaton", {
-                                "#": "drawAutomaton",
-                            },
-                                _("Draw an automaton")
-                            ]
-                        ],
-                        ["div.automaton-draw-area", { "#": "automatonQueDiv", "style": "display: none" }]
-                    ]]
-                ]],
-                ["div", [
-                    ["h1", _("Answer")],
-                    ["div", [
-                        ["textarea#quiz-editor-regex", {
-                            "rows": 10,
-                            "spellcheck": "false",
-                            "placeholder": _("Write a regular expression…")
-                        }]
-                    ]]
-                ]]
-            ]],
-            ["p.big-center", ["button", { "#": "validationButton" }, _("Validate")]]
-        ]], refs);
-
-        refs.drawAutomaton.onclick = function () {
-            refs.drawAutomaton.parentNode.style.display = "none";
-            refs.automatonQueDiv.style.display = "";
-            designerQue = new AudeDesigner(refs.automatonQueDiv);
-            setTimeout(function () {
-                designerQue.redraw();
-            }, 0);
-        };
-
-        refs.validationButton.onclick = function () {
-            var regexToAutomaton = null;
-
-            AudeGUI.Runtime.loadIncludes(["equivalence", "regex2automaton", "automaton2json"],
-                function () {
-                    AudeGUI.notifier.close(); // loading notification
-
-                    regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
-
-                    try {
-                        regexToAutomaton((<HTMLInputElement>document.getElementById("quiz-editor-regex")).value);
-                    } catch (e) {
-                        AudeGUI.notify(
-                            _("This regular expresion does not seem valid."),
-                            _("Recognized operations: “.”, “*”, “+”."),
-                            "error"
-                        );
-                        return;
-                    }
-
-                    regexRValidation(mode, index);
-                    //showQuizOverview((mode == "") ? "" : "shift");
-                }
-            );
-
-            if (!regexToAutomaton) {
-                AudeGUI.notify(
-                    _("Loading…"),
-                    _("Your regular expression is going to be checked."),
-                    "info"
-                );
-            }
-        };
-
-        quizEditorContent.appendChild(regexRPane);
-        //setCurrentState("regexR");
-    }
-
-    /*
-     * Push the current question in the quiz object.
-     */
-    function regexRValidation(mode, index) {
-        regexR = {
-            type: "regexEquiv",
-            instructionHTML: (<HTMLInputElement>document.getElementById("quiz-editor-regexRTextarea")).value,
-            automatonQuestion: null,
-            regex: (<HTMLInputElement>document.getElementById("quiz-editor-regex")).value,
-            point: 0,
-            overviewAutomatonQue: null,
-            overviewAutomatonAns: null
-        }
-
-        if (designerQue !== null) {
-            regexR.automatonQuestion =
-                designerQue.getAutomatonCode(designerQue.currentIndex, false)
-        }
-
-        if (mode === "") {
-            quiz.questions.push(regexR);
-        } else {
-            emptyPreviewTable();
-            quiz.questions[index] = regexR;
-        }
-
-        designerQue = null;
-        designerAns = null;
-    }
-
-    function modifyRegexR(buttonClicked) {
-        var index = questionIndex(buttonClicked);
-        var q = quiz.questions[index];
-
-        showRegexRPane("shift", index);
-        AudeGUI.Quiz.textFormat(q.instructionHTML, document.getElementById("quiz-editor-regexRTextarea"), true);
-        (<HTMLInputElement>document.getElementById("quiz-editor-regex")).value = q.regex;
-
-        if (q.automatonQuestion) {
-            document.getElementById("quiz-editor-drawAutomaton").click();
-            designerQue.setAutomatonCode(
-                q.automatonQuestion,
-                designerQue.currentIndex
-            );
-            designerQue.autoCenterZoom();
-        }
+        document.getElementById("quiz-editor-divPoint" + index).textContent = "" + QuizEditor.currentQuizEditor.currentQuiz.questions[index].point;
     }
 
     // Tools
-
     /*
      * Remove all questions from the overview pane
      */
     function emptyPreviewTable() {
-        var overviewTable = <HTMLTableElement>document.getElementById("quiz-editor-overview-table");
-        for (var i = quiz.questions.length; i > 0; i--) {
+        let overviewTable = <HTMLTableElement>document.getElementById("quiz-editor-overview-table");
+        for (let i = QuizEditor.currentQuizEditor.currentQuiz.questions.length; i > 0; i--) {
             overviewTable.deleteRow(i);
         }
     }
@@ -1092,39 +623,12 @@
      * Return question index starting from the edit th
      */
     function questionIndex(element) {
-        var td = element.parentNode.parentNode;
+        let td = element.parentNode.parentNode;
         return parseInt(td.parentNode.firstChild.firstChild.textContent, 10) - 1;
     }
 
-    /*
-     * Redraw all automatons of the overview table
-     */
-    function redrawAutomata() {
-        for (var i = 0, leng = quiz.questions.length, q; i < leng; i++) {
-            q = quiz.questions[i];
-            if (q.overviewAutomatonQue) {
-                q.overviewAutomatonQue.redraw();
-                q.overviewAutomatonQue.autoCenterZoom();
-            }
-            if (q.overviewAutomatonAns) {
-                q.overviewAutomatonAns.redraw();
-                q.overviewAutomatonAns.autoCenterZoom();
-            }
-        }
-    }
-
-    /*
-     * Delete all designers from the quiz object
-     */
-    function cleanDesigners() {
-        for (var i = 0, leng = quiz.questions.length; i < leng; i++) {
-            delete quiz.questions[i].overviewAutomatonQue;
-            delete quiz.questions[i].overviewAutomatonAns;
-        }
-    }
-
     function isAutomatonNull(A) {
-        var designer = new AudeDesigner(document.createElement("div"), true);
+        let designer = new AudeDesigner(document.createElement("div"), true);
         designer.setAutomatonCode(A);
         A = designer.getAutomaton(designer.currentIndex);
         return (A.getStates().card() === 1) && (A.getAlphabet().card() === 0) && (A.getInitialState() === "") && (A.getTransitions().card() === 0) && (A.getFinalStates().card() === 0);

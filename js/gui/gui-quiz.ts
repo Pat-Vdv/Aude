@@ -182,6 +182,23 @@ class Quiz {
         return false;
     }
 
+    toJSON(): any  {
+        let o: any = {};
+
+        o.title = this.title;
+        o.author = this.author;
+        o.date = this.date;
+        o.description = this.description;
+
+        o.questions = [];
+
+        for (let q of this.questions) {
+            o.questions.push(q.toJSON());
+        }
+
+        return o;
+    }
+
     /**
      * Starts the execution of this quiz.
      */

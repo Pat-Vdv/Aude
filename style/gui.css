@@ -1457,7 +1457,6 @@ fieldset {
 }
 
 /* Grammar Designer Style */
-
 #grammar-designer-terminal-div, #grammar-designer-nonterminal-div {
     position: relative;
     box-sizing: border-box;
@@ -1484,12 +1483,8 @@ fieldset {
     list-style-type: none;
 }
 
-.grammar-designer-rule-item {
-    margin: 0.5em;
-}
-
-.grammar-designer-section-title {
-    font-weight: bold;
+.grammar-designer-hidden {
+    display: none !important;
 }
 
 /* Workaround to allow KaTeX math blocks to autowrap. */

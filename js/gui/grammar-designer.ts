@@ -6,77 +6,113 @@
 class GrammarDesigner {
     _ = window.AudeGUI.l10n;
 
+    static readonly EDITOR_CONTENT = ["div", [
+        ["div.row", [
+            ["div.col-md-6", [
+                ["div.card", [
+                    ["div.card-header", window.AudeGUI.l10n("Terminal symbols")],
+                    ["div.card-body", [
+                        ["div", { "#": "terminalSymbolsDiv" }],
+                        ["div.input-group", { "#": "terminalEditSpan" }, [
+                            ["input#grammar-designer-terminal-input.form-control", { "#": "terminalInput", "maxlength": "1", "placeholder": window.AudeGUI.l10n("Enter a symbol here") }],
+                            ["div.input-group-append", [
+                                ["button#grammar-designer-add-terminal-button.btn btn-outline-primary", { "#": "terminalAddButton" }, "+"],
+                                ["button#grammar-designer-remove-terminal-button.btn btn-outline-danger", { "#": "terminalRemoveButton" }, "×"],
+                            ]]
+                        ]]
+                    ]]
+                ]]
+            ]],
+            ["div.col-md-6", [
+                ["div.card", [
+                    ["div.card-header", window.AudeGUI.l10n("Non-terminal symbols")],
+                    ["div.card-body", [
+                        ["div", { "#": "nonTerminalSymbolsDiv" }],
+                        ["div.input-group", { "#": "nonTerminalEditSpan" }, [
+                            ["input#grammar-designer-nonterminal-input.form-control", { "#": "nonTerminalInput", "maxlength": "1", "placeholder": window.AudeGUI.l10n("Enter a symbol here") }],
+                            ["div.input-group-append", [
+                                ["button#grammar-designer-add-nonterminal-button.btn btn-outline-primary", { "#": "nonTerminalAddButton" }, "+"],
+                                ["button#grammar-designer-remove-nonterminal-button.btn btn-outline-danger", { "#": "nonTerminalRemoveButton" }, "×"],
+                            ]]
+                        ]]
+                    ]]
+                ]]
+            ]]
+        ]],
+        ["br"],
+        ["div.card", [
+            ["div.card-header", window.AudeGUI.l10n("Derivation rules")],
+            ["div.card-body", [
+                ["div.input-group", [
+                    ["div.input-group-prepend", [
+                        ["span.input-group-text", window.AudeGUI.l10n("Start symbol : ")],
+                    ]],
+                    ["select.form-control", { "#": "selectStartSymbol" }]
+                ]],
+                ["br"],
+                ["div.input-group", { "#": "newRuleSpan" }, [
+                    ["select.form-control", { "#": "selectNonTerminalNewRule" }],
+                    ["span", { "#": "spanNewRuleArrow" }],
+                    ["input.form-control", { "#": "inputLeftTerminalNewRule", "type": "text", "placeholder": window.AudeGUI.l10n("Left terminal symbols") }],
+                    ["input.form-control", { "#": "inputNonTerminalNewRule", "type": "text", "maxlength": "1", "placeholder": window.AudeGUI.l10n("Non terminal symbol") }],
+                    ["input.form-control", { "#": "inputRightTerminalNewRule", "type": "text", "placeholder": window.AudeGUI.l10n("Right terminal symbols") }],
+                    ["div.input-group-append", [
+                        ["button.btn btn-primary", { "#": "buttonNewRule" }, "+"]
+                    ]]
+                ]],
+                ["ol#grammar-designer-rules-list", { "#": "rulesList" }]
+            ]]
+        ]]
+    ]];
+
     currentGrammar: linearGrammar = new linearGrammar();
 
     containerDiv: HTMLElement;
     editable: boolean;
 
-    terminalSymbolsDiv: HTMLElement;
-    nonTerminalSymbolsDiv: HTMLElement;
-    rulesList: HTMLOListElement;
+    refs = {
+        terminalSymbolsDiv: <HTMLElement>undefined,
+        terminalEditSpan: <HTMLElement>undefined,
+        terminalInput: <HTMLInputElement>undefined,
+        terminalAddButton: <HTMLButtonElement>undefined,
+        terminalRemoveButton: <HTMLButtonElement>undefined,
 
-    terminalEditSpan: HTMLElement;
-    inputNonTerminal: HTMLInputElement;
+        nonTerminalSymbolsDiv: <HTMLElement>undefined,
+        nonTerminalEditSpan: <HTMLElement>undefined,
+        nonTerminalInput: <HTMLInputElement>undefined,
+        nonTerminalAddButton: <HTMLButtonElement>undefined,
+        nonTerminalRemoveButton: <HTMLButtonElement>undefined,
 
-    nonTerminalEditSpan: HTMLElement;
-    inputTerminal: HTMLInputElement;
-
-    selectStartSymbol: HTMLSelectElement;
-
-    newRuleSpan: HTMLElement;
-    selectNonTerminalNewRule: HTMLSelectElement;
-    inputLeftTerminalNewRule: HTMLInputElement;
-    inputNonTerminalNewRule: HTMLInputElement;
-    inputRightTerminalNewRule: HTMLInputElement;
+        rulesList: <HTMLOListElement>undefined,
+        selectStartSymbol: <HTMLSelectElement>undefined,
+        newRuleSpan: <HTMLElement>undefined,
+        selectNonTerminalNewRule: <HTMLSelectElement>undefined,
+        spanNewRuleArrow: <HTMLElement>undefined,
+        inputLeftTerminalNewRule: <HTMLInputElement>undefined,
+        inputNonTerminalNewRule: <HTMLInputElement>undefined,
+        inputRightTerminalNewRule: <HTMLInputElement>undefined,
+        buttonNewRule: <HTMLButtonElement>undefined
+    };
 
     constructor(designerDiv: HTMLElement, editable: boolean = true) {
         this.containerDiv = designerDiv;
         this.editable = editable;
 
-        let refs = {
-            terminalSymbolsDiv: <HTMLElement>null,
-            terminalEditSpan: <HTMLElement>null,
-            terminalInput: <HTMLInputElement>null,
-            terminalAddButton: <HTMLButtonElement>null,
-            terminalRemoveButton: <HTMLButtonElement>null,
+        designerDiv.appendChild(libD.jso2dom(GrammarDesigner.EDITOR_CONTENT, this.refs));
 
-            nonTerminalSymbolsDiv: <HTMLElement>null,
-            nonTerminalEditSpan: <HTMLElement>null,
-            nonTerminalInput: <HTMLInputElement>null,
-            nonTerminalAddButton: <HTMLButtonElement>null,
-            nonTerminalRemoveButton: <HTMLButtonElement>null,
-        };
-
-        // Initialize terminal symbols section.
-        designerDiv.appendChild(libD.jso2dom(
-            ["div#grammar-designer-terminal-div", [
-                ["div.grammar-designer-section-title", this._("Terminal symbols")],
-                ["span", { "#": "terminalEditSpan" }, [
-                    ["input#grammar-designer-terminal-input", { "#": "terminalInput", "maxlength": "1", "placeholder": this._("Enter symbol here") }],
-                    ["button#grammar-designer-add-terminal-button", { "#": "terminalAddButton" }, this._("Add")],
-                    ["button#grammar-designer-remove-terminal-button", { "#": "terminalRemoveButton" }, this._("Remove")],
-                ]],
-                ["div#grammar-designer-terminal-contents", { "#": "terminalSymbolsDiv" }, "n o t h i n g h e r e y e t"]
-            ]],
-            refs
-        ));
-        this.terminalSymbolsDiv = refs.terminalSymbolsDiv;
-        this.inputTerminal = refs.terminalInput;
-        this.terminalEditSpan = refs.terminalEditSpan;
-
-        this.inputTerminal.onkeyup = (e) => {
+        this.refs.terminalInput.onkeyup = (e) => {
             if (e.keyCode === 13) {
-                refs.terminalAddButton.click();
+                this.refs.terminalAddButton.click();
             }
         };
 
-        refs.terminalAddButton.onclick = (e) => {
-            let val = this.inputTerminal.value;
+        this.refs.terminalAddButton.onclick = (e) => {
+            let val = this.refs.terminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
 
-            this.inputTerminal.value = "";
+            this.refs.terminalInput.value = "";
 
             if (this.currentGrammar.hasNonTerminalSymbols(val)) {
                 window.AudeGUI.notify(this._("Error !"),
@@ -90,51 +126,34 @@ class GrammarDesigner {
 
             this.currentGrammar.addTerminalSymbol(val);
             this.updateDisplay();
-            this.inputTerminal.focus();
+            this.refs.terminalInput.focus();
         };
 
-        refs.terminalRemoveButton.onclick = (e) => {
-            let val = this.inputTerminal.value;
+        this.refs.terminalRemoveButton.onclick = (e) => {
+            let val = this.refs.terminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
 
-            this.inputTerminal.value = "";
+            this.refs.terminalInput.value = "";
 
             this.currentGrammar.removeTerminalSymbol(val);
             this.updateDisplay();
         };
 
-        // Intialize non-terminal symbols section.
-        designerDiv.appendChild(libD.jso2dom(
-            ["div#grammar-designer-nonterminal-div", [
-                ["div.grammar-designer-section-title", this._("Non terminal symbols")],
-                ["span", { "#": "nonTerminalEditSpan" }, [
-                    ["input#grammar-designer-nonterminal-input", { "#": "nonTerminalInput", "maxlength": "1", "placeholder": this._("Enter symbol here") }],
-                    ["button#grammar-designer-add-nonterminal-button", { "#": "nonTerminalAddButton" }, this._("Add")],
-                    ["button#grammar-designer-remove-nonterminal-button", { "#": "nonTerminalRemoveButton" }, this._("Remove")],
-                ]],
-                ["div#grammar-designer-nonterminal-contents", { "#": "nonTerminalSymbolsDiv" }, "n o t h i n g h e r e y e t"]
-            ]],
-            refs
-        ));
-        this.nonTerminalSymbolsDiv = refs.nonTerminalSymbolsDiv;
-        this.inputNonTerminal = refs.nonTerminalInput;
-        this.nonTerminalEditSpan = refs.nonTerminalEditSpan;
-
-        this.inputNonTerminal.onkeyup = (e) => {
+        this.refs.nonTerminalInput.onkeyup = (e) => {
             if (e.keyCode === 13) {
-                refs.nonTerminalAddButton.click();
+                this.refs.nonTerminalAddButton.click();
             }
         };
 
-        refs.nonTerminalAddButton.onclick = (e) => {
-            let val = this.inputNonTerminal.value;
+        this.refs.nonTerminalAddButton.onclick = (e) => {
+            let val = this.refs.nonTerminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
 
-            this.inputNonTerminal.value = "";
+            this.refs.nonTerminalInput.value = "";
 
             if (this.currentGrammar.hasTerminalSymbols(val)) {
                 window.AudeGUI.notify(this._("Error !"),
@@ -153,63 +172,25 @@ class GrammarDesigner {
             }
 
             this.updateDisplay();
-            this.inputNonTerminal.focus();
+            this.refs.nonTerminalInput.focus();
         };
 
-        refs.nonTerminalRemoveButton.onclick = (e) => {
-            let val = this.inputNonTerminal.value;
+        this.refs.nonTerminalRemoveButton.onclick = (e) => {
+            let val = this.refs.nonTerminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
 
-            this.inputNonTerminal.value = "";
+            this.refs.nonTerminalInput.value = "";
 
             this.currentGrammar.removeNonTerminalSymbols(val);
             this.updateDisplay();
         };
 
         // Initialize the rules section.
-        let rulesRefs = {
-            rulesList: <HTMLOListElement>null,
-            selectStartSymbol: <HTMLSelectElement>null,
-            newRuleSpan: <HTMLElement>null,
-            selectNonTerminalNewRule: <HTMLSelectElement>null,
-            spanNewRuleArrow: <HTMLElement>null,
-            inputLeftTerminalNewRule: <HTMLInputElement>null,
-            inputNonTerminalNewRule: <HTMLInputElement>null,
-            inputRightTerminalNewRule: <HTMLInputElement>null,
-            buttonNewRule: <HTMLButtonElement>null
-        }
-        designerDiv.appendChild(libD.jso2dom(
-            ["div#grammar-designer-rules-div", [
-                ["div.grammar-designer-section-title", this._("Derivation rules")],
-                ["div#grammar-designer-start-div", [
-                    ["span", this._("Start symbol : ")],
-                    ["select#grammar-designer-select-start", { "#": "selectStartSymbol" }]
-                ]],
-                ["span", { "#": "newRuleSpan" }, [
-                    ["select#grammar-designer-rule-select-nonterminal", { "#": "selectNonTerminalNewRule" }],
-                    ["span", { "#": "spanNewRuleArrow" }, ""],
-                    ["input.grammar-designer-input-new-rule",
-                        { "#": "inputLeftTerminalNewRule", "placeholder": this._("Left terminal symbols") }],
-                    ["input#grammar-designer-input-new-rule",
-                        { "#": "inputNonTerminalNewRule", "maxlength": "1", "placeholder": this._("Non terminal symbol") }],
-                    ["input#grammar-designer-input-new-rule",
-                        { "#": "inputRightTerminalNewRule", "placeholder": this._("Right terminal symbols") }],
-                    ["button#grammar-designer-button-new-rule",
-                        { "#": "buttonNewRule" }, this._("Add new rule")]
-                ]],
-                ["ol#grammar-designer-rules-list", { "#": "rulesList" }]
-            ]],
-            rulesRefs
-        ));
-        this.rulesList = rulesRefs.rulesList;
-        this.selectStartSymbol = rulesRefs.selectStartSymbol;
-        this.newRuleSpan = rulesRefs.newRuleSpan;
-
         // When the start symbol is changed, we assign it to the grammar.
-        this.selectStartSymbol.onchange = (e) => {
-            let selectedValue = this.selectStartSymbol.value;
+        this.refs.selectStartSymbol.onchange = (e) => {
+            let selectedValue = this.refs.selectStartSymbol.value;
             if (!selectedValue) {
                 return;
             }
@@ -218,58 +199,52 @@ class GrammarDesigner {
             this.updateDisplay();
         };
 
-        window.AudeGUI.Quiz.textFormat("$\\rightarrow$", rulesRefs.spanNewRuleArrow);
-
-        this.selectNonTerminalNewRule = rulesRefs.selectNonTerminalNewRule;
-
-        this.inputLeftTerminalNewRule = rulesRefs.inputLeftTerminalNewRule;
-        this.inputNonTerminalNewRule = rulesRefs.inputNonTerminalNewRule;
-        this.inputRightTerminalNewRule = rulesRefs.inputRightTerminalNewRule;
+        window.AudeGUI.Quiz.textFormat("$\\rightarrow$", this.refs.spanNewRuleArrow);
 
         // Disable left symbols when right isn't empty, and vice-versa.
-        this.inputLeftTerminalNewRule.oninput = (e) => {
-            if (this.inputLeftTerminalNewRule.value.length != 0) {
-                this.inputRightTerminalNewRule.setAttribute("disabled", "true");
+        this.refs.inputLeftTerminalNewRule.oninput = (e) => {
+            if (this.refs.inputLeftTerminalNewRule.value.length != 0) {
+                this.refs.inputRightTerminalNewRule.setAttribute("disabled", "true");
             } else {
-                this.inputRightTerminalNewRule.removeAttribute("disabled");
+                this.refs.inputRightTerminalNewRule.removeAttribute("disabled");
             }
         }
 
-        this.inputLeftTerminalNewRule.onkeyup = (e) => {
+        this.refs.inputLeftTerminalNewRule.onkeyup = (e) => {
             if (e.keyCode === 13) {
-                rulesRefs.buttonNewRule.click();
+                this.refs.buttonNewRule.click();
             }
         };
 
-        this.inputRightTerminalNewRule.oninput = (e) => {
-            if (this.inputRightTerminalNewRule.value.length != 0) {
-                this.inputLeftTerminalNewRule.setAttribute("disabled", "true");
+        this.refs.inputRightTerminalNewRule.oninput = (e) => {
+            if (this.refs.inputRightTerminalNewRule.value.length != 0) {
+                this.refs.inputLeftTerminalNewRule.setAttribute("disabled", "true");
             } else {
-                this.inputLeftTerminalNewRule.removeAttribute("disabled");
+                this.refs.inputLeftTerminalNewRule.removeAttribute("disabled");
             }
         };
 
-        this.inputRightTerminalNewRule.onkeyup = (e) => {
+        this.refs.inputRightTerminalNewRule.onkeyup = (e) => {
             if (e.keyCode === 13) {
-                rulesRefs.buttonNewRule.click();
+                this.refs.buttonNewRule.click();
             }
         }
 
-        this.inputNonTerminalNewRule.onkeydown = (e) => {
+        this.refs.inputNonTerminalNewRule.onkeydown = (e) => {
             if (e.keyCode === 13) {
-                rulesRefs.buttonNewRule.click();
+                this.refs.buttonNewRule.click();
             }
         };
 
-        rulesRefs.buttonNewRule.onclick = (e) => {
+        this.refs.buttonNewRule.onclick = (e) => {
             let terminalPart: string;
             let direction: "left" | "right";
 
-            if (this.inputLeftTerminalNewRule.value.length !== 0) {
-                terminalPart = this.inputLeftTerminalNewRule.value;
+            if (this.refs.inputLeftTerminalNewRule.value.length !== 0) {
+                terminalPart = this.refs.inputLeftTerminalNewRule.value;
                 direction = "right";
-            } else if (this.inputRightTerminalNewRule.value.length !== 0) {
-                terminalPart = this.inputRightTerminalNewRule.value;
+            } else if (this.refs.inputRightTerminalNewRule.value.length !== 0) {
+                terminalPart = this.refs.inputRightTerminalNewRule.value;
                 direction = "left";
             } else {
                 terminalPart = "ε";
@@ -277,15 +252,15 @@ class GrammarDesigner {
             }
 
             this.currentGrammar.addRule(
-                this.selectNonTerminalNewRule.value,
+                this.refs.selectNonTerminalNewRule.value,
                 terminalPart,
-                this.inputNonTerminalNewRule.value,
+                this.refs.inputNonTerminalNewRule.value,
                 direction
             );
 
             this.updateDisplay();
             // Re-focus the lefthand symbol <select>, so another rule can be added easily.
-            this.selectNonTerminalNewRule.focus();
+            this.refs.selectNonTerminalNewRule.focus();
         };
 
 
@@ -322,10 +297,10 @@ class GrammarDesigner {
      */
     updateDisplay(): void {
         // Update symbols.
-        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getTerminalSymbols()), this.terminalSymbolsDiv, true);
-        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getNonTerminalSymbols()), this.nonTerminalSymbolsDiv, true);
+        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getTerminalSymbols()), this.refs.terminalSymbolsDiv, true);
+        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getNonTerminalSymbols()), this.refs.nonTerminalSymbolsDiv, true);
 
-        this.rulesList.innerHTML = "";
+        this.refs.rulesList.innerHTML = "";
         let ruleNumber = 0;
         let rules = Array.from(this.currentGrammar.getProductionRules()) as Array<Rule>;
         rules.sort((a, b) => {
@@ -366,14 +341,14 @@ class GrammarDesigner {
                 newItem.appendChild(ruleDeleteButton);
             }
 
-            this.rulesList.appendChild(newItem);
+            this.refs.rulesList.appendChild(newItem);
 
             ruleNumber++;
         }
 
         // Update start symbol select options.
-        this.selectStartSymbol.innerHTML = "";
-        this.selectNonTerminalNewRule.innerHTML = "";
+        this.refs.selectStartSymbol.innerHTML = "";
+        this.refs.selectNonTerminalNewRule.innerHTML = "";
         for (let nonTerminalSymbol of this.currentGrammar.getNonTerminalSymbols()) {
             let newOptionStart = libD.jso2dom(
                 ["option", { "value": nonTerminalSymbol }, String(nonTerminalSymbol)]
@@ -382,24 +357,24 @@ class GrammarDesigner {
             if (nonTerminalSymbol === this.currentGrammar.getStartSymbol()) {
                 newOptionStart.setAttribute("selected", "true");
             }
-            this.selectStartSymbol.appendChild(newOptionStart);
+            this.refs.selectStartSymbol.appendChild(newOptionStart);
 
             let newOptionNewRule = libD.jso2dom(
                 ["option", { "value": nonTerminalSymbol }, String(nonTerminalSymbol)]
             );
-            this.selectNonTerminalNewRule.appendChild(newOptionNewRule);
+            this.refs.selectNonTerminalNewRule.appendChild(newOptionNewRule);
         }
 
         if (!this.editable) {
-            this.selectStartSymbol.setAttribute("disabled", "true");
-            this.newRuleSpan.style.display = "none";
-            this.terminalEditSpan.style.display = "none";
-            this.nonTerminalEditSpan.style.display = "none";
+            this.refs.selectStartSymbol.setAttribute("disabled", "true");
+            this.refs.newRuleSpan.classList.add("grammar-designer-hidden");
+            this.refs.terminalEditSpan.classList.add("grammar-designer-hidden");
+            this.refs.nonTerminalEditSpan.classList.add("grammar-designer-hidden");
         } else {
-            this.selectStartSymbol.removeAttribute("disabled");
-            this.newRuleSpan.style.display = "inherit";
-            this.terminalEditSpan.style.display = "inherit";
-            this.nonTerminalEditSpan.style.display = "inherit";
+            this.refs.selectStartSymbol.removeAttribute("disabled");
+            this.refs.newRuleSpan.classList.remove("grammar-designer-hidden");
+            this.refs.terminalEditSpan.classList.remove("grammar-designer-hidden");
+            this.refs.nonTerminalEditSpan.classList.remove("grammar-designer-hidden");
         }
     }
 
