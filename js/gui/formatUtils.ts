@@ -1,5 +1,3 @@
-/// <reference path="../typings/katex.d.ts" />
-
 /**
  * Namespace containing useful functions for text formatting.
  */
@@ -11,37 +9,35 @@ namespace FormatUtils {
      * @param s - The iterable object (set, array, etc...) to format.
      */
   export function set2Latex(s: libD.Set): string {
-    let latex = "$\\{";
+    let latex = "$\\left\\lbrace ";
 
-    let size = s.size;
-    if (size === 0) {
-      return "$$\\emptyset$$";
+    if (s.size === 0) {
+      return "$\\emptyset$";
     }
 
     let i = 0;
     for (let elem of s) {
       latex += elem;
 
-      if (i != size - 1) {
+      if (i != s.size - 1) {
         latex += ", ";
       }
       i++;
     }
 
-    return latex + "\\}$";
+    return latex + " \\right\\rbrace$";
   }
 
   /**
   * Formats a regular expression to a LaTeX string.
+  * @param s - The regular expression to convert.
   */
   export function regexp2Latex(regexp: string): string {
-    let latex = "$$";
-
-    latex += regexp.replace(/\*/g, "^*");
-    latex.replace(/\(/g, "\left(");
-    latex.replace(/\)/g, "\right)");
-
-    return latex + "$$";
+    return "$ " + regexp
+      .replace(/\*/g, "^*")
+      .replace(/\(/g, "\\left(")
+      .replace(/\)/g, "\\right)")
+      + " $";
   }
 
   /** 

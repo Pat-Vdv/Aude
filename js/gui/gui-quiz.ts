@@ -17,77 +17,22 @@
 
 /* globals renderMathInElement, libD, Automaton, Set, aude, automaton2svg, audescript */
 
-// This file contains the quiz engine.
-"use strict";
-
-var AudeGUI = window.AudeGUI;
-var _ = AudeGUI.l10n;
-
-var automataContainer = null;
-var divQuiz = null;
-
-var automataAreEquivalent = null;
-var object2automaton = null;
-var regexToAutomaton = null;
-
-/** Forwards to ```FormatUtils.textFormat``` */
-function textFormat(text: string, node?: HTMLElement, html?: boolean) {
-    return FormatUtils.textFormat(text, node, html);
-}
-
-// evaluates an audescript expression, ensuring determinization,
-// minimization, completion and complementation can be used.
-// autoAnsw and A are two variables that can be accessed from the audescript
-// expression.
-function ajsEval(script, autoAnsw, A?) {
-    var res = null;
-    AudeGUI.Runtime.loadIncludes(
-        ["determinization", "minimization", "completion", "complementation"],
-        function () {
-            try {
-                res = eval(
-                    "(function() {" +
-                    audescript.toJS(`
-                                from determinization import isDeterminized
-                                from minimization    import isMinimized
-                                from completion      import isCompleted
-                                from complementation import automataAreComplement
-
-                                return ` + script
-                    ).code +
-                    "}());"
-                );
-            } catch (e) {
-                AudeGUI.notify(
-                    _("Loading the quiz failed"),
-                    libD.format(
-                        _("The audescript Code isn't correct: {0}"),
-                        e.message,
-                        "error"
-                    )
-                );
-                throw e;
-            }
-        }
-    );
-    return res;
-}
+let automataContainer = null;
+let divQuiz = null;
 
 class Quiz {
+    _ = window.AudeGUI.l10n;
+
     /** DOM input element to load a quiz */
     static fileInput: HTMLInputElement;
-    /** export textFormat */
-    static textFormat = textFormat;
-
-    static _ajsEval = ajsEval;
 
     /**  Initialize the quiz */
     static load() {
         AutomatonPrograms.loadPrograms();
         automataContainer = document.getElementById("automata-container");
         divQuiz = document.getElementById("div-quiz");
-        AudeGUI.Quiz.fileInput = document.getElementById("filequiz");
-        AudeGUI.Quiz.fileInput.onchange = openQuiz;
+        window.AudeGUI.Quiz.fileInput = document.getElementById("filequiz");
+        window.AudeGUI.Quiz.fileInput.onchange = openQuiz;
     }
 
     /** Start a quiz from string (JSON). */
@@ -98,10 +43,10 @@ class Quiz {
             Quiz.currentQuiz.start();
             //startQuiz(JSON.parse(code));
         } catch (e) {
-            AudeGUI.notify(
-                _("Loading the quiz failed"),
+            window.AudeGUI.notify(
+                window.AudeGUI.l10n("Loading the quiz failed"),
                 libD.format(
-                    _("The quiz seems to be malformed: {0}"),
+                    window.AudeGUI.l10n("The quiz seems to be malformed: {0}"),
                     e.message,
                     "error"
                 )
@@ -145,12 +90,12 @@ class Quiz {
         this.description = obj.description || "";
 
         if (!(obj.questions && obj.questions instanceof Array)) {
-            throw new Error(_("The quiz doesn't have its list of question."));
+            throw new Error(window.AudeGUI.l10n("The quiz doesn't have its list of question."));
         }
 
         for (let questionObj of obj.questions) {
             if (!questionObj.type) {
-                throw new Error(_("A question in the quiz doesn't have a type specified !"));
+                throw new Error(window.AudeGUI.l10n("A question in the quiz doesn't have a type specified !"));
             }
 
             let newQuestion: Question;
@@ -170,11 +115,11 @@ class Quiz {
                     break;
 
                 default:
-                    throw new Error(libD.format(_("Unknown question type : {0}"), questionObj.type));
+                    throw new Error(libD.format(window.AudeGUI.l10n("Unknown question type : {0}"), questionObj.type));
             }
 
             if (!newQuestion.fromJSON(questionObj)) {
-                throw new Error(_("Formatting error in a question !"));
+                throw new Error(window.AudeGUI.l10n("Formatting error in a question !"));
             };
             this.questions.push(newQuestion);
         }
@@ -182,7 +127,7 @@ class Quiz {
         return false;
     }
 
-    toJSON(): any  {
+    toJSON(): any {
         let o: any = {};
 
         o.title = this.title;
@@ -203,23 +148,16 @@ class Quiz {
      * Starts the execution of this quiz.
      */
     start() {
-        if (AudeGUI.getCurrentMode() !== "design") {
-            AudeGUI.setCurrentMode("design");
+        if (window.AudeGUI.getCurrentMode() !== "design") {
+            window.AudeGUI.setCurrentMode("design");
         }
 
         automataContainer.style.display = "none";
 
-        AudeGUI.Runtime.loadIncludes(["equivalence", "regex2automaton", "automaton2json"],
-            () => {
-                automataAreEquivalent = audescript.m("equivalence").automataAreEquivalent;
-                object2automaton = audescript.m("automaton2json").object2automaton;
-                regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
-            }
-        );
-        AudeGUI.addAutomaton();
+        window.AudeGUI.addAutomaton();
 
         if (!(this.questions && this.questions instanceof Array)) {
-            throw new Error(_("The quiz doesn't have its list of question."));
+            throw new Error(window.AudeGUI.l10n("The quiz doesn't have its list of question."));
         }
 
         this.currentQuestionIndex = -1;
@@ -237,18 +175,18 @@ class Quiz {
         divQuiz.textContent = "";
         divQuiz.classList.add("enabled");
 
-        var refs: any = {};
+        let refs: any = {};
         divQuiz.appendChild(libD.jso2dom([
             ["h1#quiz-title", [
-                ["#", this.title ? _("Quiz:") + " " : _("Quiz")],
+                ["#", this.title ? window.AudeGUI.l10n("Quiz:") + " " : window.AudeGUI.l10n("Quiz")],
                 ["span", { "#": "quizTitleContent" }]
             ]],
             ["h2#quiz-author", { "#": "author" }],
             ["div#quiz-descr", { "#": "descr" }],
-            ["a#close-quiz", { "#": "closeQuiz", "href": "#" }, _("Close the Quiz")],
+            ["a#close-quiz", { "#": "closeQuiz", "href": "#" }, window.AudeGUI.l10n("Close the Quiz")],
             ["div#quiz-content", { "#": "content" },
                 ["div.button-container",
-                    ["button", { "#": "startQuiz" }, _("Start the Quiz")]]]
+                    ["button", { "#": "startQuiz" }, window.AudeGUI.l10n("Start the Quiz")]]]
         ], refs));
 
         FormatUtils.textFormat(this.title || "", refs.quizTitleContent);
@@ -281,9 +219,9 @@ class Quiz {
             }
         } catch (e) {
             if (typeof e === "string") {
-                AudeGUI.notify(
-                    _("Error in the Quiz"),
-                    libD.format(_("There is an error in the Quiz: {0}"), e),
+                window.AudeGUI.notify(
+                    window.AudeGUI.l10n("Error in the Quiz"),
+                    libD.format(window.AudeGUI.l10n("There is an error in the Quiz: {0}"), e),
                     "error"
                 );
             } else {
@@ -304,44 +242,31 @@ class Quiz {
 
     showCorrection() {
         this.refs.content.textContent = "";
-        this.refs.content.appendChild(libD.jso2dom(["p", _("The Quiz is finished! Here are the details of the correction.")]));
+        this.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
 
-        var refs: any = {};
+        let refs: any = {};
 
-        var answers = libD.jso2dom(["table#correction-table",
+        let answers = libD.jso2dom(["table#correction-table",
             ["tr", [
-                ["th", _("Instruction")],
-                ["th", _("Correct answer?")],
-                ["th", _("Comments")]
+                ["th", this._("Instruction")],
+                ["th", this._("Correct answer?")],
+                ["th", this._("Comments")]
             ]]]);
 
-        for (var i = 0, len = this.answers.length; i < len; ++i) {
-            var question_i = this.questions[i];
+        for (let i = 0, len = this.answers.length; i < len; ++i) {
+            let question_i = this.questions[i];
 
             answers.appendChild(libD.jso2dom(["tr", [
                 ["td.qinst", { "#": "answerInstr" }, [
                     ["span.qid", (i + 1) + ". "],
                     ["div.qinstr-content"]
                 ]],
-                ["td.qstate", this.answers[i].isCorrect ? _("Yes") : _("No")],
+                ["td.qstate", this.answers[i].isCorrect ? this._("Yes") : this._("No")],
                 ["td.qcmt", { "#": "answerCmt" }]
             ]], refs));
 
-            var reasons = this.answers[i].reasons;
+            let reasons = this.answers[i].reasons;
 
-            /*if (reasons[1]) {
-                var ul = document.createElement("ul");
-
-                for (var j = 0, leng = reasons.length; j < leng; ++j) {
-                    var li = document.createElement("li");
-                    li.innerHTML = reasons[j];
-                    ul.appendChild(li);
-                }
-
-                refs.answerCmt.appendChild(ul);
-            } else {
-                refs.answerCmt.innerHTML = reasons[0] || "";
-            }*/
             FormatUtils.textFormat(reasons, refs.answerCmt);
 
             FormatUtils.textFormat(question_i.wordingText, refs.answerInstr.lastChild, question_i.isWordingHtml);
@@ -351,8 +276,8 @@ class Quiz {
             // For mcq
             if (question_i.category === QuestionCategory.MCQ) {
                 let mcq = <MCQQuestion>question_i;
-                var possibilities = mcq.wordingChoices;
-                for (var j = 0, leng = possibilities.length; j < leng; ++j) {
+                let possibilities = mcq.wordingChoices;
+                for (let j = 0, leng = possibilities.length; j < leng; ++j) {
                     refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
                         ["span.quiz-answer-id", (possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (i + 1)) + ". "],
                         ["span", { "#": i + "content" }]
@@ -368,9 +293,9 @@ class Quiz {
                     } else if (possibilities[j].html) {
                         refs[i + "content"].innerHTML = possibilities[j].html;
                     } else if (possibilities[j].text) {
-                        textFormat(possibilities[j].text, refs[i + "content"]);
+                        FormatUtils.textFormat(possibilities[j].text, refs[i + "content"]);
                     } else if (possibilities[j].html) {
-                        textFormat(possibilities[j].html, refs[i + "content"], true);
+                        FormatUtils.textFormat(possibilities[j].html, refs[i + "content"], true);
                     }
                 }
             }
@@ -378,8 +303,8 @@ class Quiz {
 
         this.refs.content.appendChild(answers);
         this.refs.content.appendChild(libD.jso2dom([
-            ["p", _("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
-            ["div.button-container", ["button", { "#": "prev" }, _("Previous page")]]
+            ["p", this._("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
+            ["div.button-container", ["button", { "#": "prev" }, this._("Previous page")]]
         ], refs));
         refs.prev.onclick = () => this.prevNextQuestion(true, false);
     }
@@ -387,9 +312,9 @@ class Quiz {
     askCurrentQuestion() {
         let q = this.questions[this.currentQuestionIndex];
 
-        var qid = this.currentQuestionIndex + 1;
+        let qid = this.currentQuestionIndex + 1;
 
-        var refs: any = {};
+        let refs: any = {};
 
         this.currentAnswersRefs = refs;
         this.refs.content.textContent = "";
@@ -399,8 +324,8 @@ class Quiz {
         this.refs.content.appendChild(
             libD.jso2dom([
                 ["div.button-container", [
-                    ["button", { "#": "prev" }, _("Previous question")],
-                    ["button", { "#": "ok" }, _("Next question")]
+                    ["button", { "#": "prev" }, this._("Previous question")],
+                    ["button", { "#": "ok" }, this._("Next question")]
                 ]]
             ], refs)
         );
@@ -420,23 +345,23 @@ class Quiz {
 
     close() {
         Quiz.currentQuiz = undefined;
-        AudeGUI.removeCurrentAutomaton();
+        window.AudeGUI.removeCurrentAutomaton();
         automataContainer.style.display = "";
         automataContainer.style.top = "";
         divQuiz.textContent = "";
         divQuiz.classList.remove("enabled");
-        AudeGUI.mainDesigner.redraw();
-        AudeGUI.Results.redraw();
+        window.AudeGUI.mainDesigner.redraw();
+        window.AudeGUI.Results.redraw();
     }
 }
 
-AudeGUI.Quiz = Quiz;
+window.AudeGUI.Quiz = Quiz;
 
 // convert a JS Object representing an automaton to an actual automaton.
 // This JS object may come from a JSON representation of the automaton.
 function automatonFromObj(o) {
-    var k = 0;
-    var A = new Automaton();
+    let k = 0;
+    let A = new Automaton();
 
     A.setInitialState(o.states[0]);
 
@@ -460,234 +385,48 @@ window.automatonFromObj = automatonFromObj;
  * Opens a quiz from the file input.
  */
 function openQuiz() {
-    var freader = new FileReader();
+    let freader = new FileReader();
 
     freader.onload = () => {
-        AudeGUI.Quiz.open(freader.result);
+        window.AudeGUI.Quiz.open(freader.result);
     };
 
-    freader.readAsText(AudeGUI.Quiz.fileInput.files[0], "utf-8");
-}
-
-// Get the automaton from the question
-function getQuestionAutomaton(q) {
-    if (q.automatonAnswer) {
-        try {
-            return svg2automaton(q.automatonAnswer);
-        } catch (e) {
-            console.error(e);
-            throw _("Automaton given in the quiz is not correct.");
-        }
-    } else if (q.regex) {
-        try {
-            return regexToAutomaton(q.regex);
-        } catch (e) {
-            console.error(e);
-            throw _("Regular expression given in the quiz is not valid.");
-        }
-    }
-}
-
-// Before leaving a question in a quiz, we validate the answers to this
-// question.
-function validateQuestionBeingLeft(quiz, questionBeingLeft) {
-    if (typeof questionBeingLeft === "number" && questionBeingLeft >= 0) {
-        var q = quiz.questions[questionBeingLeft];
-        var r = quiz.answers[questionBeingLeft];
-
-        quiz.answers[questionBeingLeft].reasons = [];
-
-        switch (q.type) {
-            case "mcq":
-                var answers = r.userResponse = new libD.Set();
-
-                var possibilities = q.possibilities;
-
-                for (var j = 0, leng = possibilities.length; j < leng; ++j) {
-                    if (quiz.currentAnswersRefs["answer-" + j].checked) {
-                        answers.add(possibilities[j].hasOwnProperty("id") ? possibilities[j].id : j + 1);
-                    }
-                }
-
-                var diff = answers.symDiff(q.answers);
-
-                r.isCorrect = diff.card() === 0;
-                if (!r.isCorrect) {
-                    var diffL = aude.toArray(diff);
-                    diffL.sort();
-                    r.reasons.push(libD.format(_("Wrong answer for {0}."), diffL.toString()));
-                }
-
-                break;
-
-            case "word": {
-                let autoAnsw = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
-
-                var words = q.words;
-                var regex = "";
-
-                r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
-
-                if (autoAnsw) {
-                    for (var i = 0, len = words.length; i < len; ++i) {
-                        if (!autoAnsw.acceptedWord(words[i])) {
-                            r.isCorrect = false;
-                            r.reasons.push(
-                                words[i]
-                                    ? libD.format(
-                                        _("Word <i>{0}</i> is not accepted while it should be."),
-                                        words[i]
-                                    )
-                                    : _("The empty word is not accepted while it should be.")
-                            );
-                        }
-
-                        if (regex) {
-                            regex += "+";
-                        }
-
-                        regex += words[i].replace(/([^0-9a-zA-Z])/g, "\\$1");
-                    }
-
-                    if (!r.reasons[0]) {
-                        r.isCorrect = automataAreEquivalent(regexToAutomaton(regex), autoAnsw);
-                        if (!r.isCorrect) {
-                            r.reasons.push(_("The given automaton accepts too many words."));
-                        }
-                    }
-                } else {
-                    r.isCorrect = false;
-                    r.reasons.push(_("Question was not answered."));
-                }
-                break;
-            }
-
-            case "regexEquiv":
-            case "automatonEquiv": {
-                let autoAnsw;
-
-                if (q.automatonAnswer) {
-                    autoAnsw = AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex);
-                    r.userResponse = AudeGUI.mainDesigner.getSVG(AudeGUI.mainDesigner.currentIndex);
-                } else if (q.regex) {
-                    r.userResponse = autoAnsw = (document.getElementById("regexUserResponse") as HTMLInputElement).value;
-                    try {
-                        autoAnsw = regexToAutomaton(autoAnsw);
-                    } catch (e) {
-                        throw _("Regular expression given in the quiz is not valid.");
-                    }
-                } else {
-                    throw _("No automaton or regular expression was given in the quiz.");
-                }
-
-                if (autoAnsw) {
-                    var A = getQuestionAutomaton(q);
-
-                    if (q.audescriptCode) {
-                        r.isCorrect = automataAreEquivalent(A, autoAnsw) && ajsEval(q.audescriptCode, autoAnsw, A);
-                        if (!r.isCorrect) {
-                            var atomicScript = q.audescriptCode.split(" and ");
-
-                            if (!automataAreEquivalent(A, autoAnsw)) {
-                                r.reasons.push(
-                                    q.automatonAnswer
-                                        ? _("The given automaton isn’t equivalent to the expected one.")
-                                        : _("The given regular expression isn’t equivalent to the expected one.")
-                                );
-                            }
-
-                            var cond = ["determinized", "minimized", "complete"];
-
-                            for (var i = 0; i < atomicScript.length; i++) {
-                                if (!ajsEval(atomicScript[i], autoAnsw)) {
-                                    for (var j = 0, res = 0; j < cond.length; j++) {
-                                        res = atomicScript[i].toLowerCase().search(cond[j]);
-                                        (res !== -1)
-                                            ? r.reasons.push(_("The given automaton isn’t " + cond[j] + "."))
-                                            : "";
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        r.isCorrect = automataAreEquivalent(A, autoAnsw);
-                        if (!r.isCorrect) {
-                            if (q.examples instanceof Array) {
-                                for (var i = 0, len = q.examples.length; i < len; ++i) {
-                                    if (!autoAnsw.acceptedWord(q.examples[i])) {
-                                        r.reasons.push(
-                                            q.examples[i]
-                                                ? libD.format(_("Word <i>{0}</i> is not accepted while it should be."), q.examples[i])
-                                                : _("The empty word is not accepted while it should be.")
-                                        );
-                                    }
-                                }
-                            }
-
-                            if (q.counterExamples instanceof Array) {
-                                for (var i = 0, len = q.counterExamples.length; i < len; ++i) {
-                                    if (autoAnsw.acceptedWord(q.counterExamples[i])) {
-                                        r.reasons.push(
-                                            q.counterExamples[i]
-                                                ? libD.format(_("Word <i>{0}</i> is accepted while it shouldn’t be."), q.counterExamples[i])
-                                                : _("The empty word is accepted while it shouldn’t be.")
-                                        );
-                                    }
-                                }
-                            }
-
-                            if (!r.reasons[0]) {
-                                r.reasons.push(
-                                    q.automatonAnswer
-                                        ? _("The given automaton isn’t equivalent to the expected one.")
-                                        : _("The given regular expression isn’t equivalent to the expected one.")
-                                );
-                            }
-                        }
-                    }
-                } else {
-                    r.isCorrect = false;
-                    r.reasons.push(_("Question was not answered."));
-                }
-                break;
-            }
-        }
-    }
+    freader.readAsText(window.AudeGUI.Quiz.fileInput.files[0], "utf-8");
 }
 
 // Show the correction of a quiz (when all questions have been answered)
 function showCorrection(quiz) {
     quiz.refs.content.textContent = "";
-    quiz.refs.content.appendChild(libD.jso2dom(["p", _("The Quiz is finished! Here are the details of the correction.")]));
+    quiz.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
 
-    var refs: any = {};
+    let refs: any = {};
 
-    var answers = libD.jso2dom(["table#correction-table",
+    let answers = libD.jso2dom(["table#correction-table",
         ["tr", [
-            ["th", _("Instruction")],
-            ["th", _("Correct answer?")],
-            ["th", _("Comments")]
+            ["th", this._("Instruction")],
+            ["th", this._("Correct answer?")],
+            ["th", this._("Comments")]
         ]]]);
 
-    for (var i = 0, len = quiz.answers.length; i < len; ++i) {
-        var question_i = quiz.questions[i];
+    for (let i = 0, len = quiz.answers.length; i < len; ++i) {
+        let question_i = quiz.questions[i];
 
         answers.appendChild(libD.jso2dom(["tr", [
             ["td.qinst", { "#": "answerInstr" }, [
                 ["span.qid", (question_i.hasOwnProperty("id") ? question_i.id : (i + 1)) + ". "],
                 ["div.qinstr-content"]
             ]],
-            ["td.qstate", quiz.answers[i].isCorrect ? _("Yes") : _("No")],
+            ["td.qstate", quiz.answers[i].isCorrect ? this._("Yes") : this._("No")],
             ["td.qcmt", { "#": "answerCmt" }]
         ]], refs));
 
-        var reasons = quiz.answers[i].reasons;
+        let reasons = quiz.answers[i].reasons;
 
         if (reasons[1]) {
-            var ul = document.createElement("ul");
+            let ul = document.createElement("ul");
 
-            for (var j = 0, leng = reasons.length; j < leng; ++j) {
-                var li = document.createElement("li");
+            for (let j = 0, leng = reasons.length; j < leng; ++j) {
+                let li = document.createElement("li");
                 li.innerHTML = reasons[j];
                 ul.appendChild(li);
             }
@@ -698,18 +437,18 @@ function showCorrection(quiz) {
         }
 
         if (question_i.instructionHTML) {
-            textFormat(question_i.instructionHTML, refs.answerInstr.lastChild, true);
+            FormatUtils.textFormat(question_i.instructionHTML, refs.answerInstr.lastChild, true);
         } else {
-            textFormat(question_i.instruction, refs.answerInstr.lastChild);
+            FormatUtils.textFormat(question_i.instruction, refs.answerInstr.lastChild);
         }
 
         refs.answerInstr.appendChild(document.createElement("ul"));
         refs.answerInstr.lastChild.className = "possibilities";
 
-        var possibilities = question_i.possibilities;
+        let possibilities = question_i.possibilities;
         // For mcq
         if (possibilities) {
-            for (var j = 0, leng = possibilities.length; j < leng; ++j) {
+            for (let j = 0, leng = possibilities.length; j < leng; ++j) {
                 refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
                     ["span.quiz-answer-id", (possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (i + 1)) + ". "],
                     ["span", { "#": i + "content" }]
@@ -725,9 +464,9 @@ function showCorrection(quiz) {
                 } else if (possibilities[j].html) {
                     refs[i + "content"].innerHTML = possibilities[j].html;
                 } else if (possibilities[j].text) {
-                    textFormat(possibilities[j].text, refs[i + "content"]);
+                    FormatUtils.textFormat(possibilities[j].text, refs[i + "content"]);
                 } else if (possibilities[j].html) {
-                    textFormat(possibilities[j].html, refs[i + "content"], true);
+                    FormatUtils.textFormat(possibilities[j].html, refs[i + "content"], true);
                 }
             }
         }
@@ -735,8 +474,8 @@ function showCorrection(quiz) {
 
     quiz.refs.content.appendChild(answers);
     quiz.refs.content.appendChild(libD.jso2dom([
-        ["p", _("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
-        ["div.button-container", ["button", { "#": "prev" }, _("Previous page")]]
+        ["p", this._("We don't want to give you a mark. Your progress is the most important thing, above any arbitrary, absolutely meaningless mark. Keep your efforts ;-)")],
+        ["div.button-container", ["button", { "#": "prev" }, this._("Previous page")]]
     ], refs));
     refs.prev.onclick = () => { }
 }
@@ -744,12 +483,12 @@ function showCorrection(quiz) {
 // Convert an SVG code to an automaton.
 // Used to validate a quiz.
 function svg2automaton(svg: string): Automaton {
-    var div = document.createElement("div");
-    var designer = new AudeDesigner(div, true);
+    let div = document.createElement("div");
+    let designer = new AudeDesigner(div, true);
     document.getElementById("div-quiz").appendChild(div);
     div.style.display = "none";
     designer.setAutomatonCode(svg);
-    var A = designer.getAutomaton(designer.currentIndex);
+    let A = designer.getAutomaton(designer.currentIndex);
     document.getElementById("div-quiz").removeChild(div);
     return A;
 }

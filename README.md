@@ -32,7 +32,7 @@ Just open `index.html` in a recent browser.
 With Chrome / Chromium and newest version of Opera, you need to run a web
 server. Mac / Linux users can run the following command in Aude's folder:
 
-    python -m SimpleHTTPServer 8010
+    python -m "http.server" 8010 --bind localhost
 
 Then, Aude is accessible at http://localhost:8010/
 

@@ -97,6 +97,8 @@ declare class Automaton {
 
     getLastTakenTransitions(): libD.Set;
     copy(): Automaton;
+
+    static parse(code: string): Automaton;
 }
 
 declare var automaton_code: (a: Automaton) => string;

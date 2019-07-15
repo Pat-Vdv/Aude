@@ -1,4 +1,5 @@
 declare namespace libD {
+  export var wm: any;
   
   export class Set {
     constructor(values?: Iterable<any>);
@@ -59,4 +60,10 @@ declare namespace libD {
   export function jso2dom(o: any, refs?: any, parent?: Node, childrenListing?: any): HTMLElement;
 
   export function getIcon(icon: string, iconSize?: string, iconPack?: string, iconExtension?: string): string;
+  export function b64EncodeUnicode(s: string): string;
+  export function b64DecodeUnicode(s: string): string;
+
+  export function l10n(): (s: string) => string;
+  export var need: any;
+  export var notify: any;
 }

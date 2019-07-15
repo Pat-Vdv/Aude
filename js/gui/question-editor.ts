@@ -2,31 +2,31 @@
  * This class provides a component to edit and create questions.
  */
 class QuestionEditor {
-    _ = AudeGUI.l10n;
+    _ = window.AudeGUI.l10n;
 
     /** 
      * The object (to be passed to jso2dom) to be displayed 
      * when there is no preview for the wording text. 
      */
-    private static readonly NO_PREVIEW_MESSAGE = ["p.text-muted", AudeGUI.l10n("Write your question in the text area and its rendered preview will appear here.")];
+    private static readonly NO_PREVIEW_MESSAGE = ["p.text-muted", window.AudeGUI.l10n("Write your question in the text area and its rendered preview will appear here.")];
     /** The object (to be passed to jso2dom) for the common inputs of a question editor. */
     private static readonly COMMON_INPUT_CONTENT =
         ["div", [
-            ["h4", AudeGUI.l10n("Wording")],
-            ["h5", AudeGUI.l10n("Wording Text")],
+            ["h4", window.AudeGUI.l10n("Wording")],
+            ["h5", window.AudeGUI.l10n("Wording Text")],
             ["div.row", [
                 ["div.col-md-6", [
                     ["textarea#question-editor-wording-text-area.form-control", { "#": "wordingTextField", "rows": "10" }],
                     ["br"],
                     ["div.form-check", [
                         ["input#question-editor-wording-html-check.form-check-input", { "#": "wordingTextHTMLCheck", "type": "checkbox" }],
-                        ["label.form-check-label", { "for": "question-editor-wording-html-check" }, AudeGUI.l10n("Parse HTML")]
+                        ["label.form-check-label", { "for": "question-editor-wording-html-check" }, window.AudeGUI.l10n("Parse HTML")]
                     ]]
                 ]],
 
                 ["div.col-md-6", [
                     ["div#question-editor-wording-preview-card.card", [
-                        ["div.card-header", AudeGUI.l10n("Preview")],
+                        ["div.card-header", window.AudeGUI.l10n("Preview")],
                         ["div.card-body", { "#": "wordingTextPreview" }, [
                             QuestionEditor.NO_PREVIEW_MESSAGE
                         ]]
@@ -34,27 +34,27 @@ class QuestionEditor {
                 ]]
             ]],
 
-            ["h5", AudeGUI.l10n("Wording Details")],
+            ["h5", window.AudeGUI.l10n("Wording Details")],
             ["div.row", [
                 ["div.col-md-6", [
-                    ["span.font-weight-bold", AudeGUI.l10n("Element N°1")],
+                    ["span.font-weight-bold", window.AudeGUI.l10n("Element N°1")],
                     ["select#question-editor-wording-figure1-type.form-control", { "#": "fig1TypeSelect" }, [
-                        ["option", { "value": "None", "selected": "true" }, AudeGUI.l10n("None")],
-                        ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
-                        ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
-                        ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Regular Grammar")],
+                        ["option", { "value": "None", "selected": "true" }, window.AudeGUI.l10n("None")],
+                        ["option", { "value": "Automaton" }, window.AudeGUI.l10n("Automaton")],
+                        ["option", { "value": "Regexp" }, window.AudeGUI.l10n("Regular expression")],
+                        ["option", { "value": "LinearGrammar" }, window.AudeGUI.l10n("Regular Grammar")],
                     ]],
                     ["br"],
                     ["div#question-editor-wording-figure1-content", { "#": "fig1Content" }]
                 ]],
 
                 ["div.col-md-6", [
-                    ["span.font-weight-bold", AudeGUI.l10n("Element N°2")],
+                    ["span.font-weight-bold", window.AudeGUI.l10n("Element N°2")],
                     ["select#question-editor-wording-figure1-type.form-control", { "#": "fig2TypeSelect" }, [
-                        ["option", { "value": "None", "selected": "true" }, AudeGUI.l10n("None")],
-                        ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
-                        ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
-                        ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Regular Grammar")],
+                        ["option", { "value": "None", "selected": "true" }, window.AudeGUI.l10n("None")],
+                        ["option", { "value": "Automaton" }, window.AudeGUI.l10n("Automaton")],
+                        ["option", { "value": "Regexp" }, window.AudeGUI.l10n("Regular expression")],
+                        ["option", { "value": "LinearGrammar" }, window.AudeGUI.l10n("Regular Grammar")],
                     ]],
                     ["br"],
                     ["div#question-editor-wording-figure2-content", { "#": "fig2Content" }]
@@ -64,45 +64,45 @@ class QuestionEditor {
     /** The object (to be passed to jso2dom) for the specific inputs for a TextInputQuestion */
     private static readonly TEXTINPUT_INPUT_CONTENT =
         ["div", [
-            ["h4", AudeGUI.l10n("Text Input Answer")],
-            ["h6", AudeGUI.l10n("Answer verification method")],
+            ["h4", window.AudeGUI.l10n("Text Input Answer")],
+            ["h6", window.AudeGUI.l10n("Answer verification method")],
             ["div.row", [
                 ["div.col-md-6", [
                     ["div.form-check", [
                         ["input#question-editor-radio-wordlist.form-check-input", { "#": "radioWordlist", "type": "radio", "name": "textInputVerifMethod", "value": "wordList", "checked": "true" }],
-                        ["label", { "for": "question-editor-radio-wordlist" }, AudeGUI.l10n("List of correct answers")],
-                        ["small", { "class": "form-text text-muted" }, AudeGUI.l10n("The user's answer will be correct only if it is in a given list.")]
+                        ["label", { "for": "question-editor-radio-wordlist" }, window.AudeGUI.l10n("List of correct answers")],
+                        ["small", { "class": "form-text text-muted" }, window.AudeGUI.l10n("The user's answer will be correct only if it is in a given list.")]
                     ]]
                 ]],
 
                 ["div.col-md-6", [
                     ["div.form-check", [
                         ["input#question-editor-radio-audescript.form-check-input", { "#": "radioAudescript", "type": "radio", "name": "textInputVerifMethod", "value": "audescript" }],
-                        ["label", { "for": "question-editor-radio-audescript" }, AudeGUI.l10n("Audescript")],
-                        ["small", { "class": "form-text text-muted" }, AudeGUI.l10n("An algorithm will check if the answer is correct.")]
+                        ["label", { "for": "question-editor-radio-audescript" }, window.AudeGUI.l10n("Audescript")],
+                        ["small", { "class": "form-text text-muted" }, window.AudeGUI.l10n("An algorithm will check if the answer is correct.")]
                     ]]
                 ]]
             ]],
 
             ["div#question-editor-textinput-verif-content", [
-                ["input#question-editor-textinput-validation-wordlist.form-control", { "#": "wordlistContent", "type": "text", "placeholder": AudeGUI.l10n("Enter the correct answers here, separated by commas.") }],
-                ["textarea#question-editor-textinput-validation-audescript.form-control", { "#": "audescriptContent", "rows": "10", "placeholder": AudeGUI.l10n("Write your AudeScript code here.") }]
+                ["input#question-editor-textinput-validation-wordlist.form-control", { "#": "wordlistContent", "type": "text", "placeholder": window.AudeGUI.l10n("Enter the correct answers here, separated by commas.") }],
+                ["textarea#question-editor-textinput-validation-audescript.form-control", { "#": "audescriptContent", "rows": "10", "placeholder": window.AudeGUI.l10n("Write your AudeScript code here.") }]
             ]]
         ]]
 
     private static readonly MCQ_INPUT_CONTENT = ["div", [
-        ["h4", AudeGUI.l10n("Multiple Choice Question Answers")],
+        ["h4", window.AudeGUI.l10n("Multiple Choice Question Answers")],
         ["div.form-check", [
             ["input#question-editor-mcq-single-check.form-check-input", { "#": "singleCheckbox", "type": "checkbox" }],
-            ["label.form-check-label", { "for": "question-editor-mcq-single-check" }, AudeGUI.l10n("Allow only one choice to be chosen")]
+            ["label.form-check-label", { "for": "question-editor-mcq-single-check" }, window.AudeGUI.l10n("Allow only one choice to be chosen")]
         ]],
         ["table.table table-bordered table-hover table-sm", [
             ["thead", [
                 ["tr", [
-                    ["th", AudeGUI.l10n("Id")],
-                    ["th", AudeGUI.l10n("Wording")],
-                    ["th", AudeGUI.l10n("Details")],
-                    ["th", AudeGUI.l10n("Correct")]
+                    ["th", window.AudeGUI.l10n("Id")],
+                    ["th", window.AudeGUI.l10n("Wording")],
+                    ["th", window.AudeGUI.l10n("Details")],
+                    ["th", window.AudeGUI.l10n("Correct")]
                 ]]
             ]],
             ["tbody", { "#": "choiceTableBody" }, [
@@ -111,52 +111,52 @@ class QuestionEditor {
         ]],
 
         ["div.card text-center", [
-            ["div.card-header", AudeGUI.l10n("New Choice")],
+            ["div.card-header", window.AudeGUI.l10n("New Choice")],
             ["div.card-body", [
-                ["input.form-control", { "#": "newChoiceText", "type": "text", "placeholder": AudeGUI.l10n("Text/HTML/LaTeX for the choice here.") }],
+                ["input.form-control", { "#": "newChoiceText", "type": "text", "placeholder": window.AudeGUI.l10n("Text/HTML/LaTeX for the choice here.") }],
                 ["br"],
                 ["div.form-group", [
-                    ["label", { "for": "question-editor-mcq-choice-detail" }, AudeGUI.l10n("Detail")],
+                    ["label", { "for": "question-editor-mcq-choice-detail" }, window.AudeGUI.l10n("Detail")],
                     ["select#question-editor-mcq-choice-detail.form-control", { "#": "newChoiceDetailType" }, [
-                        ["option", { "value": "None", "selected": "true" }, AudeGUI.l10n("None")],
-                        ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
-                        ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
-                        ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Linear Grammar")]
+                        ["option", { "value": "None", "selected": "true" }, window.AudeGUI.l10n("None")],
+                        ["option", { "value": "Automaton" }, window.AudeGUI.l10n("Automaton")],
+                        ["option", { "value": "Regexp" }, window.AudeGUI.l10n("Regular expression")],
+                        ["option", { "value": "LinearGrammar" }, window.AudeGUI.l10n("Linear Grammar")]
                     ]]
                 ]],
                 ["div", { "#": "newChoiceDetailContent" }, [
 
                 ]],
                 ["br"],
-                ["button.btn btn-primary btn-block", { "#": "newChoiceAddButton" }, AudeGUI.l10n("Add this choice to the question")]
+                ["button.btn btn-primary btn-block", { "#": "newChoiceAddButton" }, window.AudeGUI.l10n("Add this choice to the question")]
             ]]
         ]]
     ]]
 
     private static readonly AUTOEQUIV_CONSTRAINT_HELP = ["small.text-muted", [
         ["ul", [
-            ["li", AudeGUI.l10n("Every constraint must return an object of the form {correct: boolean, details: string}")],
-            ["li", AudeGUI.l10n("The user's answer is available through the variable called a, re or g if it's an automaton, a regular expression or a grammar")]
+            ["li", window.AudeGUI.l10n("Every constraint must return an object of the form {correct: boolean, details: string}")],
+            ["li", window.AudeGUI.l10n("The user's answer is available through the variable called a, re or g if it's an automaton, a regular expression or a grammar")]
         ]]
     ]];
 
     private static readonly AUTOEQUIV_CONTENT = [
-        ["h4", AudeGUI.l10n("Automaton Equivalency Answers")],
-        ["h5", AudeGUI.l10n("User's answer type")],
+        ["h4", window.AudeGUI.l10n("Automaton Equivalency Answers")],
+        ["h5", window.AudeGUI.l10n("User's answer type")],
         ["select.form-control", { "#": "usersAnswerTypeSelect" }, [
-            ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
-            ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
-            ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Linear Grammar")]
+            ["option", { "value": "Automaton" }, window.AudeGUI.l10n("Automaton")],
+            ["option", { "value": "Regexp" }, window.AudeGUI.l10n("Regular expression")],
+            ["option", { "value": "LinearGrammar" }, window.AudeGUI.l10n("Linear Grammar")]
         ]],
 
-        ["h5", AudeGUI.l10n("Reference")],
+        ["h5", window.AudeGUI.l10n("Reference")],
         ["div.form-group", [
-            ["small.form-text text-muted", AudeGUI.l10n("If set, the user's answer will be correct only if it is equivalent to this automaton, regular expression or grammar.")],
+            ["small.form-text text-muted", window.AudeGUI.l10n("If set, the user's answer will be correct only if it is equivalent to this automaton, regular expression or grammar.")],
             ["select.form-control", { "#": "referenceTypeSelect" }, [
-                ["option", { "value": "None", "selected": "true" }, AudeGUI.l10n("None")],
-                ["option", { "value": "Automaton" }, AudeGUI.l10n("Automaton")],
-                ["option", { "value": "Regexp" }, AudeGUI.l10n("Regular expression")],
-                ["option", { "value": "LinearGrammar" }, AudeGUI.l10n("Linear Grammar")]
+                ["option", { "value": "None", "selected": "true" }, window.AudeGUI.l10n("None")],
+                ["option", { "value": "Automaton" }, window.AudeGUI.l10n("Automaton")],
+                ["option", { "value": "Regexp" }, window.AudeGUI.l10n("Regular expression")],
+                ["option", { "value": "LinearGrammar" }, window.AudeGUI.l10n("Linear Grammar")]
             ]]
         ]],
 
@@ -164,12 +164,12 @@ class QuestionEditor {
 
         ]],
 
-        ["h5", AudeGUI.l10n("Constraints")],
+        ["h5", window.AudeGUI.l10n("Constraints")],
         QuestionEditor.AUTOEQUIV_CONSTRAINT_HELP,
         ["ul", { "#": "constraintList" }, [
 
         ]],
-        ["button.btn btn-primary btn-block", { "#": "addConstraintButton" }, AudeGUI.l10n("Add new constraint")]
+        ["button.btn btn-primary btn-block", { "#": "addConstraintButton" }, window.AudeGUI.l10n("Add new constraint")]
     ];
     private autoEquivReferenceInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
 
@@ -622,7 +622,7 @@ class QuestionEditor {
                     break;
             }
         }
-        
+
         if (aeq.correctAnswerGrammar) {
             this.autoEquivRefs.referenceTypeSelect.value = "LinearGrammar";
         } else if (aeq.correctAnswerRegexp) {
@@ -637,7 +637,7 @@ class QuestionEditor {
         // Creates a text area for a new constraint and adds it to the current editor.
         let newConstraintTextArea = () => {
             let constraintTextArea = <HTMLTextAreaElement>libD.jso2dom(["textarea.form-control", { "rows": "8", "placeholder": this._("Give your Audescript constraint here."), "spellcheck": "false" }]);
-            
+
             constraintTextArea.onkeydown = (e) => {
                 if (e.code === "Tab") {
                     let oldSelectStart = constraintTextArea.selectionStart;
@@ -711,7 +711,7 @@ class QuestionEditor {
                         );
                         aeq.automatonAnswerConstraintsAudescript.push(cta.value);
                     } catch (e) {
-                        AudeGUI.notify("Audescript error", e.message, "error");
+                       window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }
                     break;
 
@@ -724,7 +724,7 @@ class QuestionEditor {
                         );
                         aeq.regexpAnswerConstraintsAudescript.push(cta.value);
                     } catch (e) {
-                        AudeGUI.notify("Audescript error", e.message, "error");
+                        window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }
 
                     break;
@@ -738,7 +738,7 @@ class QuestionEditor {
                         );
                         aeq.grammarAnswerConstraintsAudescript.push(cta.value);
                     } catch (e) {
-                        AudeGUI.notify("Audescript error", e.message, "error");
+                        window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }
 
                     break;
@@ -819,7 +819,7 @@ class QuestionEditor {
                     ]],
                     ["td", [
                         ["button.btn btn-outline-danger question-editor-choice-delete", { "#": "deleteChoiceButton", "value": choice.id }, [
-                            ["img", { "src": libD.getIcon("actions/list-remove"), "alt": _("Remove") }]
+                            ["img", { "src": libD.getIcon("actions/list-remove"), "alt": this._("Remove") }]
                         ]]
                     ]]
                 ]], newChoiceRefs);

@@ -1173,7 +1173,7 @@ class TextInputQuestion extends Question {
         
     static readonly wordlistValidator = (q) => {
         if (!q.correctAnswers.includes(q.usersAnswer)) {
-            return { correct: false, details: AudeGUI.l10n("Your answer isn't correct !") };
+            return { correct: false, details: window.AudeGUI.l10n("Your answer isn't correct !") };
         }
         return { correct: true, details: "" };
     };
