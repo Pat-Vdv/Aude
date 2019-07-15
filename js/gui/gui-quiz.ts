@@ -66,13 +66,13 @@ class Quiz {
     date: string = "";
     description: string = "";
 
-    // Storage of HTML DOM references for this quiz.
+    /** Storage of HTML DOM references for this quiz. */
     refs: any;
     currentAnswersRefs: any;
 
     constructor() {
         // We load the programs for questions in advance, 
-        // since we need the a bit later.
+        // since we need them a bit later.
         AutomatonPrograms.loadPrograms();
     }
 
@@ -88,6 +88,7 @@ class Quiz {
         this.author = obj.author || "";
         this.date = obj.date || "";
         this.description = obj.description || "";
+        this.questions = [];
 
         if (!(obj.questions && obj.questions instanceof Array)) {
             throw new Error(window.AudeGUI.l10n("The quiz doesn't have its list of question."));
@@ -484,12 +485,9 @@ function showCorrection(quiz) {
 // Used to validate a quiz.
 function svg2automaton(svg: string): Automaton {
     let div = document.createElement("div");
-    let designer = new AudeDesigner(div, true);
-    document.getElementById("div-quiz").appendChild(div);
-    div.style.display = "none";
-    designer.setAutomatonCode(svg);
-    let A = designer.getAutomaton(designer.currentIndex);
-    document.getElementById("div-quiz").removeChild(div);
-    return A;
+    let designer = new AudeDesigner(div, false);
+    designer.setAutomatonCode(svg, 0);
+    console.log(designer.getAutomaton(0));
+    return designer.getAutomaton(0).copy();
 }
 window.svg2automaton = svg2automaton;

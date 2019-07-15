@@ -3,8 +3,7 @@
    "author": "Fabien Portas",
    "date": "8 juillet 2019",
    "description": "Ce quiz sert à tester la nouvelle version améliorée du moteur de quiz.",
-   "questions": [
-      {
+   "questions": [{
          "type": "mcq",
          "instructionHTML": "Que vaut $\\emptyset^*$ ?",
          "possibilities": [{
@@ -45,13 +44,21 @@
          }, {
             "id": "b",
             "html": "$L = \\left\\lbrace ((b + c)^* a (b + c)^*)^{2k}, k \\in \\mathbb{R} \\right\\rbrace$"
-         }]
+         }, {
+            "id": "c",
+            "regex": "((b+c)*a(b+c)*a(b+c)*)*"
+         }, {
+            "id": "d",
+            "html": "",
+            "grammar": "({a,b,c},{S,T},S,{S -> aT,S -> bS,S -> cS,S -> ε,T -> aS,T -> bT,T -> cT})"
+         }],
+         "answers": ["c", "d"]
       },
-      {  
+      {
          "instructionHTML": "Donnez une expression régulière reconnaissant au moins le mot \"aude\"",
          "type": "automatonEquiv",
          "usersAnswerType": "Regexp",
-         "regexpAnswerConstraintsAudescript": ["let r := new Object(); let A := AutomatonPrograms.regexToAutomaton(re); if not A.acceptedWord(\"aude\") then r.correct := false; r.details := \"Ne reconnait pas le mot !\" return r; fi; r.correct := true; r.details := \"\"; return r; "]
+         "regexpAnswerConstraintsAudescript": ["let r := new Object();\nlet A := AutomatonPrograms.regexToAutomaton(re);\nif not A.acceptedWord(\"aude\") then\n\tr.correct := false;\n\tr.details := \"Ne reconnait pas le mot !\";\n\t return r;\n fi;\nr.correct := true;\nr.details := \"\";\n return r;"]
       }
    ]
 }

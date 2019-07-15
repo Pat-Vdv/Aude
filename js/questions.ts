@@ -176,8 +176,6 @@ abstract class Question {
         // Clearing the given div.
         questionDisplayDiv.innerHTML = "";
 
-        console.log(questionDisplayDiv);
-
         // Populating the div.
         this.displayQuestionWording(questionDisplayDiv);
 
@@ -209,7 +207,7 @@ abstract class Question {
      * Checks whether the user's answer is correct. 
      * The user's answer must be read from somewhere beforehand, using, for example, ```parseUsersAnswerFromHTML``` to get it from an HTML element.
      * @see Question#parseUsersAnswerFromHTML
-     * @returns An promise for an object containing a boolean ```correct``` 
+     * @returns An object containing a boolean ```correct``` 
      * that is true if the answer was right, and a string ```details``` 
      * detailing the mistake if ```correct``` is false.
      */
@@ -248,7 +246,7 @@ abstract class Question {
                 designer.setAutomatonCode(automaton_code(wd));
                 designer.autoCenterZoom();
 
-                window.AudeGUI.Quiz.textFormat(
+                FormatUtils.textFormat(
                     FormatUtils.set2Latex(wd.getAlphabet()),
                     refs.divInfo
                 );
@@ -328,7 +326,11 @@ abstract class Question {
         }
 
         // "instruction" and "isInstructionHTML" fields
-        obj.instruction = this.wordingText;
+        if (!this.wordingText) {
+            obj.instruction = "";
+        } else {
+            obj.instruction = this.wordingText;
+        }
         obj.isInstructionHTML = this.isWordingHtml;
 
         // "wordingDetails" field
@@ -343,7 +345,7 @@ abstract class Question {
 
             if (detail instanceof Automaton) {
                 detailObj.aType = AutomatonDataType[AutomatonDataType.Automaton];
-                detailObj.content = automaton2svg(detail, (svg) => { detailObj.content = svg; });
+                detailObj.content = automaton_code(detail);
             } else if (typeof detail === "string") {
                 detailObj.aType = AutomatonDataType[AutomatonDataType.Regexp];
                 detailObj.content = detail;
@@ -403,7 +405,7 @@ abstract class Question {
             switch (type) {
                 case AutomatonDataType.Automaton: {
                     if (typeof detailObj.content === "string") {
-                        return svg2automaton(detailObj.content);
+                        return Convert.automatonCode2Automaton(detailObj.content);
                     } else {
                         return automatonFromObj(detailObj.content);
                     }
@@ -1035,6 +1037,8 @@ class MCQQuestion extends Question {
                 this.usersChoices.push(cb.value);
             }
         }
+
+        console.log(this.usersChoices);
         return false;
     }
 
@@ -1076,7 +1080,7 @@ class MCQQuestion extends Question {
             objChoice.html = choice.html;
 
             if (choice.automaton) {
-                automaton2svg(choice.automaton, (svg) => objChoice.automaton = svg);
+                objChoice.automaton = Convert.automaton2Obj(choice.automaton);
             }
 
             if (choice.regex) {
@@ -1112,15 +1116,16 @@ class MCQQuestion extends Question {
 
                 if (pObj.text) {
                     newPoss.text = pObj.text;
-                }
-
-                if (pObj.html) {
+                } else if (pObj.html) {
                     newPoss.html = pObj.html;
+                } else {
+                    newPoss.html = "";
                 }
 
                 if (pObj.automaton) {
                     if (typeof pObj.automaton === "string") {
                         newPoss.automaton = window.svg2automaton(pObj.automaton);
+                        console.log(newPoss.automaton);
                     } else {
                         newPoss.automaton = window.automatonFromObj(pObj.automaton);
                     }
@@ -1170,7 +1175,7 @@ class TextInputQuestion extends Question {
      * @see TextInputQuestion#correctAnswers
      */
     answerValidator: (q: TextInputQuestion) => { correct: boolean, details: string } = TextInputQuestion.wordlistValidator;
-        
+
     static readonly wordlistValidator = (q) => {
         if (!q.correctAnswers.includes(q.usersAnswer)) {
             return { correct: false, details: window.AudeGUI.l10n("Your answer isn't correct !") };

@@ -199,7 +199,7 @@ class GrammarDesigner {
             this.updateDisplay();
         };
 
-        window.AudeGUI.Quiz.textFormat("$\\rightarrow$", this.refs.spanNewRuleArrow);
+        FormatUtils.textFormat("$\\rightarrow$", this.refs.spanNewRuleArrow);
 
         // Disable left symbols when right isn't empty, and vice-versa.
         this.refs.inputLeftTerminalNewRule.oninput = (e) => {
@@ -297,8 +297,8 @@ class GrammarDesigner {
      */
     updateDisplay(): void {
         // Update symbols.
-        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getTerminalSymbols()), this.refs.terminalSymbolsDiv, true);
-        window.AudeGUI.Quiz.textFormat(FormatUtils.set2Latex(this.currentGrammar.getNonTerminalSymbols()), this.refs.nonTerminalSymbolsDiv, true);
+        FormatUtils.textFormat(FormatUtils.set2Latex(this.currentGrammar.getTerminalSymbols()), this.refs.terminalSymbolsDiv, true);
+        FormatUtils.textFormat(FormatUtils.set2Latex(this.currentGrammar.getNonTerminalSymbols()), this.refs.nonTerminalSymbolsDiv, true);
 
         this.refs.rulesList.innerHTML = "";
         let ruleNumber = 0;
@@ -324,7 +324,7 @@ class GrammarDesigner {
                 refs
             );
 
-            window.AudeGUI.Quiz.textFormat(
+            FormatUtils.textFormat(
                 this.rule2Latex(rule, rule.getNonTerminalSymbol() === this.currentGrammar.getStartSymbol()),
                 refs.ruleContent
             );

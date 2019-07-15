@@ -61,6 +61,8 @@ declare var audescript: {
 
 declare function automaton2svg(A: Automaton, callback: (result: string) => void): void;
 
+declare function automaton2dot(A: Automaton): string;
+
 declare class AudeDesigner {
   constructor(svgContainer: HTMLElement, readOnly?: boolean);
 
