@@ -144,11 +144,11 @@ class QuestionList {
 
         // We create the new window and its contents.
         const refs = {
-            btnSettings: HTMLButtonElement = undefined,
-            root: HTMLElement = undefined,
-            btnClose: HTMLButtonElement = undefined,
-            chapterContentDiv: HTMLElement = undefined,
-            btnChapterMenu: HTMLButtonElement = undefined,
+            btnSettings: undefined as HTMLButtonElement,
+            root: undefined as HTMLElement,
+            btnClose: undefined as HTMLButtonElement,
+            chapterContentDiv: undefined as HTMLElement,
+            btnChapterMenu: undefined as HTMLButtonElement,
         };
         QuestionList.win = libD.newWin({
             title: window.AudeGUI.l10n("Question List"),
@@ -264,8 +264,8 @@ class QuestionList {
 
         // We add the question controls.
         const refs = {
-            btnValidate: HTMLButtonElement = undefined,
-            btnRestart: HTMLElement = undefined
+            btnValidate: undefined as HTMLButtonElement ,
+            btnRestart: undefined as HTMLElement
         };
         div.appendChild(
             libD.jso2dom(["div#question-answer-button-container", [

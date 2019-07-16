@@ -71,27 +71,27 @@ class GrammarDesigner {
     private editable: boolean;
 
     private readonly refs = {
-        terminalSymbolsDiv: HTMLElement = undefined,
-        terminalEditSpan: HTMLElement = undefined,
-        terminalInput: HTMLInputElement = undefined,
-        terminalAddButton: HTMLButtonElement = undefined,
-        terminalRemoveButton: HTMLButtonElement=undefined,
+        terminalSymbolsDiv: undefined as HTMLElement,
+        terminalEditSpan: undefined as HTMLElement,
+        terminalInput: undefined as HTMLInputElement,
+        terminalAddButton: undefined as HTMLButtonElement,
+        terminalRemoveButton: undefined as HTMLButtonElement,
 
-        nonTerminalSymbolsDiv: HTMLElement=undefined,
-        nonTerminalEditSpan: HTMLElement=undefined,
-        nonTerminalInput: HTMLInputElement=undefined,
-        nonTerminalAddButton: HTMLButtonElement=undefined,
-        nonTerminalRemoveButton: HTMLButtonElement=undefined,
+        nonTerminalSymbolsDiv: undefined as HTMLElement,
+        nonTerminalEditSpan: undefined as HTMLElement,
+        nonTerminalInput: undefined as HTMLInputElement,
+        nonTerminalAddButton: undefined as HTMLButtonElement,
+        nonTerminalRemoveButton: undefined as HTMLButtonElement,
 
-        rulesList: HTMLOListElement=undefined,
-        selectStartSymbol: HTMLSelectElement=undefined,
-        newRuleSpan: HTMLElement=undefined,
-        selectNonTerminalNewRule: HTMLSelectElement=undefined,
-        spanNewRuleArrow: HTMLElement=undefined,
-        inputLeftTerminalNewRule: HTMLInputElement=undefined,
-        inputNonTerminalNewRule: HTMLInputElement=undefined,
-        inputRightTerminalNewRule: HTMLInputElement=undefined,
-        buttonNewRule: HTMLButtonElement=undefined
+        rulesList: undefined as HTMLOListElement,
+        selectStartSymbol: undefined as HTMLSelectElement,
+        newRuleSpan: undefined as HTMLElement,
+        selectNonTerminalNewRule: undefined as HTMLSelectElement,
+        spanNewRuleArrow: undefined as HTMLElement,
+        inputLeftTerminalNewRule: undefined as HTMLInputElement,
+        inputNonTerminalNewRule: undefined as HTMLInputElement,
+        inputRightTerminalNewRule: undefined as HTMLInputElement,
+        buttonNewRule: undefined as HTMLButtonElement
     };
 
     constructor(designerDiv: HTMLElement, editable: boolean = true) {
@@ -315,7 +315,7 @@ class GrammarDesigner {
 
         for (const rule of rules) {
             const refs = {
-                ruleContent: HTMLElement = undefined
+                ruleContent: undefined as HTMLElement
             };
 
             const newItem = libD.jso2dom(["li", [

@@ -180,7 +180,7 @@ abstract class Question {
         this.displayQuestionWording(questionDisplayDiv);
 
         const refs = {
-            divUserInput: HTMLElement = undefined
+            divUserInput: undefined as HTMLElement
         };
 
         const divUserInput = libD.jso2dom(
@@ -227,8 +227,8 @@ abstract class Question {
         const showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
             if (wd instanceof Automaton) {
                 const refs = {
-                    divDesigner: HTMLElement = undefined,
-                    divInfo: HTMLElement = undefined
+                    divDesigner: undefined as HTMLElement,
+                    divInfo: undefined as HTMLElement
                 };
 
                 element.appendChild(
@@ -264,8 +264,8 @@ abstract class Question {
 
         if (this.wordingDetails.length === 2) {
             const refs = {
-                wdLeft: HTMLElement = undefined,
-                wdRight: HTMLElement = undefined
+                wdLeft: undefined as HTMLElement,
+                wdRight: undefined as HTMLElement
             };
             wordingDetailsDiv.appendChild(libD.jso2dom(
                 ["div#question-automaton-designer",
