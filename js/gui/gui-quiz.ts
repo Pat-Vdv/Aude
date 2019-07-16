@@ -15,16 +15,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* globals renderMathInElement, libD, Automaton, Set, aude, automaton2svg, audescript */
-
-let automataContainer = null;
-let divQuiz = null;
+let automataContainer = undefined;
+let divQuiz = undefined;
 
 class Quiz {
     _ = window.AudeGUI.l10n;
 
     /** DOM input element to load a quiz */
     static fileInput: HTMLInputElement;
+
+    static automataContainer: HTMLElement;
 
     /**  Initialize the quiz */
     static load() {
@@ -82,7 +82,7 @@ class Quiz {
      * @returns true if the quiz has been initialized correctly
      */
     fromJSON(jsonCode: string): boolean {
-        let obj = JSON.parse(jsonCode);
+        const obj = JSON.parse(jsonCode);
 
         this.title = obj.title || "";
         this.author = obj.author || "";
@@ -94,7 +94,7 @@ class Quiz {
             throw new Error(window.AudeGUI.l10n("The quiz doesn't have its list of question."));
         }
 
-        for (let questionObj of obj.questions) {
+        for (const questionObj of obj.questions) {
             if (!questionObj.type) {
                 throw new Error(window.AudeGUI.l10n("A question in the quiz doesn't have a type specified !"));
             }
@@ -121,7 +121,7 @@ class Quiz {
 
             if (!newQuestion.fromJSON(questionObj)) {
                 throw new Error(window.AudeGUI.l10n("Formatting error in a question !"));
-            };
+            }
             this.questions.push(newQuestion);
         }
 
@@ -129,7 +129,7 @@ class Quiz {
     }
 
     toJSON(): any {
-        let o: any = {};
+        const o: any = {};
 
         o.title = this.title;
         o.author = this.author;
@@ -138,7 +138,7 @@ class Quiz {
 
         o.questions = [];
 
-        for (let q of this.questions) {
+        for (const q of this.questions) {
             o.questions.push(q.toJSON());
         }
 
@@ -164,7 +164,7 @@ class Quiz {
         this.currentQuestionIndex = -1;
 
         this.answers = [];
-        for (let i = 0; i < this.questions.length; i++) {
+        for (const q of this.questions) {
             this.answers.push({
                 isCorrect: false,
                 reasons: ""
@@ -176,7 +176,7 @@ class Quiz {
         divQuiz.textContent = "";
         divQuiz.classList.add("enabled");
 
-        let refs: any = {};
+        const refs: any = {};
         divQuiz.appendChild(libD.jso2dom([
             ["h1#quiz-title", [
                 ["#", this.title ? window.AudeGUI.l10n("Quiz:") + " " : window.AudeGUI.l10n("Quiz")],
@@ -198,7 +198,7 @@ class Quiz {
         refs.closeQuiz.onclick = this.close;
         refs.startQuiz.onclick = (e) => {
             this.prevNextQuestion(false);
-        }
+        };
     }
 
     prevNextQuestion(goToPrevious: boolean = false, validateCurrent: boolean = true) {
@@ -233,7 +233,7 @@ class Quiz {
 
     validateCurrentQuestion() {
         this.questions[this.currentQuestionIndex].parseUsersAnswer();
-        let result = this.questions[this.currentQuestionIndex].checkUsersAnswer();
+        const result = this.questions[this.currentQuestionIndex].checkUsersAnswer();
 
         this.answers[this.currentQuestionIndex] = {
             isCorrect: result.correct,
@@ -245,9 +245,9 @@ class Quiz {
         this.refs.content.textContent = "";
         this.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
 
-        let refs: any = {};
+        const refs: any = {};
 
-        let answers = libD.jso2dom(["table#correction-table",
+        const answers = libD.jso2dom(["table#correction-table",
             ["tr", [
                 ["th", this._("Instruction")],
                 ["th", this._("Correct answer?")],
@@ -255,7 +255,7 @@ class Quiz {
             ]]]);
 
         for (let i = 0, len = this.answers.length; i < len; ++i) {
-            let question_i = this.questions[i];
+            const question_i = this.questions[i];
 
             answers.appendChild(libD.jso2dom(["tr", [
                 ["td.qinst", { "#": "answerInstr" }, [
@@ -266,7 +266,7 @@ class Quiz {
                 ["td.qcmt", { "#": "answerCmt" }]
             ]], refs));
 
-            let reasons = this.answers[i].reasons;
+            const reasons = this.answers[i].reasons;
 
             FormatUtils.textFormat(reasons, refs.answerCmt);
 
@@ -276,8 +276,8 @@ class Quiz {
 
             // For mcq
             if (question_i.category === QuestionCategory.MCQ) {
-                let mcq = <MCQQuestion>question_i;
-                let possibilities = mcq.wordingChoices;
+                const mcq = question_i as MCQQuestion;
+                const possibilities = mcq.wordingChoices;
                 for (let j = 0, leng = possibilities.length; j < leng; ++j) {
                     refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
                         ["span.quiz-answer-id", (possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (i + 1)) + ". "],
@@ -287,7 +287,7 @@ class Quiz {
                     if (possibilities[j].automaton) {
                         automaton2svg(
                             possibilities[j].automaton,
-                            function (res) {
+                            (res) => {
                                 refs[i + "content"].innerHTML = res;
                             }
                         );
@@ -311,11 +311,11 @@ class Quiz {
     }
 
     askCurrentQuestion() {
-        let q = this.questions[this.currentQuestionIndex];
+        const q = this.questions[this.currentQuestionIndex];
 
-        let qid = this.currentQuestionIndex + 1;
+        const qid = this.currentQuestionIndex + 1;
 
-        let refs: any = {};
+        const refs: any = {};
 
         this.currentAnswersRefs = refs;
         this.refs.content.textContent = "";
@@ -333,12 +333,12 @@ class Quiz {
 
         refs.ok.onclick = () => {
             this.prevNextQuestion(false);
-        }
+        };
 
         if (this.currentQuestionIndex !== 0) {
             refs.prev.onclick = () => {
                 this.prevNextQuestion(true);
-            }
+            };
         } else {
             refs.prev.style.display = "none";
         }
@@ -362,7 +362,7 @@ window.AudeGUI.Quiz = Quiz;
 // This JS object may come from a JSON representation of the automaton.
 function automatonFromObj(o) {
     let k = 0;
-    let A = new Automaton();
+    const A = new Automaton();
 
     A.setInitialState(o.states[0]);
 
@@ -386,7 +386,7 @@ window.automatonFromObj = automatonFromObj;
  * Opens a quiz from the file input.
  */
 function openQuiz() {
-    let freader = new FileReader();
+    const freader = new FileReader();
 
     freader.onload = () => {
         window.AudeGUI.Quiz.open(freader.result);
@@ -400,9 +400,9 @@ function showCorrection(quiz) {
     quiz.refs.content.textContent = "";
     quiz.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
 
-    let refs: any = {};
+    const refs: any = {};
 
-    let answers = libD.jso2dom(["table#correction-table",
+    const answers = libD.jso2dom(["table#correction-table",
         ["tr", [
             ["th", this._("Instruction")],
             ["th", this._("Correct answer?")],
@@ -410,7 +410,7 @@ function showCorrection(quiz) {
         ]]]);
 
     for (let i = 0, len = quiz.answers.length; i < len; ++i) {
-        let question_i = quiz.questions[i];
+        const question_i = quiz.questions[i];
 
         answers.appendChild(libD.jso2dom(["tr", [
             ["td.qinst", { "#": "answerInstr" }, [
@@ -421,13 +421,13 @@ function showCorrection(quiz) {
             ["td.qcmt", { "#": "answerCmt" }]
         ]], refs));
 
-        let reasons = quiz.answers[i].reasons;
+        const reasons = quiz.answers[i].reasons;
 
         if (reasons[1]) {
-            let ul = document.createElement("ul");
+            const ul = document.createElement("ul");
 
             for (let j = 0, leng = reasons.length; j < leng; ++j) {
-                let li = document.createElement("li");
+                const li = document.createElement("li");
                 li.innerHTML = reasons[j];
                 ul.appendChild(li);
             }
@@ -446,7 +446,7 @@ function showCorrection(quiz) {
         refs.answerInstr.appendChild(document.createElement("ul"));
         refs.answerInstr.lastChild.className = "possibilities";
 
-        let possibilities = question_i.possibilities;
+        const possibilities = question_i.possibilities;
         // For mcq
         if (possibilities) {
             for (let j = 0, leng = possibilities.length; j < leng; ++j) {
@@ -458,7 +458,7 @@ function showCorrection(quiz) {
                 if (possibilities[j].automaton) {
                     automaton2svg(
                         possibilities[j].automaton,
-                        function (res) {
+                        (res) => {
                             refs[i + "content"].innerHTML = res;
                         }
                     );
@@ -478,14 +478,14 @@ function showCorrection(quiz) {
         ["p", this._("We don't want to give you a mark. Your progress is the most important thing, above any arbitrary, absolutely meaningless mark. Keep your efforts ;-)")],
         ["div.button-container", ["button", { "#": "prev" }, this._("Previous page")]]
     ], refs));
-    refs.prev.onclick = () => { }
+    refs.prev.onclick = () => { this.prevNextQuestion(true, false); };
 }
 
 // Convert an SVG code to an automaton.
 // Used to validate a quiz.
 function svg2automaton(svg: string): Automaton {
-    let div = document.createElement("div");
-    let designer = new AudeDesigner(div, false);
+    const div = document.createElement("div");
+    const designer = new AudeDesigner(div, false);
     designer.setAutomatonCode(svg, 0);
     console.log(designer.getAutomaton(0));
     return designer.getAutomaton(0).copy();

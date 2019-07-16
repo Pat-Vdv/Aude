@@ -3,7 +3,7 @@
  */
 namespace FormatUtils {
   "use strict";
-  
+
   /**
      * Formats a set into LaTeX syntax.
      * @param s - The iterable object (set, array, etc...) to format.
@@ -16,10 +16,10 @@ namespace FormatUtils {
     }
 
     let i = 0;
-    for (let elem of s) {
+    for (const elem of s) {
       latex += elem;
 
-      if (i != s.size - 1) {
+      if (i !== s.size - 1) {
         latex += ", ";
       }
       i++;

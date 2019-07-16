@@ -88,7 +88,7 @@ class QuestionEditor {
                 ["input#question-editor-textinput-validation-wordlist.form-control", { "#": "wordlistContent", "type": "text", "placeholder": window.AudeGUI.l10n("Enter the correct answers here, separated by commas.") }],
                 ["textarea#question-editor-textinput-validation-audescript.form-control", { "#": "audescriptContent", "rows": "10", "placeholder": window.AudeGUI.l10n("Write your AudeScript code here.") }]
             ]]
-        ]]
+        ]];
 
     private static readonly MCQ_INPUT_CONTENT = ["div", [
         ["h4", window.AudeGUI.l10n("Multiple Choice Question Answers")],
@@ -131,7 +131,7 @@ class QuestionEditor {
                 ["button.btn btn-primary btn-block", { "#": "newChoiceAddButton" }, window.AudeGUI.l10n("Add this choice to the question")]
             ]]
         ]]
-    ]]
+    ]];
 
     private static readonly AUTOEQUIV_CONSTRAINT_HELP = ["small.text-muted", [
         ["ul", [
@@ -180,37 +180,37 @@ class QuestionEditor {
     private currentQuestion: Question;
 
     /** Couple containing the input elements for the wording details. */
-    private wordingDetailInputs: [AudeDesigner | HTMLInputElement | GrammarDesigner, AudeDesigner | HTMLInputElement | GrammarDesigner]
+    private readonly wordingDetailInputs: [AudeDesigner | HTMLInputElement | GrammarDesigner, AudeDesigner | HTMLInputElement | GrammarDesigner]
         = [undefined, undefined];
 
-    private commonRefs = {
-        wordingTextField: <HTMLTextAreaElement>undefined,
-        wordingTextHTMLCheck: <HTMLInputElement>undefined,
-        wordingTextPreview: <HTMLElement>undefined,
-        fig1TypeSelect: <HTMLSelectElement>undefined,
-        fig2TypeSelect: <HTMLSelectElement>undefined,
-        fig1Content: <HTMLElement>undefined,
-        fig2Content: <HTMLElement>undefined
-    }
+    private readonly commonRefs = {
+        wordingTextField: undefined as HTMLTextAreaElement,
+        wordingTextHTMLCheck: undefined as HTMLInputElement,
+        wordingTextPreview: undefined as HTMLElement,
+        fig1TypeSelect: undefined as HTMLSelectElement,
+        fig2TypeSelect: undefined as HTMLSelectElement,
+        fig1Content: undefined as HTMLElement,
+        fig2Content: undefined as HTMLElement
+    };
 
     // Fields for TextInput Questions
-    private textInputRefs = {
-        radioWordlist: <HTMLInputElement>undefined,
-        radioAudescript: <HTMLInputElement>undefined,
-        wordlistContent: <HTMLInputElement>undefined,
-        audescriptContent: <HTMLTextAreaElement>undefined
+    private readonly textInputRefs = {
+        radioWordlist: undefined as HTMLInputElement,
+        radioAudescript: undefined as HTMLInputElement,
+        wordlistContent: undefined as HTMLInputElement,
+        audescriptContent: undefined as HTMLTextAreaElement
     };
 
     // Fields for MCQ Questions.
-    private mcqRefs = {
-        choiceTableBody: <HTMLTableSectionElement>undefined,
-        singleCheckbox: <HTMLInputElement>undefined,
-        newChoiceText: <HTMLInputElement>undefined,
-        newChoiceDetailType: <HTMLSelectElement>undefined,
-        newChoiceAddButton: <HTMLButtonElement>undefined,
-        newChoiceDetailContent: <HTMLElement>undefined
+    private readonly mcqRefs = {
+        choiceTableBody: undefined as HTMLTableSectionElement,
+        singleCheckbox: undefined as HTMLInputElement,
+        newChoiceText: undefined as HTMLInputElement,
+        newChoiceDetailType: undefined as HTMLSelectElement,
+        newChoiceAddButton: undefined as HTMLButtonElement,
+        newChoiceDetailContent: undefined as HTMLElement
     };
-    private mcqChoices: Array<{
+    private readonly mcqChoices: Array<{
         id?: string,
         text?: string,
         html?: string,
@@ -222,14 +222,14 @@ class QuestionEditor {
     private mcqChoiceDetailInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
 
     // Fields for AutomatonEquiv Questions
-    private autoEquivRefs = {
-        usersAnswerTypeSelect: <HTMLSelectElement>undefined,
-        referenceTypeSelect: <HTMLSelectElement>undefined,
-        referenceEditContent: <HTMLElement>undefined,
-        constraintList: <HTMLUListElement>undefined,
-        addConstraintButton: <HTMLButtonElement>undefined
-    }
-    private autoEquivContraintTextAreas: HTMLTextAreaElement[] = [];
+    private readonly autoEquivRefs = {
+        usersAnswerTypeSelect: undefined as HTMLSelectElement,
+        referenceTypeSelect: undefined as HTMLSelectElement,
+        referenceEditContent: undefined as HTMLElement,
+        constraintList: undefined as HTMLUListElement,
+        addConstraintButton: undefined as HTMLButtonElement
+    };
+    private readonly autoEquivContraintTextAreas: HTMLTextAreaElement[] = [];
 
     constructor(container: HTMLElement, questionCategory: QuestionCategory) {
         this.container = container;
@@ -253,7 +253,7 @@ class QuestionEditor {
     getCurrentQuestion() {
         // Retrieve wording details from inputs.
         this.currentQuestion.wordingDetails = [];
-        for (let wdi of this.wordingDetailInputs) {
+        for (const wdi of this.wordingDetailInputs) {
             if (wdi === undefined) {
                 continue;
             }
@@ -296,26 +296,26 @@ class QuestionEditor {
         commonComponentsDiv.appendChild(libD.jso2dom(QuestionEditor.COMMON_INPUT_CONTENT, this.commonRefs));
 
         this.commonRefs.wordingTextHTMLCheck.checked = this.currentQuestion.isWordingHtml;
-        if (this.currentQuestion.wordingText.length != 0) {
+        if (this.currentQuestion.wordingText.length !== 0) {
             this.commonRefs.wordingTextField.value = this.currentQuestion.wordingText;
             this.refreshWordingPreview();
         }
 
-        this.commonRefs.wordingTextField.onchange = () => { this.refreshWordingPreview(); }
+        this.commonRefs.wordingTextField.onchange = () => { this.refreshWordingPreview(); };
         this.commonRefs.wordingTextField.onkeyup = () => {
             this.refreshWordingPreview();
             this.currentQuestion.wordingText = this.commonRefs.wordingTextField.value;
-        }
+        };
 
         this.commonRefs.wordingTextHTMLCheck.onchange = () => {
             this.refreshWordingPreview();
             this.currentQuestion.isWordingHtml = this.commonRefs.wordingTextHTMLCheck.checked;
-        }
+        };
 
         this.commonRefs.fig1Content.classList.add("question-editor-hidden");
         this.commonRefs.fig2Content.classList.add("question-editor-hidden");
 
-        let findDataTypeName = (s: Automaton | string | linearGrammar): string => {
+        const findDataTypeName = (s: Automaton | string | linearGrammar): string => {
             if (s instanceof Automaton) {
                 return "Automaton";
             } else if (typeof s === "string") {
@@ -325,7 +325,7 @@ class QuestionEditor {
             } else {
                 return "None";
             }
-        }
+        };
 
         this.commonRefs.fig1TypeSelect.onchange = (e) => {
             if (this.commonRefs.fig1TypeSelect.value === "None") {
@@ -355,29 +355,29 @@ class QuestionEditor {
 
         for (let i = 0; i < 2; i++) {
             if (this.currentQuestion.wordingDetails[i] instanceof Automaton) {
-                (<AudeDesigner>this.wordingDetailInputs[i]).setAutomatonCode(automaton_code(<Automaton>this.currentQuestion.wordingDetails[i]));
+                (this.wordingDetailInputs[i] as AudeDesigner).setAutomatonCode(automaton_code(this.currentQuestion.wordingDetails[i] as Automaton));
             } else if (typeof this.currentQuestion.wordingDetails[i] === "string") {
-                (<HTMLInputElement>this.wordingDetailInputs[i]).value = <string>this.currentQuestion.wordingDetails[i];
+                (this.wordingDetailInputs[i] as HTMLInputElement).value = this.currentQuestion.wordingDetails[i] as string;
             } else if (this.currentQuestion.wordingDetails[i] instanceof linearGrammar) {
-                (<GrammarDesigner>this.wordingDetailInputs[i]).setGrammar(<linearGrammar>this.currentQuestion.wordingDetails[i]);
+                (this.wordingDetailInputs[i] as GrammarDesigner).setGrammar(this.currentQuestion.wordingDetails[i] as linearGrammar);
             }
         }
     }
 
     private displayWordingDetailInput(detailIndex: 0 | 1, type: AutomatonDataType) {
-        let htmlDiv = (detailIndex === 0 ? this.commonRefs.fig1Content : this.commonRefs.fig2Content);
+        const htmlDiv = (detailIndex === 0 ? this.commonRefs.fig1Content : this.commonRefs.fig2Content);
 
         htmlDiv.innerHTML = "";
 
         switch (type) {
             case AutomatonDataType.Automaton: {
-                let designerDiv = document.createElement("div");
+                const designerDiv = document.createElement("div");
                 designerDiv.classList.add(
                     "question-editor-wording-figure-automaton",
                     "border", "border-primary", "rounded-sm"
                 );
 
-                let designer = new AudeDesigner(designerDiv);
+                const designer = new AudeDesigner(designerDiv);
 
                 this.wordingDetailInputs[detailIndex] = designer;
                 htmlDiv.appendChild(designerDiv);
@@ -385,9 +385,9 @@ class QuestionEditor {
             }
 
             case AutomatonDataType.Regexp: {
-                let regexInput = document.createElement("input");
+                const regexInput = document.createElement("input");
                 regexInput.classList.add("form-control");
-                regexInput.setAttribute("placeholder", this._("Input your regular expression here."))
+                regexInput.setAttribute("placeholder", this._("Input your regular expression here."));
 
                 this.wordingDetailInputs[detailIndex] = regexInput;
                 htmlDiv.appendChild(regexInput);
@@ -395,7 +395,7 @@ class QuestionEditor {
             }
 
             case AutomatonDataType.LinearGrammar: {
-                let gramDesigner = new GrammarDesigner(htmlDiv, true);
+                const gramDesigner = new GrammarDesigner(htmlDiv, true);
 
                 this.wordingDetailInputs[detailIndex] = gramDesigner;
                 break;
@@ -404,7 +404,7 @@ class QuestionEditor {
     }
 
     private initTextInputSpecificComponents(specificComponentsDiv: HTMLElement) {
-        let tiq = <TextInputQuestion>this.currentQuestion;
+        const tiq = this.currentQuestion as TextInputQuestion;
         specificComponentsDiv.innerHTML = "";
         specificComponentsDiv.appendChild(
             libD.jso2dom(QuestionEditor.TEXTINPUT_INPUT_CONTENT, this.textInputRefs)
@@ -436,7 +436,7 @@ class QuestionEditor {
     }
 
     private parseTextInputSpecificComponents() {
-        let qti = (this.currentQuestion) as TextInputQuestion;
+        const qti = (this.currentQuestion) as TextInputQuestion;
         // Word list.
         if (this.textInputRefs.radioWordlist.checked) {
             qti.correctAnswers = this.textInputRefs.wordlistContent.value.split(",").map((v, i, a) => { return v.trim(); });
@@ -449,7 +449,7 @@ class QuestionEditor {
     }
 
     private initMCQSpecificComponents(specificComponentsDiv: HTMLElement) {
-        let mcq = (this.currentQuestion as MCQQuestion);
+        const mcq = (this.currentQuestion as MCQQuestion);
         specificComponentsDiv.innerHTML = "";
         specificComponentsDiv.appendChild(
             libD.jso2dom(QuestionEditor.MCQ_INPUT_CONTENT, this.mcqRefs)
@@ -463,35 +463,35 @@ class QuestionEditor {
         this.mcqRefs.singleCheckbox.dispatchEvent(new Event("change"));
 
         // If they exist, put the current question's choices into this editor's.
-        for (let choice of mcq.wordingChoices) {
-            let choiceC: any = choice;
+        for (const choice of mcq.wordingChoices) {
+            const choiceC: any = choice;
             choiceC.correct = (mcq.correctChoices.includes(choiceC.id));
             this.mcqChoices.push(choiceC);
         }
         this.redraw();
         this.mcqRefs.newChoiceAddButton.onclick = (e) => {
             let newChoiceId = "a";
-            let choiceIdExists = (choiceId: string): boolean => {
-                for (let choice of this.mcqChoices) {
+            const choiceIdExists = (choiceId: string): boolean => {
+                for (const choice of this.mcqChoices) {
                     if (choice.id === choiceId) {
                         return true;
                     }
                 }
                 return false;
-            }
+            };
 
             while (choiceIdExists(newChoiceId)) {
                 newChoiceId = String.fromCodePoint(newChoiceId.codePointAt(0) + 1);
             }
 
-            let newChoice = {
+            const newChoice = {
                 id: newChoiceId,
                 text: undefined,
                 html: this.mcqRefs.newChoiceText.value,
-                automaton: <Automaton>undefined,
-                regex: <string>undefined,
-                grammar: <linearGrammar>undefined
-            }
+                automaton: undefined as Automaton,
+                regex: undefined as string,
+                grammar: undefined as linearGrammar
+            };
 
             if (this.mcqRefs.newChoiceDetailType.value !== "None") {
                 switch (AutomatonDataType[this.mcqRefs.newChoiceDetailType.value]) {
@@ -542,7 +542,7 @@ class QuestionEditor {
                     break;
 
                 case AutomatonDataType.Regexp:
-                    this.mcqChoiceDetailInput = <HTMLInputElement>libD.jso2dom(["input.form-control", { "type": "text" }]);
+                    this.mcqChoiceDetailInput = libD.jso2dom(["input.form-control", { "type": "text" }]) as HTMLInputElement;
                     this.mcqRefs.newChoiceDetailContent.appendChild(this.mcqChoiceDetailInput);
                     break;
 
@@ -559,9 +559,9 @@ class QuestionEditor {
      * the currentQuestion field.
      */
     private parseMCQSpecificComponents() {
-        let mcq = this.currentQuestion as MCQQuestion;
-        for (let tr of this.mcqRefs.choiceTableBody.children) {
-            let check = (tr.children[3].firstChild as HTMLInputElement);
+        const mcq = this.currentQuestion as MCQQuestion;
+        for (const tr of this.mcqRefs.choiceTableBody.children) {
+            const check = (tr.children[3].firstChild as HTMLInputElement);
 
             let choiceIndex = -1;
             for (let i = 0; i < this.mcqChoices.length; i++) {
@@ -579,7 +579,7 @@ class QuestionEditor {
     }
 
     private initAutoEquivSpecificComponents(specificComponentsDiv: HTMLElement) {
-        let aeq = <AutomatonEquivQuestion>this.currentQuestion;
+        const aeq = this.currentQuestion as AutomatonEquivQuestion;
         specificComponentsDiv.appendChild(libD.jso2dom(QuestionEditor.AUTOEQUIV_CONTENT, this.autoEquivRefs));
 
         this.autoEquivRefs.usersAnswerTypeSelect.onchange = (e) => {
@@ -598,7 +598,7 @@ class QuestionEditor {
                     break;
 
                 case "Automaton":
-                    let designerDiv = libD.jso2dom(["div.question-editor-wording-figure-automaton"]);
+                    const designerDiv = libD.jso2dom(["div.question-editor-wording-figure-automaton"]);
                     this.autoEquivReferenceInput = new AudeDesigner(designerDiv, false);
                     this.autoEquivRefs.referenceEditContent.appendChild(designerDiv);
                     if (aeq.correctAnswerAutomaton) {
@@ -607,7 +607,7 @@ class QuestionEditor {
                     break;
 
                 case "Regexp":
-                    this.autoEquivReferenceInput = <HTMLInputElement>libD.jso2dom(["input.form-control", { "type": "text", "placeholder": this._("Input your regular expression here.") }]);
+                    this.autoEquivReferenceInput = libD.jso2dom(["input.form-control", { "type": "text", "placeholder": this._("Input your regular expression here.") }]) as HTMLInputElement;
                     this.autoEquivRefs.referenceEditContent.appendChild(this.autoEquivReferenceInput);
                     if (aeq.correctAnswerRegexp) {
                         this.autoEquivReferenceInput.value = aeq.correctAnswerRegexp;
@@ -621,7 +621,7 @@ class QuestionEditor {
                     }
                     break;
             }
-        }
+        };
 
         if (aeq.correctAnswerGrammar) {
             this.autoEquivRefs.referenceTypeSelect.value = "LinearGrammar";
@@ -635,12 +635,12 @@ class QuestionEditor {
         this.autoEquivRefs.referenceTypeSelect.dispatchEvent(new Event("change"));
 
         // Creates a text area for a new constraint and adds it to the current editor.
-        let newConstraintTextArea = () => {
-            let constraintTextArea = <HTMLTextAreaElement>libD.jso2dom(["textarea.form-control", { "rows": "8", "placeholder": this._("Give your Audescript constraint here."), "spellcheck": "false" }]);
+        const newConstraintTextArea = () => {
+            const constraintTextArea = libD.jso2dom(["textarea.form-control", { "rows": "8", "placeholder": this._("Give your Audescript constraint here."), "spellcheck": "false" }]) as HTMLTextAreaElement;
 
             constraintTextArea.onkeydown = (e) => {
                 if (e.code === "Tab") {
-                    let oldSelectStart = constraintTextArea.selectionStart;
+                    const oldSelectStart = constraintTextArea.selectionStart;
                     constraintTextArea.value = constraintTextArea.value.substring(0, constraintTextArea.selectionStart) + "\t" + constraintTextArea.value.substring(constraintTextArea.selectionStart);
                     constraintTextArea.selectionStart = constraintTextArea.selectionEnd = oldSelectStart + 1;
                     e.preventDefault();
@@ -669,15 +669,15 @@ class QuestionEditor {
         }
         if (!constraintList) return;
 
-        for (let constAS of constraintList) {
-            let constraintTA = newConstraintTextArea();
+        for (const constAS of constraintList) {
+            const constraintTA = newConstraintTextArea();
 
             constraintTA.value = constAS;
         }
     }
 
     private parseAutoEquivSpecificComponents() {
-        let aeq = <AutomatonEquivQuestion>this.currentQuestion;
+        const aeq = this.currentQuestion as AutomatonEquivQuestion;
 
         aeq.automatonAnswerConstraints = [];
         aeq.automatonAnswerConstraintsAudescript = [];
@@ -694,8 +694,8 @@ class QuestionEditor {
             aeq.setReferenceAnswer(this.autoEquivReferenceInput.getGrammar());
         }
 
-        let usersAnswerType = AutomatonDataType[this.autoEquivRefs.usersAnswerTypeSelect.value];
-        for (let cta of this.autoEquivContraintTextAreas) {
+        const usersAnswerType = AutomatonDataType[this.autoEquivRefs.usersAnswerTypeSelect.value];
+        for (const cta of this.autoEquivContraintTextAreas) {
             // Skip empty text areas.
             if (cta.value.trim().length === 0) {
                 continue;
@@ -711,7 +711,7 @@ class QuestionEditor {
                         );
                         aeq.automatonAnswerConstraintsAudescript.push(cta.value);
                     } catch (e) {
-                       window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
+                        window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }
                     break;
 
@@ -754,10 +754,10 @@ class QuestionEditor {
      */
     draw() {
         this.container.innerHTML = "";
-        let refs = {
-            commonInputs: <HTMLElement>undefined,
-            specificInputs: <HTMLElement>undefined
-        }
+        const refs = {
+            commonInputs: undefined as HTMLElement,
+            specificInputs: undefined as HTMLElement
+        };
 
         this.container.appendChild(libD.jso2dom([
             ["div#question-editor-common-inputs", { "#": "commonInputs" }],
@@ -799,18 +799,18 @@ class QuestionEditor {
         if (this.currentQuestion.category === QuestionCategory.MCQ) {
             this.mcqRefs.choiceTableBody.innerHTML = "";
 
-            for (let choice of this.mcqChoices) {
-                let newChoiceRefs = {
-                    wordingTD: <HTMLTableCellElement>undefined,
-                    detailsTD: <HTMLTableCellElement>undefined,
-                    wordingCorrect: <HTMLInputElement>undefined,
-                    deleteChoiceButton: <HTMLInputElement>undefined,
-                    btnMoveOrderUp: <HTMLButtonElement>undefined,
-                    btnMoveOrderDown: <HTMLButtonElement>undefined
+            for (const choice of this.mcqChoices) {
+                const newChoiceRefs = {
+                    wordingTD: undefined as HTMLTableCellElement,
+                    detailsTD: undefined as HTMLTableCellElement,
+                    wordingCorrect: undefined as HTMLInputElement,
+                    deleteChoiceButton: undefined as HTMLInputElement,
+                    btnMoveOrderUp: undefined as HTMLButtonElement,
+                    btnMoveOrderDown: undefined as HTMLButtonElement
                 };
-                let correctCheckType = (this.mcqRefs.singleCheckbox.checked ? "radio" : "checkbox");
+                const correctCheckType = (this.mcqRefs.singleCheckbox.checked ? "radio" : "checkbox");
 
-                let newChoiceTR = libD.jso2dom(["tr", [
+                const newChoiceTR = libD.jso2dom(["tr", [
                     ["td", choice.id],
                     ["td", { "#": "wordingTD" }],
                     ["td", { "#": "detailsTD" }],
@@ -828,8 +828,8 @@ class QuestionEditor {
                 newChoiceRefs.wordingCorrect.checked = choice.correct;
 
                 if (choice.automaton !== undefined) {
-                    let designerDiv = libD.jso2dom(["div#quiz-automata-designer"]);
-                    let designer = new AudeDesigner(designerDiv, true);
+                    const designerDiv = libD.jso2dom(["div#quiz-automata-designer"]);
+                    const designer = new AudeDesigner(designerDiv, true);
                     designer.setAutomatonCode(automaton_code(choice.automaton));
                     designer.autoCenterZoom();
                     newChoiceRefs.detailsTD.appendChild(designerDiv);
@@ -839,7 +839,7 @@ class QuestionEditor {
                         newChoiceRefs.detailsTD
                     );
                 } else if (choice.grammar !== undefined) {
-                    let gd = new GrammarDesigner(newChoiceRefs.detailsTD, false);
+                    const gd = new GrammarDesigner(newChoiceRefs.detailsTD, false);
                     gd.setGrammar(choice.grammar);
                 }
 
@@ -865,7 +865,7 @@ class QuestionEditor {
                     this.redraw();
                 };
 
-                newChoiceRefs.wordingCorrect.onchange = (e) => { this.parseMCQSpecificComponents(); }
+                newChoiceRefs.wordingCorrect.onchange = (e) => { this.parseMCQSpecificComponents(); };
 
                 this.mcqRefs.choiceTableBody.appendChild(newChoiceTR);
             }

@@ -94,24 +94,24 @@ abstract class Question {
     createNewStateButton(divDesigner: HTMLElement) {
         divDesigner.appendChild(libD.jso2dom(["a#new-state-btn"]));
 
-        (<HTMLElement>divDesigner.lastChild).onmousedown = function (e) {
-            (<HTMLElement>e.target).classList.add("mouse-down");
+        (divDesigner.lastChild as HTMLElement).onmousedown = (e) => {
+            (e.target as HTMLElement).classList.add("mouse-down");
         };
 
-        (<HTMLElement>divDesigner.lastChild).onmouseup = function (e) {
-            (<HTMLElement>e.target).classList.remove("mouse-down");
+        (divDesigner.lastChild as HTMLElement).onmouseup = (e) => {
+            (e.target as HTMLElement).classList.remove("mouse-down");
         };
 
-        (<HTMLElement>divDesigner.lastChild).onclick = AudeDesigner.initiateNewState;
+        (divDesigner.lastChild as HTMLElement).onclick = AudeDesigner.initiateNewState;
         divDesigner.parentNode.lastChild.lastChild.textContent = this._("New state");
     }
 
     createRedrawButton(divDesigner: HTMLElement, designer: AudeDesigner) {
-        let redrawButton = libD.jso2dom(["button", this._("Redraw")]) as HTMLButtonElement;
+        const redrawButton = libD.jso2dom(["button", this._("Redraw")]) as HTMLButtonElement;
         redrawButton.onclick = (e) => {
             window.AudeGUI.viz(
                 designer.getDot(),
-                function (res) {
+                (res) => {
                     designer.setSVG(res, designer.currentIndex);
                 }
             );
@@ -150,10 +150,10 @@ abstract class Question {
      * @param questionDisplayDiv 
      */
     displayQuestionWording(questionDisplayDiv: HTMLElement): void {
-        let refs = {
-            divWordingText: <HTMLElement>undefined,
-            divWordingDetails: <HTMLElement>undefined,
-        }
+        const refs = {
+            divWordingText: undefined as HTMLElement,
+            divWordingDetails: undefined as HTMLElement,
+        };
 
         questionDisplayDiv.appendChild(libD.jso2dom([
             ["div#question-wording-text", { "#": "divWordingText" }, this._("Question :")],
@@ -179,11 +179,11 @@ abstract class Question {
         // Populating the div.
         this.displayQuestionWording(questionDisplayDiv);
 
-        let refs = {
-            divUserInput: HTMLElement = null
+        const refs = {
+            divUserInput: HTMLElement = undefined
         };
 
-        let divUserInput = libD.jso2dom(
+        const divUserInput = libD.jso2dom(
             ["div#answer-user-input", { "#": "divUserInput" }],
             refs
         );
@@ -224,11 +224,11 @@ abstract class Question {
             return;
         }
 
-        let showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
+        const showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
             if (wd instanceof Automaton) {
-                let refs = {
-                    divDesigner: <HTMLElement>null,
-                    divInfo: <HTMLElement>null
+                const refs = {
+                    divDesigner: HTMLElement = undefined,
+                    divInfo: HTMLElement = undefined
                 };
 
                 element.appendChild(
@@ -242,7 +242,7 @@ abstract class Question {
                     )
                 );
 
-                let designer = new AudeDesigner(refs.divDesigner, true);
+                const designer = new AudeDesigner(refs.divDesigner, true);
                 designer.setAutomatonCode(automaton_code(wd));
                 designer.autoCenterZoom();
 
@@ -253,19 +253,19 @@ abstract class Question {
             } else if (typeof wd === "string") {
                 FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
             } else if (wd instanceof linearGrammar) {
-                let wdGramDesigner = new GrammarDesigner(element, false);
+                const wdGramDesigner = new GrammarDesigner(element, false);
                 wdGramDesigner.setGrammar(wd);
             } else if (wd === undefined) {
                 return;
             } else {
                 window.AudeGUI.notify(this._("Error !"), this._("This question contains an error !"), "error");
             }
-        }
+        };
 
         if (this.wordingDetails.length === 2) {
-            let refs = {
-                wdLeft: <HTMLElement>undefined,
-                wdRight: <HTMLElement>undefined
+            const refs = {
+                wdLeft: HTMLElement = undefined,
+                wdRight: HTMLElement = undefined
             };
             wordingDetailsDiv.appendChild(libD.jso2dom(
                 ["div#question-automaton-designer",
@@ -278,8 +278,8 @@ abstract class Question {
             ));
 
             for (let i = 0; i < 2; i++) {
-                let wd = this.wordingDetails[i];
-                let element = (i === 0 ? refs.wdLeft : refs.wdRight);
+                const wd = this.wordingDetails[i];
+                const element = (i === 0 ? refs.wdLeft : refs.wdRight);
 
                 showDetailObject(wd, element);
             }
@@ -306,7 +306,7 @@ abstract class Question {
      * Converts the question to a object for JSON conversion.
      */
     toJSON(): any {
-        let obj: any = {};
+        const obj: any = {};
 
         // Serializing common elements.
 
@@ -335,13 +335,13 @@ abstract class Question {
 
         // "wordingDetails" field
         obj.wordingDetails = [];
-        for (let detail of this.wordingDetails) {
+        for (const detail of this.wordingDetails) {
             // Skip empty details.
             if (detail === undefined || detail === null) {
                 continue;
             }
 
-            let detailObj = { aType: <string>undefined, content: <any>undefined };
+            const detailObj = { aType: undefined as string, content: undefined as any };
 
             if (detail instanceof Automaton) {
                 detailObj.aType = AutomatonDataType[AutomatonDataType.Automaton];
@@ -388,18 +388,18 @@ abstract class Question {
 
         // "wordingDetails"
 
-        let getDetailFromObj = (detailObj: any): (Automaton | string | linearGrammar) => {
+        const getDetailFromObj = (detailObj: any): (Automaton | string | linearGrammar) => {
             if (!detailObj.aType) {
-                throw new Error(this._("Malformed question. Wording detail has no type !"))
+                throw new Error(this._("Malformed question. Wording detail has no type !"));
             }
 
             if (!detailObj.content) {
-                throw new Error(this._("Malformed question. Wording detail has no content !"))
+                throw new Error(this._("Malformed question. Wording detail has no content !"));
             }
 
-            let type = AutomatonDataType[detailObj.aType as string];
+            const type = AutomatonDataType[detailObj.aType as string];
             if (type === undefined) {
-                throw new Error(this._("Malformed question. Unknown wording detail type !"))
+                throw new Error(this._("Malformed question. Unknown wording detail type !"));
             }
 
             switch (type) {
@@ -430,7 +430,7 @@ abstract class Question {
 
         if (qObj.wordingDetails) {
             if (qObj.wordingDetails instanceof Array) {
-                for (let detailObj of qObj.wordingDetails) {
+                for (const detailObj of qObj.wordingDetails) {
                     this.wordingDetails.push(getDetailFromObj(detailObj));
                 }
             } else {
@@ -571,7 +571,7 @@ class AutomatonEquivQuestion extends Question {
             }
             return { correct: true, details: "" };
         }
-    }
+    };
 
     usersAnswerType: AutomatonDataType = AutomatonDataType.Automaton;
     usersAnswerAutomaton: Automaton = undefined;
@@ -637,7 +637,7 @@ class AutomatonEquivQuestion extends Question {
                     oldSvg = this.answerInput.getSVG(0);
                 }
 
-                let designerDiv = libD.jso2dom(["div#question-answers-automaton"]);
+                const designerDiv = libD.jso2dom(["div#question-answers-automaton"]);
                 answerInputDiv.appendChild(designerDiv);
                 this.answerInput = new AudeDesigner(designerDiv, false);
                 this.createNewStateButton(designerDiv);
@@ -651,9 +651,9 @@ class AutomatonEquivQuestion extends Question {
             }
 
             case AutomatonDataType.Regexp: {
-                this.answerInput = <HTMLInputElement>libD.jso2dom(
+                this.answerInput = libD.jso2dom(
                     ["input#question-answers-input", { "placeholder": this._("Give your regular expression here.") }]
-                );
+                ) as HTMLInputElement;
                 answerInputDiv.appendChild(this.answerInput);
 
                 if (this.usersAnswerRaw !== undefined && typeof this.usersAnswerRaw === "string") {
@@ -694,7 +694,7 @@ class AutomatonEquivQuestion extends Question {
             return {
                 correct: false,
                 details: this._("No answer was given !")
-            }
+            };
         }
 
         if (this.correctAnswerAutomaton !== undefined) {
@@ -709,8 +709,8 @@ class AutomatonEquivQuestion extends Question {
         switch (this.usersAnswerType) {
             case AutomatonDataType.Automaton: {
                 if (this.usersAnswerRaw instanceof Automaton) {
-                    for (let checkFun of this.automatonAnswerConstraints) {
-                        let checkResult = checkFun(this.usersAnswerRaw, this);
+                    for (const checkFun of this.automatonAnswerConstraints) {
+                        const checkResult = checkFun(this.usersAnswerRaw, this);
                         if (!checkResult.correct) {
                             return checkResult;
                         }
@@ -721,8 +721,8 @@ class AutomatonEquivQuestion extends Question {
 
             case AutomatonDataType.Regexp: {
                 if (typeof this.usersAnswerRaw === "string") {
-                    for (let checkFun of this.regexpAnswerConstraints) {
-                        let checkResult = checkFun(this.usersAnswerRaw, this);
+                    for (const checkFun of this.regexpAnswerConstraints) {
+                        const checkResult = checkFun(this.usersAnswerRaw, this);
                         if (!checkResult.correct) {
                             return checkResult;
                         }
@@ -733,8 +733,8 @@ class AutomatonEquivQuestion extends Question {
 
             case AutomatonDataType.LinearGrammar: {
                 if (this.usersAnswerRaw instanceof linearGrammar) {
-                    for (let checkFun of this.grammarAnswerConstraints) {
-                        let checkResult = checkFun(this.usersAnswerRaw, this);
+                    for (const checkFun of this.grammarAnswerConstraints) {
+                        const checkResult = checkFun(this.usersAnswerRaw, this);
                         if (!checkResult.correct) {
                             return checkResult;
                         }
@@ -747,7 +747,63 @@ class AutomatonEquivQuestion extends Question {
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
+        if (this.correctAnswerGrammar !== undefined) {
+            // Display grammar.
+            const desDiv = libD.jso2dom(["div"]);
+            const des = new GrammarDesigner(desDiv, false);
+            des.setGrammar(this.correctAnswerGrammar);
+            correctAnswerDiv.appendChild(desDiv);
+        } else if (this.correctAnswerRegexp !== undefined) {
+            // Display regexp.
+            const regexDiv = libD.jso2dom(["div"]);
+            FormatUtils.textFormat(
+                FormatUtils.regexp2Latex(this.correctAnswerRegexp),
+                regexDiv
+            );
+            correctAnswerDiv.appendChild(regexDiv);
+        } else if (this.correctAnswerAutomaton !== undefined) {
+            // Display automaton.
+            const desDiv = libD.jso2dom(["div.question-automaton-designer"]);
+            correctAnswerDiv.appendChild(desDiv);
+            const des = new AudeDesigner(desDiv, true);
+            des.setAutomatonCode(automaton_code(this.correctAnswerAutomaton));
+        }
+
+        let constraintList: Array<string>;
+        switch (this.usersAnswerType) {
+            case AutomatonDataType.Automaton:
+                constraintList = this.automatonAnswerConstraintsAudescript;
+                break;
+
+            case AutomatonDataType.Regexp:
+                constraintList = this.regexpAnswerConstraintsAudescript;
+                break;
+
+            case AutomatonDataType.LinearGrammar:
+                constraintList = this.grammarAnswerConstraintsAudescript;
+                break;
+        }
+
+        if (constraintList.length !== 0) {
+            const constraintTextareaList = libD.jso2dom(["ul"]);
+
+            for (const c of constraintList) {
+                const refs = {
+                    constraintArea: undefined as HTMLTextAreaElement
+                };
+                const constraintTextarea = libD.jso2dom(["li", [
+                    ["textarea", { "#": "constraintArea", "disabled": "true" }]
+                ]], refs);
+
+                refs.constraintArea.innerHTML = c;
+
+                constraintTextareaList.appendChild(constraintTextarea);
+            }
+
+            correctAnswerDiv.appendChild(constraintTextareaList);
+        }
+
+
     }
 
     setReferenceAnswer(answer: Automaton | string | linearGrammar) {
@@ -830,7 +886,7 @@ class AutomatonEquivQuestion extends Question {
 
         // Load audescript code.
         if (qObj.automatonAnswerConstraintsAudescript && qObj.automatonAnswerConstraintsAudescript instanceof Array) {
-            for (let cnstr of qObj.automatonAnswerConstraintsAudescript) {
+            for (const cnstr of qObj.automatonAnswerConstraintsAudescript) {
                 this.automatonAnswerConstraints.push(
                     eval(
                         "(a, q) => { " + audescript.toJS(cnstr).code + "}"
@@ -841,7 +897,7 @@ class AutomatonEquivQuestion extends Question {
         }
 
         if (qObj.regexpAnswerConstraintsAudescript && qObj.regexpAnswerConstraintsAudescript instanceof Array) {
-            for (let cnstr of qObj.regexpAnswerConstraintsAudescript) {
+            for (const cnstr of qObj.regexpAnswerConstraintsAudescript) {
                 this.regexpAnswerConstraints.push(
                     eval(
                         "(re, q) => {" + audescript.toJS(cnstr).code + "}"
@@ -852,7 +908,7 @@ class AutomatonEquivQuestion extends Question {
         }
 
         if (qObj.grammarAnswerConstraintsAudescript && qObj.grammarAnswerConstraintsAudescript instanceof Array) {
-            for (let cnstr of qObj.grammarAnswerConstraintsAudescript) {
+            for (const cnstr of qObj.grammarAnswerConstraintsAudescript) {
                 this.grammarAnswerConstraints.push(
                     eval(
                         "(g, q) => {" + audescript.toJS(cnstr).code + "}"
@@ -919,7 +975,7 @@ class MCQQuestion extends Question {
         singleChoice: boolean = this.singleChoice) {
         this.wordingChoices = [];
         this.correctChoices = [];
-        for (let wc of wordingChoices) {
+        for (const wc of wordingChoices) {
             this.addWordingChoice(wc);
         }
 
@@ -935,7 +991,7 @@ class MCQQuestion extends Question {
         grammar?: linearGrammar,
         correct?: boolean
     }) {
-        let id = (wordingChoice.id === undefined ? String(this.wordingChoices.length) : wordingChoice.id);
+        const id = (wordingChoice.id === undefined ? String(this.wordingChoices.length) : wordingChoice.id);
         this.wordingChoices.push({
             id: id,
             text: wordingChoice.text,
@@ -951,10 +1007,10 @@ class MCQQuestion extends Question {
     }
 
     displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        let choiceList = libD.jso2dom(["ul#question-answers-checkbox-list"]);
+        const choiceList = libD.jso2dom(["ul#question-answers-checkbox-list"]);
 
-        for (let choice of this.wordingChoices) {
-            let refs = { choiceLabel: <HTMLElement>undefined };
+        for (const choice of this.wordingChoices) {
+            const refs = { choiceLabel: undefined as HTMLElement };
             choiceList.appendChild(libD.jso2dom(
                 ["li",
                     ["label", { "#": "choiceLabel" }]
@@ -962,7 +1018,7 @@ class MCQQuestion extends Question {
                 refs
             ));
 
-            let choiceInput = <HTMLInputElement>libD.jso2dom(
+            const choiceInput = libD.jso2dom(
                 [
                     "input",
                     {
@@ -971,7 +1027,7 @@ class MCQQuestion extends Question {
                         "value": choice.id
                     }
                 ]
-            );
+            ) as HTMLInputElement;
             refs.choiceLabel.appendChild(choiceInput);
             this.choicesCheckboxes.push(choiceInput);
 
@@ -979,10 +1035,10 @@ class MCQQuestion extends Question {
                 "span.quiz-answer-id", choice.id + ". "
             ]));
 
-            let contentRefs = {
-                textSpan: <HTMLElement>undefined,
-                figureDiv: <HTMLElement>undefined
-            }
+            const contentRefs = {
+                textSpan: undefined as HTMLElement,
+                figureDiv: undefined as HTMLElement
+            };
             refs.choiceLabel.appendChild(libD.jso2dom(
                 [
                     "span", [
@@ -1001,7 +1057,7 @@ class MCQQuestion extends Question {
 
             if (choice.automaton !== undefined) {
                 contentRefs.figureDiv.id = "question-automaton-designer";
-                let choiceAutoDesigner = new AudeDesigner(contentRefs.figureDiv);
+                const choiceAutoDesigner = new AudeDesigner(contentRefs.figureDiv);
                 choiceAutoDesigner.setAutomatonCode(automaton_code(choice.automaton));
                 choiceAutoDesigner.autoCenterZoom();
             } else if (choice.regex !== undefined) {
@@ -1011,7 +1067,7 @@ class MCQQuestion extends Question {
                     false
                 );
             } else if (choice.grammar !== undefined) {
-                let choiceGramDesigner = new GrammarDesigner(contentRefs.figureDiv, false);
+                const choiceGramDesigner = new GrammarDesigner(contentRefs.figureDiv, false);
                 choiceGramDesigner.setGrammar(choice.grammar);
             }
 
@@ -1032,7 +1088,7 @@ class MCQQuestion extends Question {
 
         this.usersChoices = [];
 
-        for (let cb of this.choicesCheckboxes) {
+        for (const cb of this.choicesCheckboxes) {
             if (cb.checked) {
                 this.usersChoices.push(cb.value);
             }
@@ -1043,9 +1099,9 @@ class MCQQuestion extends Question {
     }
 
     checkUsersAnswer(): { correct: boolean; details: string; } {
-        let symDiff = (new libD.Set(this.usersChoices)).symDiff(this.correctChoices);
+        const symDiff = (new libD.Set(this.usersChoices)).symDiff(this.correctChoices);
 
-        for (let e of symDiff) {
+        for (const e of symDiff) {
             if (!this.usersChoices.includes(e)) {
                 return {
                     correct: false,
@@ -1068,13 +1124,23 @@ class MCQQuestion extends Question {
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
+        // We call the input display to show the ckeckboxes.
+        this.displayAnswerInputs(correctAnswerDiv);
+
+        // Then we disable them and check them if they're correct.
+        for (const check of this.choicesCheckboxes) {
+            check.disabled = true;
+
+            if (this.correctChoices.includes(check.value)) {
+                check.checked = true;
+            }
+        }
     }
 
     specificToJSON(obj: any): void {
         obj.possibilities = [];
-        for (let choice of this.wordingChoices) {
-            let objChoice: any = {};
+        for (const choice of this.wordingChoices) {
+            const objChoice: any = {};
             objChoice.id = choice.id;
             objChoice.text = choice.text;
             objChoice.html = choice.html;
@@ -1109,10 +1175,10 @@ class MCQQuestion extends Question {
 
         if (qObj.possibilities) {
             let i = 0;
-            for (let pObj of qObj.possibilities) {
-                let newPoss: any = {
+            for (const pObj of qObj.possibilities) {
+                const newPoss: any = {
                     id: pObj.id || String.fromCharCode("a".charCodeAt(0) + i)
-                }
+                };
 
                 if (pObj.text) {
                     newPoss.text = pObj.text;
@@ -1181,32 +1247,32 @@ class TextInputQuestion extends Question {
             return { correct: false, details: window.AudeGUI.l10n("Your answer isn't correct !") };
         }
         return { correct: true, details: "" };
-    };
+    }
 
     /** Validator functions used for built-in question subtypes (list all reachable states, ...) */
     static readonly defaultValidators = {
         ReachableStates: (q: TextInputQuestion): { correct: boolean, details: string } => {
-            let usersStateList = q.usersAnswer.split(",");
-            let A = (q.wordingDetails[0] as Automaton);
+            const usersStateList = q.usersAnswer.split(",");
+            const A = (q.wordingDetails[0] as Automaton);
 
             // We cast every state to string to allow comparison.
-            let reachableStates = new libD.Set();
-            for (let rs of AutomatonPrograms.reachableStates(A)) {
+            const reachableStates = new libD.Set();
+            for (const rs of AutomatonPrograms.reachableStates(A)) {
                 reachableStates.add(String(rs));
             }
 
-            let allStates = new libD.Set();
-            for (let s of A.getStates()) {
+            const allStates = new libD.Set();
+            for (const s of A.getStates()) {
                 allStates.add(String(s));
             }
 
-            let symDiff = reachableStates.symDiff(usersStateList);
+            const symDiff = reachableStates.symDiff(usersStateList);
 
             console.log(usersStateList);
             console.log(reachableStates);
             console.log(symDiff);
 
-            for (let diff of symDiff) {
+            for (const diff of symDiff) {
                 if (!allStates.has(diff)) {
                     return {
                         correct: false,
@@ -1218,36 +1284,36 @@ class TextInputQuestion extends Question {
                     return {
                         correct: false,
                         details: libD.format(window.AudeGUI.l10n("State {0} is reachable."), diff)
-                    }
+                    };
                 }
 
                 if (!reachableStates.has(diff)) {
                     return {
                         correct: false,
                         details: libD.format(window.AudeGUI.l10n("State {0} isn't reachable."), diff)
-                    }
+                    };
                 }
             }
             return { correct: true, details: "" };
         },
         CoreachableStates: (q: TextInputQuestion): { correct: boolean, details: string } => {
-            let usersStateList = q.usersAnswer.split(",");
-            let A = (q.wordingDetails[0] as Automaton);
+            const usersStateList = q.usersAnswer.split(",");
+            const A = (q.wordingDetails[0] as Automaton);
 
             // We cast every state to string to allow comparison.
-            let coreachableStates = new libD.Set();
-            for (let rs of AutomatonPrograms.coreachableStates(A)) {
+            const coreachableStates = new libD.Set();
+            for (const rs of AutomatonPrograms.coreachableStates(A)) {
                 coreachableStates.add(String(rs));
             }
 
-            let allStates = new libD.Set();
-            for (let s of A.getStates()) {
+            const allStates = new libD.Set();
+            for (const s of A.getStates()) {
                 allStates.add(String(s));
             }
 
-            let symDiff = coreachableStates.symDiff(usersStateList);
+            const symDiff = coreachableStates.symDiff(usersStateList);
 
-            for (let diff of symDiff) {
+            for (const diff of symDiff) {
                 if (!allStates.has(diff)) {
                     return {
                         correct: false,
@@ -1259,29 +1325,29 @@ class TextInputQuestion extends Question {
                     return {
                         correct: false,
                         details: libD.format(window.AudeGUI.l10n("State {0} is coreachable."), diff)
-                    }
+                    };
                 }
 
                 if (!coreachableStates.has(diff)) {
                     return {
                         correct: false,
                         details: libD.format(window.AudeGUI.l10n("State {0} isn't coreachable."), diff)
-                    }
+                    };
                 }
             }
             return { correct: true, details: "" };
         },
         EquivalentStateCouples: (q: TextInputQuestion): { correct: boolean, details: string } => {
-            let couples = q.usersAnswer.split(",");
-            let stateCouples = [];
+            const couples = q.usersAnswer.split(",");
+            const stateCouples = [];
 
-            for (let couple of couples as Iterable<string>) {
+            for (const couple of couples as Iterable<string>) {
                 if (couple.length === 0) {
                     continue;
                 }
 
-                let coupleRegexp = /^[(]([^;]+)[;]([^;]+)[)]$/g;
-                let match = coupleRegexp.exec(couple.trim());
+                const coupleRegexp = /^[(]([^;]+)[;]([^;]+)[)]$/g;
+                const match = coupleRegexp.exec(couple.trim());
                 if (!match || match.length === 0) {
                     return {
                         correct: false,
@@ -1294,9 +1360,9 @@ class TextInputQuestion extends Question {
                 stateCouples.push([match[1].trim(), match[2].trim()]);
             }
 
-            let equivalentStates = [];
-            for (let couple of AutomatonPrograms.notDistinguableStates(q.wordingDetails[0] as Automaton) as Iterable<libD.Tuple>) {
-                let coupleArray = couple.asCouple();
+            const equivalentStates = [];
+            for (const couple of AutomatonPrograms.notDistinguableStates(q.wordingDetails[0] as Automaton) as Iterable<libD.Tuple>) {
+                const coupleArray = couple.asCouple();
                 // For comparison with user input, we have to cast the states to strings.
                 equivalentStates.push([String(coupleArray[0]), String(coupleArray[1])]);
             }
@@ -1305,9 +1371,9 @@ class TextInputQuestion extends Question {
                 return ((c1[0] === c2[0] && c1[1] === c2[1]) || (c1[0] === c2[1] && c1[1] === c2[0]));
             }
 
-            for (let answerCouple of stateCouples) {
+            for (const answerCouple of stateCouples) {
                 let foundInEquiv = false;
-                for (let equivCouple of equivalentStates) {
+                for (const equivCouple of equivalentStates) {
                     if (areCouplesEqual(answerCouple, equivCouple)) {
                         foundInEquiv = true;
                         break;
@@ -1322,13 +1388,13 @@ class TextInputQuestion extends Question {
                             answerCouple[0],
                             answerCouple[1]
                         )
-                    }
+                    };
                 }
             }
 
-            for (let equivCouple of equivalentStates) {
+            for (const equivCouple of equivalentStates) {
                 let foundInAnswer = false;
-                for (let answerCouple of stateCouples) {
+                for (const answerCouple of stateCouples) {
                     if (areCouplesEqual(equivCouple, answerCouple)) {
                         foundInAnswer = true;
                         break;
@@ -1343,14 +1409,14 @@ class TextInputQuestion extends Question {
                             equivCouple[0],
                             equivCouple[1]
                         )
-                    }
+                    };
                 }
             }
 
             return { correct: true, details: "" };
         },
         RecognizedWordAutomaton: (q: TextInputQuestion): { correct: boolean, details: string } => {
-            let A = (q.wordingDetails[0] as Automaton);
+            const A = (q.wordingDetails[0] as Automaton);
             if (!A.acceptedWord(q.usersAnswer)) {
                 return {
                     correct: false,
@@ -1363,7 +1429,7 @@ class TextInputQuestion extends Question {
             return { correct: true, details: "" };
         },
         RecognizedWordRegexp: (q: TextInputQuestion) => {
-            let A = AutomatonPrograms.regexToAutomaton(q.wordingDetails[0] as string);
+            const A = AutomatonPrograms.regexToAutomaton(q.wordingDetails[0] as string);
             if (!A.acceptedWord(q.usersAnswer)) {
                 return {
                     correct: false,
@@ -1376,7 +1442,7 @@ class TextInputQuestion extends Question {
             return { correct: true, details: "" };
         },
         RecognizedWordGrammar: (q: TextInputQuestion) => {
-            let A = AutomatonPrograms.linearGrammar2Automaton(q.wordingDetails[0] as linearGrammar);
+            const A = AutomatonPrograms.linearGrammar2Automaton(q.wordingDetails[0] as linearGrammar);
             if (!A.acceptedWord(q.usersAnswer)) {
                 return {
                     correct: false,
@@ -1388,7 +1454,7 @@ class TextInputQuestion extends Question {
             }
             return { correct: true, details: "" };
         }
-    }
+    };
 
     inputPlaceholder: string = this._("Input your answer here");
     inputField: HTMLInputElement;
@@ -1399,7 +1465,7 @@ class TextInputQuestion extends Question {
     }
 
     displayAnswerInputs(answerInputDiv: HTMLElement): void {
-        this.inputField = <HTMLInputElement>libD.jso2dom(
+        this.inputField = libD.jso2dom(
             [
                 "input#question-answers-input",
                 {
@@ -1407,7 +1473,7 @@ class TextInputQuestion extends Question {
                     "type": "text"
                 }
             ]
-        );
+        ) as HTMLInputElement;
         answerInputDiv.appendChild(this.inputField);
 
         if (this.usersAnswer !== undefined) {
@@ -1424,7 +1490,7 @@ class TextInputQuestion extends Question {
 
     checkUsersAnswer(): { correct: boolean; details: string; } {
         if (this.usersAnswer === undefined) {
-            return { correct: false, details: this._("No answer was given.") }
+            return { correct: false, details: this._("No answer was given.") };
         }
 
         if (!this.answerValidator || !this.answerValidatorAS) {
@@ -1432,7 +1498,7 @@ class TextInputQuestion extends Question {
             this.answerValidatorAS = undefined;
         }
 
-        let validatorReturn = this.answerValidator(this);
+        const validatorReturn = this.answerValidator(this);
         // We check the integrity of the validator's return value.
         if (!validatorReturn || validatorReturn.correct === undefined) {
             window.AudeGUI.notify(
@@ -1441,13 +1507,23 @@ class TextInputQuestion extends Question {
                 "error",
                 4000
             );
-            return { correct: false, details: this._("This question's validator doesn't give a correct value !") }
+            return { correct: false, details: this._("This question's validator doesn't give a correct value !") };
         }
         return validatorReturn;
     }
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
-        throw new Error("Method not implemented.");
+        if (this.answerValidatorAS === undefined) {
+            const correctAnswerList = libD.jso2dom(["li"]);
+            for (const w of this.correctAnswers) {
+                correctAnswerList.appendChild(libD.jso2dom(["li", w]));
+            }
+            correctAnswerDiv.appendChild(correctAnswerList);
+        } else {
+            const validatorTextArea = libD.jso2dom(["textarea.form-control", { "rows": "8", "disabled": "true" }]);
+            validatorTextArea.innerHTML = this.answerValidatorAS;
+            correctAnswerDiv.appendChild(validatorTextArea);
+        }
     }
 
     specificToJSON(obj: any): void {

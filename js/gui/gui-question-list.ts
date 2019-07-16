@@ -8,13 +8,13 @@ class QuestionList {
     static win: any;
 
     /** Reference to the HTML element containing the question list. */
-    static questionList: HTMLElement = null;
+    static questionList: HTMLElement;
     /** HTML Button element that corresponds to the currently selected chapter. */
     static selectedChapterButton: HTMLButtonElement = undefined;
 
     static selectedChapter: number = undefined;
 
-    static load(): void { }
+    static load(): void { return; }
     static run(): void { QuestionList.openQuestionList(); }
 
     /** Question list window's content as JSON array (to be fed into libD.jso2dom) */
@@ -76,7 +76,7 @@ class QuestionList {
     }
 
     /** Array of the question button element's JSON for each chapter. */
-    static readonly chapterQuestionLists = <Array<any>>[
+    static readonly chapterQuestionLists = [
         [
             QuestionList.getQuestionButton("MCQ_C1", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
             QuestionList.getQuestionButton("Complement", window.AudeGUI.l10n("Complement an automaton")), ["br"],
@@ -143,10 +143,12 @@ class QuestionList {
         }
 
         // We create the new window and its contents.
-        var refs = {
-            btnSettings: <HTMLButtonElement>null, root: <HTMLElement>null,
-            btnClose: <HTMLButtonElement>null, chapterContentDiv: <HTMLElement>null,
-            btnChapterMenu: <HTMLButtonElement>undefined,
+        const refs = {
+            btnSettings: HTMLButtonElement = undefined,
+            root: HTMLElement = undefined,
+            btnClose: HTMLButtonElement = undefined,
+            chapterContentDiv: HTMLElement = undefined,
+            btnChapterMenu: HTMLButtonElement = undefined,
         };
         QuestionList.win = libD.newWin({
             title: window.AudeGUI.l10n("Question List"),
@@ -162,9 +164,9 @@ class QuestionList {
         refs.btnClose.onclick = QuestionList.close;
 
         // We add the action to each of the chapter button.
-        let chapterButtons = document.getElementsByClassName("questionList-selection-chapter-cell-button");
+        const chapterButtons = document.getElementsByClassName("questionList-selection-chapter-cell-button");
 
-        for (let chapBtn of chapterButtons as HTMLCollectionOf<HTMLButtonElement>) {
+        for (const chapBtn of chapterButtons as HTMLCollectionOf<HTMLButtonElement>) {
             chapBtn.addEventListener("click", e => {
                 if (QuestionList.selectedChapterButton) {
                     // Change color of the previously selected chapter button.
@@ -218,13 +220,13 @@ class QuestionList {
         chapterContentDiv.appendChild(libD.jso2dom(QuestionList.getQuestionsHTMLForChapter(chapterNumber)));
 
         // We bind its action to each of the question button for this chapter.
-        let questionButtons =
+        const questionButtons =
             document.getElementsByClassName("questionList-question-select") as HTMLCollectionOf<HTMLButtonElement>;
 
-        for (let qBtn of questionButtons) {
+        for (const qBtn of questionButtons) {
             qBtn.onclick = (e) => {
-                let currentButton = e.target as HTMLButtonElement;
-                let qSubtype: QuestionSubType = QuestionSubType[currentButton.value.trim()];
+                const currentButton = e.target as HTMLButtonElement;
+                const qSubtype: QuestionSubType = QuestionSubType[currentButton.value.trim()];
                 if (qSubtype === undefined) {
                     window.AudeGUI.notify(window.AudeGUI.l10n("Error !"), window.AudeGUI.l10n("Unknown question type : ") + currentButton.value, "error");
                     return;
@@ -232,8 +234,8 @@ class QuestionList {
 
                 document.getElementById("questionList-btnbar-chapterMenu").style.display = "unset";
                 document.getElementById("questionList-selection-chapter").style.display = "none";
-                this.initiateNewQuestion(qSubtype, chapterContentDiv);
-            }
+                QuestionList.initiateNewQuestion(qSubtype, chapterContentDiv);
+            };
         }
     }
 
@@ -243,8 +245,8 @@ class QuestionList {
      * @param div - The Element in which to display the question.
      */
     static initiateNewQuestion(qSubtype: QuestionSubType, div: HTMLElement) {
-        let questionGen = new QuestionGenerator();
-        let q = questionGen.generateFromSubtype(qSubtype);
+        const questionGen = new QuestionGenerator();
+        const q = questionGen.generateFromSubtype(qSubtype);
         QuestionList.startQuestion(q, div);
     }
 
@@ -261,9 +263,9 @@ class QuestionList {
         q.displayQuestion(div);
 
         // We add the question controls.
-        let refs = {
-            btnValidate: <HTMLButtonElement>null,
-            btnRestart: <HTMLElement>null
+        const refs = {
+            btnValidate: HTMLButtonElement = undefined,
+            btnRestart: HTMLElement = undefined
         };
         div.appendChild(
             libD.jso2dom(["div#question-answer-button-container", [
@@ -277,7 +279,7 @@ class QuestionList {
                 console.error("Couldn't parse the user's input !");
             }
 
-            let correction = q.checkUsersAnswer()
+            const correction = q.checkUsersAnswer();
             if (correction.correct) {
                 window.AudeGUI.notify(window.AudeGUI.l10n("Success !"), window.AudeGUI.l10n("Your answer was correct ! Moving you to a new question..."), "ok", 4000);
                 setTimeout(
@@ -296,7 +298,7 @@ class QuestionList {
     }
 
     static openRandomGenerationSettings() {
-
+        return;
     }
 
     /** Hides the question list window. */

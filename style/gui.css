@@ -813,6 +813,11 @@ input[type=button]:active, button:active {
     margin: auto;
 }
 
+/* Class used to hide elements in the quiz editor. */
+.quiz-editor-hidden {
+    display: none !important;
+}
+
 #quiz-editor h1, #quiz-editor .big-center {
     text-align: center;
 }
@@ -821,6 +826,10 @@ input[type=button]:active, button:active {
     padding: 1ex;
     flex: 1;
     clear: both;
+}
+
+#quiz-editor-point-input {
+    width: 4.25rem;
 }
 
 #quiz-editor p>input[type="text"]:first-child:last-child {

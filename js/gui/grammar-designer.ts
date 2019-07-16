@@ -65,33 +65,33 @@ class GrammarDesigner {
         ]]
     ]];
 
-    currentGrammar: linearGrammar = new linearGrammar();
+    private currentGrammar: linearGrammar = new linearGrammar();
 
     containerDiv: HTMLElement;
-    editable: boolean;
+    private editable: boolean;
 
-    refs = {
-        terminalSymbolsDiv: <HTMLElement>undefined,
-        terminalEditSpan: <HTMLElement>undefined,
-        terminalInput: <HTMLInputElement>undefined,
-        terminalAddButton: <HTMLButtonElement>undefined,
-        terminalRemoveButton: <HTMLButtonElement>undefined,
+    private readonly refs = {
+        terminalSymbolsDiv: HTMLElement = undefined,
+        terminalEditSpan: HTMLElement = undefined,
+        terminalInput: HTMLInputElement = undefined,
+        terminalAddButton: HTMLButtonElement = undefined,
+        terminalRemoveButton: HTMLButtonElement=undefined,
 
-        nonTerminalSymbolsDiv: <HTMLElement>undefined,
-        nonTerminalEditSpan: <HTMLElement>undefined,
-        nonTerminalInput: <HTMLInputElement>undefined,
-        nonTerminalAddButton: <HTMLButtonElement>undefined,
-        nonTerminalRemoveButton: <HTMLButtonElement>undefined,
+        nonTerminalSymbolsDiv: HTMLElement=undefined,
+        nonTerminalEditSpan: HTMLElement=undefined,
+        nonTerminalInput: HTMLInputElement=undefined,
+        nonTerminalAddButton: HTMLButtonElement=undefined,
+        nonTerminalRemoveButton: HTMLButtonElement=undefined,
 
-        rulesList: <HTMLOListElement>undefined,
-        selectStartSymbol: <HTMLSelectElement>undefined,
-        newRuleSpan: <HTMLElement>undefined,
-        selectNonTerminalNewRule: <HTMLSelectElement>undefined,
-        spanNewRuleArrow: <HTMLElement>undefined,
-        inputLeftTerminalNewRule: <HTMLInputElement>undefined,
-        inputNonTerminalNewRule: <HTMLInputElement>undefined,
-        inputRightTerminalNewRule: <HTMLInputElement>undefined,
-        buttonNewRule: <HTMLButtonElement>undefined
+        rulesList: HTMLOListElement=undefined,
+        selectStartSymbol: HTMLSelectElement=undefined,
+        newRuleSpan: HTMLElement=undefined,
+        selectNonTerminalNewRule: HTMLSelectElement=undefined,
+        spanNewRuleArrow: HTMLElement=undefined,
+        inputLeftTerminalNewRule: HTMLInputElement=undefined,
+        inputNonTerminalNewRule: HTMLInputElement=undefined,
+        inputRightTerminalNewRule: HTMLInputElement=undefined,
+        buttonNewRule: HTMLButtonElement=undefined
     };
 
     constructor(designerDiv: HTMLElement, editable: boolean = true) {
@@ -107,7 +107,7 @@ class GrammarDesigner {
         };
 
         this.refs.terminalAddButton.onclick = (e) => {
-            let val = this.refs.terminalInput.value;
+            const val = this.refs.terminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
@@ -130,7 +130,7 @@ class GrammarDesigner {
         };
 
         this.refs.terminalRemoveButton.onclick = (e) => {
-            let val = this.refs.terminalInput.value;
+            const val = this.refs.terminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
@@ -148,7 +148,7 @@ class GrammarDesigner {
         };
 
         this.refs.nonTerminalAddButton.onclick = (e) => {
-            let val = this.refs.nonTerminalInput.value;
+            const val = this.refs.nonTerminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
@@ -176,7 +176,7 @@ class GrammarDesigner {
         };
 
         this.refs.nonTerminalRemoveButton.onclick = (e) => {
-            let val = this.refs.nonTerminalInput.value;
+            const val = this.refs.nonTerminalInput.value;
             if (val.trim().length === 0) {
                 return;
             }
@@ -190,7 +190,7 @@ class GrammarDesigner {
         // Initialize the rules section.
         // When the start symbol is changed, we assign it to the grammar.
         this.refs.selectStartSymbol.onchange = (e) => {
-            let selectedValue = this.refs.selectStartSymbol.value;
+            const selectedValue = this.refs.selectStartSymbol.value;
             if (!selectedValue) {
                 return;
             }
@@ -203,12 +203,12 @@ class GrammarDesigner {
 
         // Disable left symbols when right isn't empty, and vice-versa.
         this.refs.inputLeftTerminalNewRule.oninput = (e) => {
-            if (this.refs.inputLeftTerminalNewRule.value.length != 0) {
+            if (this.refs.inputLeftTerminalNewRule.value.length !== 0) {
                 this.refs.inputRightTerminalNewRule.setAttribute("disabled", "true");
             } else {
                 this.refs.inputRightTerminalNewRule.removeAttribute("disabled");
             }
-        }
+        };
 
         this.refs.inputLeftTerminalNewRule.onkeyup = (e) => {
             if (e.keyCode === 13) {
@@ -217,7 +217,7 @@ class GrammarDesigner {
         };
 
         this.refs.inputRightTerminalNewRule.oninput = (e) => {
-            if (this.refs.inputRightTerminalNewRule.value.length != 0) {
+            if (this.refs.inputRightTerminalNewRule.value.length !== 0) {
                 this.refs.inputLeftTerminalNewRule.setAttribute("disabled", "true");
             } else {
                 this.refs.inputLeftTerminalNewRule.removeAttribute("disabled");
@@ -228,7 +228,7 @@ class GrammarDesigner {
             if (e.keyCode === 13) {
                 this.refs.buttonNewRule.click();
             }
-        }
+        };
 
         this.refs.inputNonTerminalNewRule.onkeydown = (e) => {
             if (e.keyCode === 13) {
@@ -277,7 +277,7 @@ class GrammarDesigner {
         }
         latex += " \\rightarrow ";
 
-        let nonTermBody = rule.getNonTerminalSymbolBody();
+        const nonTermBody = rule.getNonTerminalSymbolBody();
         if (rule.getNonTerminalSymbolBody() === undefined) {
             latex += rule.getListSymbolTerminal();
         } else if (rule.getListSymbolTerminal() === undefined) {
@@ -302,7 +302,7 @@ class GrammarDesigner {
 
         this.refs.rulesList.innerHTML = "";
         let ruleNumber = 0;
-        let rules = Array.from(this.currentGrammar.getProductionRules()) as Array<Rule>;
+        const rules = Array.from(this.currentGrammar.getProductionRules()) as Array<Rule>;
         rules.sort((a, b) => {
             if (a.getNonTerminalSymbol() === this.currentGrammar.getStartSymbol()) {
                 return -1;
@@ -313,12 +313,12 @@ class GrammarDesigner {
             }
         });
 
-        for (let rule of rules) {
-            let refs = {
-                ruleContent: <HTMLElement>null
+        for (const rule of rules) {
+            const refs = {
+                ruleContent: HTMLElement = undefined
             };
 
-            let newItem = libD.jso2dom(["li", [
+            const newItem = libD.jso2dom(["li", [
                 ["span.grammar-designer-rule-item", { "#": "ruleContent" }]
             ]],
                 refs
@@ -331,7 +331,7 @@ class GrammarDesigner {
 
             // If designer is editable, we create the delete button for each rule.
             if (this.editable) {
-                let ruleDeleteButton = libD.jso2dom(["button.grammar-designer-delete-button", { "value": String(ruleNumber) }, this._("x")]);
+                const ruleDeleteButton = libD.jso2dom(["button.grammar-designer-delete-button", { "value": String(ruleNumber) }, this._("x")]);
 
                 ruleDeleteButton.onclick = (e) => {
                     this.currentGrammar.removeRule(rule);
@@ -349,8 +349,8 @@ class GrammarDesigner {
         // Update start symbol select options.
         this.refs.selectStartSymbol.innerHTML = "";
         this.refs.selectNonTerminalNewRule.innerHTML = "";
-        for (let nonTerminalSymbol of this.currentGrammar.getNonTerminalSymbols()) {
-            let newOptionStart = libD.jso2dom(
+        for (const nonTerminalSymbol of this.currentGrammar.getNonTerminalSymbols()) {
+            const newOptionStart = libD.jso2dom(
                 ["option", { "value": nonTerminalSymbol }, String(nonTerminalSymbol)]
             );
 
@@ -359,7 +359,7 @@ class GrammarDesigner {
             }
             this.refs.selectStartSymbol.appendChild(newOptionStart);
 
-            let newOptionNewRule = libD.jso2dom(
+            const newOptionNewRule = libD.jso2dom(
                 ["option", { "value": nonTerminalSymbol }, String(nonTerminalSymbol)]
             );
             this.refs.selectNonTerminalNewRule.appendChild(newOptionNewRule);
