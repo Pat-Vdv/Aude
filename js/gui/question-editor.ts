@@ -114,6 +114,7 @@ class QuestionEditor {
             ["div.card-header", window.AudeGUI.l10n("New Choice")],
             ["div.card-body", [
                 ["input.form-control", { "#": "newChoiceText", "type": "text", "placeholder": window.AudeGUI.l10n("Text/HTML/LaTeX for the choice here.") }],
+                ["div", { "#": "newChoiceTextPreview" }],
                 ["br"],
                 ["div.form-group", [
                     ["label", { "for": "question-editor-mcq-choice-detail" }, window.AudeGUI.l10n("Detail")],
@@ -207,6 +208,7 @@ class QuestionEditor {
         choiceTableBody: undefined as HTMLTableSectionElement,
         singleCheckbox: undefined as HTMLInputElement,
         newChoiceText: undefined as HTMLInputElement,
+        newChoiceTextPreview: undefined as HTMLElement,
         newChoiceDetailType: undefined as HTMLSelectElement,
         newChoiceAddButton: undefined as HTMLButtonElement,
         newChoiceDetailContent: undefined as HTMLElement
@@ -473,6 +475,19 @@ class QuestionEditor {
         this.mcqRefs.singleCheckbox.checked = mcq.singleChoice;
         this.mcqRefs.singleCheckbox.dispatchEvent(new Event("change"));
 
+        this.mcqRefs.newChoiceText.onchange = this.mcqRefs.newChoiceText.onkeyup = (e) => {
+            try {
+                this.mcqRefs.newChoiceText.classList.remove("is-invalid");
+                FormatUtils.textFormat(
+                    this.mcqRefs.newChoiceText.value,
+                    this.mcqRefs.newChoiceTextPreview,
+                    true
+                );
+            } catch (e) {
+                this.mcqRefs.newChoiceText.classList.add("is-invalid");
+            }
+        };
+
         // If they exist, put the current question's choices into this editor's.
         for (const choice of mcq.wordingChoices) {
             const choiceC: any = choice;
@@ -530,6 +545,7 @@ class QuestionEditor {
             }
 
             this.mcqChoices.push(newChoice);
+            this.mcqRefs.newChoiceTextPreview.innerHTML = "";
             this.redraw();
 
             this.mcqRefs.newChoiceText.value = "";
