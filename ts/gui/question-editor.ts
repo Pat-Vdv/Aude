@@ -111,7 +111,7 @@ class QuestionEditor {
         ]],
 
         ["div.card text-center", [
-            ["div.card-header", window.AudeGUI.l10n("New Choice")],
+            ["div.card-header", { "#": "choiceCardHeader" }, window.AudeGUI.l10n("New Choice")],
             ["div.card-body", [
                 ["input.form-control", { "#": "newChoiceText", "type": "text", "placeholder": window.AudeGUI.l10n("Text/HTML/LaTeX for the choice here.") }],
                 ["div", { "#": "newChoiceTextPreview" }],
@@ -129,7 +129,15 @@ class QuestionEditor {
 
                 ]],
                 ["br"],
-                ["button.btn btn-primary btn-block", { "#": "newChoiceAddButton" }, window.AudeGUI.l10n("Add this choice to the question")]
+                ["button.btn btn-primary btn-block", { "#": "newChoiceAddButton" }, window.AudeGUI.l10n("Add this choice to the question")],
+                ["div.row question-editor-hidden", { "#": "choiceEditButtonBar" }, [
+                    ["div.col-sm-6", [
+                        ["button.btn btn-primary btn-block", { "#": "choiceEditApplyButton" }, window.AudeGUI.l10n("Apply")]
+                    ]],
+                    ["div.col-sm-6", [
+                        ["button.btn btn-danger btn-block", { "#": "choiceEditCancelButton" }, window.AudeGUI.l10n("Cancel")]
+                    ]]
+                ]]
             ]]
         ]]
     ]];
@@ -211,7 +219,12 @@ class QuestionEditor {
         newChoiceTextPreview: undefined as HTMLElement,
         newChoiceDetailType: undefined as HTMLSelectElement,
         newChoiceAddButton: undefined as HTMLButtonElement,
-        newChoiceDetailContent: undefined as HTMLElement
+        newChoiceDetailContent: undefined as HTMLElement,
+
+        choiceEditApplyButton: undefined as HTMLButtonElement,
+        choiceCardHeader: undefined as HTMLElement,
+        choiceEditButtonBar: undefined as HTMLElement,
+        choiceEditCancelButton: undefined as HTMLButtonElement
     };
     private readonly mcqChoices: Array<{
         id?: string,
@@ -223,6 +236,9 @@ class QuestionEditor {
         correct?: boolean
     }> = [];
     private mcqChoiceDetailInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
+    /** Stores the choice that is currently being edited. 
+     * If instead a new choice is being created, this will be undefined. */
+    private mcqCurrentlyEditingChoiceId: string;
 
     // Fields for AutomatonEquiv Questions
     private readonly autoEquivRefs = {
@@ -495,63 +511,133 @@ class QuestionEditor {
             this.mcqChoices.push(choiceC);
         }
         this.redraw();
-        this.mcqRefs.newChoiceAddButton.onclick = (e) => {
-            let newChoiceId = "a";
-            const choiceIdExists = (choiceId: string): boolean => {
-                for (const choice of this.mcqChoices) {
-                    if (choice.id === choiceId) {
-                        return true;
-                    }
-                }
-                return false;
-            };
 
-            while (choiceIdExists(newChoiceId)) {
-                newChoiceId = String.fromCodePoint(newChoiceId.codePointAt(0) + 1);
+        const getChoiceFromInputs = (id?: string) => {
+            // If ID hasn't been given, we create a new one, since we will add a new choice.
+            if (id === undefined) {
+                id = "a";
+
+                const choiceIdExists = (choiceId: string): boolean => {
+                    for (const choice of this.mcqChoices) {
+                        if (choice.id === choiceId) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+
+                while (choiceIdExists(id)) {
+                    id = String.fromCodePoint(id.codePointAt(0) + 1);
+                }
             }
 
-            const newChoice = {
-                id: newChoiceId,
-                text: undefined,
-                html: this.mcqRefs.newChoiceText.value,
-                automaton: undefined as Automaton,
-                regex: undefined as string,
-                grammar: undefined as linearGrammar
+            let choice: {
+                id?: string,
+                text?: string,
+                html?: string,
+                automaton?: Automaton,
+                regex?: string,
+                grammar?: linearGrammar,
+                correct?: boolean
             };
+
+            for (const c of this.mcqChoices) {
+                if (c.id === id) {
+                    choice = c;
+                }
+            }
+
+            if (choice === undefined) {
+                choice = {
+                    id: id,
+                    text: undefined,
+                    html: undefined,
+                    automaton: undefined as Automaton,
+                    regex: undefined as string,
+                    grammar: undefined as linearGrammar
+                };
+            }
+
+            choice.html = this.mcqRefs.newChoiceText.value;
 
             if (this.mcqRefs.newChoiceDetailType.value !== "None") {
                 switch (AutomatonDataType[this.mcqRefs.newChoiceDetailType.value]) {
                     case AutomatonDataType.Automaton: {
                         if (this.mcqChoiceDetailInput instanceof AudeDesigner) {
-                            newChoice.automaton = this.mcqChoiceDetailInput.getAutomaton(0);
+                            choice.automaton = this.mcqChoiceDetailInput.getAutomaton(0);
                         }
                         break;
                     }
 
                     case AutomatonDataType.Regexp: {
                         if (this.mcqChoiceDetailInput instanceof HTMLInputElement) {
-                            newChoice.regex = this.mcqChoiceDetailInput.value;
+                            choice.regex = this.mcqChoiceDetailInput.value;
                         }
                         break;
                     }
 
                     case AutomatonDataType.LinearGrammar: {
                         if (this.mcqChoiceDetailInput instanceof GrammarDesigner) {
-                            newChoice.grammar = this.mcqChoiceDetailInput.getGrammar();
+                            choice.grammar = this.mcqChoiceDetailInput.getGrammar();
                         }
                         break;
                     }
                 }
             }
 
-            this.mcqChoices.push(newChoice);
+            return choice;
+        };
+
+        const cleanMCQInputs = () => {
             this.mcqRefs.newChoiceTextPreview.innerHTML = "";
-            this.redraw();
 
             this.mcqRefs.newChoiceText.value = "";
             this.mcqRefs.newChoiceDetailType.selectedIndex = 0;
-            this.mcqRefs.newChoiceDetailContent.classList.add("question-editor-hidden");
-            this.mcqRefs.newChoiceDetailContent.innerHTML = "";
+            this.mcqRefs.newChoiceDetailType.dispatchEvent(new Event("change"));
+        };
+
+        this.mcqRefs.newChoiceAddButton.onclick = (e) => {
+            const newChoice = getChoiceFromInputs();
+
+            this.mcqChoices.push(newChoice);
+            this.redraw();
+        };
+
+        this.mcqRefs.choiceEditApplyButton.onclick = (e) => {
+            if (this.mcqCurrentlyEditingChoiceId === undefined) {
+                return;
+            }
+
+            const choice = getChoiceFromInputs(this.mcqCurrentlyEditingChoiceId);
+
+            let choiceIndex: number;
+            for (let i = 0; i < this.mcqChoices.length; i++) {
+                if (this.mcqChoices[i].id === this.mcqCurrentlyEditingChoiceId) {
+                    choiceIndex = i;
+                }
+            }
+
+            if (choiceIndex) {
+                this.mcqChoices[choiceIndex] = choice;
+            }
+
+            cleanMCQInputs();
+
+            this.mcqCurrentlyEditingChoiceId = undefined;
+            this.mcqRefs.choiceCardHeader.innerHTML = this._("New Choice");
+            this.mcqRefs.choiceEditButtonBar.classList.add("question-editor-hidden");
+            this.mcqRefs.newChoiceAddButton.classList.remove("question-editor-hidden");
+            this.redraw();
+        };
+
+        this.mcqRefs.choiceEditCancelButton.onclick = (e) => {
+            cleanMCQInputs();
+
+            this.mcqCurrentlyEditingChoiceId = undefined;
+            this.mcqRefs.choiceCardHeader.innerHTML = this._("New Choice");
+            this.mcqRefs.choiceEditButtonBar.classList.add("question-editor-hidden");
+            this.mcqRefs.newChoiceAddButton.classList.remove("question-editor-hidden");
+            this.redraw();
         };
 
         this.mcqRefs.newChoiceDetailType.onchange = (e) => {
@@ -827,7 +913,8 @@ class QuestionEditor {
                     wordingCorrect: undefined as HTMLInputElement,
                     deleteChoiceButton: undefined as HTMLInputElement,
                     btnMoveOrderUp: undefined as HTMLButtonElement,
-                    btnMoveOrderDown: undefined as HTMLButtonElement
+                    btnMoveOrderDown: undefined as HTMLButtonElement,
+                    editChoiceButton: undefined as HTMLButtonElement
                 };
                 const correctCheckType = (this.mcqRefs.singleCheckbox.checked ? "radio" : "checkbox");
 
@@ -841,6 +928,9 @@ class QuestionEditor {
                     ["td", [
                         ["button.btn btn-outline-danger question-editor-choice-delete", { "#": "deleteChoiceButton", "value": choice.id }, [
                             ["img", { "src": libD.getIcon("actions/list-remove"), "alt": this._("Remove") }]
+                        ]],
+                        ["button.btn btn-outline-secondary question-editor-choice-edit", { "#": "editChoiceButton", "value": choice.id }, [
+                            ["img", { "src": libD.getIcon("actions/document-edit"), "alt": this._("Edit") }]
                         ]]
                     ]]
                 ]], newChoiceRefs);
@@ -887,6 +977,70 @@ class QuestionEditor {
                 };
 
                 newChoiceRefs.wordingCorrect.onchange = (e) => { this.parseMCQSpecificComponents(); };
+
+                newChoiceRefs.editChoiceButton.onclick = (e) => {
+                    this.mcqRefs.choiceCardHeader.innerHTML = this._("Edit Choice");
+
+                    this.mcqRefs.choiceEditButtonBar.classList.remove("question-editor-hidden");
+                    this.mcqRefs.newChoiceAddButton.classList.add("question-editor-hidden");
+
+                    let foundChoice: {
+                        id?: string,
+                        text?: string,
+                        html?: string,
+                        automaton?: Automaton,
+                        regex?: string,
+                        grammar?: linearGrammar,
+                        correct?: boolean
+                    };
+                    for (const c of this.mcqChoices) {
+                        if (c.id === (e.currentTarget as HTMLButtonElement).value) {
+                            foundChoice = c;
+                        }
+                    }
+
+                    if (foundChoice === undefined) {
+                        return; // shouldn't happen.
+                    }
+
+                    this.mcqCurrentlyEditingChoiceId = foundChoice.id;
+                    this.mcqRefs.newChoiceText.value = foundChoice.html;
+                    this.mcqRefs.newChoiceText.dispatchEvent(new Event("change"));
+
+                    let detailType: AutomatonDataType;
+                    if (foundChoice.automaton) {
+                        detailType = AutomatonDataType.Automaton;
+                    } else if (foundChoice.regex) {
+                        detailType = AutomatonDataType.Regexp;
+                    } else if (foundChoice.grammar) {
+                        detailType = AutomatonDataType.LinearGrammar;
+                    }
+
+                    if (detailType === undefined) {
+                        this.mcqRefs.newChoiceDetailType.value = "None";
+                    } else {
+                        this.mcqRefs.newChoiceDetailType.value = AutomatonDataType[detailType];
+                    }
+                    this.mcqRefs.newChoiceDetailType.dispatchEvent(new Event("change"));
+
+                    switch (detailType) {
+                        case AutomatonDataType.Automaton:
+                            const ad = this.mcqChoiceDetailInput as AudeDesigner;
+                            ad.setAutomatonCode(automaton_code(foundChoice.automaton));
+                            ad.autoCenterZoom();
+                            break;
+
+                        case AutomatonDataType.Regexp:
+                            (this.mcqChoiceDetailInput as HTMLInputElement).value = foundChoice.regex;
+                            break;
+
+                        case AutomatonDataType.LinearGrammar:
+                            (this.mcqChoiceDetailInput as GrammarDesigner).setGrammar(foundChoice.grammar);
+                            break;
+                    }
+
+                    newChoiceRefs.deleteChoiceButton.disabled = true;
+                };
 
                 this.mcqRefs.choiceTableBody.appendChild(newChoiceTR);
             }
