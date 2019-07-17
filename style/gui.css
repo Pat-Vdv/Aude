@@ -1548,5 +1548,13 @@ fieldset {
 }
 
 #question-editor-textinput-validation-audescript {
-    resize: none;
+    width: 100%;
+    height: 10rem;
+    position: relative;
+}
+
+.question-editor-audescript-editor {
+    width: 100%;
+    height: 10rem;
+    position: relative;
 }

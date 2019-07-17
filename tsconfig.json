@@ -16,7 +16,7 @@
 
   "include": [
     "./js/**.ts",
-    "./js/typings/**.d.ts",
+    "./typings/**.d.ts",
     "./js/gui/**.ts"
   ],
 

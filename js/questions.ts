@@ -1006,7 +1006,8 @@ class MCQQuestion extends Question {
         }
     }
 
-    displayAnswerInputs(answerInputDiv: HTMLElement): void {
+    private showWordingChoicesCheckboxes(div: HTMLElement, readonly: boolean = false) {
+        this.choicesCheckboxes = [];
         const choiceList = libD.jso2dom(["ul#question-answers-checkbox-list"]);
 
         for (const choice of this.wordingChoices) {
@@ -1028,6 +1029,9 @@ class MCQQuestion extends Question {
                     }
                 ]
             ) as HTMLInputElement;
+            if (readonly) {
+                choiceInput.disabled = true;
+            }
             refs.choiceLabel.appendChild(choiceInput);
             this.choicesCheckboxes.push(choiceInput);
 
@@ -1057,7 +1061,7 @@ class MCQQuestion extends Question {
 
             if (choice.automaton !== undefined) {
                 contentRefs.figureDiv.id = "question-automaton-designer";
-                const choiceAutoDesigner = new AudeDesigner(contentRefs.figureDiv);
+                const choiceAutoDesigner = new AudeDesigner(contentRefs.figureDiv, true);
                 choiceAutoDesigner.setAutomatonCode(automaton_code(choice.automaton));
                 choiceAutoDesigner.autoCenterZoom();
             } else if (choice.regex !== undefined) {
@@ -1077,7 +1081,12 @@ class MCQQuestion extends Question {
                 }
             }
         }
-        answerInputDiv.appendChild(choiceList);
+
+        div.appendChild(choiceList);
+    }
+
+    displayAnswerInputs(answerInputDiv: HTMLElement): void {
+        this.showWordingChoicesCheckboxes(answerInputDiv);
     }
 
     parseUsersAnswer(): boolean {
@@ -1125,12 +1134,10 @@ class MCQQuestion extends Question {
 
     displayCorrectAnswer(correctAnswerDiv: HTMLElement): void {
         // We call the input display to show the ckeckboxes.
-        this.displayAnswerInputs(correctAnswerDiv);
+        this.showWordingChoicesCheckboxes(correctAnswerDiv, true);
 
         // Then we disable them and check them if they're correct.
         for (const check of this.choicesCheckboxes) {
-            check.disabled = true;
-
             if (this.correctChoices.includes(check.value)) {
                 check.checked = true;
             }

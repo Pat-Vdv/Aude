@@ -86,7 +86,7 @@ class QuestionEditor {
 
             ["div#question-editor-textinput-verif-content", [
                 ["input#question-editor-textinput-validation-wordlist.form-control", { "#": "wordlistContent", "type": "text", "placeholder": window.AudeGUI.l10n("Enter the correct answers here, separated by commas.") }],
-                ["textarea#question-editor-textinput-validation-audescript.form-control", { "#": "audescriptContent", "rows": "10", "placeholder": window.AudeGUI.l10n("Write your AudeScript code here.") }]
+                ["div#question-editor-textinput-validation-audescript", { "#": "audescriptContent" }]
             ]]
         ]];
 
@@ -198,8 +198,9 @@ class QuestionEditor {
         radioWordlist: undefined as HTMLInputElement,
         radioAudescript: undefined as HTMLInputElement,
         wordlistContent: undefined as HTMLInputElement,
-        audescriptContent: undefined as HTMLTextAreaElement
+        audescriptContent: undefined as HTMLElement
     };
+    private aceEditorAudescript: AceAjax.Editor;
 
     // Fields for MCQ Questions.
     private readonly mcqRefs = {
@@ -229,7 +230,7 @@ class QuestionEditor {
         constraintList: undefined as HTMLUListElement,
         addConstraintButton: undefined as HTMLButtonElement
     };
-    private readonly autoEquivContraintTextAreas: HTMLTextAreaElement[] = [];
+    private readonly autoEquivConstraintEditors: AceAjax.Editor[] = [];
 
     constructor(container: HTMLElement, questionCategory: QuestionCategory) {
         this.container = container;
@@ -422,10 +423,20 @@ class QuestionEditor {
             this.textInputRefs.wordlistContent.classList.add("question-editor-hidden");
         };
 
+        if (this.aceEditorAudescript !== undefined) {
+            this.aceEditorAudescript.destroy();
+            this.aceEditorAudescript.container.remove();
+        }
+        this.aceEditorAudescript = ace.edit(this.textInputRefs.audescriptContent);
+        this.aceEditorAudescript.getSession().setOption("useWorker", false);
+        this.aceEditorAudescript.getSession().setMode("ace/mode/audescript");
+        this.aceEditorAudescript.resize(true);
+
+        // If set retrieve values from the question (for editing questions).
         if (tiq.answerValidatorAS) {
             this.textInputRefs.radioWordlist.checked = false;
             this.textInputRefs.radioAudescript.checked = true;
-            this.textInputRefs.audescriptContent.value = tiq.answerValidatorAS;
+            this.aceEditorAudescript.getSession().setValue(tiq.answerValidatorAS);
             this.textInputRefs.radioAudescript.dispatchEvent(new Event("change"));
         } else {
             this.textInputRefs.radioWordlist.checked = true;
@@ -443,7 +454,7 @@ class QuestionEditor {
             qti.answerValidatorAS = undefined;
             qti.answerValidatorAS = undefined;
         } else {
-            qti.answerValidatorAS = this.textInputRefs.audescriptContent.value;
+            qti.answerValidatorAS = this.aceEditorAudescript.getSession().getValue();
             qti.answerValidator = eval("(q) => { " + audescript.toJS(qti.answerValidatorAS).code + " } ");
         }
     }
@@ -635,26 +646,19 @@ class QuestionEditor {
         this.autoEquivRefs.referenceTypeSelect.dispatchEvent(new Event("change"));
 
         // Creates a text area for a new constraint and adds it to the current editor.
-        const newConstraintTextArea = () => {
-            const constraintTextArea = libD.jso2dom(["textarea.form-control", { "rows": "8", "placeholder": this._("Give your Audescript constraint here."), "spellcheck": "false" }]) as HTMLTextAreaElement;
+        const newConstraintEditor = () => {
+            const newEditorDiv = libD.jso2dom(["div.question-editor-audescript-editor"]);
+            const newEditor = ace.edit(newEditorDiv);
 
-            constraintTextArea.onkeydown = (e) => {
-                if (e.code === "Tab") {
-                    const oldSelectStart = constraintTextArea.selectionStart;
-                    constraintTextArea.value = constraintTextArea.value.substring(0, constraintTextArea.selectionStart) + "\t" + constraintTextArea.value.substring(constraintTextArea.selectionStart);
-                    constraintTextArea.selectionStart = constraintTextArea.selectionEnd = oldSelectStart + 1;
-                    e.preventDefault();
-                }
-            };
+            this.autoEquivRefs.constraintList.appendChild(newEditorDiv);
+            this.autoEquivConstraintEditors.push(newEditor);
 
-            this.autoEquivRefs.constraintList.appendChild(constraintTextArea);
-            this.autoEquivContraintTextAreas.push(constraintTextArea);
-
-            return constraintTextArea;
+            return newEditor;
         };
 
-        this.autoEquivRefs.addConstraintButton.onclick = newConstraintTextArea;
+        this.autoEquivRefs.addConstraintButton.onclick = newConstraintEditor;
 
+        // If set in question, we retrieve and add editors for the already existing constraints.
         let constraintList = undefined;
         switch (aeq.usersAnswerType) {
             case AutomatonDataType.Automaton:
@@ -670,9 +674,9 @@ class QuestionEditor {
         if (!constraintList) return;
 
         for (const constAS of constraintList) {
-            const constraintTA = newConstraintTextArea();
+            const constraintEdit = newConstraintEditor();
 
-            constraintTA.value = constAS;
+            constraintEdit.getSession().setValue(constAS);
         }
     }
 
@@ -695,9 +699,10 @@ class QuestionEditor {
         }
 
         const usersAnswerType = AutomatonDataType[this.autoEquivRefs.usersAnswerTypeSelect.value];
-        for (const cta of this.autoEquivContraintTextAreas) {
+        for (const cta of this.autoEquivConstraintEditors) {
+            const constraintText = cta.getSession().getValue().trim();
             // Skip empty text areas.
-            if (cta.value.trim().length === 0) {
+            if (constraintText.length === 0) {
                 continue;
             }
 
@@ -706,10 +711,10 @@ class QuestionEditor {
                     try {
                         aeq.automatonAnswerConstraints.push(
                             eval(
-                                "(a, q) => { " + audescript.toJS(cta.value).code + "}"
+                                "(a, q) => { " + audescript.toJS(constraintText).code + "}"
                             )
                         );
-                        aeq.automatonAnswerConstraintsAudescript.push(cta.value);
+                        aeq.automatonAnswerConstraintsAudescript.push(constraintText);
                     } catch (e) {
                         window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }
@@ -719,10 +724,10 @@ class QuestionEditor {
                     try {
                         aeq.regexpAnswerConstraints.push(
                             eval(
-                                "(re, q) => { " + audescript.toJS(cta.value).code + "}"
+                                "(re, q) => { " + audescript.toJS(constraintText).code + "}"
                             )
                         );
-                        aeq.regexpAnswerConstraintsAudescript.push(cta.value);
+                        aeq.regexpAnswerConstraintsAudescript.push(constraintText);
                     } catch (e) {
                         window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }
@@ -733,10 +738,10 @@ class QuestionEditor {
                     try {
                         aeq.grammarAnswerConstraints.push(
                             eval(
-                                "(g, q) => { " + audescript.toJS(cta.value).code + "}"
+                                "(g, q) => { " + audescript.toJS(constraintText).code + "}"
                             )
                         );
-                        aeq.grammarAnswerConstraintsAudescript.push(cta.value);
+                        aeq.grammarAnswerConstraintsAudescript.push(constraintText);
                     } catch (e) {
                         window.AudeGUI.notify(this._("Audescript error"), e.message, "error");
                     }

@@ -4,21 +4,21 @@
  */
 namespace Convert {
   export function automaton2Obj(a: Automaton): object {
-    let obj: any = {};
+    const obj: any = {};
 
-    let initialState = a.getInitialState();
+    const initialState = a.getInitialState();
     // We put the initial state in the first position.
     obj.states = [initialState];
-    for (let st of a.getStates()) {
+    for (const st of a.getStates()) {
       if (st !== initialState) {
         obj.states.push(st);
       }
     }
 
     obj.finalStates = Array.from(a.getFinalStates());
-    
+
     obj.transitions = [];
-    for (let tr of a.getTransitions() as Iterable<Transition>) {
+    for (const tr of a.getTransitions() as Iterable<Transition>) {
       obj.transitions.push([tr.startState, tr.symbol, tr.endState]);
     }
 
@@ -30,8 +30,8 @@ namespace Convert {
   }
 
   export function svg2Automaton(svg: string): Automaton {
-    let div = document.createElement("div");
-    let des = new AudeDesigner(div, true);
+    const div = document.createElement("div");
+    const des = new AudeDesigner(div, true);
     des.setSVG(svg, 0);
     return des.getAutomaton(0);
   }
