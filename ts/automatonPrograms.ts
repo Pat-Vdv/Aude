@@ -46,15 +46,15 @@ class AutomatonPrograms {
     static hasEpsilonTransitions: (a: Automaton) => boolean;
 
     /*Chapter 4*/
-    static regexToAutomaton = null;
-    static automatonToRegex = null;
+    static regexToAutomaton: (regex: string) => Automaton;
+    static automatonToRegex: (a: Automaton) => string;
 
     /*Chapter 5*/
-    static leftLinear2RightLinearGrammar = null;
-    static rightLinear2LeftLinearGrammar = null;
+    static leftLinear2RightLinearGrammar: (l: linearGrammar | string) => linearGrammar;
+    static rightLinear2LeftLinearGrammar: (r: linearGrammar | string) => linearGrammar;
     static linearGrammar2Automaton: (g: linearGrammar | string) => Automaton;
-    static automaton2RightLinearGrammar = null;
-    static isLeftLinear = null;
+    static automaton2RightLinearGrammar: (a: Automaton) => linearGrammar;
+    static isLeftLinear: (a: linearGrammar) => boolean;
 
     /**
      * Loads automata-related algorithms (minimization, completion, etc...) from audescript.
@@ -62,7 +62,7 @@ class AutomatonPrograms {
      * since they are loaded asynchronously.
      */
     static loadPrograms(forceReload: boolean = false): void {
-        if (this.areProgramsLoaded && !forceReload) {
+        if (AutomatonPrograms.areProgramsLoaded && !forceReload) {
             return;
         }
 
@@ -97,7 +97,7 @@ class AutomatonPrograms {
                 AutomatonPrograms.isDeterminized = audescript.m("determinization").isDeterminized;
                 AutomatonPrograms.smallerWord = audescript.m("smallerWord").smallerWord;
                 AutomatonPrograms.epsElim = audescript.m("epsElimination").epsElim;
-                AutomatonPrograms.hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions
+                AutomatonPrograms.hasEpsilonTransitions = audescript.m("epsElimination").hasEpsilonTransitions;
                 AutomatonPrograms.regexToAutomaton = audescript.m("regex2automaton").regexToAutomaton;
                 AutomatonPrograms.automatonToRegex = audescript.m("automaton2regex").automatonToRegex;
                 AutomatonPrograms.leftLinear2RightLinearGrammar = audescript.m("leftLinear2RightLinearGrammar").leftLinear2RightLinearGrammar;
