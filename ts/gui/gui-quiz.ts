@@ -245,14 +245,15 @@ class Quiz {
         this.refs.content.textContent = "";
         this.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
 
-        const refs: any = {};
-
         const answers = libD.jso2dom(["table#correction-table",
             ["tr", [
                 ["th", this._("Instruction")],
                 ["th", this._("Correct answer?")],
                 ["th", this._("Comments")]
-            ]]]);
+            ]]]
+        );
+
+        const refs: any = {};
 
         for (let i = 0, len = this.answers.length; i < len; ++i) {
             const question_i = this.questions[i];
@@ -271,34 +272,10 @@ class Quiz {
             FormatUtils.textFormat(reasons, refs.answerCmt);
 
             FormatUtils.textFormat(question_i.wordingText, refs.answerInstr.lastChild, question_i.isWordingHtml);
-            refs.answerInstr.appendChild(document.createElement("ul"));
-            refs.answerInstr.lastChild.className = "possibilities";
+            refs.answerInstr.appendChild(document.createElement("div"));
 
-            // For mcq
-            if (question_i.category === QuestionCategory.MCQ) {
-                const mcq = question_i as MCQQuestion;
-                const possibilities = mcq.wordingChoices;
-                for (let j = 0, leng = possibilities.length; j < leng; ++j) {
-                    refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
-                        ["span.quiz-answer-id", (possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (i + 1)) + ". "],
-                        ["span", { "#": i + "content" }]
-                    ]], refs));
-
-                    if (possibilities[j].automaton) {
-                        automaton2svg(
-                            possibilities[j].automaton,
-                            (res) => {
-                                refs[i + "content"].innerHTML = res;
-                            }
-                        );
-                    } else if (possibilities[j].html) {
-                        refs[i + "content"].innerHTML = possibilities[j].html;
-                    } else if (possibilities[j].text) {
-                        FormatUtils.textFormat(possibilities[j].text, refs[i + "content"]);
-                    } else if (possibilities[j].html) {
-                        FormatUtils.textFormat(possibilities[j].html, refs[i + "content"], true);
-                    }
-                }
+            if (question_i instanceof MCQQuestion) {
+                question_i.showWordingChoicesCheckboxes(refs.answerInstr.lastChild);
             }
         }
 
@@ -361,24 +338,7 @@ window.AudeGUI.Quiz = Quiz;
 // convert a JS Object representing an automaton to an actual automaton.
 // This JS object may come from a JSON representation of the automaton.
 function automatonFromObj(o) {
-    let k = 0;
-    const A = new Automaton();
-
-    A.setInitialState(o.states[0]);
-
-    for (k = 1; k < o.states.length; ++k) {
-        A.addState(o.states[k]);
-    }
-
-    for (k = 0; k < o.finalStates.length; ++k) {
-        A.addFinalState(o.finalStates[k]);
-    }
-
-    for (k = 0; k < o.transitions.length; ++k) {
-        A.addTransition(o.transitions[k][0], o.transitions[k][1], o.transitions[k][2]);
-    }
-
-    return A;
+    return Convert.obj2automaton(o);
 }
 window.automatonFromObj = automatonFromObj;
 
@@ -395,99 +355,12 @@ function openQuiz() {
     freader.readAsText(window.AudeGUI.Quiz.fileInput.files[0], "utf-8");
 }
 
-// Show the correction of a quiz (when all questions have been answered)
-function showCorrection(quiz) {
-    quiz.refs.content.textContent = "";
-    quiz.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
-
-    const refs: any = {};
-
-    const answers = libD.jso2dom(["table#correction-table",
-        ["tr", [
-            ["th", this._("Instruction")],
-            ["th", this._("Correct answer?")],
-            ["th", this._("Comments")]
-        ]]]);
-
-    for (let i = 0, len = quiz.answers.length; i < len; ++i) {
-        const question_i = quiz.questions[i];
-
-        answers.appendChild(libD.jso2dom(["tr", [
-            ["td.qinst", { "#": "answerInstr" }, [
-                ["span.qid", (question_i.hasOwnProperty("id") ? question_i.id : (i + 1)) + ". "],
-                ["div.qinstr-content"]
-            ]],
-            ["td.qstate", quiz.answers[i].isCorrect ? this._("Yes") : this._("No")],
-            ["td.qcmt", { "#": "answerCmt" }]
-        ]], refs));
-
-        const reasons = quiz.answers[i].reasons;
-
-        if (reasons[1]) {
-            const ul = document.createElement("ul");
-
-            for (let j = 0, leng = reasons.length; j < leng; ++j) {
-                const li = document.createElement("li");
-                li.innerHTML = reasons[j];
-                ul.appendChild(li);
-            }
-
-            refs.answerCmt.appendChild(ul);
-        } else {
-            refs.answerCmt.innerHTML = reasons[0] || "";
-        }
-
-        if (question_i.instructionHTML) {
-            FormatUtils.textFormat(question_i.instructionHTML, refs.answerInstr.lastChild, true);
-        } else {
-            FormatUtils.textFormat(question_i.instruction, refs.answerInstr.lastChild);
-        }
-
-        refs.answerInstr.appendChild(document.createElement("ul"));
-        refs.answerInstr.lastChild.className = "possibilities";
-
-        const possibilities = question_i.possibilities;
-        // For mcq
-        if (possibilities) {
-            for (let j = 0, leng = possibilities.length; j < leng; ++j) {
-                refs.answerInstr.lastChild.appendChild(libD.jso2dom(["li", [
-                    ["span.quiz-answer-id", (possibilities[j].hasOwnProperty("id") ? possibilities[j].id : (i + 1)) + ". "],
-                    ["span", { "#": i + "content" }]
-                ]], refs));
-
-                if (possibilities[j].automaton) {
-                    automaton2svg(
-                        possibilities[j].automaton,
-                        (res) => {
-                            refs[i + "content"].innerHTML = res;
-                        }
-                    );
-                } else if (possibilities[j].html) {
-                    refs[i + "content"].innerHTML = possibilities[j].html;
-                } else if (possibilities[j].text) {
-                    FormatUtils.textFormat(possibilities[j].text, refs[i + "content"]);
-                } else if (possibilities[j].html) {
-                    FormatUtils.textFormat(possibilities[j].html, refs[i + "content"], true);
-                }
-            }
-        }
-    }
-
-    quiz.refs.content.appendChild(answers);
-    quiz.refs.content.appendChild(libD.jso2dom([
-        ["p", this._("We don't want to give you a mark. Your progress is the most important thing, above any arbitrary, absolutely meaningless mark. Keep your efforts ;-)")],
-        ["div.button-container", ["button", { "#": "prev" }, this._("Previous page")]]
-    ], refs));
-    refs.prev.onclick = () => { this.prevNextQuestion(true, false); };
-}
-
 // Convert an SVG code to an automaton.
 // Used to validate a quiz.
 function svg2automaton(svg: string): Automaton {
     const div = document.createElement("div");
     const designer = new AudeDesigner(div, false);
     designer.setAutomatonCode(svg, 0);
-    console.log(designer.getAutomaton(0));
     return designer.getAutomaton(0).copy();
 }
 window.svg2automaton = svg2automaton;

@@ -1006,7 +1006,7 @@ class MCQQuestion extends Question {
         }
     }
 
-    private showWordingChoicesCheckboxes(div: HTMLElement, readonly: boolean = false) {
+    showWordingChoicesCheckboxes(div: HTMLElement, readonly: boolean = false, hideCheckboxes = false) {
         this.choicesCheckboxes = [];
         const choiceList = libD.jso2dom(["ul#question-answers-checkbox-list"]);
 
@@ -1031,6 +1031,9 @@ class MCQQuestion extends Question {
             ) as HTMLInputElement;
             if (readonly) {
                 choiceInput.disabled = true;
+            }
+            if (hideCheckboxes) {
+                choiceInput.style.display = "none";
             }
             refs.choiceLabel.appendChild(choiceInput);
             this.choicesCheckboxes.push(choiceInput);
@@ -1103,7 +1106,6 @@ class MCQQuestion extends Question {
             }
         }
 
-        console.log(this.usersChoices);
         return false;
     }
 
@@ -1198,7 +1200,6 @@ class MCQQuestion extends Question {
                 if (pObj.automaton) {
                     if (typeof pObj.automaton === "string") {
                         newPoss.automaton = window.svg2automaton(pObj.automaton);
-                        console.log(newPoss.automaton);
                     } else {
                         newPoss.automaton = window.automatonFromObj(pObj.automaton);
                     }
@@ -1274,10 +1275,6 @@ class TextInputQuestion extends Question {
             }
 
             const symDiff = reachableStates.symDiff(usersStateList);
-
-            console.log(usersStateList);
-            console.log(reachableStates);
-            console.log(symDiff);
 
             for (const diff of symDiff) {
                 if (!allStates.has(diff)) {
