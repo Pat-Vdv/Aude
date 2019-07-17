@@ -7,11 +7,21 @@ class GrammarDesigner {
     _ = window.AudeGUI.l10n;
 
     static readonly EDITOR_CONTENT = ["div", [
+        ["div.row", {"#": "directInputDiv"}, [
+            ["div.col-lg-2", window.AudeGUI.l10n("Direct string input :")],
+            ["div.col-lg-9", [
+                ["input.form-control", {"#": "directInputField", "type": "text", "placeholder": window.AudeGUI.l10n("Give your grammar here.")}]
+            ]],
+            ["div.col-lg-1", [
+                ["button.btn btn-outline-primary", {"#": "directInputOkButton"}, window.AudeGUI.l10n("Load")]
+            ]]
+        ]],
+        ["br"],
         ["div.row", [
             ["div.col-md-6", [
                 ["div.card", [
-                    ["div.card-header", window.AudeGUI.l10n("Terminal symbols")],
                     ["div.card-body", [
+                        ["h6.card-title", window.AudeGUI.l10n("Terminal symbols")],
                         ["div", { "#": "terminalSymbolsDiv" }],
                         ["div.input-group", { "#": "terminalEditSpan" }, [
                             ["input#grammar-designer-terminal-input.form-control", { "#": "terminalInput", "maxlength": "1", "placeholder": window.AudeGUI.l10n("Enter a symbol here") }],
@@ -25,8 +35,8 @@ class GrammarDesigner {
             ]],
             ["div.col-md-6", [
                 ["div.card", [
-                    ["div.card-header", window.AudeGUI.l10n("Non-terminal symbols")],
                     ["div.card-body", [
+                        ["h6.card-title", window.AudeGUI.l10n("Non-terminal symbols")],
                         ["div", { "#": "nonTerminalSymbolsDiv" }],
                         ["div.input-group", { "#": "nonTerminalEditSpan" }, [
                             ["input#grammar-designer-nonterminal-input.form-control", { "#": "nonTerminalInput", "maxlength": "1", "placeholder": window.AudeGUI.l10n("Enter a symbol here") }],
@@ -71,6 +81,10 @@ class GrammarDesigner {
     private editable: boolean;
 
     private readonly refs = {
+        directInputDiv: undefined as HTMLElement,
+        directInputField: undefined as HTMLInputElement,
+        directInputOkButton: undefined as HTMLButtonElement,
+
         terminalSymbolsDiv: undefined as HTMLElement,
         terminalEditSpan: undefined as HTMLElement,
         terminalInput: undefined as HTMLInputElement,
@@ -263,6 +277,20 @@ class GrammarDesigner {
             this.refs.selectNonTerminalNewRule.focus();
         };
 
+        this.refs.directInputField.onkeyup = (e) => {
+            this.refs.directInputField.classList.remove("is-invalid");
+        };
+
+        this.refs.directInputOkButton.onclick = (e) => {
+            try {
+                this.setGrammar(string2LinearGrammar(this.refs.directInputField.value));
+                this.refs.directInputField.value = "";
+            } catch (e) {
+                this.refs.directInputField.classList.add("is-invalid");
+                window.AudeGUI.notify(this._("Grammar string error"), e.message, "error", 5000);
+            }
+        };
+
 
         this.updateDisplay();
     }
@@ -370,11 +398,13 @@ class GrammarDesigner {
             this.refs.newRuleSpan.classList.add("grammar-designer-hidden");
             this.refs.terminalEditSpan.classList.add("grammar-designer-hidden");
             this.refs.nonTerminalEditSpan.classList.add("grammar-designer-hidden");
+            this.refs.directInputDiv.classList.add("grammar-designer-hidden");
         } else {
             this.refs.selectStartSymbol.removeAttribute("disabled");
             this.refs.newRuleSpan.classList.remove("grammar-designer-hidden");
             this.refs.terminalEditSpan.classList.remove("grammar-designer-hidden");
             this.refs.nonTerminalEditSpan.classList.remove("grammar-designer-hidden");
+            this.refs.directInputDiv.classList.remove("grammar-designer-hidden");
         }
     }
 
