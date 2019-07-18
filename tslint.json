@@ -28,7 +28,11 @@
         "no-trailing-whitespace": [true, "ignore-comments", "ignore-jsdoc"],
         "no-duplicate-variable": [true, "check-parameters"],
         "no-for-in-array": true,
-        "no-angle-bracket-type-assertion": true
+        "no-angle-bracket-type-assertion": true,
+        "ban-ts-ignore": true,
+        "promise-function-async": true,
+        "unified-signatures": true,
+        "await-promise": [true, "Thenable"]
     },
     "rulesDirectory": []
 }

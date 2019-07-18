@@ -437,6 +437,10 @@ class QuizEditor {
             }
         };
 
+        refs.pointInput.onchange = () => {
+            q.point = parseFloat(refs.pointInput.value);
+        };
+
         q.displayQuestionWording(refs.quesDiv);
         q.displayCorrectAnswer(refs.answDiv);
     }

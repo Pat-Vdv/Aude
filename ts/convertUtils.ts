@@ -19,7 +19,11 @@ namespace Convert {
 
     obj.transitions = [];
     for (const tr of a.getTransitions() as Iterable<Transition>) {
-      obj.transitions.push([tr.startState, tr.symbol, tr.endState]);
+      let symbol = tr.symbol;
+      if (!symbol) {
+        symbol = epsilon;
+      }
+      obj.transitions.push([tr.startState, symbol, tr.endState]);
     }
 
     return obj;
@@ -40,7 +44,11 @@ namespace Convert {
     }
 
     for (k = 0; k < o.transitions.length; ++k) {
-      A.addTransition(o.transitions[k][0], o.transitions[k][1], o.transitions[k][2]);
+      let symbol = o.transitions[k][1];
+      if (!symbol) {
+        symbol = epsilon;
+      }
+      A.addTransition(o.transitions[k][0], symbol, o.transitions[k][2]);
     }
 
     return A;

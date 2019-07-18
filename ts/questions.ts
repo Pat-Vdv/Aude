@@ -305,6 +305,8 @@ abstract class Question {
             obj.wordingDetails.push(detailObj);
         }
 
+        obj.point = String(this.point);
+
         // Serializing specific elements.
         this.specificToJSON(obj);
 
@@ -386,7 +388,9 @@ abstract class Question {
             }
         }
 
-
+        if (qObj.point && !isNaN(parseFloat(qObj.point))) {
+            this.point = parseFloat(qObj.point);
+        }
 
         // "Legacy" support for automaton wording detail.
         if (qObj.automatonQuestion) {

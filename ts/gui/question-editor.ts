@@ -591,6 +591,7 @@ class QuestionEditor {
             const newChoice = getChoiceFromInputs();
 
             this.mcqChoices.push(newChoice);
+            cleanMCQInputs();
             this.redraw();
         };
 
