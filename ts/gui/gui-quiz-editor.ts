@@ -29,7 +29,7 @@ class QuizEditor {
     public static currentQuizEditor: QuizEditor = undefined;
     public static run = QuizEditor.openQuizEditor;
 
-    public static load() { return ; }
+    public static load() { return; }
     /*
      * Open an old quiz.
      * @param. code: old "quiz object"
@@ -72,8 +72,8 @@ class QuizEditor {
         ];
 
         const quizTitleInput = document.getElementById("quiz-editor-titleInput") as HTMLInputElement;
-        const  authorInput = document.getElementById("quiz-editor-authorInput") as HTMLInputElement;
-        const  descriptionTextarea = document.getElementById("quiz-editor-descriptionTextarea") as HTMLInputElement;
+        const authorInput = document.getElementById("quiz-editor-authorInput") as HTMLInputElement;
+        const descriptionTextarea = document.getElementById("quiz-editor-descriptionTextarea") as HTMLInputElement;
 
         const date = new Date();
         QuizEditor.currentQuizEditor.currentQuiz.title = quizTitleInput.value;
@@ -396,7 +396,7 @@ class QuizEditor {
                 ["div", { "#": "quesDiv" }]
             ]],
             ["td", [
-                ["button.btn btn-outline-primary", {"#": "answerCollapseButton"}, this._("Show")],
+                ["button.btn btn-outline-primary", { "#": "answerCollapseButton" }, this._("Show")],
                 ["div.quiz-editor-hidden", { "#": "answDiv" }]
             ]],
             ["td", [
@@ -410,7 +410,7 @@ class QuizEditor {
                 ]]
             ]],
             ["td", { style: "text-align: center;" }, [
-                ["input#quiz-editor-point-input.form-control", {"#": "pointInput", "type": "number", "min": "0", "max": "100", "cols": "3", "value": String(q.point)}]
+                ["input#quiz-editor-point-input.form-control", { "#": "pointInput", "type": "number", "min": "0", "max": "100", "cols": "3", "value": String(q.point) }]
             ]]
         ]], refs));
 

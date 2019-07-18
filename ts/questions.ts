@@ -91,35 +91,6 @@ abstract class Question {
         }
     }
 
-    createNewStateButton(divDesigner: HTMLElement) {
-        divDesigner.appendChild(libD.jso2dom(["a#new-state-btn"]));
-
-        (divDesigner.lastChild as HTMLElement).onmousedown = (e) => {
-            (e.target as HTMLElement).classList.add("mouse-down");
-        };
-
-        (divDesigner.lastChild as HTMLElement).onmouseup = (e) => {
-            (e.target as HTMLElement).classList.remove("mouse-down");
-        };
-
-        (divDesigner.lastChild as HTMLElement).onclick = AudeDesigner.initiateNewState;
-        divDesigner.parentNode.lastChild.lastChild.textContent = this._("New state");
-    }
-
-    createRedrawButton(divDesigner: HTMLElement, designer: AudeDesigner) {
-        const redrawButton = libD.jso2dom(["button", this._("Redraw")]) as HTMLButtonElement;
-        redrawButton.onclick = (e) => {
-            window.AudeGUI.viz(
-                designer.getDot(),
-                (res) => {
-                    designer.setSVG(res, designer.currentIndex);
-                }
-            );
-            designer.autoCenterZoom();
-        };
-        divDesigner.parentElement.appendChild(redrawButton);
-    }
-
     /** The broad question category for this object (text input, mcq, automaton, ...). */
     category: QuestionCategory;
     /** Precise subtype of the question. */
@@ -226,30 +197,7 @@ abstract class Question {
 
         const showDetailObject = (wd: Automaton | string | linearGrammar, element: HTMLElement, single?: boolean) => {
             if (wd instanceof Automaton) {
-                const refs = {
-                    divDesigner: undefined as HTMLElement,
-                    divInfo: undefined as HTMLElement
-                };
-
-                element.appendChild(
-                    libD.jso2dom(
-                        [
-                            ["div.question-other-info", [["span", this._("Alphabet : ")], ["div", { "#": "divInfo" }]]],
-                            ["br"],
-                            ["div" + (single ? "#question-automaton-designer" : ""), { "#": "divDesigner" }]
-                        ],
-                        refs
-                    )
-                );
-
-                const designer = new AudeDesigner(refs.divDesigner, true);
-                designer.setAutomatonCode(automaton_code(wd));
-                designer.autoCenterZoom();
-
-                FormatUtils.textFormat(
-                    FormatUtils.set2Latex(wd.getAlphabet()),
-                    refs.divInfo
-                );
+                AutomatonIO.displayAutomaton(element, wd);
             } else if (typeof wd === "string") {
                 FormatUtils.textFormat(FormatUtils.regexp2Latex(wd), element, true);
             } else if (wd instanceof linearGrammar) {
@@ -637,11 +585,7 @@ class AutomatonEquivQuestion extends Question {
                     oldSvg = this.answerInput.getSVG(0);
                 }
 
-                const designerDiv = libD.jso2dom(["div#question-answers-automaton"]);
-                answerInputDiv.appendChild(designerDiv);
-                this.answerInput = new AudeDesigner(designerDiv, false);
-                this.createNewStateButton(designerDiv);
-                this.createRedrawButton(designerDiv, this.answerInput);
+                this.answerInput = AutomatonIO.getNewAutomatonEditor(answerInputDiv);
 
                 // We set the old designer's SVG, if it has been set.
                 if (oldSvg !== undefined) {
@@ -763,10 +707,7 @@ class AutomatonEquivQuestion extends Question {
             correctAnswerDiv.appendChild(regexDiv);
         } else if (this.correctAnswerAutomaton !== undefined) {
             // Display automaton.
-            const desDiv = libD.jso2dom(["div.question-automaton-designer"]);
-            correctAnswerDiv.appendChild(desDiv);
-            const des = new AudeDesigner(desDiv, true);
-            des.setAutomatonCode(automaton_code(this.correctAnswerAutomaton));
+            AutomatonIO.displayAutomaton(correctAnswerDiv, this.correctAnswerAutomaton);
         }
 
         let constraintList: Array<string>;
@@ -1063,10 +1004,7 @@ class MCQQuestion extends Question {
             }
 
             if (choice.automaton !== undefined) {
-                contentRefs.figureDiv.id = "question-automaton-designer";
-                const choiceAutoDesigner = new AudeDesigner(contentRefs.figureDiv, true);
-                choiceAutoDesigner.setAutomatonCode(automaton_code(choice.automaton));
-                choiceAutoDesigner.autoCenterZoom();
+                AutomatonIO.displayAutomaton(contentRefs.figureDiv, choice.automaton);
             } else if (choice.regex !== undefined) {
                 FormatUtils.textFormat(
                     FormatUtils.regexp2Latex(choice.regex),

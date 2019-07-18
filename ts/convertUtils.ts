@@ -50,10 +50,25 @@ namespace Convert {
     return Automaton.parse(code);
   }
 
+  export async function dot2svg(dot: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      window.AudeGUI.viz(
+        dot,
+        (svg) => {
+          resolve(svg);
+        }
+      );
+    });
+  }
+
   export function svg2Automaton(svg: string): Automaton {
     const div = document.createElement("div");
     const des = new AudeDesigner(div, true);
     des.setSVG(svg, 0);
     return des.getAutomaton(0);
+  }
+
+  export async function automaton2svg(a: Automaton): Promise<string> {
+    return dot2svg(automaton2dot(a));
   }
 }

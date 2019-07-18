@@ -1558,3 +1558,28 @@ fieldset {
     height: 10rem;
     position: relative;
 }
+
+/* The automaton editors object themselves. */
+.automaton-designer {
+    margin: 1rem;
+    padding: 0.33rem;
+}
+/* The div containing the SVG for automaton designers. */
+.automaton-designer-input {
+    width: 95%;
+    height: 20rem;
+    display: block;
+    position: relative;
+}
+
+.automaton-display {
+    border: 0;
+    background: none;
+    min-height: 100px;
+}
+
+.automaton-display-svg {
+    min-height: 7.5rem;
+    max-height: 15rem;
+    width: 100%;
+}

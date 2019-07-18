@@ -390,16 +390,7 @@ class QuestionEditor {
 
         switch (type) {
             case AutomatonDataType.Automaton: {
-                const designerDiv = document.createElement("div");
-                designerDiv.classList.add(
-                    "question-editor-wording-figure-automaton",
-                    "border", "border-primary", "rounded-sm"
-                );
-
-                const designer = new AudeDesigner(designerDiv);
-
-                this.wordingDetailInputs[detailIndex] = designer;
-                htmlDiv.appendChild(designerDiv);
+                this.wordingDetailInputs[detailIndex] = AutomatonIO.getNewAutomatonEditor(htmlDiv);
                 break;
             }
 
@@ -650,8 +641,7 @@ class QuestionEditor {
 
             switch (AutomatonDataType[this.mcqRefs.newChoiceDetailType.value]) {
                 case AutomatonDataType.Automaton:
-                    this.mcqChoiceDetailInput = new AudeDesigner(this.mcqRefs.newChoiceDetailContent, false);
-                    this.mcqRefs.newChoiceDetailContent.classList.add("question-editor-wording-figure-automaton");
+                    this.mcqChoiceDetailInput = AutomatonIO.getNewAutomatonEditor(this.mcqRefs.newChoiceDetailContent);
                     break;
 
                 case AutomatonDataType.Regexp:
@@ -711,9 +701,7 @@ class QuestionEditor {
                     break;
 
                 case "Automaton":
-                    const designerDiv = libD.jso2dom(["div.question-editor-wording-figure-automaton"]);
-                    this.autoEquivReferenceInput = new AudeDesigner(designerDiv, false);
-                    this.autoEquivRefs.referenceEditContent.appendChild(designerDiv);
+                    this.autoEquivReferenceInput = AutomatonIO.getNewAutomatonEditor(this.autoEquivRefs.referenceEditContent);
                     if (aeq.correctAnswerAutomaton) {
                         this.autoEquivReferenceInput.setAutomatonCode(automaton_code(aeq.correctAnswerAutomaton));
                     }
@@ -939,11 +927,7 @@ class QuestionEditor {
                 newChoiceRefs.wordingCorrect.checked = choice.correct;
 
                 if (choice.automaton !== undefined) {
-                    const designerDiv = libD.jso2dom(["div#quiz-automata-designer"]);
-                    const designer = new AudeDesigner(designerDiv, true);
-                    designer.setAutomatonCode(automaton_code(choice.automaton));
-                    designer.autoCenterZoom();
-                    newChoiceRefs.detailsTD.appendChild(designerDiv);
+                    AutomatonIO.displayAutomaton(newChoiceRefs.detailsTD, choice.automaton);
                 } else if (choice.regex !== undefined) {
                     FormatUtils.textFormat(
                         FormatUtils.regexp2Latex(choice.regex),

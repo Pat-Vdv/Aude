@@ -275,13 +275,13 @@ class Quiz {
             refs.answerInstr.appendChild(document.createElement("div"));
 
             if (question_i instanceof MCQQuestion) {
-                question_i.showWordingChoicesCheckboxes(refs.answerInstr.lastChild);
+                question_i.showWordingChoicesCheckboxes(refs.answerInstr.lastChild, true, true);
             }
         }
 
         this.refs.content.appendChild(answers);
         this.refs.content.appendChild(libD.jso2dom([
-            ["p", this._("We are willing to don’t give you any mark. Your progress is the most important thing, above any arbitrary absolute meaningless mark. Keep your efforts ;-)")],
+            ["p", this._("We don't want to give you any mark. Your progress is the most important thing, above any arbitrary, absolutely meaningless mark. Keep up your efforts ;-)")],
             ["div.button-container", ["button", { "#": "prev" }, this._("Previous page")]]
         ], refs));
         refs.prev.onclick = () => this.prevNextQuestion(true, false);
