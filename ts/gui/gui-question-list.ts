@@ -1,8 +1,8 @@
 /**
- * "Static class" that handles the question list.
+ * "Static class" that handles the question list/training exercises.
  */
 class QuestionList {
-    _ = window.AudeGUI.l10n;
+    private readonly _ = window.AudeGUI.l10n;
 
     /** The libD window object for the Question List */
     static win: any;
@@ -15,7 +15,7 @@ class QuestionList {
     static selectedChapter: number = undefined;
 
     static load(): void { return; }
-    static run(): void { QuestionList.openQuestionList(); }
+    static run = QuestionList.openQuestionList;
 
     /** Question list window's content as JSON array (to be fed into libD.jso2dom) */
     static readonly questionWindowContent = (
@@ -89,7 +89,7 @@ class QuestionList {
             //QuestionList.getQuestionButton("Table2Automaton", window.AudeGUI.l10n("Give the automaton from the table")), ["br"],
             QuestionList.getQuestionButton("Reachable", window.AudeGUI.l10n("List all reachable states of an automaton")), ["br"],
             QuestionList.getQuestionButton("Coreachable", window.AudeGUI.l10n("List all co-reachable states of an automaton")), ["br"],
-            QuestionList.getQuestionButton("RecognizeLanguageAutomaton", window.AudeGUI.l10n("Give an automaton that recognizes a given language")), ["br"],
+            //QuestionList.getQuestionButton("RecognizeLanguageAutomaton", window.AudeGUI.l10n("Give an automaton that recognizes a given language")), ["br"],
             QuestionList.getQuestionButton("Word", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
         ],
         [
@@ -108,7 +108,7 @@ class QuestionList {
             QuestionList.getQuestionButton("MCQ_C4", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
             QuestionList.getQuestionButton("Automaton2Regexp", window.AudeGUI.l10n("Give a regular expression equivalent to an automaton")), ["br"],
             QuestionList.getQuestionButton("Regexp2Automaton", window.AudeGUI.l10n("Give an automaton equivalent to a regular expression")), ["br"],
-            QuestionList.getQuestionButton("RecognizeLanguageRegexp", window.AudeGUI.l10n("Give a regular expression that recognizes a given language")), ["br"],
+            //QuestionList.getQuestionButton("RecognizeLanguageRegexp", window.AudeGUI.l10n("Give a regular expression that recognizes a given language")), ["br"],
             QuestionList.getQuestionButton("WordRegexp", window.AudeGUI.l10n("Give a word recognized by a regular expression")), ["br"],
         ],
         [

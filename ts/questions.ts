@@ -394,7 +394,7 @@ abstract class Question {
 
         // "Legacy" support for automaton wording detail.
         if (qObj.automatonQuestion) {
-            this.wordingDetails.push(window.svg2automaton(qObj.automatonQuestion));
+            this.wordingDetails.push(Convert.svg2automaton(qObj.automatonQuestion));
         }
 
         // Deserialize specific elements. 
@@ -811,13 +811,13 @@ class AutomatonEquivQuestion extends Question {
         // LEGACY Automaton answer
         if (qObj.automatonAnswer) {
             if (typeof qObj.automatonAnswer === "string") {
-                this.correctAnswerAutomaton = window.svg2automaton(qObj.automatonAnswer);
+                this.correctAnswerAutomaton = Convert.svg2automaton(qObj.automatonAnswer);
             } else {
                 this.correctAnswerAutomaton = window.automatonFromObj(qObj.automatonAnswer);
             }
         } else if (qObj.correctAnswerAutomaton) {
             if (typeof qObj.correctAnswerAutomaton === "string") {
-                this.correctAnswerAutomaton = window.svg2automaton(qObj.correctAnswerAutomaton);
+                this.correctAnswerAutomaton = Convert.svg2automaton(qObj.correctAnswerAutomaton);
             } else {
                 this.correctAnswerAutomaton = window.automatonFromObj(qObj.correctAnswerAutomaton);
             }
@@ -1141,7 +1141,7 @@ class MCQQuestion extends Question {
 
                 if (pObj.automaton) {
                     if (typeof pObj.automaton === "string") {
-                        newPoss.automaton = window.svg2automaton(pObj.automaton);
+                        newPoss.automaton = Convert.svg2automaton(pObj.automaton);
                     } else {
                         newPoss.automaton = window.automatonFromObj(pObj.automaton);
                     }
@@ -1439,7 +1439,7 @@ class TextInputQuestion extends Question {
             return { correct: false, details: this._("No answer was given.") };
         }
 
-        if (!this.answerValidator || !this.answerValidatorAS) {
+        if ((this.subtype === QuestionSubType.CustomTextInput) && (!this.answerValidator || !this.answerValidatorAS)) {
             this.answerValidator = TextInputQuestion.wordlistValidator;
             this.answerValidatorAS = undefined;
         }

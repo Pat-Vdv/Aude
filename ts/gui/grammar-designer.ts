@@ -4,8 +4,9 @@
  * in a more convenient way than a basic textual syntax.
  */
 class GrammarDesigner {
-    _ = window.AudeGUI.l10n;
+    private readonly _ = window.AudeGUI.l10n;
 
+    /** The JSON Object for a grammar editor's content. For libD.jso2dom. */
     static readonly EDITOR_CONTENT = ["div", [
         ["div.row", {"#": "directInputDiv"}, [
             ["div.col-lg-2", window.AudeGUI.l10n("Direct string input :")],
@@ -75,11 +76,13 @@ class GrammarDesigner {
         ]]
     ]];
 
+    /** The grammar currently being edited by this editor. */
     private currentGrammar: linearGrammar = new linearGrammar();
 
     containerDiv: HTMLElement;
     private editable: boolean;
 
+    /** DOM Element References for this editor. */
     private readonly refs = {
         directInputDiv: undefined as HTMLElement,
         directInputField: undefined as HTMLInputElement,
@@ -114,12 +117,13 @@ class GrammarDesigner {
 
         designerDiv.appendChild(libD.jso2dom(GrammarDesigner.EDITOR_CONTENT, this.refs));
 
+        // Bind "enter" key to mimick click on "Add" button for terminal symbols.
         this.refs.terminalInput.onkeyup = (e) => {
             if (e.keyCode === 13) {
                 this.refs.terminalAddButton.click();
             }
         };
-
+        // Bind click on "Add" terminal button.
         this.refs.terminalAddButton.onclick = (e) => {
             const val = this.refs.terminalInput.value;
             if (val.trim().length === 0) {
@@ -142,7 +146,7 @@ class GrammarDesigner {
             this.updateDisplay();
             this.refs.terminalInput.focus();
         };
-
+        // Bind click on "Remove" terminal button.
         this.refs.terminalRemoveButton.onclick = (e) => {
             const val = this.refs.terminalInput.value;
             if (val.trim().length === 0) {
@@ -155,12 +159,13 @@ class GrammarDesigner {
             this.updateDisplay();
         };
 
+        // Bind "enter" key to mimick click on "Add" button for non-terminal symbols.
         this.refs.nonTerminalInput.onkeyup = (e) => {
             if (e.keyCode === 13) {
                 this.refs.nonTerminalAddButton.click();
             }
         };
-
+        // Bind click on "Add" non-terminal button.
         this.refs.nonTerminalAddButton.onclick = (e) => {
             const val = this.refs.nonTerminalInput.value;
             if (val.trim().length === 0) {
@@ -188,7 +193,7 @@ class GrammarDesigner {
             this.updateDisplay();
             this.refs.nonTerminalInput.focus();
         };
-
+        // Bind click on "Remove" non-terminal button.
         this.refs.nonTerminalRemoveButton.onclick = (e) => {
             const val = this.refs.nonTerminalInput.value;
             if (val.trim().length === 0) {
@@ -224,12 +229,6 @@ class GrammarDesigner {
             }
         };
 
-        this.refs.inputLeftTerminalNewRule.onkeyup = (e) => {
-            if (e.keyCode === 13) {
-                this.refs.buttonNewRule.click();
-            }
-        };
-
         this.refs.inputRightTerminalNewRule.oninput = (e) => {
             if (this.refs.inputRightTerminalNewRule.value.length !== 0) {
                 this.refs.inputLeftTerminalNewRule.setAttribute("disabled", "true");
@@ -238,21 +237,31 @@ class GrammarDesigner {
             }
         };
 
+        // Bind "enter" key in left terminal field to mimick click on "Add" rule button.
+        this.refs.inputLeftTerminalNewRule.onkeyup = (e) => {
+            if (e.keyCode === 13) {
+                this.refs.buttonNewRule.click();
+            }
+        };
+
+        // Bind "enter" key in right terminal field to mimick click on "Add" rule button.
         this.refs.inputRightTerminalNewRule.onkeyup = (e) => {
             if (e.keyCode === 13) {
                 this.refs.buttonNewRule.click();
             }
         };
 
+        // Bind "enter" key in non-terminal field to mimick click on "Add" rule button.
         this.refs.inputNonTerminalNewRule.onkeydown = (e) => {
             if (e.keyCode === 13) {
                 this.refs.buttonNewRule.click();
             }
         };
 
+        // Bind new rule button click.
         this.refs.buttonNewRule.onclick = (e) => {
             let terminalPart: string;
-            let direction: "left" | "right";
+            let direction:  "left" | "right";
 
             if (this.refs.inputLeftTerminalNewRule.value.length !== 0) {
                 terminalPart = this.refs.inputLeftTerminalNewRule.value;
@@ -277,10 +286,13 @@ class GrammarDesigner {
             this.refs.selectNonTerminalNewRule.focus();
         };
 
+        // If direct input field had been shown as invalid 
+        // in a previous validation, undo it now.
         this.refs.directInputField.onkeyup = (e) => {
             this.refs.directInputField.classList.remove("is-invalid");
         };
 
+        // Bind direct input ok button.
         this.refs.directInputOkButton.onclick = (e) => {
             try {
                 this.setGrammar(string2LinearGrammar(this.refs.directInputField.value));
@@ -291,10 +303,14 @@ class GrammarDesigner {
             }
         };
 
-
         this.updateDisplay();
     }
 
+    /**
+     * Formats a regular grammar's rule to a LaTeX string.
+     * @param rule - The rule to format
+     * @param isStartSymbol - If true, the lefthand symbol will be shown as bold, to denot it being the start symbol.
+     */
     private rule2Latex(rule: Rule, isStartSymbol: boolean = false): string {
         let latex = "$";
 
@@ -424,6 +440,9 @@ class GrammarDesigner {
         this.updateDisplay();
     }
 
+    /**
+     * Sets whether this grammar editor should be editable.
+     */
     setEditable(editable: boolean) {
         this.editable = editable;
         this.updateDisplay();

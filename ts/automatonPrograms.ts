@@ -7,7 +7,6 @@
 class AutomatonPrograms {
     private static areProgramsLoaded: boolean = false;
 
-    // For the creation of the automaton
     static createAutomatonCoreachable:
         (nbStates: number,
             alphabet: Iterable<any>,

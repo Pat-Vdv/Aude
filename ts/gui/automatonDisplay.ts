@@ -1,10 +1,11 @@
 /**
- * This namespace contains utilities to display inputs for automata.
+ * This namespace contains utilities to display, or show inputs for automata.
  */
 namespace AutomatonIO {
     const AudeGUI = window.AudeGUI;
     const _ = AudeGUI.l10n;
 
+    /** JSON Object Content for the automaton display (readonly). For libD.jso2dom. */
     const AUTOMATON_DISPLAY_CONTENT = ["div.automaton-svg-display", [
         ["div", {"#": "alphabetDiv"}],
         ["div.automaton-display-svg", {"#": "automatonDiv"}, [
@@ -13,7 +14,7 @@ namespace AutomatonIO {
             ]]
         ]]
     ]];
-
+    /** JSON Object Content for the automaton editable (editable). For libD.jso2dom. */
     const AUTOMATON_EDITOR_CONTENT = ["div.automaton-designer border border-primary rounded", [
         ["div", {"#": "alphabetDiv"}],
         ["div.automaton-designer-input", { "#": "designerDiv" }],
@@ -27,22 +28,6 @@ namespace AutomatonIO {
             ]]
         ]]
     ]];
-
-    /** Function that will create the "New State" button for the designer in the given div. */
-    function createNewStateButton(divDesigner: HTMLElement) {
-        divDesigner.appendChild(libD.jso2dom(["a#new-state-btn"]));
-
-        (divDesigner.lastChild as HTMLElement).onmousedown = (e) => {
-            (e.target as HTMLElement).classList.add("mouse-down");
-        };
-
-        (divDesigner.lastChild as HTMLElement).onmouseup = (e) => {
-            (e.target as HTMLElement).classList.remove("mouse-down");
-        };
-
-        (divDesigner.lastChild as HTMLElement).onclick = AudeDesigner.initiateNewState;
-        divDesigner.parentNode.lastChild.lastChild.textContent = _("New state");
-    }
 
     /**
      * Creates an editable automaton designer in a given div.

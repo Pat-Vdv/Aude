@@ -22,12 +22,12 @@ function shuffleArrayInPlace(array: Array<any>): void {
 }
 
 function shuffleArray(array: Array<any>): Array<any> {
-    let newArray = [];
+    const newArray = [];
 
-    let oldArray = array.slice();
+    const oldArray = array.slice();
     let i = array.length;
     while (i > 0) {
-        let randomIndex = randomInteger(0, i);
+        const randomIndex = randomInteger(0, i);
         newArray.push(oldArray[randomIndex]);
         oldArray.splice(randomIndex, 1);
 
@@ -87,37 +87,35 @@ class AutomatonGenerator {
     /** If true, the automata in each generated pair will be equivalent. */
     private areEquivalent: boolean;
 
-    private static areProgramsLoaded = false;
-
     private static shuffleStateNames(a: Automaton) {
-        let oldAutomaton = a.copy();
+        const oldAutomaton = a.copy();
         a.setAlphabet(oldAutomaton.getAlphabet());
 
-        let states = Array.from(oldAutomaton.getStates());
-        let shuffledStates = shuffleArray(states);
+        const states = Array.from(oldAutomaton.getStates());
+        const shuffledStates = shuffleArray(states);
 
-        let translationMap = new Map();
+        const translationMap = new Map();
         for (let i = 0; i < states.length; i++) {
             translationMap.set(states[i], shuffledStates[i]);
         }
 
         // We remove all final states.
-        for (let fs of oldAutomaton.getFinalStates()) {
+        for (const fs of oldAutomaton.getFinalStates()) {
             a.setNonFinalState(fs);
         }
 
         // We set final states again (but translated).
-        for (let fs of oldAutomaton.getFinalStates()) {
+        for (const fs of oldAutomaton.getFinalStates()) {
             a.setFinalState(translationMap.get(fs));
         }
 
         // We remove all transitions.
-        for (let trans of oldAutomaton.getTransitions()) {
+        for (const trans of oldAutomaton.getTransitions()) {
             a.removeTransition(trans);
         }
 
         // We add all transitions but with the start and end states translated.
-        for (let trans of oldAutomaton.getTransitions() as Iterable<Transition>) {
+        for (const trans of oldAutomaton.getTransitions() as Iterable<Transition>) {
             a.addTransition(
                 translationMap.get(trans.startState),
                 trans.symbol,
@@ -126,7 +124,7 @@ class AutomatonGenerator {
         }
 
         a.setInitialState(translationMap.get(a.getInitialState()));
-        return true
+        return true;
     }
 
     constructor(alphabet: Iterable<any> = AutomatonGenerator.DEFAULT_GENERATOR.alphabet,
@@ -159,22 +157,22 @@ class AutomatonGenerator {
      * These functions take a single automaton and return true
      * iff the modification was able to be made.
      */
-    private static semiDestructiveAutomatonMutations = [
+    private static readonly semiDestructiveAutomatonMutations = [
         // Add a transition from and to a random state.
         (a: Automaton) => {
-            let states = Array.from(a.getStates());
-            let alphabet = Array.from(a.getAlphabet());
-            let numTrans = a.getTransitions().size;
+            const states = Array.from(a.getStates());
+            const alphabet = Array.from(a.getAlphabet());
+            const numTrans = a.getTransitions().size;
 
             if (numTrans < states.length * alphabet.length) {
                 shuffleArrayInPlace(alphabet);
                 shuffleArrayInPlace(states);
-                let statesDests = states.slice();
+                const statesDests = states.slice();
                 shuffleArrayInPlace(statesDests);
 
-                for (let sState of states) {
-                    for (let dState of statesDests) {
-                        for (let symb of alphabet) {
+                for (const sState of states) {
+                    for (const dState of statesDests) {
+                        for (const symb of alphabet) {
                             if (!a.hasTransition(sState, symb, dState) &&
                                 a.getSuccessors(sState, symb).size === 0) {
 
@@ -189,15 +187,13 @@ class AutomatonGenerator {
         },
         // Add a state that's both accessible and coaccessible.
         (a: Automaton) => {
-            let states = Array.from(a.getStates());
-
             let newState = 0;
             while (a.hasState(newState) || a.hasState(String(newState))) {
                 newState++;
             }
 
-            let reachableStates = Array.from(AutomatonPrograms.reachableStates(a));
-            let alphabet = Array.from(a.getAlphabet());
+            const reachableStates = Array.from(AutomatonPrograms.reachableStates(a));
+            const alphabet = Array.from(a.getAlphabet());
 
             // We shuffle the arrays to iterate through them at random.
             shuffleArrayInPlace(reachableStates);
@@ -207,8 +203,8 @@ class AutomatonGenerator {
             let fromReachableTransitionSymbol: any = undefined;
 
             stateLoop:
-            for (let rState of reachableStates) {
-                for (let symb of alphabet) {
+            for (const rState of reachableStates) {
+                for (const symb of alphabet) {
                     if (a.getSuccessors(rState, symb).size === 0) {
                         startState = rState;
                         fromReachableTransitionSymbol = symb;
@@ -222,47 +218,46 @@ class AutomatonGenerator {
             }
 
             // We look for a coreachable state to link our new state to.
-            let coreachableStates = Array.from(AutomatonPrograms.coreachableStates(a));
+            const coreachableStates = Array.from(AutomatonPrograms.coreachableStates(a));
             if (coreachableStates.length === 0) {
                 return false;
             }
-            let endState = coreachableStates[randomInteger(0, coreachableStates.length)];
+            const endState = coreachableStates[randomInteger(0, coreachableStates.length)];
             // alphabet is already shuffled, we take the first element
-            let toCoreachableTransitionSymbol = alphabet[0];
+            const toCoreachableTransitionSymbol = alphabet[0];
 
             a.addState(newState);
             a.addTransition(startState, fromReachableTransitionSymbol, newState);
             a.addTransition(newState, toCoreachableTransitionSymbol, endState);
             return true;
         }
-    ]
+    ];
 
     /**
      * Array of functions that modify an automaton, while 
      * ensuring the recognized language doesn't change.
      */
-    private static nonDestructiveAutomatonMutations = [
+    private static readonly nonDestructiveAutomatonMutations = [
         // Shuffles state names
         AutomatonGenerator.shuffleStateNames,
         // Add transition from reachable to non-coreachable state.
         (a: Automaton) => {
-            let startState: any;
-            let reachableStates = Array.from(AutomatonPrograms.reachableStates(a));
+            const reachableStates = Array.from(AutomatonPrograms.reachableStates(a));
             shuffleArrayInPlace(reachableStates);
 
-            let alphabet = Array.from(a.getAlphabet());
+            const alphabet = Array.from(a.getAlphabet());
             shuffleArrayInPlace(alphabet);
 
-            let nonCoreachableStates = Array.from(
+            const nonCoreachableStates = Array.from(
                 a.getStates().minus(AutomatonPrograms.coreachableStates(a))
             );
             shuffleArrayInPlace(nonCoreachableStates);
 
             startStateSelection:
-            for (let rs of reachableStates) {
+            for (const rs of reachableStates) {
                 let symbol: any;
                 symbolSelection:
-                for (let symb of alphabet) {
+                for (const symb of alphabet) {
                     if (a.getSuccessors(rs, symb).size === 0) {
                         symbol = symb;
                         break symbolSelection;
@@ -273,7 +268,7 @@ class AutomatonGenerator {
                     continue startStateSelection;
                 }
 
-                for (let crs of nonCoreachableStates) {
+                for (const crs of nonCoreachableStates) {
                     a.addTransition(rs, symbol, crs);
                     return true;
                 }
@@ -282,19 +277,21 @@ class AutomatonGenerator {
         },
         // If a state has at least two transitions with the same destination, duplicate the destination.
         (a: Automaton) => {
-            let states = Array.from(a.getStates());
+            const states = Array.from(a.getStates());
             shuffleArrayInPlace(states);
 
-            for (let t1 of a.getTransitions() as Iterable<Transition>) {
-                for (let t2 of a.getTransitions().minus([t1]) as Iterable<Transition>) {
+            for (const t1 of a.getTransitions() as Iterable<Transition>) {
+                for (const t2 of a.getTransitions().minus([t1]) as Iterable<Transition>) {
                     if (
                         t1.startState === t2.startState &&
                         t1.endState === t2.endState &&
                         t1.symbol !== t2.symbol
                     ) {
-                        let oldState = t1.endState;
-                        let newState: any;
-                        for (newState = 0; a.hasState(newState); newState++) { }
+                        const oldState = t1.endState;
+                        let newState = 0;
+                        while (a.hasState(newState)) {
+                            newState++;
+                        }
 
                         // We add the new state, and set it final if need be.
                         a.addState(newState);
@@ -303,7 +300,7 @@ class AutomatonGenerator {
                         }
 
                         // We add the transitions from the duplicated state.
-                        for (let tr of a.getTransitions() as Iterable<Transition>) {
+                        for (const tr of a.getTransitions() as Iterable<Transition>) {
                             if (tr.startState === oldState) {
                                 a.addTransition(newState, tr.symbol, tr.endState);
                             }
@@ -317,15 +314,15 @@ class AutomatonGenerator {
             }
             return false;
         }
-    ]
+    ];
     /**
      * Array of the number of times each of the non-destructive mutatios will be applied.
      * In case of the generation of a pair of automata, the passes will be randomly 
      * applied to one automaton or the other until none are left.
      */
-    private static nonDestructiveMutationPasses = [
+    private static readonly nonDestructiveMutationPasses = [
         1, 4, 3
-    ]
+    ];
 
     /**
      * Generates a single automaton, following
@@ -333,7 +330,7 @@ class AutomatonGenerator {
      */
     generateAutomaton(): Automaton {
         console.time("Automaton Generation Timer");
-        let A = new Automaton();
+        const A = new Automaton();
 
         // We add states numbered from 0 to the number of states (exclusive).
         for (let i = 0; i < this.stateCount; i++) {
@@ -341,7 +338,7 @@ class AutomatonGenerator {
         }
 
         // We initialize the automaton's alphabet.
-        for (let s of this.alphabet) {
+        for (const s of this.alphabet) {
             A.addSymbol(s);
         }
 
@@ -350,9 +347,9 @@ class AutomatonGenerator {
 
         // If we generate an automaton with epsilon transitions, we
         // add them to our possible transition symbols.
-        let transitionSymbolPool = Array.from(this.alphabet);
+        const transitionSymbolPool = Array.from(this.alphabet);
         if (this.hasEpsilon) {
-            let numEpsilon = transitionSymbolPool.length / 4;
+            const numEpsilon = transitionSymbolPool.length / 4;
             for (let i = 0; i < numEpsilon; i++) {
                 transitionSymbolPool.push(epsilon);
             }
@@ -361,15 +358,15 @@ class AutomatonGenerator {
         // We generate transitions by "walking" the automaton at random.
         let numTransitionsAdded = 0;
         let currentState = A.getInitialState();
-        let previousStates = [];
-        while (numTransitionsAdded != this.transitionCount) {
+        const previousStates = [];
+        while (numTransitionsAdded !== this.transitionCount) {
             // We sometimes go back to a previously visited state, to avoid linearity.
-            if (Math.random() < 0.5 && previousStates.length != 0) {
+            if (Math.random() < 0.5 && previousStates.length !== 0) {
                 currentState = previousStates[randomInteger(0, previousStates.length)];
             }
 
-            let isolatedStates = A.getStates().copy();
-            for (let tr of A.getTransitions() as Iterable<Transition>) {
+            const isolatedStates = A.getStates().copy();
+            for (const tr of A.getTransitions() as Iterable<Transition>) {
                 isolatedStates.remove(tr.startState);
                 isolatedStates.remove(tr.endState);
             }
@@ -380,7 +377,7 @@ class AutomatonGenerator {
                 endState = randomInteger(0, this.stateCount);
             }
 
-            let transitionSymbol = transitionSymbolPool[randomInteger(0, transitionSymbolPool.length)];
+            const transitionSymbol = transitionSymbolPool[randomInteger(0, transitionSymbolPool.length)];
 
             // If the transition already exists, don't add it.
             if (A.hasTransition(currentState, transitionSymbol, endState)) {
@@ -389,7 +386,7 @@ class AutomatonGenerator {
 
             // If we are creating a deterministic automaton
             // and the symbol is already used, we "take" that transition.
-            let successors = Array.from(A.getSuccessors(currentState, transitionSymbol));
+            const successors = Array.from(A.getSuccessors(currentState, transitionSymbol));
             if (this.isDeterministic && successors.length !== 0) {
                 currentState = successors[0];
                 continue;
@@ -402,13 +399,13 @@ class AutomatonGenerator {
         }
 
         let numFinalStates = 0;
-        let reachableStates = Array.from(AutomatonPrograms.reachableStates(A));
+        const reachableStates = Array.from(AutomatonPrograms.reachableStates(A));
         if (!this.noEmptyLanguage || reachableStates.includes(currentState)) {
             A.setFinalState(currentState);
             numFinalStates++;
         }
 
-        while (numFinalStates != this.finalStateCount) {
+        while (numFinalStates !== this.finalStateCount) {
             let finalState: any;
             do {
                 if (numFinalStates >= reachableStates.length) {
@@ -430,7 +427,7 @@ class AutomatonGenerator {
      * Generates a linear grammar.
      */
     generateGrammar(leftOrRightLinear: "left" | "right" = "right"): linearGrammar {
-        let G = AutomatonPrograms.automaton2RightLinearGrammar(this.generateAutomaton());
+        const G = AutomatonPrograms.automaton2RightLinearGrammar(this.generateAutomaton());
         return (leftOrRightLinear === "left" ?
             AutomatonPrograms.rightLinear2LeftLinearGrammar(G) :
             G);
@@ -453,11 +450,11 @@ class AutomatonGenerator {
         let automata = [];
         if (this.areEquivalent) {
             this.allowNonMinimal();
-            let A = this.generateAutomaton();
+            const A = this.generateAutomaton();
             automata = [A, A.copy()];
 
             for (let i = 0; i < AutomatonGenerator.nonDestructiveAutomatonMutations.length; i++) {
-                let operation = AutomatonGenerator.nonDestructiveAutomatonMutations[i];
+                const operation = AutomatonGenerator.nonDestructiveAutomatonMutations[i];
 
                 for (let j = 0; j < AutomatonGenerator.nonDestructiveMutationPasses[i]; j++) {
                     if (Math.random() < 0.5) {
@@ -468,18 +465,18 @@ class AutomatonGenerator {
                 }
             }
         } else if (this.languageInterNonEmpty) {
-            let oldStateCount = this.stateCount;
-            let oldTransCount = this.transitionCount;
+            const oldStateCount = this.stateCount;
+            const oldTransCount = this.transitionCount;
 
             if (lowNumberOfChanges) {
                 this.stateCount = Math.ceil(this.stateCount / 2);
                 this.transitionCount = Math.ceil(this.transitionCount / 2);
             }
-            let A = this.generateAutomaton();
+            const A = this.generateAutomaton();
             automata = [A, A.copy()];
 
             for (let i = 0; i < Math.floor(this.stateCount / 2); i++) {
-                let chosenOperation =
+                const chosenOperation =
                     AutomatonGenerator.semiDestructiveAutomatonMutations[
                     randomInteger(0, AutomatonGenerator.semiDestructiveAutomatonMutations.length)
                     ];
@@ -499,7 +496,7 @@ class AutomatonGenerator {
 
             // We shuffle the state names of the automata,
             // to make them look less alike.
-            for (let auto of automata) {
+            for (const auto of automata) {
                 AutomatonGenerator.shuffleStateNames(auto);
             }
 
@@ -550,7 +547,7 @@ class AutomatonGenerator {
 class QuestionGenerator {
     /** The generator used for questions that need automata in their instructions. */
     automatonGenerator: AutomatonGenerator;
-    private _ = window.AudeGUI.l10n;
+    private readonly _ = window.AudeGUI.l10n;
 
     constructor() {
         this.automatonGenerator = new AutomatonGenerator();
@@ -562,7 +559,7 @@ class QuestionGenerator {
         switch (Question.deduceQuestionCategory(qSubtype)) {
             case QuestionCategory.AutomatonEquivQuestion: {
                 q = new AutomatonEquivQuestion(qSubtype);
-                let qae = <AutomatonEquivQuestion>q;
+                const qae = q as AutomatonEquivQuestion;
 
                 let numberToGenerate = 1;
                 let typeToGenerate = AutomatonDataType.Automaton;
@@ -600,6 +597,11 @@ class QuestionGenerator {
                     case QuestionSubType.Automaton2Regexp:
                         this.automatonGenerator.allowNonDeterministic();
                         this.automatonGenerator.allowEpsilonTransitions();
+                        qae.usersAnswerType = AutomatonDataType.Regexp;
+                        break;
+
+                    case QuestionSubType.Automaton2Grammar:
+                        qae.usersAnswerType = AutomatonDataType.LinearGrammar;
                         break;
 
                     case QuestionSubType.LeftGrammar2RightGrammar:
@@ -642,7 +644,7 @@ class QuestionGenerator {
             }
             case QuestionCategory.TextInput: {
                 q = new TextInputQuestion(qSubtype);
-                let tiq = <TextInputQuestion>q;
+                const tiq = q as TextInputQuestion;
 
                 this.automatonGenerator.forbidNonDeterministic();
                 this.automatonGenerator.forbidEpsilonTransitions();
@@ -694,11 +696,11 @@ class QuestionGenerator {
             }
             case QuestionCategory.MCQ: {
                 q = new MCQQuestion(qSubtype);
-                let mcq = <MCQQuestion>q;
+                const mcq = q as MCQQuestion;
 
                 switch (qSubtype) {
                     case QuestionSubType.EquivalentAutomata:
-                        let areEquivalent = Math.random() < 0.5;
+                        const areEquivalent = Math.random() < 0.5;
                         if (areEquivalent) {
                             this.automatonGenerator.forbidNonEquivalent();
                         } else {
@@ -721,7 +723,7 @@ class QuestionGenerator {
                                 { id: "d", text: "8", correct: true }
                             ],
                             true
-                        )
+                        );
                 }
                 break;
             }
@@ -729,6 +731,4 @@ class QuestionGenerator {
 
         return q;
     }
-
-
 }

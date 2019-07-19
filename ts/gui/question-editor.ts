@@ -2,7 +2,7 @@
  * This class provides a component to edit and create questions.
  */
 class QuestionEditor {
-    _ = window.AudeGUI.l10n;
+    private readonly _ = window.AudeGUI.l10n;
 
     /** 
      * The object (to be passed to jso2dom) to be displayed 
@@ -89,7 +89,7 @@ class QuestionEditor {
                 ["div#question-editor-textinput-validation-audescript", { "#": "audescriptContent" }]
             ]]
         ]];
-
+    /** The object (to be passed to jso2dom) for the specific inputs for a MCQQuestion */
     private static readonly MCQ_INPUT_CONTENT = ["div", [
         ["h4", window.AudeGUI.l10n("Multiple Choice Question Answers")],
         ["div.form-check", [
@@ -141,14 +141,14 @@ class QuestionEditor {
             ]]
         ]]
     ]];
-
+    /** The object (for jso2dom) for the help attached to constraint input for AutomatonEquivQuestions. */
     private static readonly AUTOEQUIV_CONSTRAINT_HELP = ["small.text-muted", [
         ["ul", [
             ["li", window.AudeGUI.l10n("Every constraint must return an object of the form {correct: boolean, details: string}")],
             ["li", window.AudeGUI.l10n("The user's answer is available through the variable called a, re or g if it's an automaton, a regular expression or a grammar")]
         ]]
     ]];
-
+    /** The object (to be passed to jso2dom) for the specific inputs for a AutomatonEquivQuestions */
     private static readonly AUTOEQUIV_CONTENT = [
         ["h4", window.AudeGUI.l10n("Automaton Equivalency Answers")],
         ["h5", window.AudeGUI.l10n("User's answer type")],
@@ -180,18 +180,23 @@ class QuestionEditor {
         ]],
         ["button.btn btn-primary btn-block", { "#": "addConstraintButton" }, window.AudeGUI.l10n("Add new constraint")]
     ];
-    private autoEquivReferenceInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
 
     /** The HTMLElement containing this question editor. */
     container: HTMLElement;
 
-    /** The question currently being edited by this editor. */
+    /**
+     * The question currently being edited by this editor.
+     * NEVER get it directly from here, as it will be missing some information
+     * that can only be parsed at the time of retrieval.
+     * Use getCurrentQuestion instead.
+     * @see getCurrentQuestion
+     */
     private currentQuestion: Question;
 
     /** Couple containing the input elements for the wording details. */
     private readonly wordingDetailInputs: [AudeDesigner | HTMLInputElement | GrammarDesigner, AudeDesigner | HTMLInputElement | GrammarDesigner]
         = [undefined, undefined];
-
+    /** The HTML DOM References for the common inputs. */
     private readonly commonRefs = {
         wordingTextField: undefined as HTMLTextAreaElement,
         wordingTextHTMLCheck: undefined as HTMLInputElement,
@@ -203,15 +208,18 @@ class QuestionEditor {
     };
 
     // Fields for TextInput Questions
+    /** The HTML DOM References for the inputs specific to the text input questions. */
     private readonly textInputRefs = {
         radioWordlist: undefined as HTMLInputElement,
         radioAudescript: undefined as HTMLInputElement,
         wordlistContent: undefined as HTMLInputElement,
         audescriptContent: undefined as HTMLElement
     };
+    /** The Ace editor object for the text input validator audescript code. */
     private aceEditorAudescript: AceAjax.Editor;
 
     // Fields for MCQ Questions.
+    /** The HTML DOM References for the inputs specific to MCQ questions. */
     private readonly mcqRefs = {
         choiceTableBody: undefined as HTMLTableSectionElement,
         singleCheckbox: undefined as HTMLInputElement,
@@ -226,6 +234,7 @@ class QuestionEditor {
         choiceEditButtonBar: undefined as HTMLElement,
         choiceEditCancelButton: undefined as HTMLButtonElement
     };
+    /** Array containing choices for the currently edited MCQ Question. */
     private readonly mcqChoices: Array<{
         id?: string,
         text?: string,
@@ -235,12 +244,14 @@ class QuestionEditor {
         grammar?: linearGrammar,
         correct?: boolean
     }> = [];
+    /** The input for a new choice's detail in an MCQ question. */
     private mcqChoiceDetailInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
     /** Stores the choice that is currently being edited. 
      * If instead a new choice is being created, this will be undefined. */
     private mcqCurrentlyEditingChoiceId: string;
 
     // Fields for AutomatonEquiv Questions
+    /** The HTML DOM References for the inputs specific to automaton equivalency questions. */
     private readonly autoEquivRefs = {
         usersAnswerTypeSelect: undefined as HTMLSelectElement,
         referenceTypeSelect: undefined as HTMLSelectElement,
@@ -248,6 +259,9 @@ class QuestionEditor {
         constraintList: undefined as HTMLUListElement,
         addConstraintButton: undefined as HTMLButtonElement
     };
+    /** The input object for the reference structure in an autoequiv question. */
+    private autoEquivReferenceInput: AudeDesigner | HTMLInputElement | GrammarDesigner;
+    /** Array of the Ace editors for each constraint of an Automaton Equiv question. */
     private readonly autoEquivConstraintEditors: AceAjax.Editor[] = [];
 
     constructor(container: HTMLElement, questionCategory: QuestionCategory) {
@@ -269,6 +283,7 @@ class QuestionEditor {
         this.draw();
     }
 
+    /** Parses the input and returns the currently edited question. */
     getCurrentQuestion() {
         // Retrieve wording details from inputs.
         this.currentQuestion.wordingDetails = [];
@@ -300,6 +315,7 @@ class QuestionEditor {
         return this.currentQuestion;
     }
 
+    /** Sets the current question to the given one. */
     setCurrentQuestion(q: Question) {
         this.currentQuestion = q;
 
@@ -383,6 +399,12 @@ class QuestionEditor {
         }
     }
 
+    /**
+     * Displays the input element for one of the wording details, of the given type,
+     * and saves it to wordingDetailInputs.
+     * @param detailIndex - The index of the wording detail to show input for (0 or 1)
+     * @param type - The type of the wording detail input.
+     */
     private displayWordingDetailInput(detailIndex: 0 | 1, type: AutomatonDataType) {
         const htmlDiv = (detailIndex === 0 ? this.commonRefs.fig1Content : this.commonRefs.fig2Content);
 
@@ -413,6 +435,7 @@ class QuestionEditor {
         }
     }
 
+    /** Initializes the components specific to text input questions. */
     private initTextInputSpecificComponents(specificComponentsDiv: HTMLElement) {
         const tiq = this.currentQuestion as TextInputQuestion;
         specificComponentsDiv.innerHTML = "";
@@ -455,6 +478,8 @@ class QuestionEditor {
         }
     }
 
+    /** Parses the input components specific to text input questions 
+     * and places this data in currentQuestion. */
     private parseTextInputSpecificComponents() {
         const qti = (this.currentQuestion) as TextInputQuestion;
         // Word list.
@@ -468,6 +493,7 @@ class QuestionEditor {
         }
     }
 
+    /** Initializes the components specific to MCQ questions. */
     private initMCQSpecificComponents(specificComponentsDiv: HTMLElement) {
         const mcq = (this.currentQuestion as MCQQuestion);
         specificComponentsDiv.innerHTML = "";
@@ -682,6 +708,7 @@ class QuestionEditor {
         mcq.setWordingChoices(this.mcqChoices);
     }
 
+    /** Initializes the components specific to automaton equivalency questions. */
     private initAutoEquivSpecificComponents(specificComponentsDiv: HTMLElement) {
         const aeq = this.currentQuestion as AutomatonEquivQuestion;
         specificComponentsDiv.appendChild(libD.jso2dom(QuestionEditor.AUTOEQUIV_CONTENT, this.autoEquivRefs));
@@ -771,6 +798,8 @@ class QuestionEditor {
         }
     }
 
+    /** Parses the input components specific to automaton equivalency questions 
+     * and places this data in currentQuestion. */
     private parseAutoEquivSpecificComponents() {
         const aeq = this.currentQuestion as AutomatonEquivQuestion;
 
@@ -891,6 +920,10 @@ class QuestionEditor {
         }
     }
 
+    /** 
+     * Refreshes the display of this editor. 
+     * If the current question is an MCQ, it updates its choices' list display.
+     */
     redraw() {
         if (this.currentQuestion.category === QuestionCategory.MCQ) {
             this.mcqRefs.choiceTableBody.innerHTML = "";

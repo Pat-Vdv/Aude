@@ -2,7 +2,7 @@ DEST_EXAM?=../aude-exam
 
 all: js/lib/viz/viz.js l10n dirlist.txt js/audescript/audescript.js doc/index.html buildTS
 
-.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod buildTS
+.PHONY: zip uncommited-zip dirlist.txt count-lines clean /tmp/aude-uncommited.zip  /tmp/aude.zip l10n count-lines exam prod buildTS build-typedoc
 
 l10n:
 	cd l10n && make
@@ -93,3 +93,7 @@ count-lines:
 
 buildTS:
 	tsc -p tsconfig.json
+
+# Builds the HTML Typedoc from code comments.
+build-typedoc:
+	typedoc --out build/typedoc

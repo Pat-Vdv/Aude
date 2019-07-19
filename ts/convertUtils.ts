@@ -69,7 +69,7 @@ namespace Convert {
     });
   }
 
-  export function svg2Automaton(svg: string): Automaton {
+  export function svg2automaton(svg: string): Automaton {
     const div = document.createElement("div");
     const des = new AudeDesigner(div, true);
     des.setSVG(svg, 0);

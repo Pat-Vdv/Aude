@@ -15,24 +15,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-let automataContainer = undefined;
-let divQuiz = undefined;
-
+/**
+ * Handles storage and execution of quizzes.
+ */
 class Quiz {
-    _ = window.AudeGUI.l10n;
+    private readonly _ = window.AudeGUI.l10n;
 
     /** DOM input element to load a quiz */
     static fileInput: HTMLInputElement;
-
-    static automataContainer: HTMLElement;
+    /** The DOM element that will contaion quizzes when and if they are executed. */
+    private static divQuiz: HTMLElement;
+    /**
+     * Quiz instance that is being executed.
+     * Only one quiz can be executed at a time.
+     */
+    static currentQuiz: Quiz;
 
     /**  Initialize the quiz */
     static load() {
         AutomatonPrograms.loadPrograms();
-        automataContainer = document.getElementById("automata-container");
-        divQuiz = document.getElementById("div-quiz");
-        window.AudeGUI.Quiz.fileInput = document.getElementById("filequiz");
-        window.AudeGUI.Quiz.fileInput.onchange = openQuiz;
+        Quiz.divQuiz = document.getElementById("div-quiz");
+        Quiz.fileInput = document.getElementById("filequiz") as HTMLInputElement;
+        Quiz.fileInput.onchange = Quiz.openQuiz;
     }
 
     /** Start a quiz from string (JSON). */
@@ -55,10 +59,24 @@ class Quiz {
         }
     }
 
-    static currentQuiz: Quiz;
+    /**
+    * Opens a quiz from the file input.
+    */
+    static openQuiz() {
+        const freader = new FileReader();
 
+        freader.onload = () => {
+            Quiz.open(freader.result as string);
+        };
+
+        freader.readAsText(Quiz.fileInput.files[0], "utf-8");
+    }
+
+    /** This quizz's questions. */
     questions: Array<Question> = [];
+    /** During execution, the index of the question currently shown to the user. */
     currentQuestionIndex: number;
+    /** During execution, the validation results for the user's answers. */
     answers: Array<{ isCorrect: boolean, reasons: string }> = [];
 
     title: string = "";
@@ -77,13 +95,14 @@ class Quiz {
     }
 
     /**
-     * Initializes this quiz using the given object.
+     * Initializes this quiz using the given JSON string.
      * @param jsonCode - The JSON code to intialize from.
      * @returns true if the quiz has been initialized correctly
      */
     fromJSON(jsonCode: string): boolean {
         const obj = JSON.parse(jsonCode);
 
+        // Load misc. info.
         this.title = obj.title || "";
         this.author = obj.author || "";
         this.date = obj.date || "";
@@ -94,6 +113,7 @@ class Quiz {
             throw new Error(window.AudeGUI.l10n("The quiz doesn't have its list of question."));
         }
 
+        // Load questions.
         for (const questionObj of obj.questions) {
             if (!questionObj.type) {
                 throw new Error(window.AudeGUI.l10n("A question in the quiz doesn't have a type specified !"));
@@ -128,6 +148,10 @@ class Quiz {
         return false;
     }
 
+    /**
+     * Returns an object ready for serialization using JSON.stringify
+     * that represents this quiz.
+     */
     toJSON(): any {
         const o: any = {};
 
@@ -153,31 +177,33 @@ class Quiz {
             window.AudeGUI.setCurrentMode("design");
         }
 
-        automataContainer.style.display = "none";
-
         window.AudeGUI.addAutomaton();
 
         if (!(this.questions && this.questions instanceof Array)) {
             throw new Error(window.AudeGUI.l10n("The quiz doesn't have its list of question."));
         }
 
+        // If a quiz was previously executing, close it.
+        Quiz.currentQuiz.close();
+        Quiz.currentQuiz = this;
         this.currentQuestionIndex = -1;
 
+        // Fill the answers with dummy incorrect statuses.
         this.answers = [];
         for (const q of this.questions) {
             this.answers.push({
                 isCorrect: false,
-                reasons: ""
+                reasons: this._("No answer given.")
             });
         }
 
-        divQuiz.classList.add("intro");
-        divQuiz.classList.remove("started");
-        divQuiz.textContent = "";
-        divQuiz.classList.add("enabled");
+        Quiz.divQuiz.classList.add("intro");
+        Quiz.divQuiz.classList.remove("started");
+        Quiz.divQuiz.textContent = "";
+        Quiz.divQuiz.classList.add("enabled");
 
         const refs: any = {};
-        divQuiz.appendChild(libD.jso2dom([
+        Quiz.divQuiz.appendChild(libD.jso2dom([
             ["h1#quiz-title", [
                 ["#", this.title ? window.AudeGUI.l10n("Quiz:") + " " : window.AudeGUI.l10n("Quiz")],
                 ["span", { "#": "quizTitleContent" }]
@@ -201,11 +227,15 @@ class Quiz {
         };
     }
 
+    /**
+     * Makes the current quiz go to the previous or next question. 
+     * @param goToPrevious - If true, will go to the previous question, otherwise goes to the next.s
+     * @param validateCurrent - If true, the user's answer to the current question will be checked before leaving.
+     */
     prevNextQuestion(goToPrevious: boolean = false, validateCurrent: boolean = true) {
         try {
-            divQuiz.classList.remove("intro");
-            divQuiz.classList.add("started");
-            automataContainer.style.display = "none";
+            Quiz.divQuiz.classList.remove("intro");
+            Quiz.divQuiz.classList.add("started");
 
             if (this.currentQuestionIndex >= 0 && validateCurrent) {
                 this.validateCurrentQuestion();
@@ -231,6 +261,10 @@ class Quiz {
         }
     }
 
+    /**
+     * Checks the user's answer for the current question and 
+     * sets its validation status in the "answers" array.
+     */
     validateCurrentQuestion() {
         this.questions[this.currentQuestionIndex].parseUsersAnswer();
         const result = this.questions[this.currentQuestionIndex].checkUsersAnswer();
@@ -241,6 +275,9 @@ class Quiz {
         };
     }
 
+    /**
+     * Shows the correction at the end of a quiz.
+     */
     showCorrection() {
         this.refs.content.textContent = "";
         this.refs.content.appendChild(libD.jso2dom(["p", this._("The Quiz is finished! Here are the details of the correction.")]));
@@ -287,6 +324,9 @@ class Quiz {
         refs.prev.onclick = () => this.prevNextQuestion(true, false);
     }
 
+    /**
+     * Displays the curent question and its inputs.
+     */
     askCurrentQuestion() {
         const q = this.questions[this.currentQuestionIndex];
 
@@ -321,13 +361,14 @@ class Quiz {
         }
     }
 
+    /**
+     * Closes this quiz object.
+     */
     close() {
         Quiz.currentQuiz = undefined;
         window.AudeGUI.removeCurrentAutomaton();
-        automataContainer.style.display = "";
-        automataContainer.style.top = "";
-        divQuiz.textContent = "";
-        divQuiz.classList.remove("enabled");
+        Quiz.divQuiz.textContent = "";
+        Quiz.divQuiz.classList.remove("enabled");
         window.AudeGUI.mainDesigner.redraw();
         window.AudeGUI.Results.redraw();
     }
@@ -342,25 +383,5 @@ function automatonFromObj(o) {
 }
 window.automatonFromObj = automatonFromObj;
 
-/**
- * Opens a quiz from the file input.
- */
-function openQuiz() {
-    const freader = new FileReader();
-
-    freader.onload = () => {
-        window.AudeGUI.Quiz.open(freader.result);
-    };
-
-    freader.readAsText(window.AudeGUI.Quiz.fileInput.files[0], "utf-8");
-}
-
-// Convert an SVG code to an automaton.
-// Used to validate a quiz.
-function svg2automaton(svg: string): Automaton {
-    const div = document.createElement("div");
-    const designer = new AudeDesigner(div, false);
-    designer.setAutomatonCode(svg, 0);
-    return designer.getAutomaton(0).copy();
-}
-window.svg2automaton = svg2automaton;
+// Exported here for legacy support. Use Convert.svg2automaton instead.
+window.svg2automaton = Convert.svg2automaton;

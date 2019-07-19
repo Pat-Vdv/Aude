@@ -2,12 +2,10 @@
  * Namespace containing useful functions for text formatting.
  */
 namespace FormatUtils {
-  "use strict";
-
   /**
-     * Formats a set into LaTeX syntax.
-     * @param s - The iterable object (set, array, etc...) to format.
-     */
+  * Formats a set into LaTeX syntax.
+  * @param s - The iterable object (set, array, etc...) to format.
+  */
   export function set2Latex(s: libD.Set): string {
     let latex = "$\\left\\lbrace ";
 

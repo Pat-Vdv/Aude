@@ -14,6 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 enum QuizEditorState {
     Overview,
     NewQuestion,
@@ -24,15 +25,23 @@ enum QuizEditorState {
 class QuizEditor {
     /**
      * Current quiz editor instance.
-     * Only one quiz editor is usable at a time (singleton).
+     * Only one quiz editor is usable at a time (~singleton pattern).
      */
     public static currentQuizEditor: QuizEditor = undefined;
+    /**
+     * Quiz Editor "entry point".
+     * This is the function that will be called 
+     * when the "Edit Quiz" button is pressed. 
+     */
     public static run = QuizEditor.openQuizEditor;
-
+    /**
+     * Needed for Aude module system. Doesn't do anything.
+     */
     public static load() { return; }
-    /*
+    /** 
      * Open an old quiz.
-     * @param. code: old "quiz object"
+     * Resets the current quiz editor's quiz.
+     * @param code : The JSON string for the old quiz.
      */
     public static open(code: string) {
         try {
@@ -41,7 +50,7 @@ class QuizEditor {
             }
             QuizEditor.currentQuizEditor.emptyPreviewTable();
             QuizEditor.currentQuizEditor.currentQuiz.fromJSON(code);
-            QuizEditor.currentQuizEditor.showOverview("shift");
+            QuizEditor.currentQuizEditor.showOverview();
         } catch (e) {
             window.AudeGUI.notify(
                 window.AudeGUI.l10n("Loading the quiz failed"),
@@ -55,7 +64,11 @@ class QuizEditor {
         }
     }
 
-    public static saveQuiz() {
+    /**
+     * Gets the info such as the author, title, description and 
+     * date for the current quiz and assigns them to said quiz.
+     */
+    private static parseQuizInfo() {
         const tableMonth = [
             window.AudeGUI.l10n("January"),
             window.AudeGUI.l10n("February"),
@@ -82,20 +95,23 @@ class QuizEditor {
         QuizEditor.currentQuizEditor.currentQuiz.description = descriptionTextarea.value;
     }
 
-    /*
-     * Save the current quiz in a file in the local storage of the user computer.
+    /**
+     * Saves the current quiz in a file in the local storage of the user's computer.
      */
     public static save() {
         const jsonQuiz = JSON.stringify(QuizEditor.currentQuizEditor.currentQuiz.toJSON());
         const blob = new Blob([jsonQuiz], { type: "application/json" });
-        let date = QuizEditor.currentQuizEditor.currentQuiz.date;
-        let author = QuizEditor.currentQuizEditor.currentQuiz.author;
-        date = date.replace(" ", "");
-        author = author.replace(" ", "-");
-        const fileName = "Quiz_" + date + "_" + QuizEditor.currentQuizEditor.currentQuiz.author + ".json";
+        const date = QuizEditor.currentQuizEditor.currentQuiz.date.replace(" ", "");
+        const author = QuizEditor.currentQuizEditor.currentQuiz.author.replace(" ", "-");
+        const fileName = "Quiz_" + date + "_" + author + ".json";
 
         saveAs(blob, fileName);
     }
+    /**
+     * Minimizes the current quiz editor window.
+     * @remarks 
+     * The same quiz editor can still be reopened afterwards.
+     */
     static close() {
         if (!QuizEditor.currentQuizEditor) {
             return;
@@ -117,7 +133,11 @@ class QuizEditor {
         QuizEditor.currentQuizEditor.open();
     }
 
-    public static openQuiz() {
+    /**
+     * Opens a file brower and loads a quiz from the file if
+     * any was selected.
+     */
+    public static openQuizFromFile() {
         const file = document.getElementById("quiz-editor-file") as HTMLInputElement; // input file
         file.onchange = () => {
             const freader = new FileReader();
@@ -189,15 +209,19 @@ class QuizEditor {
     ]];
 
     //// FIELDS ////
-    _ = window.AudeGUI.l10n;
+    /** Forwards to AudeGUI.l10n. @see AudeGUI.l10n */
+    private readonly _ = window.AudeGUI.l10n;
 
     /** The libD window used for this editor. */
     win: libD.WSwin;
 
+    /** HTML DOM Element that contains this quiz editor. */
     container: HTMLElement;
+    /** HTML DOM Element that contains this quiz editor's content (without navbar). */
     content: HTMLElement;
-    currentQuestionEditor: QuestionEditor;
+    /** The quiz this editor is currently working on. */
     currentQuiz: Quiz;
+    /** The current state of this quiz editor. */
     currentState: QuizEditorState;
 
     constructor() {
@@ -218,6 +242,7 @@ class QuizEditor {
 
     /**
      * Initializes all of this quiz editor's components.
+     * Shows overview afterwards.
      */
     draw() {
         if (this.win) {
@@ -249,7 +274,7 @@ class QuizEditor {
         this.container = refs.root;
         this.content = refs.content;
 
-        refs.overview.onclick = (e) => { this.showOverview("show"); };
+        refs.overview.onclick = (e) => { this.showOverview(false); };
 
         // Close the quiz editor.
         refs.close.onclick = QuizEditor.close;
@@ -257,7 +282,7 @@ class QuizEditor {
         // Open an old quiz.
         refs.open.onclick = () => {
             const fileinput = document.getElementById("quiz-editor-file");
-            fileinput.onclick = QuizEditor.openQuiz;
+            fileinput.onclick = QuizEditor.openQuizFromFile;
             fileinput.click();
         };
 
@@ -326,23 +351,14 @@ class QuizEditor {
         this.content.appendChild(newQuestionPane);
     }
 
-    /*
-    * Add  if (mode = "") the last edit question to the overview table
-    * else (mode = shift) show the overview table from all the quiz object
-    */
-    showOverview(mode: string) {
-        switch (mode) {
-            case "":
-                this.refreshQuestionPreview(QuizEditor.currentQuizEditor.currentQuiz.questions.length - 1);
-                break;
-
-            case "shift":
-                this.refreshQuestionPreview();
-                break;
-
-            case "show":
-                // Do nothing specific, we just want to show the stuff actually
-                break;
+    /**
+     * Shows/update this quiz editor's overview.
+     * Sets the current state to Overview.
+     * @param refreshPreview - If true, all the question's previews will be updated.
+     */
+    showOverview(refreshPreview = true) {
+        if (refreshPreview) {
+            this.refreshQuestionPreview();
         }
 
         if (this.currentQuiz.questions.length > 0) {
@@ -359,6 +375,7 @@ class QuizEditor {
     /**
     * Add the questions[index] to the overview table.
     * If index not specified, will empty and redraw the whole table.
+    * @param index - Index of the question to add to the preview table.
     */
     refreshQuestionPreview(index?: number) {
         const overviewTableBody = document.getElementById("quiz-editor-overview-table-body");
@@ -396,15 +413,16 @@ class QuizEditor {
                 ["div", { "#": "quesDiv" }]
             ]],
             ["td", [
-                ["button.btn btn-outline-primary", { "#": "answerCollapseButton" }, this._("Show")],
+                ["button.btn btn-outline-primary btn-sm", { "#": "answerCollapseButton" }, this._("Show")],
                 ["div.quiz-editor-hidden", { "#": "answDiv" }]
             ]],
             ["td", [
                 ["div", { style: "text-align: center" }, [
-                    ["button#quiz-editor-modifQuestion" + index, { "#": "modifButton", "title": window.AudeGUI.l10n("edit"), "value": index }, [
+                    ["button#quiz-editor-modifQuestion.btn btn-outline-secondary btn-sm" + index, { "#": "modifButton", "title": window.AudeGUI.l10n("edit"), "value": index }, [
                         ["img", { src: libD.getIcon("actions/document-edit"), alt: "Edit" }]
                     ]],
-                    ["button#quiz-editor-removeQuestion" + index, { "#": "removeButton", "title": window.AudeGUI.l10n("remove"), "value": index }, [
+                    ["br"],
+                    ["button#quiz-editor-removeQuestion.btn btn-outline-danger btn-sm" + index, { "#": "removeButton", "title": window.AudeGUI.l10n("remove"), "value": index }, [
                         ["img", { src: libD.getIcon("actions/list-remove"), alt: "Remove" }]
                     ]]
                 ]]
@@ -416,9 +434,8 @@ class QuizEditor {
 
         refs.removeButton.onclick = (e) => {
             const btn = e.currentTarget as HTMLButtonElement;
-            this.emptyPreviewTable();
             this.removeQuestion(parseInt(btn.value, 10));
-            this.showOverview("shift");
+            this.showOverview();
         };
 
         refs.modifButton.onclick = (e) => {
@@ -445,10 +462,17 @@ class QuizEditor {
         q.displayCorrectAnswer(refs.answDiv);
     }
 
+    /**
+     * Clears the whole preview table.
+     */
     emptyPreviewTable() {
         document.getElementById("quiz-editor-overview-table-body").innerHTML = "";
     }
 
+    /**
+     * Removes a question from the current quiz.
+     * @param index - The index of the question to remove from the quiz.
+     */
     removeQuestion(index: number) {
         if (0 <= index && index < this.currentQuiz.questions.length) {
             this.currentQuiz.questions.splice(index, 1);
@@ -458,7 +482,8 @@ class QuizEditor {
     /**
      * Shows the question editor for creating a question
      * of the given question category.
-     * @param qCat 
+     * @param qCat - Category of the question to create.
+     * @see QuestionCategory
      */
     showPaneForCategory(qCat: QuestionCategory) {
         this.editOrCreateQuestion(this.currentQuiz.questions.length, qCat);
@@ -478,6 +503,7 @@ class QuizEditor {
             return;
         }
 
+        // Remove previous question edit pane.
         let qEditPane = document.getElementById("quiz-editor-QuestionEdit-pane");
         if (qEditPane) {
             qEditPane.parentElement.removeChild(qEditPane);
@@ -489,7 +515,7 @@ class QuizEditor {
         };
         qEditPane = libD.jso2dom(["div#quiz-editor-QuestionEdit-pane.quiz-editor-pane", [
             ["div", { "#": "editorDiv" }],
-            ["p.big-center", ["button", { "#": "validationButton" }, window.AudeGUI.l10n("Validate")]]
+            ["p.big-center", ["button.btn btn-primary", { "#": "validationButton" }, window.AudeGUI.l10n("Validate")]]
         ]], refs);
 
         const questionEditor = new QuestionEditor(refs.editorDiv, (create ? qCat : this.currentQuiz.questions[index].category));
@@ -501,7 +527,7 @@ class QuizEditor {
 
         refs.validationButton.onclick = (e) => {
             this.currentQuiz.questions[(create ? this.currentQuiz.questions.length : index)] = questionEditor.getCurrentQuestion();
-            this.showOverview("shift");
+            this.showOverview();
             this.setCurrentState(QuizEditorState.Overview);
         };
         this.setCurrentState(QuizEditorState.QuestionEdit);
@@ -510,7 +536,7 @@ class QuizEditor {
     /**
      * Sets the current state of this editor.
      * Additionally, shows the pane corresponding to the new state and hides
-     * the pone corresponding to the previous state.
+     * the pane corresponding to the previous state.
      */
     setCurrentState(newState: QuizEditorState) {
         if (newState === this.currentState) {
@@ -577,7 +603,7 @@ class QuizEditor {
         ]], refs);
 
         refs.validationButton.onclick = () => {
-            QuizEditor.saveQuiz();
+            QuizEditor.parseQuizInfo();
             window.AudeGUI.QuizEditor.save();
             window.AudeGUI.QuizEditor.close();
         };
@@ -590,5 +616,5 @@ class QuizEditor {
         this.setCurrentState(QuizEditorState.Save);
     }
 }
-
+// Export QuizEditor to the global AudeGUI object.
 window.AudeGUI.QuizEditor = QuizEditor;
