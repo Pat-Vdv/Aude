@@ -21,16 +21,18 @@ The instructions for this question category can be any combination of one, or tw
 
 The answer for this category can be an automaton, regular expression or a linear grammar.
 
-### Answer validation
+#### Answer validation
 
-The user's answer is converted to an automaton, and checked for equivalency against a reference answer. <br>
-Additionnally, constraints can be added to the answer. These constraints are functions that take an object corresponding to the user's answer (```Automaton``` if it's an automaton, ```string``` for regular expressions and ```linearGrammar``` for linear grammars), and return an object with the following protoype : 
+First, the user's answer can be converted to an automaton, and checked for equivalency against a reference answer. <br>
+Also, constraints can be added to the answer. These constraints are functions that take an object corresponding to the user's answer (```Automaton``` if it's an automaton, ```string``` for regular expressions and ```linearGrammar``` for linear grammars), and return an object with the following protoype : 
 
 ```ts 
 {correct: boolean, details: string}
 ```
 
 These functions can be defined in Audescript.
+
+The two methods can be used, alone or in combination (equivalent automaton AND minimized constraint). 
 
 ### **Multiple Choice Questions**
 
@@ -77,25 +79,23 @@ Quizzes are stored using a JSON file. Here are descriptions of its fields.
 * ```questions: Array<Question>``` : An array of all the quizz's questions.
 
 ### JSON Question format
-A question's representation varies depending on its category, but the following fields are valid in any question category :
+The following fields exist for any question category :
 
-* ```type: string``` : Describes the type (and thus category) of question. Possible values are : ```"mcq"```, ```"automatonEquiv"```, ```"regexEquiv"```, ```"grammarEquiv"``` or ```"textInput"```.
-* ```instruction: string``` : Wording text.
-* ```instructionHTML: string``` : Wording text (containing HTML). If ```instruction``` is set already, this will not be shown.
+* `type: string` : Describes the type (and thus category) of question. Possible values are : `"mcq"`, `"automatonEquiv"`, or `"textInput"`.
+* `instruction: string` : Wording text.
+* `isInstructionHTML: boolean` : If `true`, the `instruction` field will be rendered as HTML.
+* `point: number` : The number of points this question is worth (currently unused).
+* `wordingDetails: Array | any` : Gives up to two wording "details", that is, objects that are displayed alongside the question. <br>
+These are objects of the form ```{aType: string, content: any}```, where ```aType``` specifies the type of that object (can be ```"Automaton"```, ```"Regexp"``` or ```"LinearGrammar"```), and ```content``` actually contains the data for that object. The data is different according to the type, see [JSON Data Structures](#json-data-structures) for details on each type.
 
-#### Automaton Equivalency Questions Specific
-* ```wordingDetails: Array | any``` : Gives up to two wording "details", that is, objects that are displayed alongside the question. <br>
-    These are objects of the form ```{aType: string, content: any}```, where ```aType``` specifies the type of that object (can be ```"Automaton"```, ```"Regexp"``` or ```"LinearGrammar"```), and ```content``` actually contains the data for that object. The data is different according to the type, see [JSON Data Structures](#json-data-structures) for details on each type.
+Moreover, every category has its own fields :
+#### Automaton Equivalency Specific Fields
 
-* ```automatonAnswer: Automaton``` : The reference correct answer automaton. See [JSON Data Structures](#json-data-structures) for details.
+* `usersAnswerType` : The type of the answer expected from the user (`"Automaton"`, `"Regexp"`, or `"LinearGrammar"`).
+* `correctAnswerGrammar`, `correctAnswerRegexp` and `correctAnswerAutomaton` (optional) : The reference structure to which the user's answer must be equivalent to be correct.
+* `automatonAnswerConstraintsAudescript`, `regexpAnswerConstraintsAudescript` and `grammarAnswerConstraintsAudescript` (optional) : Arrays of the Audescript code for each constraint. Only the array corresponding to the `usersAnswerType` will be used.
 
-* ```automatonAnswerConstraintsAS: Array<(a: Automaton) => {correct: boolean, details: string}>``` : Audescript code for additional constraints set on the automaton answer. Has no effect if the answer isn't an automaton.
-
-* ```regexpAnswerConstraintsAS: Array<(re: string) => {correct: boolean, details: string}>``` : Audescript code for additional constraints set on the regular expression answer. Has no effect if the answer isn't a regular expression.
-
-* ```grammarAnswerConstraintsAS: Array<(g: linearGrammar) => {correct: boolean, details: string}>``` : Audescript code for additional constraints set on the grammar answer. Has no effect if the answer isn't a linear grammar.
-
-#### Multiple Choice Questions Specific
+#### Multiple Choice Questions Specific Fields
 * ```wordingDetails: Array | any``` : Gives up to two wording "details", that is, objects that are displayed alongside the question. <br>
     These are objects of the form ```{aType: string, content: any}```, where ```aType``` specifies the type of that object (can be ```"Automaton"```, ```"Regexp"``` or ```"LinearGrammar"```), and ```content``` actually contains the data for that object. The data is different according to the type, see [JSON Data Structures](#json-data-structures) for details on each type.
 * ```possibilities: Array```: Gives all the possibilities for this question.
@@ -107,7 +107,7 @@ A possibility is identified by its ```id``` field.
 * ```answers: Array<string>```: The IDs of all the correct choices.
 * ```singleChoice: boolean```: If truthy, only one choice will be selectable by the user.
 
-#### Text Input Questions Specific
+#### Text Input Questions Specific Fields
 * ```wordingDetails: Array | any``` : Gives up to two wording "details", that is, objects that are displayed alongside the question. <br>
     These are objects of the form ```{aType: string, content: any}```, where ```aType``` specifies the type of that object (can be ```"Automaton"```, ```"Regexp"``` or ```"LinearGrammar"```), and ```content``` actually contains the data for that object. The data is different according to the type, see [JSON Data Structures](#json-data-structures) for details on each type.
 * ```correctAnswers: Array<string>```: Array of correct text answers (if validators not given).
@@ -134,7 +134,7 @@ return r;
 
 ### JSON Data Structures {#json-data-structures}
 #### Automata
-Two possibilities here, either the *raw* SVG string, or a more user-friendly object of the form :
+Two possibilities here, either a specially formatted string, or a more user-friendly object of the form :
 ```ts
 {states: Array<any>, finalStates: Array<any>, transitions: Array<Array<any>>}
 ```
