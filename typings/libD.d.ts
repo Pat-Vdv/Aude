@@ -1,5 +1,10 @@
 declare namespace libD {
   export var wm: any;
+  export var lang: string;
+
+  // TODO : Find more precise typings.
+  export var jsLoad: any;
+  export var moduleLoaded: any;
   
   export class Set {
     constructor(values?: Iterable<any>);

@@ -25,29 +25,45 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*eslint-env browser*/
-/*jslint browser: true, ass: true, indent:4 */
+/**
+ * This namespace contains functions that allow loading files from the server.
+ */
+namespace FileIO {
+    const cache = new Map<string, any>();
 
-(function (pkg) {
-    "use strict";
-    var cache = {};
-    pkg.getFile = function (fname, success, failure, keep) {
-        if (keep && cache[fname] !== undefined) {
-            success(cache[fname]);
+    /**
+     * Tries to load a file.
+     * If the loading succeeds, calls the given success callback 
+     * with the string contents of the file.
+     * Else, calls the given failure callback with a message and eventual
+     * error code.
+     * @param fileName - The name of the file to load.
+     * @param success - The success callback.
+     * @param failure - The failure callback.
+     * @param keep - If true, tries to load from cached files before reading disk.
+     */
+    export function getFile(
+        fileName: string,
+        success: (fileContent: string) => void,
+        failure: (message: string, status?: number) => void = (m, s) => { return; },
+        keep: boolean = false
+    ) {
+        if (keep && cache[fileName] !== undefined) {
+            success(cache[fileName]);
             return;
         }
 
         try {
-            var xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             //workaround chromium issue #45702
-            xhr.open("get", fname + (location.protocol === "file:" ? "?" + (new Date().toString()) : ""), true);
+            xhr.open("get", fileName + (location.protocol === "file:" ? "?" + (new Date().toString()) : ""), true);
             xhr.setRequestHeader("Cache-Control", "no-cache");
 
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = () => {
                 if (xhr.readyState === 4) {
                     if (!xhr.status || (xhr.status === 200 && success)) {
                         if (keep) {
-                            cache[fname] = xhr.responseText;
+                            cache[fileName] = xhr.responseText;
                         }
                         success(xhr.responseText);
                     } else if (failure) {
@@ -68,9 +84,13 @@
                 failure(e.message);
             }
         }
-    };
+    }
 
-    window.setFile = function (fname, data) {
-        cache[fname] = data;
-    };
-}(this));
+    /** Sets the data for a file in cache. */
+    export function setFile(fileName: string, data: any) {
+        cache[fileName] = data;
+    }
+    // Legacy exports to global namespace for JS.
+    globalThis.getFile = getFile;
+    globalThis.setFile = setFile;
+}

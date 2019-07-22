@@ -48,16 +48,17 @@ to style the whole user interface, the different javascript files that animate
 this interface and `katex.min.css`, the CSS file for KaTeX.
 
 # Code Organization
+<small>For more informations on the Typescript modules, you can read the TSDoc comments in the code itself or build an HTML documentation page by running `make build-typedoc` (you need to have tyepdoc installed).s</small>
 
 ## Entry Point: `index.html`
-
-The entry point if the code of Aude is `index.html`.
+Like any website, the entry point of the code of Aude is `index.html`.<br>
+Here are loaded all the scripts that make Aude run.
 
 ## js/lib/source-map.min.js
 
 This is used by Audescript to map generated Javascript code to source written in
 Audescript.
-This eases debbugging Audescript code.
+This eases debugging Audescript code.
 
 ## js/lib/libD/1.1/core.js
 
@@ -154,18 +155,12 @@ For a comprehensive list of supported methods, look at the source.
 These files are used to map touch events from tablets and phones to regular mouse events.
 They effectively makes Aude compatible with tablets.
 
-## js/mousewheel.js
+## ts/mousewheel.ts
 
 This file handles mousewheel events.
 
-## js/getFile.js
-
-This file defines function `getFile(fname, success, failure, keep)` meant to
-read a file stored from the working folder of Aude.
- - `fname` is the name of the file to get
- - `success : function (textContent : string)` is a callback function called with the file contents as text in parameter.
- - `failure (optional) : function (shortReason : string, details ?: any)` is a callback function that is called if the file could not be retreived. `details` may or may not be provided. Read the source code for more information.
- - `keep (optional): boolean` if provided and true, the file with be cached in memory so subsequent calls to `getFile` for this file will not access to the network or to the local filesystem.
+## ts/fileio.ts
+This file defines the namespace `FileIO` that allows reading files stored in the Aude working directory.
 
 ## js/lib/babel-core/*
 
@@ -249,11 +244,12 @@ every module of the interface should appear. On page load, it runs the `load`
 method of each of these parts. Please look at `js/gui/gui-editors.js` for easy
 to understand AudeGUI modules.
 
-### js/gui/gui-algo-list.js
+### ts/gui/gui-filelist-loader.ts
 
-This creates the list of algorithms that are provided with Aude in the interface.
-This is run on page load and never called again, so nothing about this file
-appears in the namespace `AudeGUI`.
+This module loads the local files (example automata, algorithms and quizzes).
+It also bind the events for the "Open" and "Load quiz" buttons.
+
+This is run on page load and never called again, and it doesn't export anything.
 
 ### js/gui/gui-automata-list.js
 
@@ -274,9 +270,10 @@ This binds events from the user interface to actions defined in the different
 `AudeGUI` modules. This mostly concerns parts of the interfaces that are defined
 in `index.html` and not created in Javascript.
 
-### js/gui/gui-quiz.js
+### ts/gui/gui-quiz.ts
 
-This defines the module `AudeGUI.Quiz`, that runs quizzes.
+This defines the class `Quiz` that both handles the representation and execution of
+quizzes.
 
 ### js/gui/gui-results.js
 
@@ -293,8 +290,8 @@ execution.
 This defines the module `AudeGUI.WordExecution`, used to animate the execution
 of a word.
 
-### js/gui/gui-question.js
+### ts/gui/gui-question-list.ts
 
-Handles the experimental question list, organized by chapters.
+Handles the experimental question list (or training exercises), organized by chapters.
 
 [Back to the index](index.md)
