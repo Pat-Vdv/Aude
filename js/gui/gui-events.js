@@ -144,6 +144,13 @@ window.AudeGUI.initEvents = function () {
         );
     }(document.getElementById("undo"), document.getElementById("redo")));
 
+    const userAccountButton = document.getElementById("toolbarUserButton");
+    if (userAccountButton) {
+        userAccountButton.onclick = (e) => {
+            
+        }
+    }
+
     (function () {
         var hamburger = document.getElementById("hamburger");
 
