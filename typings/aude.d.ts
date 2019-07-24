@@ -44,7 +44,7 @@ interface Window {
 
     addAutomaton(): void;
 
-    notify(title: string, content: string | HTMLElement, type?: string, time?: number): void;
+    notify(title: string, content: string | HTMLElement, type?: "info" | "ok" | "error", time?: number): void;
     viz(code: string, callback: (res: string) => void): void;
   };
 

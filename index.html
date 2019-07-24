@@ -59,10 +59,11 @@
     <script src="js/gui/gui-automata-list.js"></script>
     <script src="js/gui/gui-display.js"></script>
     <script src="js/gui/gui-editors.js"></script>
-    <script src="js/gui/gui-events.js"></script>
-    <script src="js/gui/gui-help.js"></script>
     <script src="build/server-api/audeserver.js"></script>
     <script src="build/server-api/audeusers.js"></script>
+    <script src="build/gui/gui-user-account.js"></script>
+    <script src="js/gui/gui-events.js"></script>
+    <script src="js/gui/gui-help.js"></script>
     <script src="build/gui/automatonDisplay.js"></script>
     <script src="build/gui/grammar-designer.js"></script>
     <script src="build/automatonPrograms.js"></script>
@@ -150,13 +151,13 @@
         </span>
         <span class="right">
             <span>
-                <span>
-                    <button id="help" data-translated-content="true">Help</button>
-                </span>
-                <span class="sep"></span>
-                    <button id="toolbarUserButton" data-translated-title="true" title="User">User</button>
-                <span class="sep"></span>
+                <button id="help" data-translated-content="true">Help</button>
             </span>
+            <span class="sep"></span>
+            <span>
+                <button id="toolbarUserButton" data-translated-title="true" title="User">User</button>
+            </span>
+            <span class="sep"></span>
             <span>
                 <button id="hamburger" data-translated-title="true" title="Menu"><span class="symb">☰</span></button>
             </span>
@@ -189,6 +190,10 @@
         </div>
     </section>
 
+    <div id="user-menu" class="user-hidden">
+
+    </div>
+
     <div id="menu" class="disabled">
         <input type="file" id="fileautomaton" style="display:none" />
         <input type="file" id="fileprogram" style="display:none" />
@@ -215,7 +220,6 @@
             <button id="exercice"><span data-translated-content="true">Training exercises</span> <span
                     style="color:red"> (experimental) </span></button>
         </span>
-
     </div>
     <div id="content">
         <div id="automataedit" class="pane">

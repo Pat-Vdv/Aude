@@ -147,7 +147,7 @@ window.AudeGUI.initEvents = function () {
     const userAccountButton = document.getElementById("toolbarUserButton");
     if (userAccountButton) {
         userAccountButton.onclick = (e) => {
-            
+            UserAccountGUI.UserAccountWidget.toggleShown();
         }
     }
 
