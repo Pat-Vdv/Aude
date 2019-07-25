@@ -17,6 +17,7 @@
   "include": [
     "./ts/**.ts",
     "./ts/gui/**.ts",
+    "./ts/gui/user/**.ts",
     "./ts/server-api/**.ts",
     "./js/**.ts",
     "./typings/**.d.ts",

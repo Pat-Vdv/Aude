@@ -49,29 +49,7 @@ namespace AudeUsers {
         }
     }
 
-    const USER_SERVER_ADDRESS = "http://localhost:8080";
-
-    export async function isServerAvailable(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                fetch(
-                    USER_SERVER_ADDRESS + "/status",
-                    {
-                        method: "GET"
-                    }
-                ).then(
-                    (response) => {
-                        resolve(true);
-                    },
-                    (reason) => {
-                        resolve(false);
-                    }
-                );
-            } catch (ignore) {
-                resolve(false);
-            }
-        });
-    }
+    const USER_SERVER_ADDRESS = AudeServer.SERVER_ADDRESS;
 
     export function isUserLoggedIn(): boolean {
         return Boolean(sessionStorage.getItem("username")) &&
@@ -79,7 +57,8 @@ namespace AudeUsers {
     }
 
     export async function attemptLogin(username: string, password: string): Promise<ReturnState> {
-        if (!(await isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
+        if (!(await AudeServer.isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
+
         const loginData = new FormData();
         loginData.append("username", username);
         loginData.append("passwd", password);
@@ -156,7 +135,7 @@ namespace AudeUsers {
     }
 
     export async function getAllUsernames(): Promise<ReturnState | Array<string>> {
-        if (!(await isServerAvailable())) return ReturnState.SERVER_UNREACHABLE;
+        if (!(await AudeServer.isServerAvailable())) return ReturnState.SERVER_UNREACHABLE;
 
         return fetch (
             USER_SERVER_ADDRESS + "/user/all",
@@ -176,7 +155,7 @@ namespace AudeUsers {
             (reason) => {
                 return ReturnState.MISC_ERROR;
             }
-        )
+        );
     }
 
     /**
@@ -208,7 +187,7 @@ namespace AudeUsers {
          */
         export async function changePassword(newPassword: string): Promise<ReturnState> {
             if (!isUserLoggedIn()) return Promise.resolve(ReturnState.NO_USER_LOGGED_IN);
-            if (!isServerAvailable()) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
+            if (!AudeServer.isServerAvailable()) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
 
             if (newPassword.length < MIN_PASSWORD_LENGTH) return ReturnState.PASSWORD_TOO_SHORT;
 
@@ -245,7 +224,7 @@ namespace AudeUsers {
 
         export async function changeUsername(newUsername: string): Promise<ReturnState> {
             if (!isUserLoggedIn()) return Promise.resolve(ReturnState.NO_USER_LOGGED_IN);
-            if (!isServerAvailable()) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
+            if (!AudeServer.isServerAvailable()) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
 
             const postData = new FormData();
             postData.set("username", getUsername());
@@ -282,7 +261,7 @@ namespace AudeUsers {
          * 
          */
         export async function deleteAccount(): Promise<ReturnState> {
-            if (!(await isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
+            if (!(await AudeServer.isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
             if (!isUserLoggedIn()) return Promise.resolve(ReturnState.NO_USER_LOGGED_IN);
 
             const postData = new FormData();
@@ -315,7 +294,7 @@ namespace AudeUsers {
 
         export namespace Automata {
             export async function uploadAutomaton(automatonName: string, automaton: Automaton): Promise<ReturnState> {
-                if (!(await isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
+                if (!(await AudeServer.isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
                 if (!isUserLoggedIn()) return Promise.resolve(ReturnState.NO_USER_LOGGED_IN);
 
                 const postData = new FormData();
@@ -383,7 +362,6 @@ namespace AudeUsers {
                 .then(r => r.json())
                 .then(
                     (json) => {
-                        console.log(json);
                         if (json.code) {
                             return [errorMessageToreturnState(json.message), undefined];
                         }
@@ -393,7 +371,38 @@ namespace AudeUsers {
                         console.error(reason);
                         return [ReturnState.MISC_ERROR, undefined];
                     }
+                );
+            }
+
+            /**
+             * Returns an array containing objects that only
+             * have the id and title of this user's automata.
+             */
+            export async function getUsersAutomata(): Promise<[ReturnState, Array<{id: number, title: string}>]> {
+                return fetch(
+                    AudeServer.SERVER_ADDRESS + "/automata/fromUser?username=" + getUsername(),
+                    {
+                        method: "GET"
+                    }
                 )
+                .then(r => r.json())
+                .then(
+                    (json) => {
+                        if (json.code) {
+                            return [errorMessageToreturnState(json.message), undefined];
+                        }
+
+                        const autoList = [];
+                        for (const auto of json) {
+                            autoList.push({id: auto.id, title: auto.nameAuto});
+                        }
+                        return [ReturnState.OK, autoList];
+                    },
+                    (reason) => {
+                        console.error(reason);
+                        return [ReturnState.MISC_ERROR, undefined];
+                    }
+                );
             }
         }
     }

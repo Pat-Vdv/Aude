@@ -53,14 +53,54 @@ declare namespace libD {
 
   export function format(fmt: string, ...args: any[]): string;
 
-  export interface WSwin {
+  export class WSwin {
+    setPosFromDOM(): void;
+    init(): void;
     show(focus?: boolean): void;
-    close (closeStage?: number): void;
+    reallyClose(): void;
+    close (closeStage?: 0 | 1 | 2): void;
+    setPreventClosing(f: any): void;
+    setFullscreen(b?: boolean): void;
+    focus(): void;
+    toBeneath(): void;
     minimize(): void;
+    maximize(side? : "width" | "height"): void;
+    restore(): void;
+    setDecoration(b: boolean): void;
+    setTop(n: any): void;
 
     ws: any;
   }
-  export function newWin(o: any): WSwin;
+
+  export function newWin(o?: {
+    minWidth?: number | string,
+    width?: number | string,
+    maxWidth?: number | string,
+    minHeight?: number | string,
+    height? : number | string,
+    maxHeight?: number | string,
+    show?: boolean,
+    title?: string,
+    content?: Node,
+    minimize?: boolean,
+    focus?: boolean,
+    top?: any,
+    right?: any,
+    bottom?: any,
+    left?: any,
+    preferRelative?: boolean,
+    xPreferRelative?: boolean,
+    yPreferRelative?: boolean,
+    closable?: boolean,
+    resizable?: boolean,
+    minimizable?: boolean,
+    maximizable?: boolean,
+    decoration?: boolean,
+    sticky?: boolean,
+    iconifiable?: boolean,
+    fullscreen?: boolean,
+    type?: "normal" | "panel" | "dialog" | "tooltip" | "popup-menu" | "splash"
+  }): WSwin;
 
   export function jso2dom(o: any, refs?: any, parent?: Node, childrenListing?: any): HTMLElement;
 

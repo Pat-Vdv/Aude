@@ -1,4 +1,5 @@
 
+/// <reference path="./automaton-manager.ts" />
 /**
  * Namespace for UI elements relating to user account management.
  */
@@ -7,7 +8,7 @@ namespace UserAccountGUI {
   const _ = AudeGUI.l10n;
 
   export class UserAccountWidget {
-    private static readonly widgetContents = ["div.container", { "#": "contentDiv" }, [
+    private static readonly widgetContents = ["div.container-fluid", { "#": "contentDiv" }, [
       ["div", { "#": "signinPane" }, [
         ["h6.text-center", _("Sign In")],
         ["form.form form-inline", { "action": "#" }, [
@@ -17,7 +18,12 @@ namespace UserAccountGUI {
         ]]
       ]],
       ["div.user-hidden", {"#": "userPane"}, [
-        ["button.btn btn-outline-danger", {"#": "userLogoutButton"}, _("Logout")]
+        ["h5.text-center", {"#": "userGreeting"}],
+        ["h6.text-left", _("Automata")],
+        ["button.btn btn-primary btn-sm", {"#": "automatonManageButton"}, _("My automata")],
+        ["br"],
+        ["br"],
+        ["button.btn btn-outline-danger btn-sm", {"#": "userLogoutButton"}, _("Logout")]
       ]]
     ]];
 
@@ -47,7 +53,7 @@ namespace UserAccountGUI {
       UserAccountWidget.currentInstance.container.classList.toggle("user-hidden");
     }
 
-    private container: HTMLElement;
+    container: HTMLElement;
     private readonly contentRefs = {
       contentDiv: undefined as HTMLElement,
       signinPane: undefined as HTMLElement,
@@ -57,7 +63,11 @@ namespace UserAccountGUI {
 
       userPane: undefined as HTMLInputElement,
       userLogoutButton: undefined as HTMLButtonElement,
+      userGreeting: undefined as HTMLElement,
+      automatonManageButton: undefined as HTMLButtonElement,
     };
+
+    private currentAutomatonManager: AutomatonManager;
 
     constructor() {
       this.container = document.getElementById("user-menu");
@@ -83,6 +93,14 @@ namespace UserAccountGUI {
           this.contentRefs.signinPasswordField.value
         ).then((state) => {
           switch (state) {
+            case AudeUsers.ReturnState.SERVER_UNREACHABLE:
+                AudeGUI.notify(
+                  _("Server error"),
+                  _("The content server is unavailable."),
+                  "error",
+                  4000
+                );
+              break;
             case AudeUsers.ReturnState.NO_SUCH_USER:
               AudeGUI.notify(
                 _("Login error"),
@@ -142,6 +160,15 @@ namespace UserAccountGUI {
       this.contentRefs.userLogoutButton.onclick = () => {
         AudeUsers.logout();
         this.updateDisplay();
+        this.hide();
+      };
+
+      this.contentRefs.automatonManageButton.onclick = () => {
+        if (this.currentAutomatonManager === undefined) {
+          this.currentAutomatonManager = new AutomatonManager();
+        } else {
+          this.currentAutomatonManager.show();
+        }
       };
 
       this.updateDisplay();
@@ -153,6 +180,8 @@ namespace UserAccountGUI {
         this.contentRefs.signinPane.classList.add("user-hidden");
 
         // Populate and show user pane.
+        this.contentRefs.userGreeting.innerHTML = AudeUsers.CurrentUser.getUsername();
+
         this.contentRefs.userPane.classList.remove("user-hidden");
       } else {
         // Hide user pane.

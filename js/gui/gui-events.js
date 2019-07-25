@@ -83,7 +83,7 @@ window.AudeGUI.initEvents = function () {
 
     if (!AudeGUI.audeExam) {
         exportResult.onclick = AudeGUI.Results.export;
-        AudeGUI.Programs.fileInput.onchange   = AudeGUI.Programs.open;
+        AudeGUI.Programs.fileInput.onchange = AudeGUI.Programs.open;
     }
 
     AudeGUI.automatonFileInput.onchange = AudeGUI.openAutomaton;
@@ -146,9 +146,19 @@ window.AudeGUI.initEvents = function () {
 
     const userAccountButton = document.getElementById("toolbarUserButton");
     if (userAccountButton) {
-        userAccountButton.onclick = (e) => {
-            UserAccountGUI.UserAccountWidget.toggleShown();
-        }
+        // Checking whether the content server is available.
+        AudeServer.isServerAvailable().then(
+            (available) => {
+                if (available) {
+                    userAccountButton.onclick = (e) => {
+                        UserAccountGUI.UserAccountWidget.toggleShown();
+                    }
+                } else {
+                    console.warn("Content server unavailable, hiding user features...");
+                    userAccountButton.classList.add("user-hidden");
+                }
+            }
+        );
     }
 
     (function () {

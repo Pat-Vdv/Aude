@@ -1603,3 +1603,11 @@ fieldset {
     text-align: left;
     padding: 5px;
 }
+
+#automaton-manager {
+    background-color: #eee;
+    padding: 5px;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+}
