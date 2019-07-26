@@ -6,7 +6,11 @@
 namespace UserAccountGUI {
   const AudeGUI = window.AudeGUI;
   const _ = AudeGUI.l10n;
-
+  
+  /**
+   * Class that handles the widget that
+   * provides access to all the server-side features.
+   */
   export class UserAccountWidget {
     private static readonly widgetContents = ["div.container-fluid", { "#": "contentDiv" }, [
       ["div.user-pane", { "#": "signinPane" }, [
@@ -44,8 +48,13 @@ namespace UserAccountGUI {
       ]]
     ]];
 
+    /**
+     * Current instance of the widget.
+     * Only one instance should exist at a time.
+     */
     private static currentInstance: UserAccountWidget;
 
+    /** Shows the user widget */
     static show() {
       if (UserAccountWidget.currentInstance !== undefined) {
         UserAccountWidget.currentInstance.display();
@@ -55,12 +64,14 @@ namespace UserAccountGUI {
       }
     }
 
+    /** Hides the user widget. */
     static hide() {
       if (UserAccountWidget.currentInstance !== undefined) {
         UserAccountWidget.currentInstance.hide();
       }
     }
 
+    /** Toggles visibility of the user widget. */
     static toggleShown() {
       if (UserAccountWidget.currentInstance === undefined) {
         UserAccountWidget.currentInstance = new UserAccountWidget();
@@ -96,6 +107,7 @@ namespace UserAccountGUI {
     };
     private currentPane: HTMLElement;
 
+    /** The automaton manager that has been opened. */
     private currentAutomatonManager: AutomatonManager;
 
     constructor() {
@@ -364,6 +376,7 @@ namespace UserAccountGUI {
       }
     }
 
+    /** Changes the pane that is currently visible to the given pane element. */
     private setCurrentPane(pane: HTMLElement) {
       if (pane === this.currentPane) {
         return;

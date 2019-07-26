@@ -18,6 +18,10 @@ namespace AudeUsers {
         NO_SUCH_AUTOMATON, // Tried to access an automaton whose id doesn't exist.
     }
 
+    /**
+     * Converts an error message string returned by the server to 
+     * a return state. 
+     */
     function errorMessageToreturnState(errorMessage: string): ReturnState {
         switch (errorMessage) {
             case "accountExists":
@@ -40,26 +44,18 @@ namespace AudeUsers {
         }
     }
 
-    export function getReturnStateMessage(rs: ReturnState): string {
-        switch (rs) {
-            case ReturnState.OK:
-                return _("OK");
-
-            case ReturnState.NO_USER_LOGGED_IN:
-                return _("You are not logged in !");
-
-            case ReturnState.SERVER_UNREACHABLE:
-                return _("The content server is unreachable.");
-        }
-    }
-
-    const USER_SERVER_ADDRESS = AudeServer.SERVER_ADDRESS;
-
+    /**
+     * Returns true if a user is logged into session.
+     */
     export function isUserLoggedIn(): boolean {
         return Boolean(sessionStorage.getItem("username")) &&
             Boolean(sessionStorage.getItem("passwordHash"));
     }
 
+    /**
+     * Tries logging in with given credentials.
+     * If success, stores credentials in session.
+     */
     export async function attemptLogin(username: string, password: string): Promise<ReturnState> {
         if (!(await AudeServer.isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
 
@@ -68,7 +64,7 @@ namespace AudeUsers {
         loginData.append("passwd", password);
 
         return fetch(
-            USER_SERVER_ADDRESS + "/user/login",
+            AudeServer.SERVER_ADDRESS + "/user/login",
             {
                 method: "POST",
                 body: loginData
@@ -92,11 +88,16 @@ namespace AudeUsers {
                 });
     }
 
+    /** Clears logged in user from session. */
     export function logout() {
         sessionStorage.removeItem("username");
         sessionStorage.removeItem("passwordHash");
     }
 
+    /** 
+     * Creates a new user account with given credentials. 
+     * On success, logs in to session the created account.
+    */
     export async function createNewUser(username: string, password: string): Promise<ReturnState> {
         if (password.length < MIN_PASSWORD_LENGTH) return Promise.resolve(ReturnState.PASSWORD_TOO_SHORT);
 
@@ -105,7 +106,7 @@ namespace AudeUsers {
         postData.set("passwd", password);
 
         return fetch(
-            USER_SERVER_ADDRESS + "/user/add",
+            AudeServer.SERVER_ADDRESS + "/user/add",
             {
                 method: "POST",
                 body: postData
@@ -138,11 +139,12 @@ namespace AudeUsers {
             );
     }
 
+    /** Returns a list of the usernames of all the registered users. */
     export async function getAllUsernames(): Promise<ReturnState | Array<string>> {
         if (!(await AudeServer.isServerAvailable())) return ReturnState.SERVER_UNREACHABLE;
 
         return fetch (
-            USER_SERVER_ADDRESS + "/user/all",
+            AudeServer.SERVER_ADDRESS + "/user/all",
             {
                 method: "GET"
             }
@@ -201,7 +203,7 @@ namespace AudeUsers {
             loginData.append("newPasswd", newPassword);
 
             return fetch(
-                USER_SERVER_ADDRESS + "/user/updatePassword",
+                AudeServer.SERVER_ADDRESS + "/user/updatePassword",
                 {
                     method: "POST",
                     body: loginData
@@ -226,6 +228,9 @@ namespace AudeUsers {
                 );
         }
 
+        /**
+         * Edits current logged in user's username to the given string.
+         */
         export async function changeUsername(newUsername: string): Promise<ReturnState> {
             if (!isUserLoggedIn()) return Promise.resolve(ReturnState.NO_USER_LOGGED_IN);
             if (!AudeServer.isServerAvailable()) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
@@ -236,7 +241,7 @@ namespace AudeUsers {
             postData.set("newUsername", newUsername);
 
             return fetch(
-                USER_SERVER_ADDRESS + "/user/updateUsername",
+                AudeServer.SERVER_ADDRESS + "/user/updateUsername",
                 {
                     method: "POST",
                     body: postData
@@ -273,7 +278,7 @@ namespace AudeUsers {
             postData.set("passwd", getPasswordHash());
 
             return fetch(
-                USER_SERVER_ADDRESS + "/user/deleteUser",
+                AudeServer.SERVER_ADDRESS + "/user/deleteUser",
                 {
                     method: "POST",
                     body: postData
@@ -296,7 +301,13 @@ namespace AudeUsers {
                 );
         }
 
+        /**
+         * This namespace provides access to Automaton management functions.
+         */
         export namespace Automata {
+            /**
+             * Uploads the given automaton with the given title.
+             */
             export async function uploadAutomaton(automatonName: string, automaton: Automaton): Promise<ReturnState> {
                 if (!(await AudeServer.isServerAvailable())) return Promise.resolve(ReturnState.SERVER_UNREACHABLE);
                 if (!isUserLoggedIn()) return Promise.resolve(ReturnState.NO_USER_LOGGED_IN);
@@ -308,7 +319,7 @@ namespace AudeUsers {
                 postData.set("contents", automaton_code(automaton));
 
                 return fetch(
-                    USER_SERVER_ADDRESS + "/automata/create",
+                    AudeServer.SERVER_ADDRESS + "/automata/create",
                     {
                         method: "POST",
                         body: postData
@@ -323,6 +334,9 @@ namespace AudeUsers {
                 });
             }
 
+            /**
+             * Replaces a previously-uploaded automaton's contents with the given automaton.
+             */
             export async function editAutomaton(automatonId: number, newContent: Automaton): Promise<ReturnState> {
                 const postData = new FormData();
                 postData.set("username", getUsername());
@@ -331,7 +345,7 @@ namespace AudeUsers {
                 postData.set("newContents", automaton_code(newContent));
 
                 return fetch(
-                    USER_SERVER_ADDRESS + "/automata/update",
+                    AudeServer.SERVER_ADDRESS + "/automata/update",
                     {
                         method: "POST",
                         body: postData
@@ -352,13 +366,44 @@ namespace AudeUsers {
                 );
             }
 
+            /**
+             * Deletes the previously-uploaded automaton with given id.
+             */
             export async function deleteAutomaton(automatonId: number): Promise<ReturnState> {
-                return ReturnState.MISC_ERROR;
+                const deleteData = new FormData();
+                deleteData.set("username", getUsername());
+                deleteData.set("passwd", getPasswordHash());
+                deleteData.set("automatonId", String(automatonId));
+
+                return fetch(
+                    AudeServer.SERVER_ADDRESS + "/automata/delete",
+                    {
+                        method: "DELETE",
+                        body: deleteData
+                    }
+                )
+                .then(r => r.json())
+                .then(
+                    (json) => {
+                        if (json.code) {
+                            return errorMessageToreturnState(json.message);
+                        }
+
+                        return ReturnState.OK;
+                    },
+                    (reason) => {
+                        console.log(reason);
+                        return ReturnState.MISC_ERROR;
+                    }
+                );
             }
 
+            /**
+             * returns uploaded automaton with given id.
+             */
             export async function getAutomaton(automatonId: number): Promise<[ReturnState, Automaton]> {
                 return fetch(
-                    USER_SERVER_ADDRESS + "/automata/show?automatonId=" + String(automatonId),
+                    AudeServer.SERVER_ADDRESS + "/automata/show?automatonId=" + String(automatonId),
                     {
                         method: "GET"
                     }

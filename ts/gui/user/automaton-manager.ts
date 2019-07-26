@@ -2,10 +2,13 @@ namespace UserAccountGUI {
   const AudeGUI = window.AudeGUI;
   const _ = AudeGUI.l10n;
 
+  /**
+   * Class that handles a user's automaton manager.
+   */
   export class AutomatonManager {
     private static readonly MANAGER_CONTENTS = ["div#automaton-manager.overflow-auto", [
       ["button.btn btn-sm btn-primary", { "#": "uploadAutomatonButton" }, _("+ Upload the current automaton")],
-      ["div", {"#": "usersAutomatonList"}],
+      ["div", { "#": "usersAutomatonList" }],
     ]];
 
     private win: libD.WSwin;
@@ -18,6 +21,10 @@ namespace UserAccountGUI {
       this.init();
     }
 
+    /**
+     * Displays this automaton manager.
+     * Reopens the same window if possible.
+     */
     show() {
       if (this.win && this.win.ws) {
         this.win.show();
@@ -26,6 +33,10 @@ namespace UserAccountGUI {
       }
     }
 
+    /**
+     * Initializes this automaton manager's window
+     * and components.
+     */
     private init() {
       this.win = libD.newWin(
         {
@@ -71,6 +82,9 @@ namespace UserAccountGUI {
       this.win.show();
     }
 
+    /**
+     * Populates the automaton list by fetching them from the server.
+     */
     private fetchAndDisplayUsersAutomata() {
       this.manRefs.usersAutomatonList.innerHTML = "";
 
@@ -93,13 +107,17 @@ namespace UserAccountGUI {
 
           const ulist = this.manRefs.usersAutomatonList.appendChild(libD.jso2dom(["ul"])) as HTMLUListElement;
           for (const o of reqresult[1]) {
-            const itemRefs = { openButton: undefined as HTMLButtonElement };
-            ulist.appendChild(libD.jso2dom(["li", [
+            const itemRefs = { openButton: undefined as HTMLButtonElement, deleteButton: undefined as HTMLButtonElement };
+            const autoItem = libD.jso2dom(["li", [
               ["span.font-weight-bold", o.title], ["br"],
               ["span", _("Share code : ")],
               ["span", String(o.id)], ["br"],
-              ["button.btn btn-sm btn-outline-primary", {"#": "openButton"}, _("Load into designer")]
-            ]], itemRefs));
+              ["button.btn btn-sm btn-outline-primary", { "#": "openButton" }, _("Load into designer")],
+              ["button.btn btn-sm btn-outline-danger", { "#": "deleteButton" }, [
+                ["img", { src: libD.getIcon("actions/list-remove"), alt: "Remove" }]
+              ]],
+            ]], itemRefs);
+            ulist.appendChild(autoItem);
 
             itemRefs.openButton.onclick = (e) => {
               if (!window.confirm(_("Loading this automaton will replace the one in the current editor ? Continue ?"))) {
@@ -118,6 +136,36 @@ namespace UserAccountGUI {
                   }
 
                   AudeGUI.mainDesigner.setAutomatonCode(automaton_code(reqret[1]));
+                }
+              );
+            };
+
+            itemRefs.deleteButton.onclick = (e) => {
+              if (!window.confirm(_("Do you really want to delete this automaton from your account ?"))) {
+                return;
+              }
+
+              AudeUsers.CurrentUser.Automata.deleteAutomaton(o.id).then(
+                (reqret) => {
+                  console.log(AudeUsers.ReturnState[reqret]);
+                  if (reqret !== AudeUsers.ReturnState.OK) {
+                    AudeGUI.notify(
+                      _("Error !"),
+                      _("An error has occurred !"),
+                      "error",
+                      4000
+                    );
+                    return;
+                  }
+
+                  AudeGUI.notify(
+                    _("Success"),
+                    libD.format(_("Successfully deleted automaton {0} from your account."), o.id),
+                    "ok",
+                    4000
+                  );
+
+                  autoItem.remove();
                 }
               );
             };
