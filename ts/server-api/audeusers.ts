@@ -15,6 +15,7 @@ namespace AudeUsers {
         PASSWORD_TOO_SHORT, // Password given for sign up or password change is too short.
         USERNAME_TAKEN, // Tried to create a user with an already used username.
         SIGNUP_ACCOUNT_EXISTS, // Tried to create an account with same username and password as existing one.
+        NO_SUCH_AUTOMATON, // Tried to access an automaton whose id doesn't exist.
     }
 
     function errorMessageToreturnState(errorMessage: string): ReturnState {
@@ -30,6 +31,9 @@ namespace AudeUsers {
 
             case "noSuchUser":
                 return ReturnState.NO_SUCH_USER;
+
+            case "noSuchAutomaton":
+                return ReturnState.NO_SUCH_AUTOMATON;
 
             default:
                 return ReturnState.MISC_ERROR;

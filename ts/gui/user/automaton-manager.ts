@@ -3,9 +3,9 @@ namespace UserAccountGUI {
   const _ = AudeGUI.l10n;
 
   export class AutomatonManager {
-    private static readonly MANAGER_CONTENTS = ["div#automaton-manager", [
+    private static readonly MANAGER_CONTENTS = ["div#automaton-manager.overflow-auto", [
+      ["button.btn btn-sm btn-primary", { "#": "uploadAutomatonButton" }, _("+ Upload the current automaton")],
       ["div", {"#": "usersAutomatonList"}],
-      ["button.btn btn-sm btn-primary", { "#": "uploadAutomatonButton" }, _("+ Upload the current automaton")]
     ]];
 
     private win: libD.WSwin;
@@ -95,7 +95,9 @@ namespace UserAccountGUI {
           for (const o of reqresult[1]) {
             const itemRefs = { openButton: undefined as HTMLButtonElement };
             ulist.appendChild(libD.jso2dom(["li", [
-              ["span", o.title],
+              ["span.font-weight-bold", o.title], ["br"],
+              ["span", _("Share code : ")],
+              ["span", String(o.id)], ["br"],
               ["button.btn btn-sm btn-outline-primary", {"#": "openButton"}, _("Load into designer")]
             ]], itemRefs));
 

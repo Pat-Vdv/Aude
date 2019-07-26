@@ -1611,3 +1611,7 @@ fieldset {
     height: 100%;
     display: inline-block;
 }
+
+.user-pane:not(.user-pane-current) {
+    display: none !important;
+}

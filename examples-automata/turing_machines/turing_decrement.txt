@@ -1,0 +1,104 @@
+0
+1
+2
+
+"C = 0"
+"C = 1"
+
+0 $/-;> 1
+1 0/-;> 1
+1 1/-;> 1
+1 $/-;< 2
+2 0/1;< 2
+2 1/0;- "C = 0"
+2 $/-;- "C = 1"
+
+<representation type='image/svg+xml'>
+<svg width="1680" height="560" viewBox="-558.942 -193.917 1680 560" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g class="graph" data-id="graph0">
+<title>automaton</title>
+
+
+
+<g class="node" data-id="MA==">
+<title>0</title>
+<ellipse fill="white" stroke="#000000" cx="133.6416" cy="86.5792" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="133.6416" y="90.7792" font-family="Times,serif" font-size="14.00" fill="#000000">0</text>
+</g>
+
+<g class="initialStateArrow" data-id="initialStateArrow" transform="rotate(0)">
+<title>_begin-&gt;0</title>
+<path fill="none" stroke="#000000" d="M77.6416015625,86.5792007446289 C96.97493489583333,86.5792007446289 106.30826822916667,86.5792007446289 105.6416015625,86.5792007446289"></path>
+<polygon fill="#000000" stroke="#000000" points="115.6416015625,86.5792007446289 105.6416015625,82.5792007446289 110.6416015625,86.5792007446289 105.6416015625,86.5792007446289 105.6416015625,86.5792007446289 105.6416015625,86.5792007446289 110.6416015625,86.5792007446289 105.6416015625,90.5792007446289 115.6416015625,86.5792007446289 115.6416015625,86.5792007446289"></polygon>
+</g>
+
+<g class="node" data-id="MQ==">
+<title>1</title>
+<ellipse fill="white" stroke="#000000" cx="232.978" cy="86.5792" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="232.978" y="90.7792" font-family="Times,serif" font-size="14.00" fill="#000000">1</text>
+</g>
+
+<g class="edge" data-id="MA== MQ==">
+<title>0-&gt;1</title>
+<path fill="none" stroke="black" d="M 151.8614 86.5792 C 166.5642 86.5792 187.5129 86.5792 204.4383 86.5792"></path>
+<polygon fill="black" stroke="black" points="204.874,83.0791 214.874,86.5792 204.874,90.0791 204.874,83.0791"></polygon>
+<text text-anchor="middle" x="183.3098" y="82.3792" font-family="Times,serif" font-size="14.00">$/-;&gt;</text>
+</g>
+
+<g class="edge" data-id="MQ== MQ==">
+<title>1-&gt;1</title>
+<path fill="none" stroke="black" d="M 224.613 70.2889 C 222.5959 60.19 225.3842 50.5792 232.978 50.5792 C 237.8427 50.5792 240.7353 54.5235 241.6558 60.0136"></path>
+<polygon fill="black" stroke="black" points="245.146,60.4001 241.343,70.2889 238.149,60.187 245.146,60.4001"></polygon>
+<text text-anchor="middle" x="232.978" y="46.3792" font-family="Times,serif" font-size="14.00">0/-;&gt;,1/-;&gt;</text>
+</g>
+
+<g class="node" data-id="Mg==">
+<title>2</title>
+<ellipse fill="white" stroke="#000000" cx="332.3144" cy="86.5792" rx="18" ry="18" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="332.3144" y="90.7792" font-family="Times,serif" font-size="14.00" fill="#000000">2</text>
+</g>
+
+<g class="edge" data-id="MQ== Mg==">
+<title>1-&gt;2</title>
+<path fill="none" stroke="black" d="M 251.1978 86.5792 C 265.9006 86.5792 286.8493 86.5792 303.7747 86.5792"></path>
+<polygon fill="black" stroke="black" points="304.21,83.0791 314.21,86.5792 304.21,90.0791 304.21,83.0791"></polygon>
+<text text-anchor="middle" x="282.6462" y="82.3792" font-family="Times,serif" font-size="14.00">$/-;&lt;</text>
+</g>
+
+<g class="edge" data-id="Mg== Mg==">
+<title>2-&gt;2</title>
+<path fill="none" stroke="black" d="M 323.9494 70.2889 C 321.9323 60.19 324.7206 50.5792 332.3144 50.5792 C 337.1791 50.5792 340.0717 54.5235 340.9922 60.0136"></path>
+<polygon fill="black" stroke="black" points="344.482,60.4001 340.679,70.2889 337.485,60.187 344.482,60.4001"></polygon>
+<text text-anchor="middle" x="332.3144" y="46.3792" font-family="Times,serif" font-size="14.00">0/1;&lt;</text>
+</g>
+
+<g class="node" data-id="QyA9IDA=">
+<title>C = 0</title>
+<ellipse fill="white" stroke="#000000" cx="449.3354" cy="40.5792" rx="32.6499" ry="32.6499" fill-opacity="0"></ellipse>
+<ellipse fill="white" stroke="#000000" cx="449.3354" cy="40.5792" rx="36.6586" ry="36.6586" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="449.3354" y="44.7792" font-family="Times,serif" font-size="14.00" fill="#000000">C = 0</text>
+</g>
+
+<g class="edge" data-id="Mg== QyA9IDA=">
+<title>2-&gt;C = 0</title>
+<path fill="none" stroke="black" d="M 349.0806 79.9885 C 363.8531 74.1815 386.0333 65.4627 405.7783 57.7011"></path>
+<polygon fill="black" stroke="black" points="404.645,54.3858 415.233,53.9847 407.206,60.9006 404.645,54.3858"></polygon>
+<text text-anchor="middle" x="381.5353" y="58.3792" font-family="Times,serif" font-size="14.00">1/0;-</text>
+</g>
+
+<g class="node" data-id="QyA9IDE=">
+<title>C = 1</title>
+<ellipse fill="white" stroke="#000000" cx="449.3354" cy="131.57920000000001" rx="32.6499" ry="32.6499" fill-opacity="0"></ellipse>
+<ellipse fill="white" stroke="#000000" cx="449.3354" cy="131.57920000000001" rx="36.6586" ry="36.6586" fill-opacity="0"></ellipse>
+<text text-anchor="middle" x="449.3354" y="135.7792" font-family="Times,serif" font-size="14.00" fill="#000000">C = 1</text>
+</g>
+
+<g class="edge" data-id="Mg== QyA9IDE=">
+<title>2-&gt;C = 1</title>
+<path fill="none" stroke="black" d="M 349.3302 93.1226 C 364.0386 98.7786 385.9545 107.2063 405.5245 114.7319"></path>
+<polygon fill="black" stroke="black" points="406.824,111.482 414.901,118.338 404.311,118.015 406.824,111.482"></polygon>
+<text text-anchor="middle" x="381.5353" y="96.3792" font-family="Times,serif" font-size="14.00">$/-;-</text>
+</g>
+</g>
+</svg>
+</representation>
