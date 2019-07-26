@@ -49,6 +49,16 @@ namespace UserAccountGUI {
       );
 
       this.manRefs.uploadAutomatonButton.onclick = () => {
+        if (AudeGUI.mainDesigner.getAutomaton(AudeGUI.mainDesigner.currentIndex) === null) {
+          AudeGUI.notify(
+            _("Error !"),
+            _("The current automaton is empty or it doesn't have an initial state."),
+            "error",
+            4000
+          );
+          return;
+        }
+
         const title = window.prompt("Give a title to the uploaded automaton :", "Title here.");
         if (title.length === 0) {
           AudeGUI.notify(_("Error"), _("The title cannot be empty !"), "error", 4000);
@@ -147,7 +157,6 @@ namespace UserAccountGUI {
 
               AudeUsers.CurrentUser.Automata.deleteAutomaton(o.id).then(
                 (reqret) => {
-                  console.log(AudeUsers.ReturnState[reqret]);
                   if (reqret !== AudeUsers.ReturnState.OK) {
                     AudeGUI.notify(
                       _("Error !"),
