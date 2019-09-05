@@ -112,7 +112,7 @@ The WTFPL license is provided in the file wtfpl.txt.
 
 # Authors
 
-Main Author: Raphaël Jakse (UJF) : raphael dot jakse at univ-grenoble-alpes dot fr
+Main author: Raphaël Jakse (UGA) : raphael dot jakse at univ-grenoble-alpes dot fr
 Supervised by Yliès Falcone : ylies dot falcone at univ-grenoble-alpes dot fr
 
 This program was started as a personal project around November 2012. The main
@@ -123,3 +123,5 @@ find it useful.
 A big part of Aude, however, was written during an internship in summer 2013
 at Verimag, supervised by Yliès Falcone (from the LIG Laboratory) and paid by
 Université Joseph Fourier (now Université Grenoble Alpes).
+
+It has now been improved by multiple interns across the years.
