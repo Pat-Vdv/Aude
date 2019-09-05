@@ -27,17 +27,12 @@ algorithms commonly found in lectures about finite state automata.
 
 # Running Aude
 
-Just open `index.html` in a recent browser.
+Due to restriction of current browsers for accessing files locally, you need to run a web server.
+Mac / Linux users can run the following command in Aude's folder:
 
-With Chrome / Chromium and newest version of Opera, you need to run a web
-server. Mac / Linux users can run the following command in Aude's folder:
+    python3 -m "http.server" 8010 --bind localhost
 
-    python -m "http.server" 8010 --bind localhost
-
-Then, Aude is accessible at http://localhost:8010/
-
-Windows users are advised to use Mozilla Firefox, this is probably the
-simplest option.
+Then, Aude is accessible at http://localhost:8010/ and will work on any recent major browser.
 
 Supported browsers are:
  - The last version of Firefox
