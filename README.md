@@ -58,6 +58,8 @@ or a new version of Opera.
 # Installing
 
 Place the folder of Aude anywhere you want Aude to be installed.
+If you got the code of Aude from the sources, you need to install [Typescript](https://github.com/Microsoft/TypeScript)
+and then type `make`.
 
 # Unit tests
 
