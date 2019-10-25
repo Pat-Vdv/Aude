@@ -123,14 +123,14 @@ end function
 #     ( regex )
 #
 #
-#  Note: Spaces are ignored "·" can be writen "." or can be ignored.
+#  Note: Spaces are ignored, "·" can be written "." or can be left out.
 #
 #  Symbol:
 #     letter
 #     LETTER
 #     figure
 #     ε
-#     \e             →   ε
+#     \e             →   t
 #     \ anyCaracter  →   anyCaracter
 #
 #  Regular Expressions : Semantic
@@ -143,7 +143,18 @@ end function
 
 export function regexToAutomaton(regex)
     if regex is undefined then
-        regex := prompt("Enter the regular expression you want to get an automaton of.")
+        regex := prompt(
+            AudeGUI.l10n(
+                "Enter the regular expression you want to translate into an automaton.\n" +
+                "Recursive syntax:\n" +
+                " — a  is a regular expression (simple character)\n" +
+                " — \\e and ε  are regular expressions (epsilon)\n" +
+                " — r1 + r2  is a regular expression (union)\n" +
+                " — r1r2, r1.r2 and r1·r2  are regular expressions (contatenation)\n" +
+                " — r*  is a regular expression (Kleene star)\n" +
+                "Parentheses can be used."
+            )
+        )
 
         if regex is null then
             return

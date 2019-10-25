@@ -1284,3 +1284,13 @@ msgstr ""
 
 msgid "Unit tests for Aude"
 msgstr ""
+
+msgid "Enter the regular expression you want to translate into an automaton.\n"
+"Recursive syntax:\n"
+" — a  is a regular expression (simple character)\n"
+" — \\e and ε  are regular expressions (epsilon)\n"
+" — r1 + r2  is a regular expression (union)\n"
+" — r1r2, r1.r2 and r1·r2  are regular expressions (contatenation)\n"
+" — r*  is a regular expression (Kleene star)\n"
+"Parentheses can be used."
+msgstr ""
