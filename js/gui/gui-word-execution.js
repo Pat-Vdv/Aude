@@ -74,28 +74,33 @@
                     content: libD.jso2dom(
                         ["div.libD-ws-colors-auto", { "style": "height:100%" }, [
                             ["div", { "#": "root" }, [
-                                ["input.run-word-type-automaton", {
-                                    "type": "radio",
-                                    "name": "mode",
-                                    "value": "automaton",
-                                    "checked": "true"
-                                }],
-                                ["span", _("Automaton")],
+                                ["label", [
+                                    ["input.run-word-type-automaton", {
+                                        "type": "radio",
+                                        "name": "mode",
+                                        "value": "automaton",
+                                        "checked": "true"
+                                    }],
+                                    ["#", " " + _("Automaton")]
+                                ]],
 
-                                ["input.run-word-type-automaton", {
-                                    "type": "radio",
-                                    "name": "mode",
-                                    "value": "pushdown"
-                                }],
-                                ["span", _("Pushdown automaton")],
+                                ["label", [
+                                    ["input.run-word-type-automaton", {
+                                        "type": "radio",
+                                        "name": "mode",
+                                        "value": "pushdown"
+                                    }],
+                                    ["#", " " + _("Pushdown automaton")]
+                                ]],
 
-                                ["input.run-word-type-automaton", {
-                                    "type": "radio",
-                                    "name": "mode",
-                                    "value": "turing"
-                                }],
-
-                                ["span", _("Turing machine")], ["br"],
+                                ["label", [
+                                    ["input.run-word-type-automaton", {
+                                        "type": "radio",
+                                        "name": "mode",
+                                        "value": "turing"
+                                    }],
+                                    ["#", " " + _("Turing machine")]
+                                ]], ["br"],
 
                                 ["label", { "for": "execute-word-input" }, _("Word: ")],
                                 ["input#execute-word-input", { type: "text", "#": "word" }],
