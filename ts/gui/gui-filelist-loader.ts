@@ -16,7 +16,7 @@
 */
 
 ((pkg) => {
-    const AudeGUI = pkg.AudeGUI;
+    const AudeGUI = window.AudeGUI;
     const _ = AudeGUI.l10n;
 
     // Try to load dirlist.txt.
@@ -176,7 +176,7 @@
                     (link as any)._file,
                     fun,
                     () => {
-                        AudeGUI.notify(fail);
+                        AudeGUI.notify("Failure to load a file", fail); // FIXME l10n string
                     },
                     true
                 );
