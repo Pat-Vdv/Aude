@@ -63,6 +63,7 @@ declare namespace libD {
     minimize(): void;
     maximize(side? : "width" | "height"): void;
     restore(): void;
+    resize(): void;
     setDecoration(b: boolean): void;
     setTop(n: any): void;
 

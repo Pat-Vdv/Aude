@@ -14,21 +14,7 @@ interface Window {
     initEvents: () => void,
     save: any,
     saveAs: any,
-    Results: {
-      deferedResultShow: boolean,
-      enable: () => void,
-      splitterMove: (e: { clientX: number }) => void,
-      setText: (t: string, dontNotify?: boolean) => void,
-      setDOM: (n: Node, dontNotify?: boolean) => void,
-      setAutomaton: (A: Automaton) => void,
-      set: (res: any) => void,
-      setMealy: (M) => void,
-      setMoore: (M) => void,
-      setPushdownAutomaton: (P) => void,
-      load: () => void,
-      export: () => void,
-      redraw: () => void
-    },
+    Results: any,
     onResize: () => void,
     programResultUpdated(dontNotify, res),
     l10n: (txt: string) => string,
@@ -99,19 +85,33 @@ declare class AudeDesigner {
 }
 
 declare class Moore {
+    getInitialState(): any;
+    getStates(): libD.Set;
     setInitialState(state: any);
     addTransition(start: any, symbol: any, end: any);
     setOutput(start: any, output: any);
+    getOutput(state?: any): any;
+    getInputAlphabet(): libD.Set;
+    next(state: any, symbol:any): any;
+    next(state: any, inputSymbol: any): any[];
 }
 
 declare class Mealy {
+    getInitialState(): any;
+    getStates(): libD.Set;
     setInitialState(state: any);
     addTransition(start: any, symbol: any, end: any);
     setOutput(start: any, input: any, output: any);
+    getOutput(state?: any): any;
+    getInputAlphabet(): libD.Set;
+    next(state: any, inputSymbol: any): any[];
 }
 
 declare class Pushdown {
     setInitialState(state: any);
+    getInitialState(): any;
     setFinalState(state: any);
+    getFinalStates(): libD.Set;
+    getTransitions(): libD.Set;
     addTransition(start: any, symbol: any, stackSymbol: any, end: any, newStackSymbol: any);
 }

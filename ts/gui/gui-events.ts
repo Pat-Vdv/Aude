@@ -30,7 +30,7 @@ window.AudeGUI.initEvents = function () {
             if (e.keyCode === 69) {
                 if (e.shiftKey) {
                     if (!AudeGUI.audeExam) {
-                        AudeGUI.Results.export();
+                        AudeGUI.Results.exportResult();
                     }
                 }
                 e.preventDefault();

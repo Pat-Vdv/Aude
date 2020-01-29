@@ -1,6 +1,7 @@
 from epsElimination import epsElim
 from regex2automaton import regexToAutomaton
 from linearGrammar2Automaton import linearGrammar2Automaton
+from grammartools import drawSelectMode
 
 export function emptyLanguage(A)
    # If the automaton doesn't recognize any word, return true. Otherwize, return false.
@@ -38,7 +39,7 @@ end function
 
 run(
     function()
-        function accept(radioButton,regex,grammar,win)
+        function accept(radioButton, regex, grammar, win)
             if radioButton[0].checked then # Automaton
                 AudeGUI.Results.set(emptyLanguage(get_automaton(currentAutomaton)))
             else if radioButton[1].checked then
@@ -49,6 +50,6 @@ run(
             win.close()
         end function
 
-        AudeGUI.Results.drawSelectMode(accept)
+        drawSelectMode(accept)
     end function
 )

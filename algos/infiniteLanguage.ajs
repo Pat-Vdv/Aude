@@ -64,7 +64,7 @@ run(
             win.close()
         end function
 
-        AudeGUI.Results.drawSelectMode(accept)
+        drawSelectMode(accept)
 
     end function
 )
