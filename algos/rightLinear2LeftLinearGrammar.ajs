@@ -1,3 +1,5 @@
+from grammartools import askGrammarAlgorithm, getInputGrammar
+
 # Convert a right linear grammar to a left linear grammar
 # G can be a string or a grammar class
 # if str is 1 the function returns a string
@@ -91,6 +93,5 @@ run(
         end function
 
         askGrammarAlgorithm(accept)
-
     end function
 )

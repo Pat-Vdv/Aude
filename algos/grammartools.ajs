@@ -1,0 +1,174 @@
+// Resize the window when adding elements
+// Now use win.resize()
+
+// pkg.resize = function (div) {
+//     div.parentNode.className = "libD-wm-content auto-size";
+//     div.parentNode.parentNode.style.width = "";
+//     div.parentNode.parentNode.style.height = "";
+// }
+
+// Area to allow the users to write the grammar.
+// Take a function in parameters, the function is launched when the user
+// clicks on the button
+export function askGrammarAlgorithm(validate)
+    if document.getElementById("input-grammar-algorithm") then
+        return "You have already launched the program!"
+    end if
+
+    // To prevent opening multiple windows
+    let div := document.createElement("div");
+    div.className := "libD-ws-colors-auto auto-size";
+    div.id := "input-grammar-algorithm";
+
+    let win := libD.newWin({
+        // Create a new window
+        title:      AudeGUI.l10n("Enter a grammar"),
+        show:       true,
+        fullscreen: false,
+        content:    div
+    });
+
+    Display.inputGrammar(div);
+    div.appendChild(
+        libD.jso2dom([
+            ["br"],
+            ["button#validate-grammar", _("Validate")]
+        ])
+    );
+
+    document.getElementById("validate-grammar").onclick := validate;
+
+    // Add the resize event when we add or delete a rule
+    document.getElementById("add-rule").addEventListener(
+        "click",
+        function ()
+            win.resize();
+        end function
+    );
+end function
+
+// Use inputGrammar grammar before using this function
+// Get the string grammar from the inputGrammar and return a String corresponding to the grammar
+export function getInputGrammar()
+    let grammar := document.getElementById("input-plain-grammar");
+
+    if grammar.value is not "" then
+        return grammar.value;
+    end if
+
+    let divTerm    := document.getElementById("input-term-symbol");
+    let divNonTerm := document.getElementById("input-non-term-symbol");
+    let divStart   := document.getElementById("input-start-symbol");
+    let divRules   := document.getElementById("input-production-rules");
+
+    // The grammar is created from the input
+    let G := (
+        "({" + divTerm.value + "},{" +
+        divNonTerm.value + "}," +
+        divStart.value + ",{"
+    );
+
+    let rule := divRules.childNodes[0];
+    G += rule.childNodes[0].value + "->" + rule.childNodes[2].value;
+
+    let l := divRules.childElementCount
+
+    for i from 1 to l do
+        // For each rule we take the informations from the input
+        rule := divRules.childNodes[i];
+
+        if rule.childNodes[0].value is not "" and rule.childNodes[2].value is not "" then
+            G += (
+                "," + rule.childNodes[0].value +
+                "->" + rule.childNodes[2].value
+            );
+        end if
+    end for
+
+    G += "})";
+
+    return G;
+end function
+
+function inputGrammar(divAnswersUser)
+    divAnswersUser.appendChild(libD.jso2dom([
+        ["div#input-block-grammar", [
+            ["span", _("Write directly the grammar:")],
+            ["input#input-plain-grammar"], ["br"],
+            ["div#div-enter-easy-grammar", _("Or enter easily the grammar:")],
+            ["span", _("Write the terminal symbols:")],
+            ["input#input-term-symbol"], ["br"],
+            ["span", _("Write the non terminal symbols:")],
+            ["input#input-non-term-symbol"], ["br"],
+            ["select#input-start-symbol", [
+                ["option", _("Select the start symbol")],
+            ]],
+            ["div#input-production-rules", [
+                ["div.question-answers-input-rule", [
+                    ["input.input-rule-non-term-symbol", {
+                        "type": "text",
+                        "placeholder": _("Non terminal symbol")
+                    }],
+                    ["span.arrow", ("→")],
+                    ["input.input-rule-non-term-symbol", {
+                        "type": "text",
+                        "placeholder": _("Body")
+                    }],
+                    ["button.input-rule-remove", '×'],
+                ]]
+            ]],
+            ["button#add-rule", _("Add a rule")],
+        ]]
+    ]));
+
+    // Create the list of start symbol with the non terminal symbols
+    let startSymbol := document.getElementById("input-start-symbol");
+    let nonTermSym := document.getElementById("input-non-term-symbol");
+    let startSymbolSelected := null;
+    nonTermSym.oninput := (function ()
+        startSymbolSelected := startSymbol.value; // Save the current value
+        let syms := nonTermSym.value.split(',');
+
+        if syms.length > 0 then
+            startSymbol.textContent := "";
+            startSymbol.appendChild(libD.jso2dom(
+                ["option#select-start-symbol", _("Select the start symbol")]
+            ));
+        end if
+
+        foreach s in syms do
+            if s is not "" and s is not " " then
+                let option := document.createElement("option");
+                option.value := s;
+                option.textContent := s;
+                startSymbol.appendChild(option);
+            end if
+        end foreach
+
+        // Reset the value after recreating the options
+        startSymbol.value := startSymbolSelected;
+    end function);
+
+    // To enter the production rules
+    var divRules := document.getElementById("input-production-rules");
+    document.getElementById("add-rule").onclick := (function ()
+        divRules.appendChild(libD.jso2dom([
+            ["div.question-answers-input-rule", [
+                ["input.input-rule-non-term-symbol", {
+                    "type": "text",
+                    "placeholder": _("Non terminal symbol")
+                }],
+                ["span.arrow", "→"],
+                ["input.input-rule-non-term-symbol", {
+                    "type": "text",
+                    "placeholder": _("Body")
+                }],
+                ["button.input-rule-remove", '×'],
+            ]]
+        ]));
+
+        document.getElementsByClassName("input-rule-remove")[divRules.childElementCount - 1].onclick := (function (e)
+            e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+        end function);
+    end function);
+end function

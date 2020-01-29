@@ -1,3 +1,5 @@
+from grammartools import askGrammarAlgorithm, getInputGrammar
+
 from leftLinear2RightLinearGrammar import leftLinear2RightLinearGrammar
 from leftLinear2RightLinearGrammar import isLeftLinear
 from splitWord import splitWord

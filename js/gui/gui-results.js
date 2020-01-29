@@ -304,6 +304,100 @@
 
         redraw: function () {
             resultDesigner.redraw();
+        },
+
+        // FIXME
+        // Let the user selects the mode (automaton, RE, grammar)
+        drawSelectMode: function (accept) {
+            // Let the user selects the mode:
+            if (
+                document.getElementById("selection-mode-algorithm") === undefined || document.getElementById("selection-mode-algorithm") === null
+            ) {
+                // To prevent opening multiple windows
+                var div = document.createElement("div");
+                div.className = "libD-ws-colors-auto auto-size";
+                div.id = "selection-mode-algorithm";
+                div.appendChild(libD.jso2dom([
+                    ["div", _("Choose the entry of the algorithm:")],
+                    ["input.selection-mode-type", {"type": "radio", "name": "mode", "value": "automaton", "checked": "true"}],
+                    ["span", _("Automaton")], ["br"],
+                    ["input.selection-mode-type", {"type": "radio", "name": "mode", "value": "RE"}],
+                    ["span", _("Regular expression")], ["br"],
+                    ["div", [
+                        ["input#input-regex", {"type": "text", "style": "display: none"}],
+                    ]],
+                    ["input.selection-mode-type", {"type": "radio", "name": "mode", "value": "grammar"}],
+                    ["span", _("Grammar")], ["br"],
+                    ["div", [
+                        ["div#input-grammar", {"style": "display: none"}],
+                    ]],
+                    ["button#accept-mode-language", _("Validate")], ["br"],
+                ]));
+
+                var win = libD.newWin({ // Create a new window
+                    title:      _("Choose type"),
+                    show:       true,
+                    fullscreen: false,
+                    content:    div
+                });
+
+
+                var regex   = document.getElementById("input-regex");
+                var grammar = document.getElementById("input-grammar");
+
+                Display.inputGrammar(grammar);
+
+                // Add the resize event when we add or delete a rule
+                document.getElementById("add-rule").addEventListener(
+                    "click",
+                    function () {
+                        win.resize();
+                        var removes = document.getElementsByClassName("input-rule-remove");
+                        var parent  = document.getElementById("input-production-rules");
+                        removes[parent.childElementCount-1].addEventListener(
+                            "click",
+                            function() {
+                                win.resize();
+                            }
+                        );
+                    }
+                );
+
+                var radioButton = document.getElementsByClassName("selection-mode-type");
+
+                radioButton[0].oninput = function() {
+                    win.resize();
+                    regex.style.display = "none";
+                    grammar.style.display = "none";
+                };
+
+                radioButton[1].oninput = function() {
+                    win.resize();
+                    if (getComputedStyle(regex).display == "none") {
+                        regex.style.display = "inline";
+                        grammar.style.display = "none";
+                    } else {
+                        regex.style.display = "none";
+                    }
+                };
+
+                radioButton[2].oninput = function () {
+                    win.resize();
+                    if (getComputedStyle(grammar).display === "none") {
+                        grammar.style.display = "inline";
+                        regex.style.display = "none";
+                    } else {
+                        grammar.style.display = "none";
+                    }
+                };
+
+                // Button to validate the choice
+                document.getElementById("accept-mode-language").onclick = function () {
+                    accept(radioButton, regex.value, getInputGrammar(), win);
+                };
+            } else {
+                return "You have already launched the program!";
+            }
         }
     };
 }(window));

@@ -4,6 +4,45 @@ from mutate import randomNumber
 from reachability import reachableStates
 from coreachability import coreachableStates
 
+
+// Ask the value to create an automaton
+// activate the function validate
+function askSettingsAutomaton(validate)
+    let div := document.createElement("div");
+    div.className := "libD-ws-colors-auto auto-size";
+
+    div.appendChild(libD.jso2dom([
+        AutomatonPrograms.tableRandomAutomateGeneration(),
+        ["div", {"style": "text-align:right"}, ["button#validate-automaton", _("Validate")]]
+    ]));
+
+    let win := libD.newWin({ // Create a new window
+        title:      _("Settings automaton"),
+        show:       true,
+        fullscreen: false,
+        content: div
+    });
+
+    // Validate the choice
+    document.getElementById("validate-automaton").onclick := (function ()
+        let inputs := document.getElementsByClassName("input-settings-question");
+        let alphabet := inputs[1].value.split(",");
+        let access := (
+            if inputs[5].checked and inputs[6].checked then
+                1
+            else if (not inputs[5].checked) and inputs[6].checked then
+                2
+            else if inputs[5].checked and not inputs[6].checked then
+                3
+            else
+                0
+        )
+
+        validate(inputs[0].value, alphabet, inputs[2].value, inputs[3].value, inputs[4].value, acces);
+    end function)
+end function
+
+
 # Take:
 #  - a number of states
 #  - an alphabet

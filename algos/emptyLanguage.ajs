@@ -38,7 +38,6 @@ end function
 
 run(
     function()
-
         function accept(radioButton,regex,grammar,win)
             if radioButton[0].checked then # Automaton
                 AudeGUI.Results.set(emptyLanguage(get_automaton(currentAutomaton)))
@@ -50,7 +49,6 @@ run(
             win.close()
         end function
 
-        drawSelectMode(accept)
-
+        AudeGUI.Results.drawSelectMode(accept)
     end function
 )
