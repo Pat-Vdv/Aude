@@ -15,32 +15,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-(function (pkg) {
+(function () {
     "use strict";
-    var AudeGUI = pkg.AudeGUI;
-    var _ = AudeGUI.l10n;
+    let AudeGUI = window.AudeGUI;
+    let _ = AudeGUI.l10n;
 
-    var win = null;
-    var help = null;
-    var helpContent = null;
-    var helpChapter = null;
+    let win = null;
+    let help = null;
+    let helpContent = null;
+    let helpChapter = null;
 
-    AudeGUI.Help = {
-        load: function () {},
-        run: openHelp
-    };
+    // Computes the position of an element
+    function getOffset(element) {
+        let top = 0, left = 0;
 
-    function openHelp () {
-        console.log(AudeGUI.getCurrentMode());
-        if (win && win.ws) {
-            win.close();
-        }
+        do {
+            top  += element.offsetTop;
+            left += element.offsetLeft;
+        } while ( (element = element.offsetParent) );
 
-        else if (AudeGUI.getCurrentMode() === "program" ) {
-            drawHelpAlgo();
-        } else if (AudeGUI.getCurrentMode() === "design" ) {
-            drawHelpDesign();
-        }
+        return {top: top, left: left};
     }
 
     function drawHelpDesign() {
@@ -67,7 +61,7 @@
     }
 
     // Create the page that shows the help for algorithm
-    function  drawHelpAlgo () {
+    function drawHelpAlgo() {
         let helpWindowContent = ["div#help-main", [
             // To select the chapter
             ["div#questionList-selection-chapter", [
@@ -87,8 +81,8 @@
             content: libD.jso2dom(helpWindowContent)
         });
 
-        var buttons = document.getElementsByClassName("help-selection-chapter");
-        for (var i = 0, l = buttons.length; i < l; i++) {
+        let buttons = document.getElementsByClassName("help-selection-chapter");
+        for (let i = 0, l = buttons.length; i < l; i++) {
             // Add event on the buttons
 
             buttons[i].addEventListener(
@@ -99,10 +93,11 @@
                         helpChapter.style.backgroundColor = "rgba(239, 240, 241, 0.93)";
                     }
 
+                    let target = e.target as HTMLButtonElement;
                     // Change to red when we click
-                    e.target.style.backgroundColor = "rgba(239, 100, 100)";
-                    helpChapter = e.target;
-                    drawHelpIndex(e.target.value);
+                    target.style.backgroundColor = "rgba(239, 100, 100)";
+                    helpChapter = target;
+                    drawHelpIndex(target.value);
                 }
             );
 
@@ -110,8 +105,9 @@
                 "mouseover",
                 function(e) {
                     // Change the color to grey when mouseover
-                    if (getComputedStyle(e.target).backgroundColor != "rgb(239, 100, 100)") {
-                        e.target.style.backgroundColor = "rgba(150, 150, 150)";
+                    let target = e.target as HTMLButtonElement;
+                    if (getComputedStyle(target).backgroundColor != "rgb(239, 100, 100)") {
+                        target.style.backgroundColor = "rgba(150, 150, 150)";
                     }
                 }
             );
@@ -120,8 +116,9 @@
                 "mouseout",
                 function(e) {
                     // Change the color to white when mouseout
-                    if (getComputedStyle(e.target).backgroundColor != "rgb(239, 100, 100)") {
-                        e.target.style.backgroundColor = "rgba(239, 240, 241, 0.93)";
+                    let target = e.target as HTMLButtonElement;
+                    if (getComputedStyle(target).backgroundColor != "rgb(239, 100, 100)") {
+                        target.style.backgroundColor = "rgba(239, 240, 241, 0.93)";
                     }
                 }
             );
@@ -129,9 +126,9 @@
     }
 
     // Draw the index composed by the buttons
-    function drawHelpIndex (chapter) {
+    function drawHelpIndex(chapter) {
         // Area to display the list
-        var div = document.getElementById("help-content");
+        let div = document.getElementById("help-content");
 
         div.innerHTML = "";
         switch (chapter) {
@@ -224,20 +221,20 @@
             break;
 
         }
-        var buttons = document.getElementsByClassName("help-index-button");
+        let buttons = document.getElementsByClassName("help-index-button");
 
-        for (var i = 0, l = buttons.length; i < l; i++) {
+        for (let i = 0, l = buttons.length; i < l; i++) {
             // Add event on the buttons
             buttons[i].addEventListener("click", function(e) {
-                drawHelpCommand(e.target.value);
+                drawHelpCommand((e.target as HTMLButtonElement).value);
             });
         }
     }
 
-    function drawHelpCommand (command) {
+    function drawHelpCommand(command) {
         console.log (command);
-        var content = null;
-        var ifInstr = ["div", [
+        let content = null;
+        let ifInstr = ["div", [
             ["span.help-instruction", "if "],
             ["span", "condition "],
             ["span.help-instruction", "then "]
@@ -584,29 +581,35 @@
                 break;
         }
 
-        var ele = getOffset(document.getElementById("help-main"));
+        let ele = getOffset(document.getElementById("help-main"));
 
         //Display the selected help
-        var winCommand = libD.newWin({ //Create a new window
+        let winCommand = libD.newWin({ //Create a new window
             title:      _(command),
             show:       true,
             fullscreen: false,
-            content: libD.jso2dom(content) //Send the html
+            content: libD.jso2dom(content),
+            top: ele.top,
+            left: ele.left - document.getElementById("help-command").offsetWidth
         });
 
-        winCommand.top = ele.top + "px";
-        winCommand.left = ele.left - document.getElementById("help-command").offsetWidth + "px";
     }
 
-    // Computes the position of an element
-    function getOffset(element) {
-        var top = 0, left = 0;
+    class Help {
+        static load() {};
 
-        do {
-            top  += element.offsetTop;
-            left += element.offsetLeft;
-        } while ( (element = element.offsetParent) );
+        static run() {
+            if (win && win.ws) {
+                win.close();
+            }
 
-        return {top: top, left: left};
-    }
-}(window));
+            else if (AudeGUI.getCurrentMode() === "program" ) {
+                drawHelpAlgo();
+            } else if (AudeGUI.getCurrentMode() === "design" ) {
+                drawHelpDesign();
+            }
+        };
+    };
+
+    AudeGUI.Help = Help;
+}());

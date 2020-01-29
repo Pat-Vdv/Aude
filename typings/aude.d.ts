@@ -37,6 +37,7 @@ interface Window {
     Runtime: any,
     AutomatonCodeEditor: any,
     AutomataList: any,
+    Help: any,
 
     removeCurrentAutomaton(): void;
 
