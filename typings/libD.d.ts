@@ -1,4 +1,5 @@
 declare namespace libD {
+  export var none: (e?: Event) => boolean;
   export var wm: any;
   export var lang: string;
 
@@ -6,12 +7,9 @@ declare namespace libD {
   export var jsLoad: any;
   export var moduleLoaded: any;
   
-  export class Set {
+  export class Set extends window.Set {
     constructor(values?: Iterable<any>);
-    add(v: any): void;
     delete(v: any): boolean;
-    clear(): void;
-    has(v: any): boolean;
     unionInPlace(set: Iterable<any>): libD.Set;
     interInPlace(set: Iterable<any>): libD.Set;
     minusInPlace(set: Iterable<any>): libD.Set;
@@ -34,7 +32,6 @@ declare namespace libD {
 
     remove(v: any): void;
     size: number;
-    [Symbol.iterator](): Iterator<any>;
   }
 
   export class Tuple {

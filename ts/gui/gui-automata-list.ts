@@ -17,10 +17,10 @@
 
 /* globals libD */
 
-(function (pkg) {
+(function () {
     "use strict";
 
-    var AudeGUI = pkg.AudeGUI;
+    var AudeGUI = window.AudeGUI;
 
     var _ = AudeGUI.l10n;
 
@@ -33,13 +33,14 @@
     var automataListBtn   = null;
     var automataListUL    = null;
 
-    function automataListClick(e) {
-        if (e.currentTarget.lastChild.textContent) {
-            var j = parseInt(e.currentTarget.lastChild.textContent, 10);
-            e.currentTarget.lastChild.textContent = "";
+    function automataListClick(e: Event): void {
+        let target = e.currentTarget as Element;
+        if (target.lastChild.textContent) {
+            var j = parseInt(target.lastChild.textContent, 10);
+            target.lastChild.textContent = "";
             automataList.splice(j, 1);
 
-            for (var l = 0; l < AudeGUI.AutomataList.automatonCount; ++l) {
+            for (var l = 0; l < AutomataList.automatonCount; ++l) {
                 var lastChild = automataListUL.childNodes[l].firstChild.lastChild;
                 var k = parseInt(lastChild.textContent, 10);
 
@@ -48,21 +49,21 @@
                 }
             }
         } else {
-            e.currentTarget.lastChild.textContent = automataList.length;
-            automataList.push(e.currentTarget._index);
+            target.lastChild.textContent = "" + automataList.length;
+            automataList.push((target as any)._index);
         }
     }
 
-    function automataListMouseOver(e) {
+    function automataListMouseOver(e: Event): void {
         if (salc_cur_automaton !== -1) {
-            AudeGUI.mainDesigner.setCurrentIndex(e.currentTarget._index);
+            AudeGUI.mainDesigner.setCurrentIndex((e.currentTarget as any)._index);
         }
     }
 
-    AudeGUI.AutomataList = {
-        automatonCount: 0,
+    class AutomataList {
+        static automatonCount: number = 0;
 
-        load: function () {
+        static load(): void {
             automataListClose = document.getElementById("automata-list-chooser-close");
             automataListIntro = document.getElementById("automata-list-chooser-intro");
             automataListDiv   = document.getElementById("automata-list-chooser");
@@ -90,9 +91,9 @@
                 ),
                 libD.getIcon("actions/format-list-ordered")
             );
-        },
+        }
 
-        removeAutomaton: function (A) {
+        removeAutomaton(A: Automaton): void {
             var i = automataList.indexOf(A);
 
             if (i !== -1) {
@@ -103,21 +104,21 @@
                     }
                 }
             }
-        },
+        }
 
-        getIndex: function (i) {
+        getIndex(i: number): Automaton {
             return automataList[i];
-        },
+        }
 
-        length: function () {
+        length(): number {
             return automataList.length;
-        },
+        }
 
-        hide: function () {
+        hide(): void {
             automataListDiv.classList.add("disabled");
-        },
+        }
 
-        show: function (count, callback) {
+        show(count: number, callback?: any): void {
             if (!automataListDiv.classList.contains("disabled")) {
                 return;
             }
@@ -158,17 +159,17 @@
 
             automataListUL.textContent = "";
 
-            for (var k = 0; k < AudeGUI.AutomataList.automatonCount; ++k) {
+            for (var k = 0; k < AutomataList.automatonCount; ++k) {
                 var li = document.createElement("li");
                 var a  = document.createElement("a");
                 a.href = "#";
-                a._index = k;
+                (a as any)._index = k;
                 var indexInList = automataList.indexOf(k);
-                var number = document.createElement("span");
-                number.className = "automaton-number";
+                var nb = document.createElement("span");
+                nb.className = "automaton-number";
 
                 if (indexInList !== -1) {
-                    number.textContent = indexInList;
+                    nb.textContent = "" + indexInList;
                 }
 
                 a.onclick = automataListClick;
@@ -177,7 +178,7 @@
 
                 a.appendChild(document.createElement("span"));
                 a.lastChild.textContent = libD.format(_("Automaton #{0}"), k);
-                a.appendChild(number);
+                a.appendChild(nb);
                 li.appendChild(a);
                 automataListUL.appendChild(li);
             }
@@ -185,4 +186,6 @@
             automataListDiv.classList.remove("disabled");
         }
     };
-}(window));
+
+    window.AudeGUI.AutomataList = AutomataList;
+})();

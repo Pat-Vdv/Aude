@@ -50,7 +50,7 @@ class TuringMachine {
     tapePosition: number;
     lastTakenTransition: TuringTransition;
 
-    constructor(states: libD.Set, tapeAlphabet: libD.Set, qInit: any, transitions: Set<TuringTransition>, finalStates: libD.Set, emptyTapeValue: any) {
+    constructor(states?: libD.Set, tapeAlphabet?: libD.Set, qInit?: any, transitions?: Set<TuringTransition>, finalStates?: libD.Set, emptyTapeValue?: any) {
         this.states = states || new libD.Set();
         this.tapeAlphabet = tapeAlphabet || new libD.Set();
         this.transitions = transitions || new Set();

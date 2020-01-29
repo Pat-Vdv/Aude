@@ -1,10 +1,15 @@
 declare var aude: any;
 
+declare class Heap extends Array {
+    top(): any
+}
+
 interface Window {
   AudeGUI: {
     automatonFileInput: any,
     mainDesigner: AudeDesigner,
     notifier: any,
+    openAutomaton: any,
     Results: {
       deferedResultShow: boolean,
       enable: () => void,
@@ -24,18 +29,14 @@ interface Window {
     programResultUpdated(dontNotify, res),
     l10n: (txt: string) => string,
     audeExam: boolean,
-    Runtime: {
-      loadIncludes: (includes: Array<any>, callback: Function) => void;
-      get_pushdown_automaton(index: number);
-      get_turing_machine(index: number);
-    },
+    Programs: any,
     Quiz: any,
     QuestionList: any,
     QuizEditor: any,
     WordExecution: any,
-    Moore: any,
-    Mealy: any,
-    AutomatonCodeEditor: any
+    Runtime: any,
+    AutomatonCodeEditor: any,
+    AutomataList: any,
 
     removeCurrentAutomaton(): void;
 
@@ -52,6 +53,8 @@ interface Window {
 
   svg2automaton(svg: string): Automaton;
   automatonFromObj(obj: any): Automaton;
+  pushSymbol(symbols: string, stack: string[]); // FIXME put in a namespace specific to pushdown automata
+  heap(l: any[]): Heap;
 }
 
 declare var audescript: {
@@ -69,6 +72,7 @@ declare class AudeDesigner {
   currentIndex: number;
 
   setAutomatonCode: (automaton: string, index?: any) => void;
+  setCurrentIndex: (index: number) => void;
   clearSVG(index, dontSnapshot): void;
   getAutomaton: (index: number, onlyStrings?: boolean) => Automaton;
   transitionPulseColor(index?, startState?, symbol?, endState?, color?, pulseTime?): void;
@@ -83,4 +87,22 @@ declare class AudeDesigner {
   stateRemoveBackgroundColor(index?, state?): void;
   static initiateNewState(): void;
   static outerHTML(node: Node): string;
+}
+
+declare class Moore {
+    setInitialState(state: any);
+    addTransition(start: any, symbol: any, end: any);
+    setOutput(start: any, output: any);
+}
+
+declare class Mealy {
+    setInitialState(state: any);
+    addTransition(start: any, symbol: any, end: any);
+    setOutput(start: any, input: any, output: any);
+}
+
+declare class Pushdown {
+    setInitialState(state: any);
+    setFinalState(state: any);
+    addTransition(start: any, symbol: any, stackSymbol: any, end: any, newStackSymbol: any);
 }

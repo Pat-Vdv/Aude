@@ -1,5 +1,5 @@
 
-
+// FIXME: fix any reference to window.pushSymbol
 // Push the given symbols to the stack
 // pushSymbols("Cat") -> stack: [0:t, 1:a, 2:C]
 function pushSymbol(symbols, stack) {

@@ -17,29 +17,29 @@
 
 /* globals libD, audescript, getFile, babel */
 
-(function (pkg) {
+(function () {
     "use strict";
 
-    var AudeGUI = pkg.AudeGUI;
-    var _ = AudeGUI.l10n;
+    let AudeGUI = window.AudeGUI;
+    let _ = AudeGUI.l10n;
 
-    var loadingProgNot = null;
+    let loadingProgNot = null;
 
     //.name contains the name of the current
-    var curAlgo = {};
+    let curAlgo: any = {};
 
-    var algoAutomatonL = null;
-    var algoAutomatonR = null;
-    var algoRE = null;
-    var algoGrammar = null;
-    var algoOther = null;
-    var algoName = null;
+    let algoAutomatonL = null;
+    let algoAutomatonR = null;
+    let algoRE = null;
+    let algoGrammar = null;
+    let algoOther = null;
+    let algoName = null;
 
-    var modules = [];
-    var loadedModule = {};
+    let modules = [];
+    let loadedModule = {};
 
     function audescript2js(code, moduleName, fileName, data) {
-        var res = audescript.toJS(code, moduleName, fileName);
+        let res = audescript.toJS(code, moduleName, fileName);
         data.includes = res.neededModules;
         return (
             "(function (run, get_automaton, get_automata, get_mealy, get_moore, get_pushdown_automaton, currentAutomaton) {" +
@@ -47,8 +47,8 @@
         );
     }
 
-    AudeGUI.Runtime = {
-        load: function () {
+    class Runtime {
+        static load(): void {
             curAlgo.name = "id";
             algoName = document.getElementById("predef-algos-name");
             algoAutomatonL = document.getElementById("container-algo-automata-left");
@@ -56,37 +56,37 @@
             algoRE = document.getElementById("container-algo-re");
             algoGrammar = document.getElementById("container-algo-gammar");
             algoOther = document.getElementById("container-algo-other");
-        },
+        }
 
-        run: function (fun, g, f) {
-            if (fun === AudeGUI.Runtime.get_automata) {
-                AudeGUI.Runtime.get_automata(g, function () {
+        static run(fun: any, g: any, f: any): void {
+            if (fun === Runtime.get_automata) {
+                Runtime.get_automata(g, function () {
                     AudeGUI.Results.set(f.apply(this, arguments));
                 });
             } else {
                 AudeGUI.Results.set(fun.apply(window, [].slice.call(arguments, 1)));
             }
-        },
+        }
 
-        addAlgo: function (algo) {
-            var line = algo.split("/");
-            var fname = line[0].trim();
-            var descr = line[1].trim();
-            var type = line[2].trim();
-            var button = document.createElement("button");
+        static addAlgo(algo: string): void {
+            let line = algo.split("/");
+            let fname = line[0].trim();
+            let descr = line[1].trim();
+            let resultType = line[2].trim();
+            let button = document.createElement("button");
             button.className = "cell-algo";
             button.value = fname.replace(/\.ajs$/, "");
             button.textContent = _(descr);
 
             button.onclick = function (e) {
-                curAlgo.name = e.target.value;
+                curAlgo.name = (e.target as HTMLButtonElement).value;
 
                 //Change the name of the selected algo
                 algoName.textContent = _(descr);
-                AudeGUI.Runtime.launchPredefAlgo();
+                Runtime.launchPredefAlgo();
             }
 
-            switch (type) {
+            switch (resultType) {
                 case "automaton":
                     curAlgo.type='automaton';
                     if (algoAutomatonL.childElementCount <= algoAutomatonR.childElementCount) {
@@ -114,33 +114,33 @@
                 default:
                     console.log("Algo type not recognized");
             }
-        },
+        }
 
-        callWithList: function (count, callback) {
-            var automata = [];
+        static callWithList(count: number, callback: (automata : Automaton[]) => any): void {
+            let automata : Automaton[] = [];
 
-            for (var k = 0; k < count; ++k) {
-                automata.push(AudeGUI.Runtime.get_automaton(AudeGUI.AutomataList.getIndex(k)));
+            for (let k = 0; k < count; ++k) {
+                automata.push(Runtime.get_automaton(AudeGUI.AutomataList.getIndex(k)));
             }
 
             /*jshint validthis: true */
             callback.apply(this, automata);
-        },
+        }
 
-        get_mealy: function (i) {
+        static get_mealy(i: number): Mealy {
             // Automaton → Moore
-            let A = AudeGUI.Runtime.get_automaton(i, true);
+            let A = Runtime.get_automaton(i, true);
 
             if (isNaN(i)) {
                 return null;
             }
 
-            var M = new Mealy;
+            let M = new Mealy();
 
             // defining the initial state for M
             M.setInitialState(aude.getValue(A.getInitialState(), automataMap));
 
-            var f = A.getTransitionFunction();
+            let f = A.getTransitionFunction();
 
             f().forEach(function (startState) {
                 f(startState).forEach(function (symbol) {
@@ -151,14 +151,14 @@
                         let nStartState = aude.getValue(startState, automataMap);
                         let nEndState = aude.getValue(endState, automataMap);
 
-                        var trans  = symbol.split("/");
+                        let trans  = symbol.split("/");
 
                         if (trans.length !== 2) {
                             throw new Error(_(libD.format("Transition {0} is missing an output symbol or has too many '/'.", symbol)))
                         }
 
-                        var input  = aude.getValue(trans[0], automataMap);
-                        var output = aude.getValue(trans[1], automataMap);
+                        let input  = aude.getValue(trans[0], automataMap);
+                        let output = aude.getValue(trans[1], automataMap);
 
                        M.addTransition(nStartState, input, nEndState);
                        M.setOutput(nStartState, input, output);
@@ -167,32 +167,32 @@
             });
 
             return M;
-        },
+        }
 
-        get_moore: function (i) {
+        static get_moore(i: number): Moore {
             // Automaton → Moore
-            let A = AudeGUI.Runtime.get_automaton(i, true);
+            let A = Runtime.get_automaton(i, true);
 
             if (isNaN(i)) {
                 return null;
             }
 
-            var M = new Moore();
+            let M = new Moore();
 
             M.setInitialState(aude.getValue(A.getInitialState().split("/")[0], automataMap));
 
-            var trans = A.getTransitionFunction();
+            let trans = A.getTransitionFunction();
 
             A.getStates().forEach(
                 function (s) {
                     // separating the actual state from its output
-                    var sp = s.split("/");
+                    let sp = s.split("/");
                     if (sp.length !== 2) {
                         throw new Error(_(libD.format("State {0} is missing an output symbol or has too many '/'.", s)))
                     }
 
-                    var state  = aude.getValue(sp[0], automataMap);
-                    var output = aude.getValue(sp[1], automataMap);
+                    let state  = aude.getValue(sp[0], automataMap);
+                    let output = aude.getValue(sp[1], automataMap);
                     M.setOutput(state, output);
 
                     trans(s).forEach(
@@ -208,14 +208,14 @@
             );
 
             return M;
-        },
+        }
 
-        get_automaton: function (i, statesAsString) {
+        static get_automaton(i: number, statesAsString?: boolean): Automaton {
             if (isNaN(i)) {
                 return null;
             }
 
-            var A = null;
+            let A = null;
 
             try {
                 A = AudeGUI.mainDesigner.getAutomaton(i, statesAsString);
@@ -229,44 +229,40 @@
             }
 
             return A;
-        },
+        }
 
         // Automaton → Pushdown automaton
-        get_pushdown_automaton: function (i, statesAsString) {
+        // FIXME underscores
+        static get_pushdown_automaton(i: number, statesAsString: boolean): Pushdown {
             if (isNaN(i)) {
                 return null;
             }
 
-            var A = null;
+            let A = Runtime.get_automaton(i, true);
 
-            if (isNaN(i)) {
-                return null;
-            }
-
-            var A = AudeGUI.Runtime.get_automaton(i, true);
-
-            var P = new Pushdown();
+            let P = new Pushdown();
 
             P.setInitialState(A.getInitialState());
 
-            for (var s of A.getFinalStates()) {
+            for (let s of A.getFinalStates()) {
                 P.setFinalState(s);
             }
 
-            var trans = A.getTransitions();
-            var tabTransition = [];
-            var c = "";
-            var i=0;
+            let trans = A.getTransitions();
+            let tabTransition = [];
+            let c = "";
+
+            let j = 0;
 
             // For each transition
             try {
-                for (var t of trans) {
-                    while(t.symbol[i] != ";" && i < t.symbol.length) {
-                        c += t.symbol[i];
-                        i++;
+                for (let t of trans) {
+                    while(t.symbol[j] != ";" && j < t.symbol.length) {
+                        c += t.symbol[j];
+                        j++;
                     }
 
-                    i++;
+                    j++;
 
                     if (c.trim() === "ε") {
                         tabTransition.push(epsilon);
@@ -277,12 +273,12 @@
 
                     c = "";
 
-                    while (t.symbol[i] !== "/" && i < t.symbol.length) {
-                        c += t.symbol[i];
-                        i++;
+                    while (t.symbol[j] !== "/" && j < t.symbol.length) {
+                        c += t.symbol[j];
+                        j++;
                     }
 
-                    i++;
+                    j++;
 
                     tabTransition.push(
                         (c.trim()==="ε")
@@ -291,16 +287,16 @@
                     );
 
                     c = "";
-                    while (String(t.symbol[i]) !== "\0" && i < t.symbol.length) {
-                        c += t.symbol[i];
-                        i++;
+                    while (String(t.symbol[j]) !== "\0" && j < t.symbol.length) {
+                        c += t.symbol[j];
+                        j++;
                     }
 
                     //The symbols to push to the stack
                     tabTransition.push(c.trim());
 
                     //If the transition is composed of only ε
-                    if (t.symbol === pkg.epsilon) {
+                    if (t.symbol === epsilon) {
                         P.addTransition(
                             t.startState,
                             epsilon,
@@ -320,7 +316,7 @@
 
                     tabTransition = [];
                     c = "";
-                    i = 0;
+                    j = 0;
                 }
             } catch(e) {
                 console.error(e);
@@ -332,16 +328,16 @@
             }
 
             return P;
-        },
+        }
 
-        get_turing_machine: function(i, statesAsString) {
+        static get_turing_machine(i: number, statesAsString: boolean): TuringMachine {
             if (isNaN(i)) {
                 return null;
             }
 
-            var A = AudeGUI.Runtime.get_automaton(i, true);
+            let A = Runtime.get_automaton(i, true);
 
-            var T = new TuringMachine();
+            let T = new TuringMachine();
 
             T.setInitialState(A.getInitialState());
 
@@ -355,7 +351,7 @@
 
             // Parsing and adding transitions.
             A.getTransitions().forEach(function (tr) {
-                var splitSlash = tr.symbol.split("/");
+                let splitSlash = tr.symbol.split("/");
 
                 if (splitSlash.length != 2) {
                     throw new Error(
@@ -364,8 +360,8 @@
                         )
                     );
                 }
-                var startSymb = splitSlash[0].trim();
-                var splitSemicolon = splitSlash[1].split(";");
+                let startSymb = splitSlash[0].trim();
+                let splitSemicolon = splitSlash[1].split(";");
 
                 if (splitSemicolon.length != 2) {
                     throw new Error(
@@ -375,10 +371,10 @@
                     );
                 }
 
-                var endSymb = splitSemicolon[0].trim();
-                var endMove = splitSemicolon[1].trim();
+                let endSymb = splitSemicolon[0].trim();
+                let endMove = splitSemicolon[1].trim();
 
-                if (tr.symbol === pkg.epsilon) {
+                if (tr.symbol === epsilon) {
                     throw new Error(
                         libD.format(
                             _("get_turing_machine: epsilon not allowed in turing machine.")
@@ -396,34 +392,34 @@
             });
 
             return T;
-        },
+        }
 
-        get_automata: function (count, callback) {
+        static get_automata(count: number, callback: any): void {
             if (AudeGUI.AutomataList.length() < count) {
                 AudeGUI.AutomataList.show(count, callback);
             } else {
-                AudeGUI.Runtime.callWithList(count, callback);
+                Runtime.callWithList(count, callback);
             }
-        },
+        }
 
-        runProgram: function (code, moduleName) {
+        static runProgram(code: any, moduleName?: string): void {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
             }
 
-            AudeGUI.Runtime.runProgramCode(
+            Runtime.runProgramCode(
                 code,
                 moduleName || "<program>",
-                AudeGUI.Runtime.run,
-                AudeGUI.Runtime.get_automaton,
-                AudeGUI.Runtime.get_automata,
-                AudeGUI.Runtime.get_mealy,
-                AudeGUI.Runtime.get_moore,
-                AudeGUI.Runtime.get_pushdown_automaton
+                Runtime.run,
+                Runtime.get_automaton,
+                Runtime.get_automata,
+                Runtime.get_mealy,
+                Runtime.get_moore,
+                Runtime.get_pushdown_automaton
             );
-        },
+        }
 
-        launchPredefAlgo: function () {
+        static launchPredefAlgo(): void {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
             }
@@ -434,7 +430,7 @@
             }
 
             if (modules[curAlgo.name]) {
-                AudeGUI.Runtime.runProgram(modules[curAlgo.name], curAlgo.name);
+                Runtime.runProgram(modules[curAlgo.name], curAlgo.name);
             } else {
                 loadingProgNot = libD.notify({
                     type: "info",
@@ -443,51 +439,52 @@
                     delay: 500
                 });
 
-                AudeGUI.Runtime.loadModule(curAlgo.name, AudeGUI.Runtime.launchPredefAlgo);
+                Runtime.loadModule(curAlgo.name, Runtime.launchPredefAlgo);
             }
-        },
+        }
 
-        loadIncludes: function (includes, callback) {
-            for (var i = 0; i < includes.length; i++) {
+        static loadIncludes(includes: string[], callback: () => any):void {
+            for (let i = 0; i < includes.length; i++) {
                 if (!modules[includes[i]]) {
-                    AudeGUI.Runtime.loadModule(
+                    Runtime.loadModule(
                         includes[i],
-                        AudeGUI.Runtime.loadIncludes.bind(null, includes, callback)
+                        Runtime.loadIncludes.bind(null, includes, callback)
                     );
                     return;
                 }
 
                 if (!audescript.m(includes[i])) {
-                    AudeGUI.Runtime.loadLibrary(modules[includes[i]], includes[i]);
+                    Runtime.loadLibrary(modules[includes[i]], includes[i]);
                 }
             }
 
             if (callback) {
                 callback();
             }
-        },
+        }
 
-        loadLibrary: function (code, moduleName) {
-            AudeGUI.Runtime.runProgramCode(
+        static loadLibrary(code: any, moduleName: string):void {
+            Runtime.runProgramCode(
                 code,
                 moduleName || "<program>",
                 libD.none,
                 libD.none,
                 libD.none,
                 libD.none,
+                libD.none,
                 libD.none
             );
-        },
+        }
 
-        replaceStackLine: function (stackLine) {
+        static replaceStackLine(stackLine: string):string {
             return stackLine.replace(/eval at .*\(.*\),[\s]+/, "").replace(/@(file|https?|ftps?|sftp):\/\/.+> eval:/, " ");
-        },
+        }
 
-        cleanStack: function (stack) {
-            var stackLines = stack.split("\n");
-            var res = "";
-    //         var oldRes = "";
-            for (var i = 0; i < stackLines.length; i++) {
+        static cleanStack(stack: string):string {
+            let stackLines = stack.split("\n");
+            let res = "";
+    //         let oldRes = "";
+            for (let i = 0; i < stackLines.length; i++) {
                 if (i === 0 && stackLines[0].match(/^[a-zA-Z]*Error:/)) {
                     continue;
                 }
@@ -496,7 +493,7 @@
                     break;
                 }
 
-                var line = AudeGUI.Runtime.replaceStackLine(stackLines[i]);
+                let line = Runtime.replaceStackLine(stackLines[i]);
                 if (line.match(/^\s*\d+:\d+\s*$/)) {
                     break;
                 }
@@ -506,23 +503,32 @@
 
     //         return oldRes;
             return res;
-        },
+        }
 
-        runProgramCode: function (f, moduleName, run, get_automaton, get_automata, get_mealy, get_moore, get_pushdown_automaton) {
+        static runProgramCode(
+                f: (runFun: any, getAutomatonFun: any, getAutomataFun: any, getMealyFun: any, getMooreFun: any, getPushdownFun: any, index: number) => any,
+                moduleName: string,
+                run: any,
+                get_automaton: any,
+                get_automata: any,
+                get_mealy: any,
+                get_moore: any,
+                get_pushdown_automaton: any
+        ): void {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
                 loadingProgNot = null;
             }
 
             try {
-                var res = f(
+                let res = f(
                     run,
                     get_automaton,
                     get_automata,
                     get_mealy,
                     get_moore,
                     get_pushdown_automaton,
-                    AudeGUI.mainDesigner.currentIndex,
+                    AudeGUI.mainDesigner.currentIndex
                 );
 
                 if (typeof res !== "undefined") {
@@ -534,23 +540,23 @@
                     title: libD.format(_("Error executing {0}"), moduleName),
                     content: libD.jso2dom(
                         ["div", {style:"white-space:pre-wrap"},
-                            e.toString() + "\n" + AudeGUI.Runtime.cleanStack(e.stack)
+                            e.toString() + "\n" + Runtime.cleanStack(e.stack)
                         ]
                     )
                 });
                 throw e;
             }
-        },
+        }
 
-        loadAudescriptCode: function (moduleName, audescriptCode, callback) {
-            var data = {};
-            var includes = null;
-            var code = null;
+        static loadAudescriptCode(moduleName: string, audescriptCode: string, callback: (code: string) => any): void {
+            let data = {};
+            let includes = null;
+            let code = null;
 
             try {
                 code = eval(audescript2js(audescriptCode, moduleName, moduleName + ".ajs", data));
 
-                includes = data.includes;
+                includes = (data as any).includes;
             } catch (e) {
                 AudeGUI.notify(
                     libD.format(
@@ -569,7 +575,7 @@
                 throw e;
             }
 
-            AudeGUI.Runtime.loadIncludes(
+            Runtime.loadIncludes(
                 includes,
                 function () {
                     if (moduleName) {
@@ -579,9 +585,9 @@
                     callback(code);
                 }
             );
-        },
+        }
 
-        loadModule: function (moduleName, callback) {
+        static loadModule(moduleName: string, callback: () => any) {
             if (modules[curAlgo.name]) {
                 if (callback) {
                     callback();
@@ -596,18 +602,18 @@
 
             loadedModule[moduleName] = [callback];
 
-            getFile(
+            FileIO.getFile(
                 "algos/" + moduleName + ".ajs?" + Date.now(),
                 function (f) {
-                    AudeGUI.Runtime.loadAudescriptCode(moduleName, f, function () {
-                        var m = loadedModule[moduleName];
+                    Runtime.loadAudescriptCode(moduleName, f, function () {
+                        let m = loadedModule[moduleName];
                         while (m.length) {
                             (m.pop())();
                         }
                     });
                 },
                 function (message, status) {
-                    var msg = null;
+                    let msg = null;
 
                     if (message === "status") {
                         msg = libD.format(
@@ -632,9 +638,9 @@
                     );
                 }
             );
-        },
+        }
 
-        loadAS: function (code) {
+        static loadAS(code: string): void {
             if (loadingProgNot) {
                 loadingProgNot.close(true);
             }
@@ -646,21 +652,9 @@
                 delay: 1000
             });
 
-            AudeGUI.Runtime.loadAudescriptCode(null, code, AudeGUI.Runtime.runProgram);
+            Runtime.loadAudescriptCode(null, code, Runtime.runProgram);
         }
     };
 
-    //FIXME
-    pkg.heap = function (a) {
-        Object.defineProperty(a, "top", {
-            enumerable: false,
-            configurable: false,
-            writable: false,
-            value: function () {
-                return a[a.length - 1];
-            }
-        });
-
-        return a;
-    };
-}(window));
+    AudeGUI.Runtime = Runtime;
+})();
