@@ -18,22 +18,22 @@
 /* globals ace */
 
 
-(function (pkg) {
-    "use strict";
+(function () {
+    let automatoncodeedit = null;
+    let aceEditor = null;
 
-    var automatoncodeedit = null;
-    var AudeGUI = pkg.AudeGUI;
+    let AudeGUI = window.AudeGUI;
 
-    AudeGUI.AutomatonCodeEditor = {
-        getText: function () {
+    class AutomatonCodeEditor {
+        static getText(): string {
             return automatoncodeedit.value;
-        },
+        };
 
-        setText: function (t) {
+        static setText(t: string): void {
             automatoncodeedit.value = t;
-        },
+        };
 
-        load: function () {
+        static load(): void {
             automatoncodeedit = document.getElementById("automatoncodeedit");
             automatoncodeedit.spellcheck = false;
 
@@ -48,29 +48,31 @@
         }
     };
 
-    var aceEditor = null;
+    AudeGUI.AutomatonCodeEditor = AutomatonCodeEditor;
 
-    AudeGUI.ProgramEditor = {
-        getText: function () {
+    class ProgramEditor {
+        static getText(): string {
             return aceEditor ? aceEditor.getValue() : "";
-        },
+        };
 
-        setText: function (t) {
+        static setText(t: string): void {
             AudeGUI.ProgramEditor.enable();
             aceEditor.setValue(t);
-        },
+        };
 
-        enable: function () {
+        static enable(): void {
             if (!aceEditor) {
                 aceEditor = ace.edit("codeedit");
                 aceEditor.getSession().setOption("useWorker", false);
                 aceEditor.getSession().setMode("ace/mode/audescript");
                 aceEditor.$blockScrolling = Infinity;
             }
-        },
+        };
 
-        load: function () {
+        static load(): void {
             // Nothing to do here yet
-        }
+        };
     };
-}(window));
+
+    AudeGUI.ProgramEditor = ProgramEditor;
+}());

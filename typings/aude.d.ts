@@ -36,6 +36,7 @@ interface Window {
     WordExecution: any,
     Runtime: any,
     AutomatonCodeEditor: any,
+    ProgramEditor: any,
     AutomataList: any,
     Help: any,
 
