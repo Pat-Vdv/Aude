@@ -6,10 +6,14 @@ declare class Heap extends Array {
 
 interface Window {
   AudeGUI: {
+    setCurrentAutomatonIndex: any,
     automatonFileInput: any,
     mainDesigner: AudeDesigner,
     notifier: any,
     openAutomaton: any,
+    initEvents: () => void,
+    save: any,
+    saveAs: any,
     Results: {
       deferedResultShow: boolean,
       enable: () => void,
@@ -89,6 +93,9 @@ declare class AudeDesigner {
   stateRemoveBackgroundColor(index?, state?): void;
   static initiateNewState(): void;
   static outerHTML(node: Node): string;
+  onUndoRedoEvent: any;
+  undo: any;
+  redo: any;
 }
 
 declare class Moore {

@@ -16,11 +16,8 @@
 */
 
 window.AudeGUI.initEvents = function () {
-    "use strict";
-
-    var AudeGUI = window.AudeGUI;
-
-    var exportResult = document.getElementById("export-result");
+    let AudeGUI = window.AudeGUI;
+    let exportResult = document.getElementById("export-result");
 
     window.addEventListener("keydown", function (e) {
         if (e.ctrlKey || e.metaKey) {
@@ -33,7 +30,7 @@ window.AudeGUI.initEvents = function () {
             if (e.keyCode === 69) {
                 if (e.shiftKey) {
                     if (!AudeGUI.audeExam) {
-                        exportResult.onclick();
+                        AudeGUI.Results.export();
                     }
                 }
                 e.preventDefault();
@@ -53,7 +50,7 @@ window.AudeGUI.initEvents = function () {
     });
 
     (function () {
-        var switchmode = document.getElementById("switchmode");
+        let switchmode = document.getElementById("switchmode") as HTMLSelectElement;
 
         switchmode.onchange = function () {
             AudeGUI.setCurrentMode(switchmode.value);
@@ -89,7 +86,7 @@ window.AudeGUI.initEvents = function () {
     AudeGUI.automatonFileInput.onchange = AudeGUI.openAutomaton;
 
     (function () {
-        var open = document.getElementById("open")
+        let open = document.getElementById("open")
         if (!open.onclick) {
             open.onclick = function () {
                 if (AudeGUI.getCurrentMode() === "program") {
@@ -162,10 +159,10 @@ window.AudeGUI.initEvents = function () {
     }
 
     (function () {
-        var hamburger = document.getElementById("hamburger");
+        let hamburger = document.getElementById("hamburger");
 
         if (hamburger) {
-            var menu = document.getElementById("menu");
+            let menu = document.getElementById("menu");
 
             hamburger.onclick = function () {
                 window.setTimeout(
@@ -207,7 +204,7 @@ window.AudeGUI.initEvents = function () {
             let listAlgosShown = false;
             const listAlgos = document.getElementById("container-algos");
             const arrowPredefAlgos = document.getElementById("arrow-select-algo");
-            const listAlgosSearch = document.getElementById("container-algos-search");
+            const listAlgosSearch = document.getElementById("container-algos-search") as HTMLInputElement;
             let algoButtons = null;
 
             function select(button) {
@@ -247,7 +244,7 @@ window.AudeGUI.initEvents = function () {
                     listAlgosShown = true;
                     AudeGUI.onResize();
                     listAlgosSearch.focus();
-                    listAlgosSearch.oninput();
+                    listAlgosSearchInput();
                 }
 
                 e.stopPropagation();
@@ -289,8 +286,8 @@ window.AudeGUI.initEvents = function () {
                 }
             };
 
-            listAlgosSearch.oninput = function () {
-                var v = listAlgosSearch.value;
+            function listAlgosSearchInput() {
+                let v = listAlgosSearch.value;
 
                 if (selected && v) {
                     select(null);
@@ -306,12 +303,14 @@ window.AudeGUI.initEvents = function () {
                         button.classList.add("algo-hidden");
                     }
                 }
-            };
+            }
+
+            listAlgosSearch.oninput = listAlgosSearchInput;
 
             document.getElementById("container-algos-search-clear").onclick = function () {
                 listAlgosSearch.value = "";
                 listAlgosSearch.focus();
-                listAlgosSearch.oninput();
+                listAlgosSearchInput();
             };
         }());
 
@@ -347,12 +346,4 @@ window.AudeGUI.initEvents = function () {
             AudeGUI.QuestionList.run();
         };
     }
-
-    document.getElementById("automaton_plus").onchange = function () {
-        AudeGUI.setCurrentAutomatonIndex(
-            parseInt(
-                document.getElementById("automaton_plus").value,
-                10)
-        );
-    };
 };
