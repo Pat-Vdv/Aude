@@ -15,64 +15,54 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* globals ace */
-
-
-(function () {
+namespace AudeGUI.AutomatonCodeEditor {
     let automatoncodeedit = null;
+
+    export function getText(): string {
+        return automatoncodeedit.value;
+    };
+
+    export function setText(t: string): void {
+        automatoncodeedit.value = t;
+    };
+
+    export function load(): void {
+        automatoncodeedit = document.getElementById("automatoncodeedit");
+        automatoncodeedit.spellcheck = false;
+
+        automatoncodeedit.onchange = function () {
+            if (automatoncodeedit.value) {
+                AudeGUI.mainDesigner.setAutomatonCode(
+                    automatoncodeedit.value,
+                    AudeGUI.mainDesigner.currentIndex
+                );
+            }
+        };
+    }
+}
+
+namespace AudeGUI.ProgramEditor {
     let aceEditor = null;
 
-    let AudeGUI = window.AudeGUI;
+    export function getText(): string {
+        return aceEditor ? aceEditor.getValue() : "";
+    };
 
-    class AutomatonCodeEditor {
-        static getText(): string {
-            return automatoncodeedit.value;
-        };
+    export function setText(t: string): void {
+        AudeGUI.ProgramEditor.enable();
+        aceEditor.setValue(t);
+    };
 
-        static setText(t: string): void {
-            automatoncodeedit.value = t;
-        };
-
-        static load(): void {
-            automatoncodeedit = document.getElementById("automatoncodeedit");
-            automatoncodeedit.spellcheck = false;
-
-            automatoncodeedit.onchange = function () {
-                if (automatoncodeedit.value) {
-                    AudeGUI.mainDesigner.setAutomatonCode(
-                        automatoncodeedit.value,
-                        AudeGUI.mainDesigner.currentIndex
-                    );
-                }
-            };
+    export function enable(): void {
+        if (!aceEditor) {
+            aceEditor = ace.edit("codeedit");
+            aceEditor.getSession().setOption("useWorker", false);
+            aceEditor.getSession().setMode("ace/mode/audescript");
+            aceEditor.$blockScrolling = Infinity;
         }
     };
 
-    AudeGUI.AutomatonCodeEditor = AutomatonCodeEditor;
-
-    class ProgramEditor {
-        static getText(): string {
-            return aceEditor ? aceEditor.getValue() : "";
-        };
-
-        static setText(t: string): void {
-            AudeGUI.ProgramEditor.enable();
-            aceEditor.setValue(t);
-        };
-
-        static enable(): void {
-            if (!aceEditor) {
-                aceEditor = ace.edit("codeedit");
-                aceEditor.getSession().setOption("useWorker", false);
-                aceEditor.getSession().setMode("ace/mode/audescript");
-                aceEditor.$blockScrolling = Infinity;
-            }
-        };
-
-        static load(): void {
-            // Nothing to do here yet
-        };
+    export function load(): void {
+        // Nothing to do here yet
     };
-
-    AudeGUI.ProgramEditor = ProgramEditor;
-}());
+};

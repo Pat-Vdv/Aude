@@ -332,7 +332,6 @@ function pushSymbol(symbols, stack) {
                 });
             }
 
-            transList = null;
             return function (startState, symbol, stackSymbol, newStackSymbol, getEndStates) {
                 if (getEndStates) {
                     return endStates;
@@ -346,43 +345,20 @@ function pushSymbol(symbols, stack) {
                         return symbolsByState[aude.elementToString(startState)] || new Set();
 
                     case 2:
-                        var s;
                         if (symbol === pkg.epsilon || symbol === "\\e" || symbol === "ε") {
-                            s = (endStatesStackSymbolNewStackSymbolByStartStateEpsilon[aude.elementToString(startState)]) || new Set();
-                            if (!determinizedFunction && s === undefined) {
-                                return new Set();
-                            }
-
-                            return s;
+                            return (endStatesStackSymbolNewStackSymbolByStartStateEpsilon[aude.elementToString(startState)]) || new Set();
                         }
 
-                        s = (endStatesStackSymbolNewStackSymbolByStartStateBySymbols[aude.elementToString(startState)] || [])[aude.elementToString(symbol)];
-
-                        if (!determinizedFunction && s === undefined) {
-                            return new Set();
-                        }
-
-                        return s;
+                        return (endStatesStackSymbolNewStackSymbolByStartStateBySymbols[aude.elementToString(startState)] || [])[aude.elementToString(symbol)] || new Set();
 
                     case 3:
-                        var s;
                         if (symbol === pkg.epsilon || symbol === "\\e" || symbol === "ε") {
-                            s = (endStatesNewStackSymbolByStartStateEpsilon[aude.elementToString(startState)] || [])[aude.elementToString(stackSymbol)];
-                            if (!determinizedFunction && s === undefined) {
-                                return new Set();
-                            }
-                            return s;
+                            return (endStatesNewStackSymbolByStartStateEpsilon[aude.elementToString(startState)] || [])[aude.elementToString(stackSymbol)] || new Set();
                         }
 
-                        s = (
+                        return (
                             (endStatesNewStackSymbolByStartStateBySymbols[aude.elementToString(startState)] || [])[aude.elementToString(symbol)] || []
-                        )[aude.elementToString(stackSymbol)];
-
-                        if (!determinizedFunction && s === undefined) {
-                            return new Set();
-                        }
-
-                        return s;
+                        )[aude.elementToString(stackSymbol)] || new Set();
                 }
             };
         },
@@ -528,10 +504,11 @@ function pushSymbol(symbols, stack) {
 
             var i;
             function browseState(tab) {
+                var nStack, nTransition;
                 if (!visited.has(tab.endState) && tab.stackSymbol === null && tab.newStackSymbol === null) {
                     // For transition without modification of the stack
-                    var nStack = cs[i].stack.slice();
-                    var nTransition = cs[i].transitions.slice();
+                    nStack = cs[i].stack.slice();
+                    nTransition = cs[i].transitions.slice();
 
                     th.lastTakenTransitions.add(
                         new pkg.PushdownTransition(
@@ -566,8 +543,8 @@ function pushSymbol(symbols, stack) {
                         isTopStack(tab.stackSymbol, cs[i].stack)
                     )
                 ) {
-                    var nStack = cs[i].stack.slice();
-                    var nTransition = cs[i].transitions.slice();
+                    nStack = cs[i].stack.slice();
+                    nTransition = cs[i].transitions.slice();
 
                     th.lastTakenTransitions.add(
                         new pkg.PushdownTransition(
@@ -579,8 +556,9 @@ function pushSymbol(symbols, stack) {
                         )
                     );
 
-                    if (tab.stackSymbol!==pkg.epsilon) {
-                        for (var c of tab.stackSymbol) {
+                    if (tab.stackSymbol !== pkg.epsilon) {
+                        let times = tab.stackSymbol;
+                        while (times --> 0) {
                             nStack.pop();
                         }
                     }
@@ -666,10 +644,11 @@ function pushSymbol(symbols, stack) {
                         )
                     );
 
-                    if (tab.stackSymbol!==pkg.epsilon) {
+                    if (tab.stackSymbol !== pkg.epsilon) {
                         // Pop the stack only if the transition is not a;ε/A
 
-                        for (var c of tab.stackSymbol) {
+                        let times = tab.stackSymbol;
+                        while (times --> 0) {
                             nStack.pop();
                         }
                     }
@@ -696,15 +675,15 @@ function pushSymbol(symbols, stack) {
                 }
             }
 
-            for (i = 0; i < cs.length; ++i) {
-                this.currentStates.remove(cs[i]);
+            for (const c of cs) {
+                this.currentStates.remove(c);
             }
 
-            for (i = 0; i < cs.length; ++i) {
+            for (const c of cs) {
                 // Return all the transitions
                 // with the  stackSymbol, current top stack symbol and
                 // current state
-                transitionFunction(cs[i].state, symbol).forEach(addState);
+                transitionFunction(c.state, symbol).forEach(addState);
             }
 
             this.currentStatesAddReachablesByEpsilon(transitionFunction);
@@ -716,9 +695,9 @@ function pushSymbol(symbols, stack) {
         // Don't forget to set the current state to the initial state if you
         // need it.
         runWord: function (symbols) {
-            var i, transitionFunction = this.getTransitionFunction();
-            for (i in symbols) {
-                this.runSymbol(symbols[i], transitionFunction);
+            const transitionFunction = this.getTransitionFunction();
+            for (const symbol of symbols) {
+                this.runSymbol(symbol, transitionFunction);
             }
        },
 
@@ -739,7 +718,7 @@ function pushSymbol(symbols, stack) {
             var nStack = [];
             pushSymbol(this.getInitialStackSymbol(), nStack);
 
-            // Initialise the current state
+            // Initialize the current state
             this.setCurrentState({
                 "state": this.getInitialState(),
                 "stack": nStack,
@@ -747,19 +726,23 @@ function pushSymbol(symbols, stack) {
             });
 
             this.runWord(symbols);
-            if (mode===0 || mode==="stack") {
-                // The stack is empty (only the initial stackS ymbol) and we
-                // read all the symbols of the word
-                var accepted = (
-                    this.isStackEmpty() &&
-                    this.currentStates.card() > 0
-                );
-            } else if (mode === 1 || mode === "final") {
-                // End on a final state
-                var accepted = this.isFinal();
-            } else if (mode === 2 || mode === "stackFinal") {
-                var accepted = this.isFinalAndStackEmpty();
-            }
+            var accepted = (
+                (mode===0 || mode==="stack")
+                    ? (
+                        // The stack is empty (only the initial stackS ymbol) and we
+                        // read all the symbols of the word
+                        this.isStackEmpty() &&
+                        this.currentStates.card() > 0
+                    ) : (
+                        (mode === 1 || mode === "final")
+                            ? this.isFinal() // End on a final state
+                            : (
+                                (mode === 2 || mode === "stackFinal")
+                                    ? this.isFinalAndStackEmpty()
+                                    : false // should never happen
+                            )
+                    )
+            )
 
             this.setCurrentStates(states);
             this.lastTakenTransitions = transitions;

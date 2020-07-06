@@ -109,4 +109,5 @@ declare namespace libD {
   export function l10n(): (s: string) => string;
   export var need: any;
   export var notify: any;
+  export var Notify: any;
 }

@@ -1,24 +1,24 @@
 /**
- * "Static class" that handles the question list/training exercises.
+ * Handles the question list/training exercises.
  */
-class QuestionList {
-    private readonly _ = window.AudeGUI.l10n;
+namespace AudeGUI.QuestionList {
+    const _ = window.AudeGUI.l10n;
 
     /** The libD window object for the Question List */
-    static win: any;
+    let win: any;
 
     /** Reference to the HTML element containing the question list. */
-    static questionList: HTMLElement;
+    let questionList: HTMLElement;
+
     /** HTML Button element that corresponds to the currently selected chapter. */
-    static selectedChapterButton: HTMLButtonElement = undefined;
+    let selectedChapterButton: HTMLButtonElement = undefined;
 
-    static selectedChapter: number = undefined;
+    let selectedChapter: number = undefined;
 
-    static load(): void { return; }
-    static run = QuestionList.openQuestionList;
+    export function load(): void { return; }
 
     /** Question list window's content as JSON array (to be fed into libD.jso2dom) */
-    static readonly questionWindowContent = (
+    const questionWindowContent = (
         ["div#questionList.libD-ws-colors-auto libD-ws-size-auto", { "#": "root" }, [
             ["div#questionList-container-button-navigation",
                 [
@@ -71,75 +71,75 @@ class QuestionList {
     );
 
     /** Returns the JSON array corresponding to a question button with the value and text given. */
-    static getQuestionButton(value: string, text: string) {
+    function getQuestionButton(value: string, text: string) {
         return ["button.questionList-question-select", { "value": value }, text];
     }
 
     /** Array of the question button element's JSON for each chapter. */
-    static readonly chapterQuestionLists = [
+    const chapterQuestionLists = [
         [
-            QuestionList.getQuestionButton("MCQ_C1", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
-            QuestionList.getQuestionButton("Complement", window.AudeGUI.l10n("Complement an automaton")), ["br"],
-            QuestionList.getQuestionButton("Complete", window.AudeGUI.l10n("Complete an automaton")), ["br"],
-            QuestionList.getQuestionButton("Product", window.AudeGUI.l10n("Find the product of 2 automata")), ["br"],
-            QuestionList.getQuestionButton("Minimize", window.AudeGUI.l10n("Minimize an automaton")), ["br"],
-            QuestionList.getQuestionButton("EquivalentStates", window.AudeGUI.l10n("List all the equivalent states of an automaton")), ["br"],
-            QuestionList.getQuestionButton("EquivalentAutomata", window.AudeGUI.l10n("Equivalency between 2 automata")), ["br"],
-            //QuestionList.getQuestionButton("Automaton2Table", window.AudeGUI.l10n("Give the tabular form of the automaton")), ["br"],
-            //QuestionList.getQuestionButton("Table2Automaton", window.AudeGUI.l10n("Give the automaton from the table")), ["br"],
-            QuestionList.getQuestionButton("Reachable", window.AudeGUI.l10n("List all reachable states of an automaton")), ["br"],
-            QuestionList.getQuestionButton("Coreachable", window.AudeGUI.l10n("List all co-reachable states of an automaton")), ["br"],
-            //QuestionList.getQuestionButton("RecognizeLanguageAutomaton", window.AudeGUI.l10n("Give an automaton that recognizes a given language")), ["br"],
-            QuestionList.getQuestionButton("Word", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
+            getQuestionButton("MCQ_C1", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
+            getQuestionButton("Complement", window.AudeGUI.l10n("Complement an automaton")), ["br"],
+            getQuestionButton("Complete", window.AudeGUI.l10n("Complete an automaton")), ["br"],
+            getQuestionButton("Product", window.AudeGUI.l10n("Find the product of 2 automata")), ["br"],
+            getQuestionButton("Minimize", window.AudeGUI.l10n("Minimize an automaton")), ["br"],
+            getQuestionButton("EquivalentStates", window.AudeGUI.l10n("List all the equivalent states of an automaton")), ["br"],
+            getQuestionButton("EquivalentAutomata", window.AudeGUI.l10n("Equivalency between 2 automata")), ["br"],
+            //getQuestionButton("Automaton2Table", window.AudeGUI.l10n("Give the tabular form of the automaton")), ["br"],
+            //getQuestionButton("Table2Automaton", window.AudeGUI.l10n("Give the automaton from the table")), ["br"],
+            getQuestionButton("Reachable", window.AudeGUI.l10n("List all reachable states of an automaton")), ["br"],
+            getQuestionButton("Coreachable", window.AudeGUI.l10n("List all co-reachable states of an automaton")), ["br"],
+            //getQuestionButton("RecognizeLanguageAutomaton", window.AudeGUI.l10n("Give an automaton that recognizes a given language")), ["br"],
+            getQuestionButton("Word", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
         ],
         [
-            QuestionList.getQuestionButton("MCQ_C2", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
-            QuestionList.getQuestionButton("Determinize", window.AudeGUI.l10n("Determinize an automaton")), ["br"],
-            QuestionList.getQuestionButton("Determinize_Minimize", window.AudeGUI.l10n("Determinize and minimize an automaton")), ["br"],
-            QuestionList.getQuestionButton("WordNonDet", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
+            getQuestionButton("MCQ_C2", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
+            getQuestionButton("Determinize", window.AudeGUI.l10n("Determinize an automaton")), ["br"],
+            getQuestionButton("Determinize_Minimize", window.AudeGUI.l10n("Determinize and minimize an automaton")), ["br"],
+            getQuestionButton("WordNonDet", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
         ],
         [
-            QuestionList.getQuestionButton("MCQ_C3", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
-            QuestionList.getQuestionButton("EliminateEpsilon", window.AudeGUI.l10n("Eliminate the ε-transitions from an automaton")), ["br"],
-            QuestionList.getQuestionButton("Determinize_EliminateEpsilon", window.AudeGUI.l10n("Determinize an automaton and eliminate its ε-transitions")), ["br"],
-            QuestionList.getQuestionButton("WordEpsilon", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
+            getQuestionButton("MCQ_C3", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
+            getQuestionButton("EliminateEpsilon", window.AudeGUI.l10n("Eliminate the ε-transitions from an automaton")), ["br"],
+            getQuestionButton("Determinize_EliminateEpsilon", window.AudeGUI.l10n("Determinize an automaton and eliminate its ε-transitions")), ["br"],
+            getQuestionButton("WordEpsilon", window.AudeGUI.l10n("Give a word recognized by an automaton")), ["br"],
         ],
         [
-            QuestionList.getQuestionButton("MCQ_C4", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
-            QuestionList.getQuestionButton("Automaton2Regexp", window.AudeGUI.l10n("Give a regular expression equivalent to an automaton")), ["br"],
-            QuestionList.getQuestionButton("Regexp2Automaton", window.AudeGUI.l10n("Give an automaton equivalent to a regular expression")), ["br"],
-            //QuestionList.getQuestionButton("RecognizeLanguageRegexp", window.AudeGUI.l10n("Give a regular expression that recognizes a given language")), ["br"],
-            QuestionList.getQuestionButton("WordRegexp", window.AudeGUI.l10n("Give a word recognized by a regular expression")), ["br"],
+            getQuestionButton("MCQ_C4", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
+            getQuestionButton("Automaton2Regexp", window.AudeGUI.l10n("Give a regular expression equivalent to an automaton")), ["br"],
+            getQuestionButton("Regexp2Automaton", window.AudeGUI.l10n("Give an automaton equivalent to a regular expression")), ["br"],
+            //getQuestionButton("RecognizeLanguageRegexp", window.AudeGUI.l10n("Give a regular expression that recognizes a given language")), ["br"],
+            getQuestionButton("WordRegexp", window.AudeGUI.l10n("Give a word recognized by a regular expression")), ["br"],
         ],
         [
-            QuestionList.getQuestionButton("MCQ_C5", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
-            QuestionList.getQuestionButton("Grammar2Automaton", window.AudeGUI.l10n("Give an automaton equivalent to a right linear grammar")), ["br"],
-            QuestionList.getQuestionButton("Automaton2Grammar", window.AudeGUI.l10n("Give a right linear grammar equivalent to an automaton")), ["br"],
-            QuestionList.getQuestionButton("LeftGrammar2RightGrammar", window.AudeGUI.l10n("Convert a left linear grammar to a right linear grammar")), ["br"],
-            QuestionList.getQuestionButton("WordGrammar", window.AudeGUI.l10n("Give a word recognized by a linear grammar")), ["br"],
+            getQuestionButton("MCQ_C5", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
+            getQuestionButton("Grammar2Automaton", window.AudeGUI.l10n("Give an automaton equivalent to a right linear grammar")), ["br"],
+            getQuestionButton("Automaton2Grammar", window.AudeGUI.l10n("Give a right linear grammar equivalent to an automaton")), ["br"],
+            getQuestionButton("LeftGrammar2RightGrammar", window.AudeGUI.l10n("Convert a left linear grammar to a right linear grammar")), ["br"],
+            getQuestionButton("WordGrammar", window.AudeGUI.l10n("Give a word recognized by a linear grammar")), ["br"],
         ],
         [
-            QuestionList.getQuestionButton("MCQ_C6", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
+            getQuestionButton("MCQ_C6", window.AudeGUI.l10n("Multiple choice questions")), ["br"],
         ]
     ];
 
     /** Shows the list of questions. */
-    static openQuestionList(): void {
+    export function run(): void {
         // If the window already exists, we simply show it.
-        if (QuestionList.win && QuestionList.win.ws) {
-            QuestionList.win.show();
+        if (win && win.ws) {
+            win.show();
             return;
         }
-        QuestionList.drawQuestionList();
+        drawQuestionList();
     }
 
     /** Draws the question list into a new window (if another is already opened, closes it) */
-    static drawQuestionList(): void {
+    function drawQuestionList(): void {
         AutomatonPrograms.loadPrograms();
 
-        if (QuestionList.win && QuestionList.win.ws) {
-            QuestionList.win.close();
-            QuestionList.questionList.parentNode.removeChild(QuestionList.questionList);
+        if (win && win.ws) {
+            win.close();
+            questionList.parentNode.removeChild(questionList);
         }
 
         // We create the new window and its contents.
@@ -150,47 +150,47 @@ class QuestionList {
             chapterContentDiv: undefined as HTMLElement,
             btnChapterMenu: undefined as HTMLButtonElement,
         };
-        QuestionList.win = libD.newWin({
+        win = libD.newWin({
             title: window.AudeGUI.l10n("Question List"),
             show: true,
             fullscreen: true,
-            content: libD.jso2dom(QuestionList.questionWindowContent, refs)
+            content: libD.jso2dom(questionWindowContent, refs)
         });
 
         // We bind their action to the settings and close button.
-        refs.btnSettings.onclick = QuestionList.openRandomGenerationSettings;
-        refs.btnChapterMenu.onclick = QuestionList.drawQuestionList;
+        refs.btnSettings.onclick = openRandomGenerationSettings;
+        refs.btnChapterMenu.onclick = drawQuestionList;
         refs.btnChapterMenu.style.display = "none";
-        refs.btnClose.onclick = QuestionList.close;
+        refs.btnClose.onclick = close;
 
         // We add the action to each of the chapter button.
         const chapterButtons = document.getElementsByClassName("questionList-selection-chapter-cell-button");
 
         for (const chapBtn of chapterButtons as HTMLCollectionOf<HTMLButtonElement>) {
             chapBtn.addEventListener("click", e => {
-                if (QuestionList.selectedChapterButton) {
+                if (selectedChapterButton) {
                     // Change color of the previously selected chapter button.
-                    QuestionList.selectedChapterButton.classList.remove("questionList-selected");
+                    selectedChapterButton.classList.remove("questionList-selected");
                 }
 
-                QuestionList.selectedChapterButton = e.target as HTMLButtonElement;
-                QuestionList.selectedChapterButton.classList.add("questionList-selected");
+                selectedChapterButton = e.target as HTMLButtonElement;
+                selectedChapterButton.classList.add("questionList-selected");
 
-                QuestionList.selectedChapter = parseInt(QuestionList.selectedChapterButton.value, 10);
-                QuestionList.drawQuestionsForChapter(QuestionList.selectedChapter, refs.chapterContentDiv);
+                selectedChapter = parseInt(selectedChapterButton.value, 10);
+                drawQuestionsForChapter(selectedChapter, refs.chapterContentDiv);
             });
 
-            if (QuestionList.selectedChapter !== undefined && parseInt(chapBtn.value, 10) === QuestionList.selectedChapter) {
+            if (selectedChapter !== undefined && parseInt(chapBtn.value, 10) === selectedChapter) {
                 chapBtn.classList.add("questionList-selected");
-                QuestionList.selectedChapterButton = chapBtn;
+                selectedChapterButton = chapBtn;
             }
         }
 
-        QuestionList.questionList = refs.root;
+        questionList = refs.root;
 
         // If a chapter was previously selected, display its questions.
-        if (QuestionList.selectedChapter !== undefined) {
-            QuestionList.drawQuestionsForChapter(QuestionList.selectedChapter, refs.chapterContentDiv);
+        if (selectedChapter !== undefined) {
+            drawQuestionsForChapter(selectedChapter, refs.chapterContentDiv);
         }
     }
 
@@ -201,9 +201,9 @@ class QuestionList {
      * @see QuestionList#chapterQuestionLists
      * @param chapterNumber - The chapter for which to get the HTML questions.
      */
-    static getQuestionsHTMLForChapter(chapterNumber: number) {
-        if (chapterNumber >= 1 && chapterNumber <= QuestionList.chapterQuestionLists.length) {
-            return QuestionList.chapterQuestionLists[chapterNumber - 1];
+    function getQuestionsHTMLForChapter(chapterNumber: number) {
+        if (chapterNumber >= 1 && chapterNumber <= chapterQuestionLists.length) {
+            return chapterQuestionLists[chapterNumber - 1];
         } else {
             return ["span.questionList-question", window.AudeGUI.l10n("This chapter doesn't contain any question (yet)...")];
         }
@@ -214,10 +214,10 @@ class QuestionList {
      * @param chapterNumber - The number of the chapter to draw.
      * @param chapterContentDiv - The HTML element to draw the chapter in.
      */
-    static drawQuestionsForChapter(chapterNumber: number, chapterContentDiv: HTMLElement): void {
+    function drawQuestionsForChapter(chapterNumber: number, chapterContentDiv: HTMLElement): void {
         chapterContentDiv.textContent = "";
 
-        chapterContentDiv.appendChild(libD.jso2dom(QuestionList.getQuestionsHTMLForChapter(chapterNumber)));
+        chapterContentDiv.appendChild(libD.jso2dom(getQuestionsHTMLForChapter(chapterNumber)));
 
         // We bind its action to each of the question button for this chapter.
         const questionButtons =
@@ -234,7 +234,7 @@ class QuestionList {
 
                 document.getElementById("questionList-btnbar-chapterMenu").style.display = "unset";
                 document.getElementById("questionList-selection-chapter").style.display = "none";
-                QuestionList.initiateNewQuestion(qSubtype, chapterContentDiv);
+                initiateNewQuestion(qSubtype, chapterContentDiv);
             };
         }
     }
@@ -244,10 +244,10 @@ class QuestionList {
      * @param qSubtype - The subtype of the question to launch.
      * @param div - The Element in which to display the question.
      */
-    static initiateNewQuestion(qSubtype: QuestionSubType, div: HTMLElement) {
+    function initiateNewQuestion(qSubtype: QuestionSubType, div: HTMLElement) {
         const questionGen = new QuestionGenerator();
         const q = questionGen.generateFromSubtype(qSubtype);
-        QuestionList.startQuestion(q, div);
+        startQuestion(q, div);
     }
 
     /**
@@ -256,7 +256,7 @@ class QuestionList {
      * @param q - The question to present to the user.
      * @param div - The HTML DOM Element to display the question in. Will be cleared.
      */
-    static startQuestion(q: Question, div: HTMLElement) {
+    function startQuestion(q: Question, div: HTMLElement) {
         div.innerHTML = "";
 
         // We display the question's details.
@@ -284,7 +284,7 @@ class QuestionList {
                 window.AudeGUI.notify(window.AudeGUI.l10n("Success !"), window.AudeGUI.l10n("Your answer was correct ! Moving you to a new question..."), "ok", 4000);
                 setTimeout(
                     () => {
-                        QuestionList.initiateNewQuestion(q.subtype, div);
+                        initiateNewQuestion(q.subtype, div);
                     },
                     1500);
             } else {
@@ -293,20 +293,19 @@ class QuestionList {
         };
 
         refs.btnRestart.onclick = (e) => {
-            QuestionList.initiateNewQuestion(q.subtype, div);
+            initiateNewQuestion(q.subtype, div);
         };
     }
 
-    static openRandomGenerationSettings() {
+    function openRandomGenerationSettings() {
         return;
     }
 
     /** Hides the question list window. */
-    static close() {
-        if (!QuestionList.questionList || !QuestionList.win) {
+    function close() {
+        if (!questionList || !win) {
             return;
         }
-        QuestionList.win.minimize();
+        win.minimize();
     }
 }
-window.AudeGUI.QuestionList = QuestionList;

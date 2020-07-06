@@ -33,7 +33,6 @@
     var RESIZE_HANDLE_WIDTH = 12;
     var TRANSITION_HANDLE_WIDTH = 6;
     var CSSP = "automata-designer-";
-    var OVERLAY_TIMEOUT = 1500;
     var OVERLAY_TOP_OFFSET = 10;
     var MOVE_BEFORE_BLOCK_OVERLAY = 3;
 
@@ -258,8 +257,7 @@
             p = pathSegList.getItem(2);
 
             var pi = pathSegList.getItem(1);
-            var rx = ellipseD.rx.baseVal.value,
-                ry = ellipseD.ry.baseVal.value;
+            var ry = ellipseD.ry.baseVal.value;
 
             pointOnEllipse(ellipseD, cx - 10, cy - 18 - ry, po, 0, cx, cy);
 
@@ -401,12 +399,13 @@
             rx * rx * Math.pow(Math.sin(saveAlpha * Math.PI / 180), 2)
         );
 
+        var x, y;
         if (cy > polygon.points[0].y) {
-            var x = cx - t * Math.cos(saveAlpha * Math.PI / 180);
-            var y = cy - t * Math.sin(saveAlpha * Math.PI / 180);
+            x = cx - t * Math.cos(saveAlpha * Math.PI / 180);
+            y = cy - t * Math.sin(saveAlpha * Math.PI / 180);
         } else if (cy <= polygon.points[0].y) {
-            var x = cx - t * Math.cos(-saveAlpha * Math.PI / 180);
-            var y = cy + t * Math.sin(-saveAlpha * Math.PI / 180);
+            x = cx - t * Math.cos(-saveAlpha * Math.PI / 180);
+            y = cy + t * Math.sin(-saveAlpha * Math.PI / 180);
         }
 
         var tx = x - polygon.points[0].x;
@@ -533,7 +532,6 @@
             div.removeChild(node);
         }
 
-        div = null;
         return o;
     };
 
@@ -801,9 +799,8 @@
 
         var identifiedElements = svgWorkingNode.querySelectorAll("[id]");
 
-        var nid, len = identifiedElements.length;
-        for (i = 0; i < len; i++) {
-            nid = identifiedElements[i].getAttribute("id");
+        for (i = 0, len = identifiedElements.length; i < len; i++) {
+            var nid = identifiedElements[i].getAttribute("id");
             identifiedElements[i].removeAttribute("id");
             identifiedElements[i].setAttribute("data-id", nid);
         }
@@ -1060,12 +1057,6 @@
             title = "automaton";
         }
 
-
-        var dot = "digraph " +
-                  JSON.stringify(title) +
-                  " {\n\trankdir=LR\n\t_begin [style = invis];\n";
-
-
         var nodes = this.svgs[index].querySelectorAll(".node");
 
         for (let i = 0, len = nodes.length; i < len; ++i) {
@@ -1315,8 +1306,6 @@
                 bigEllipse.setAttribute("cx", smallEllipse.getAttribute("cx"));
                 bigEllipse.setAttribute("cy", smallEllipse.getAttribute("cy"));
             }
-
-            var bcr = label.getBoundingClientRect();
 
             label.setAttribute("x", smallEllipse.cx.baseVal.value);
             label.setAttribute("y", smallEllipse.cy.baseVal.value + 4);
@@ -1596,8 +1585,8 @@
                         origSegEnd   = ech;
                     }
 
-                    text.setAttribute("x", newPos(textOrigX, origSegStart.x, origSegEnd.x, textOrigY, origSegStart.y, origSegEnd.y, width, dx, height, dy));
-                    text.setAttribute("y", newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width, dx));
+                    text.setAttribute("x", newPos(textOrigX, origSegStart.x, origSegEnd.x, textOrigY, origSegStart.y, origSegEnd.y, width, dx, height));
+                    text.setAttribute("y", newPos(textOrigY, origSegStart.y, origSegEnd.y, textOrigX, origSegStart.x, origSegEnd.x, height, dy, width));
 
                     if (coords.t[i].transitionStraight) {
                         cleanTransitionPos(
@@ -1614,14 +1603,14 @@
                             origSeg = origSegs.getItem(s);
 
                             if (seg.pathSegType === SVGPathSeg.PATHSEG_CURVETO_CUBIC_ABS) {
-                                seg.x1 = newPos(origSeg.x1, origSegStart.x, origSegEnd.x, origSeg.y1, origSegStart.y, origSegEnd.y, width, dx, height, dy);
-                                seg.y1 = newPos(origSeg.y1, origSegStart.y, origSegEnd.y, origSeg.x1, origSegStart.x, origSegEnd.x, height, dy, width, dx);
-                                seg.x2 = newPos(origSeg.x2, origSegStart.x, origSegEnd.x, origSeg.y2, origSegStart.y, origSegEnd.y, width, dx, height, dy);
-                                seg.y2 = newPos(origSeg.y2, origSegStart.y, origSegEnd.y, origSeg.x2, origSegStart.x, origSegEnd.x, height, dy, width, dx);
+                                seg.x1 = newPos(origSeg.x1, origSegStart.x, origSegEnd.x, origSeg.y1, origSegStart.y, origSegEnd.y, width, dx, height);
+                                seg.y1 = newPos(origSeg.y1, origSegStart.y, origSegEnd.y, origSeg.x1, origSegStart.x, origSegEnd.x, height, dy, width);
+                                seg.x2 = newPos(origSeg.x2, origSegStart.x, origSegEnd.x, origSeg.y2, origSegStart.y, origSegEnd.y, width, dx, height);
+                                seg.y2 = newPos(origSeg.y2, origSegStart.y, origSegEnd.y, origSeg.x2, origSegStart.x, origSegEnd.x, height, dy, width);
                             }
 
-                            seg.x = newPos(origSeg.x, origSegStart.x, origSegEnd.x, origSeg.y, origSegStart.y, origSegEnd.y, width, dx, height, dy);
-                            seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width, dx);
+                            seg.x = newPos(origSeg.x, origSegStart.x, origSegEnd.x, origSeg.y, origSegStart.y, origSegEnd.y, width, dx, height);
+                            seg.y = newPos(origSeg.y, origSegStart.y, origSegEnd.y, origSeg.x, origSegStart.x, origSegEnd.x, height, dy, width);
                         }
 
                         fixTransition(path);
@@ -1684,12 +1673,13 @@
                 rx * rx * Math.pow(Math.sin(alpha), 2)
             );
 
+            var x, y;
             if (cy > mouseY) {
-                var x = cx - t * Math.cos(alpha);
-                var y = cy - t * Math.sin(alpha);
-            } else if (cy <= mouseY) {
-                var x = cx - t * Math.cos(alpha);
-                var y = cy + t * Math.sin(alpha);
+                x = cx - t * Math.cos(alpha);
+                y = cy - t * Math.sin(alpha);
+            } else {
+                x = cx - t * Math.cos(alpha);
+                y = cy + t * Math.sin(alpha);
             }
 
             var translationX = x - polygon.points[0].x;
@@ -2077,9 +2067,6 @@
                 ellipse = ellipses[0];
             } else {
                 ellipse = ellipses[0].cloneNode(false);
-                var rx = ellipse.rx.baseVal.value + 4,
-                    ry = ellipse.ry.baseVal.value + 4;
-
                 fill(ellipse, "none");
                 nodeMoving.insertBefore(ellipse, ellipses[0].nextSibling);
             }

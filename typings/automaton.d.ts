@@ -87,9 +87,10 @@ declare class Automaton {
     getSuccessors(state: any, symbol: any): libD.Set;
     getReachable(state: any, visited: libD.Set): libD.Set;
 
+    step(): boolean;
     runSymbol(symbol: any, 
-            transitionFunction: (startState?: any, symbol?: any, getEndStates?: boolean) => libD.Set, 
-            dontEraseTakenTransitions: boolean
+            transitionFunction?: (startState?: any, symbol?: any, getEndStates?: boolean) => libD.Set, 
+            dontEraseTakenTransitions?: boolean
         ): void;
     
     runWord(symbols: string | Array<any>): void;

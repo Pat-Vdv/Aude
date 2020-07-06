@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-((pkg) => {
+(function () {
     const AudeGUI = window.AudeGUI;
     const _ = AudeGUI.l10n;
 
@@ -56,7 +56,7 @@
         // according to their names and directory structure.
         for (let filePath of dirs) {
             filePath = filePath.trim();
-            // Skip empty lines;
+            // Skip empty lines
             if (!filePath) {
                 continue;
             }
@@ -94,7 +94,7 @@
          * @param textList - Title for the list of pre-made files.
          * @param funList - The function that associates a link's <a> element to its
          * @param btnText - The text for the local files button.
-         * @param letter - The letter identifying the type 
+         * @param letter - The letter identifying the type
          * of files ("q" for Quizzes, "a" for algorithms, "e" for example automata)
          * @param folder - The name of the folder containing the files,
          * used to remove it from display name of file.
@@ -203,12 +203,12 @@
                     makeWindow(
                         _("Load a Quiz"),
                         _("Ready to use quizzes"),
-                        lfile(AudeGUI.Quiz.open, _("Loading quiz failed.")),
+                        lfile(AudeQuiz.open, _("Loading quiz failed.")),
                         _("Load a quiz"),
                         "q",
                         "quiz/",
                         "json",
-                        AudeGUI.Quiz.fileInput
+                        AudeQuiz.fileInput
                     );
                 };
             }
@@ -248,4 +248,4 @@
             }
         });
     }
-})(globalThis);
+})();

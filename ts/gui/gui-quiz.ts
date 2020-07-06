@@ -18,7 +18,7 @@
 /**
  * Handles storage and execution of quizzes.
  */
-class Quiz {
+class AudeQuiz {
     private readonly _ = window.AudeGUI.l10n;
 
     /** DOM input element to load a quiz */
@@ -29,22 +29,22 @@ class Quiz {
      * Quiz instance that is being executed.
      * Only one quiz can be executed at a time.
      */
-    static currentQuiz: Quiz;
+    static currentQuiz: AudeQuiz;
 
     /**  Initialize the quiz */
     static load() {
         AutomatonPrograms.loadPrograms();
-        Quiz.divQuiz = document.getElementById("div-quiz");
-        Quiz.fileInput = document.getElementById("filequiz") as HTMLInputElement;
-        Quiz.fileInput.onchange = Quiz.openQuiz;
+        AudeQuiz.divQuiz = document.getElementById("div-quiz");
+        AudeQuiz.fileInput = document.getElementById("filequiz") as HTMLInputElement;
+        AudeQuiz.fileInput.onchange = AudeQuiz.openQuiz;
     }
 
     /** Start a quiz from string (JSON). */
     static open(code: string) {
         try {
-            Quiz.currentQuiz = new Quiz();
-            Quiz.currentQuiz.fromJSON(code);
-            Quiz.currentQuiz.start();
+            AudeQuiz.currentQuiz = new AudeQuiz();
+            AudeQuiz.currentQuiz.fromJSON(code);
+            AudeQuiz.currentQuiz.start();
             //startQuiz(JSON.parse(code));
         } catch (e) {
             window.AudeGUI.notify(
@@ -66,10 +66,10 @@ class Quiz {
         const freader = new FileReader();
 
         freader.onload = () => {
-            Quiz.open(freader.result as string);
+            AudeQuiz.open(freader.result as string);
         };
 
-        freader.readAsText(Quiz.fileInput.files[0], "utf-8");
+        freader.readAsText(AudeQuiz.fileInput.files[0], "utf-8");
     }
 
     /** This quizz's questions. */
@@ -87,12 +87,6 @@ class Quiz {
     /** Storage of HTML DOM references for this quiz. */
     refs: any;
     currentAnswersRefs: any;
-
-    constructor() {
-        // We load the programs for questions in advance, 
-        // since we need them a bit later.
-        AutomatonPrograms.loadPrograms();
-    }
 
     /**
      * Initializes this quiz using the given JSON string.
@@ -184,8 +178,8 @@ class Quiz {
         }
 
         // If a quiz was previously executing, close it.
-        Quiz.currentQuiz.close();
-        Quiz.currentQuiz = this;
+        AudeQuiz.currentQuiz.close();
+        AudeQuiz.currentQuiz = this;
         this.currentQuestionIndex = -1;
 
         // Fill the answers with dummy incorrect statuses.
@@ -197,13 +191,13 @@ class Quiz {
             });
         }
 
-        Quiz.divQuiz.classList.add("intro");
-        Quiz.divQuiz.classList.remove("started");
-        Quiz.divQuiz.textContent = "";
-        Quiz.divQuiz.classList.add("enabled");
+        AudeQuiz.divQuiz.classList.add("intro");
+        AudeQuiz.divQuiz.classList.remove("started");
+        AudeQuiz.divQuiz.textContent = "";
+        AudeQuiz.divQuiz.classList.add("enabled");
 
         const refs: any = {};
-        Quiz.divQuiz.appendChild(libD.jso2dom([
+        AudeQuiz.divQuiz.appendChild(libD.jso2dom([
             ["h1#quiz-title", [
                 ["#", this.title ? window.AudeGUI.l10n("Quiz:") + " " : window.AudeGUI.l10n("Quiz")],
                 ["span", { "#": "quizTitleContent" }]
@@ -234,8 +228,8 @@ class Quiz {
      */
     prevNextQuestion(goToPrevious: boolean = false, validateCurrent: boolean = true) {
         try {
-            Quiz.divQuiz.classList.remove("intro");
-            Quiz.divQuiz.classList.add("started");
+            AudeQuiz.divQuiz.classList.remove("intro");
+            AudeQuiz.divQuiz.classList.add("started");
 
             if (this.currentQuestionIndex >= 0 && validateCurrent) {
                 this.validateCurrentQuestion();
@@ -330,8 +324,6 @@ class Quiz {
     askCurrentQuestion() {
         const q = this.questions[this.currentQuestionIndex];
 
-        const qid = this.currentQuestionIndex + 1;
-
         const refs: any = {};
 
         this.currentAnswersRefs = refs;
@@ -365,16 +357,14 @@ class Quiz {
      * Closes this quiz object.
      */
     close() {
-        Quiz.currentQuiz = undefined;
+        AudeQuiz.currentQuiz = undefined;
         window.AudeGUI.removeCurrentAutomaton();
-        Quiz.divQuiz.textContent = "";
-        Quiz.divQuiz.classList.remove("enabled");
+        AudeQuiz.divQuiz.textContent = "";
+        AudeQuiz.divQuiz.classList.remove("enabled");
         window.AudeGUI.mainDesigner.redraw();
         window.AudeGUI.Results.redraw();
     }
 }
-
-window.AudeGUI.Quiz = Quiz;
 
 // convert a JS Object representing an automaton to an actual automaton.
 // This JS object may come from a JSON representation of the automaton.

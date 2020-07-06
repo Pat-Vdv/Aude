@@ -15,9 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-(function () {
-    "use strict";
-    let AudeGUI = window.AudeGUI;
+namespace AudeGUI.Help {
     let _ = AudeGUI.l10n;
 
     let win = null;
@@ -592,24 +590,19 @@
             top: ele.top,
             left: ele.left - document.getElementById("help-command").offsetWidth
         });
-
     }
 
-    class Help {
-        static load() {};
+    export function load() {};
 
-        static run() {
-            if (win && win.ws) {
-                win.close();
-            }
+    export function run() {
+        if (win && win.ws) {
+            win.close();
+        }
 
-            else if (AudeGUI.getCurrentMode() === "program" ) {
-                drawHelpAlgo();
-            } else if (AudeGUI.getCurrentMode() === "design" ) {
-                drawHelpDesign();
-            }
-        };
+        else if (AudeGUI.getCurrentMode() === "program" ) {
+            drawHelpAlgo();
+        } else if (AudeGUI.getCurrentMode() === "design" ) {
+            drawHelpDesign();
+        }
     };
-
-    AudeGUI.Help = Help;
-}());
+}

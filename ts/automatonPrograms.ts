@@ -114,7 +114,3 @@ class AutomatonPrograms {
         }
     }
 }
-
-window.addEventListener("load", () => {
-    AutomatonPrograms.loadPrograms();
-});
