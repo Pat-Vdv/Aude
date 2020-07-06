@@ -181,7 +181,6 @@ namespace AudeGUI {
                 let algoButtons = null;
 
                 function select(button) {
-                    console.log("select", button);
                     if (selected) {
                         selected.classList.remove("algo-selected");
                     }
