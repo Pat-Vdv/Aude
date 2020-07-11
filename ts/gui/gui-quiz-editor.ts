@@ -28,7 +28,7 @@ namespace AudeGUI.QuizEditor {
      */
     export function load() { return; }
 
-    /** 
+    /**
      * Opens an quiz.
      * Resets the current quiz editor's quiz.
      * @param code : The JSON string for the old quiz.
@@ -59,7 +59,7 @@ namespace AudeGUI.QuizEditor {
     }
 
     /**
-     * Gets the info such as the author, title, description and 
+     * Gets the info such as the author, title, description and
      * date for the current quiz and assigns them to said quiz.
      */
     function parseQuizInfo() {
@@ -103,7 +103,7 @@ namespace AudeGUI.QuizEditor {
     }
     /**
      * Minimizes the current quiz editor window.
-     * @remarks 
+     * @remarks
      * The same quiz editor can still be reopened afterwards.
      */
     function close() {
@@ -128,6 +128,7 @@ namespace AudeGUI.QuizEditor {
         currentQuiz.date = "";
         currentQuiz.description = "";
         currentQuiz.questions = [];
+        currentState = null;
         draw();
         refreshQuestionPreview();
         setCurrentState(QuizEditorState.Overview);
@@ -166,14 +167,14 @@ namespace AudeGUI.QuizEditor {
 
     const WINDOW_CONTENT = ["div#quiz-editor.libD-ws-colors-auto libD-ws-size-auto container-fluid", { "#": "root" }, [
         ["nav", { "class": "navbar navbar-expand navbar-light" }, [
-            ["a.navbar-brand", { "href": "#" }, window.AudeGUI.l10n("Quiz Editor")],
-
             ["div", { "class": "navbar-nav mr-auto" }, [
                 ["a.nav-link", { "#": "open", "href": "#" }, window.AudeGUI.l10n("Open")],
                 ["input#quiz-editor-file", { "#": "file", "type": "file", "style": "display: none" }],
                 ["a.nav-link", { "#": "save", "href": "#" }, window.AudeGUI.l10n("Save")],
                 ["a.nav-link", { "#": "destroy", "href": "#" }, window.AudeGUI.l10n("New Quiz")],
             ]],
+
+            ["div.navbar-title", window.AudeGUI.l10n("Quiz Editor")],
 
             ["div", { "class": "navbar-nav ml-auto" }, [
                 ["a.nav-link", { "#": "overview", "href": "#" }, window.AudeGUI.l10n("Show the quiz overview")],
@@ -293,7 +294,7 @@ namespace AudeGUI.QuizEditor {
 
         refs.destroy.onclick = () => {
             if (window.confirm(window.AudeGUI.l10n("Do you really want to start a new quiz from scratch?"))) {
-                draw();
+                run();
             }
         };
 
@@ -475,10 +476,10 @@ namespace AudeGUI.QuizEditor {
 
     /**
      * Creates or modifies the question at the given index.
-     * If the index is greater or equal to the question list length, it will be 
+     * If the index is greater or equal to the question list length, it will be
      * created at the end of the question list, otherwise it will be edited.
-     * @param index 
-     * @param qCat 
+     * @param index
+     * @param qCat
      */
     function editOrCreateQuestion(index: number, qCat?: QuestionCategory) {
         const create = index >= currentQuiz.questions.length;
@@ -514,6 +515,7 @@ namespace AudeGUI.QuizEditor {
             showOverview();
             setCurrentState(QuizEditorState.Overview);
         };
+
         setCurrentState(QuizEditorState.QuestionEdit);
     }
 

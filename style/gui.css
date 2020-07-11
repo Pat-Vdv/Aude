@@ -808,6 +808,15 @@ input[type=button]:active, button:active {
     flex-direction: column;
 }
 
+#question-editor-wording-text-area {
+  width:calc(100% - 5px);
+  box-sizing: border-box
+}
+
+#quiz-editor-content h5 {
+  margin-bottom:2px;
+}
+
 .quiz-editor-pane {
     max-width: 130ex;
     margin: auto;
@@ -1123,7 +1132,7 @@ input[type=button]:active, button:active {
     transition: 300ms background-color;
     padding: 1rem;
     background: none;
-    border: none; 
+    border: none;
     text-decoration: none;
     cursor: pointer;
     width: 100%;

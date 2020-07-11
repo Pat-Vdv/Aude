@@ -576,7 +576,6 @@ namespace AudeGUI.Runtime {
     }
 
     export function loadModule(moduleName: string, callback: () => any) {
-        console.log("loadModule", new Error("Trace"))
         if (modules[curAlgo.name]) {
             if (callback) {
                 callback();
