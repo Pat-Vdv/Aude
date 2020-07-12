@@ -112,10 +112,10 @@ This program makes use of the following external projects:
 The GPLv3 license is provided in the file gpl.txt.
 The WTFPL license is provided in the file wtfpl.txt.
 
-# Authors
+# Maintainers
 
-Main author: Raphaël Jakse (UGA) : raphael dot jakse at univ-grenoble-alpes dot fr
-Supervised by Yliès Falcone : ylies dot falcone at univ-grenoble-alpes dot fr
+- Raphaël Jakse (formerly at UGA) : raphael dot aude at jakse dot fr
+- Yliès Falcone : ylies dot falcone at univ-grenoble-alpes dot fr
 
 This program was started as a personal project around November 2012. The main
 goal was to get to know automata and related algorithms, and also help

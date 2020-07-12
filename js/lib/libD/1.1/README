@@ -19,5 +19,4 @@ I just had to choose a namespace and libD is what came. Why? I don't know. Maybe
 
 libD calls third-party shims available in the 3rd folder. See 3rd/README for more details.
 
-Author :
-	Raphaël Jakse : raphael dot jakse at gmail dot com
+Author: Raphaël Jakse <raphael dot libd at jakse dot fr>
